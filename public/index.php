@@ -28,7 +28,7 @@ if ($brand == 'localhost') {
   $matches = explode('/', $url);
   $brand = $matches[0];
   $url = str_replace($brand.'/', '', $url);
-  define('BRANDURL', 'http://localhost/brockhensley-mvc/'.$brand.'/');
+  define('BRANDURL', 'http://localhost/awoms/'.$brand.'/');
 } else {
   // Remove '.com' from brand received from HTTP_HOST/htaccess
   $brand = str_replace('.com', '', $brand);
