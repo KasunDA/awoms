@@ -1,0 +1,9 @@
+# Force all requests to index except images/js/cs (anything that exists)
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(.*)$ index.php?brand=%{HTTP_HOST}&url=$1 [PT,L]
+</IfModule>
