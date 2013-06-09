@@ -37,6 +37,8 @@ if ($brand == 'localhost') {
 $brand = str_replace('dev.', '', $brand);
 define('BRAND', $brand);
 
+var_dump($_GET, $_REQUEST, $brand, $url, BRAND, BRANDURL);
+
 // Handle page request via Bootstrap
 require_once (ROOT . DS . 'library' . DS . 'bootstrap.class.php');
 new Bootstrap($url);

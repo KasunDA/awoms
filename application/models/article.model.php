@@ -13,7 +13,8 @@ class Article extends Model
   public function getArticleInfo($articleID) {
     $cols = self::getArticleColumns();
     $where = 'articleID = '.$articleID;
-    return self::select($cols, $where)[0];
+    $res = self::select($cols, $where); // Dereferencing not available until php v5.4-5.5
+    return $res[0];
   }
   
   public function getArticleIDs($where = NULL) {
