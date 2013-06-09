@@ -528,7 +528,7 @@ php_flag magic_quotes_gpc Off
 
 # Format errors in plain text
 # Note: Leave this setting 'On' for xdebug's var_dump() output
-# php_flag html_errors Off
+php_flag html_errors On
 
 # Show multiple occurrence of error
 # php_flag ignore_repeated_errors Off
