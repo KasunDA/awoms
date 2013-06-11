@@ -3,11 +3,12 @@
 
 # TEAM
 
-    <name> -- <role> -- <twitter>
+    dirt - dirt@awoms.com
 
 # THANKS
 
-    <name>
+    2600
+    The Internet
 
 # TECHNOLOGY COLOPHON
 
