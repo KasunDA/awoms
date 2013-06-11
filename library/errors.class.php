@@ -58,7 +58,8 @@ class Errors
             [" . $subject . "]
             [Message:]" . $message . "
             [File:]" . $file . "
-            [Line:]" . $line;
+            [Line:]" . $line . "
+            [Visitor:] " . $_SERVER['REMOTE_ADDR'];
         // HTML Body
         $htmlBody = "
 		<table border='1' cellpadding='5' cellspacing='0'>
@@ -72,6 +73,9 @@ class Errors
 			<tr>
 				<td>Line:</td><td>" . $line . "</td>
 			</tr>
+      <tr>
+        <td>Visitor:</td><td>" . $_SERVER['REMOTE_ADDR'] . "</td>
+      </tr>
 		</table>";
         // Message handling
         if (self::$errorLevel > 0) {
@@ -117,6 +121,7 @@ class Errors
             [Message:]" . $message . "
             [File:]" . $file . "
             [Line:]" . $line . "
+            [Visitor:] " . $_SERVER['REMOTE_ADDR'] . "
             [Trace:]" . $trace . "
             [XDebug:]" . $xdebug . "
             ";
@@ -132,6 +137,9 @@ class Errors
 			<tr>
 				<td>Line:</td><td>" . $line . "</td>
 			</tr>
+      <tr>
+        <td>Visitor:</td><td>" . $_SERVER['REMOTE_ADDR'] . "</td>
+      </tr>
 			<tr>
 				<td>Trace:</td><td><pre>" . $trace . "</pre></td>
 			</tr>
@@ -179,6 +187,7 @@ class Errors
                 [Message:]" . $error['message'] . "
                 [File:]" . $error['file'] . "
                 [Line:]" . $error['line'] . "
+                [Visitor:] " . $_SERVER['REMOTE_ADDR'] . "
                 [Type:]" . $error['type'];
             $htmlBody = "
                 <table border='1' cellpadding='5' cellspacing='0'>
@@ -191,6 +200,9 @@ class Errors
                 </tr>
                 <tr>
                         <td>Line:</td><td>" . $error['line'] . "</td>
+                </tr>
+                <tr>
+                        <td>Visitor:</td><td>" . $_SERVER['REMOTE_ADDR'] . "</td>
                 </tr>
                 <tr>
                         <td>Type:</td><td>" . $error['type'] . "</td>
