@@ -20,8 +20,8 @@
     }?>
     <input type='hidden' name='inp_articleID' value='<?php echo $articleID; ?>' />
     
-    <!-- Name -->
-    Name
+    <!-- Title -->
+    Title
     <input type='text' name='inp_articleName' value='<?php
       if (isset($inp_articleName)) {
         echo $inp_articleName;

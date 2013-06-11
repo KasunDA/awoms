@@ -31,7 +31,8 @@
                 <nav>
                     <ul>
                         <li><a href='<?php echo BRANDURL; ?>home'><?= BRAND; ?></a></li>
-                        <li><a href='<?php echo BRANDURL; ?>articles'>Articles</a></li>
+                        <li><a href='<?php echo BRANDURL; ?>articles/viewall'>Articles</a></li>
+                        <li><a href='<?php echo BRANDURL; ?>articles/write'>Write</a></li>
                     </ul>
                 </nav>
             </header>

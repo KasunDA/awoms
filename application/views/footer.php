@@ -3,7 +3,8 @@
 
         <div class="footer-container">
             <footer class="wrapper">
-                <h3>footer</h3>
+                <h3><?=BRAND;?>.com</h3>
+                <cite>contact: info@<?=BRAND;?>.com</cite>
             </footer>
         </div>
 

@@ -79,8 +79,12 @@ class ArticlesController extends Controller
     empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
     $this->set('step', $step);
     $this->set('title', 'Articles :: Write');
+    
+    // Step 1
+    // Is existing article selected for editing?
+    
 
-    // Step 2
+    // Step 2: Save article
     if ($step == 2) {
 
       // Data array to be passed to sql
