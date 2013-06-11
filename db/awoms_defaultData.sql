@@ -4,7 +4,7 @@ USE `awoms`;
 INSERT INTO `users`
 (`userID`, `userActive`, `username`, `passphrase`)
 VALUES
-(DEFAULT, 1, 'anonymous', ''); -- Anonymous user
+(1, 1, 'anonymous', ''); -- Anonymous user
 
 -- Parent Item Types
 INSERT INTO `refParentItemTypes`

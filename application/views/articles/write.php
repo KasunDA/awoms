@@ -4,7 +4,7 @@
   if (isset($articleID)
     && $articleID != 'DEFAULT') {
     echo "
-      Article (#".$articleID.") updated! (Copy #".$bodyContentID.") <a href='http://".$_SERVER['SERVER_NAME']."/brockhensley-mvc/awoms/articles/view/".$articleID."'>View Article</a>";
+      Article (#".$articleID.") updated! (Copy #".$bodyContentID.") <a href='".BRANDURL."articles/view/".$articleID."'>View Article</a><hr />";
   }
   ?>
 </div>
