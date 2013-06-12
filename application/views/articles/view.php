@@ -33,15 +33,3 @@
   </aside>
 
 </div>
-  
-<?php
-// Can be used for multi-step 1.2..3..4.....5 inner-templates
-/*
-// Loads appropriate template file if exists otherwise goes straight to default template
-$tplPath = ROOT.DS.'application/views'.DS.$this->controller.DS.$this->action.'.step'.$step.'.php';
-if (is_file($tplPath)) {
-  include($tplPath);
-}
- * 
- */
-?>

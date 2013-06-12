@@ -16,6 +16,19 @@ class Errors
     public static $email = ERROR_EMAIL;
 
     /**
+     * debugLogger
+     * 
+     * @param int $errorLevel
+     *  10 = Full info
+     * @param mixed $data
+     */
+    public static function debugLogger($errorLevel, $data) {
+      if (ERROR_LEVEL == 10) {
+        var_dump($data);
+      }
+    }
+    
+    /**
      * captureNormal
      *
      * Error handler for normal errors

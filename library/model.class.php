@@ -163,7 +163,7 @@ class Model extends Database
   public function saveBodyContents($parentItemID, $parentItemTypeID, $bodyContentText, $userID) {
     $table = 'bodyContents';
     $bodyContentActive = 1;
-    $bodyContentDateModified = '2012-01-03 04:06:08'; // @todo utility datetime
+    $bodyContentDateModified = Utility::getDateTimeUTC();
     
     // Construct sql data
     $cols = array('bodyContentID', 'parentItemID', 'parentItemTypeID', 'bodyContentActive', 'bodyContentDateModified', 'bodyContentText', 'userID');

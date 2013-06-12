@@ -15,7 +15,7 @@
   for ($i=0; $i<count($articles); $i++) {
 ?>
     <li>
-      <a href='<?= BRANDURL; ?>articles/view/<?= $articles[$i]['articleID']; ?>/<?= $articles[$i]['articleName']; ?>'>
+      <a href='<?= BRANDURL; ?>articles/view/<?= $articles[$i]['articleID']; ?>/<?= str_replace(' ', '-', $articles[$i]['articleName']); ?>'>
         <?= $articles[$i]['articleName']; ?>
       </a>&nbsp;<small><cite><?= $articles[$i]['articleDatePublished']; ?></cite></small>
     </li>

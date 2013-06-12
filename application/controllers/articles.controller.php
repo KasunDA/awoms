@@ -11,6 +11,7 @@ class ArticlesController extends Controller
    * View
    */
   public function view() {
+    Errors::debugLogger(10, __METHOD__.'@'.__LINE__);
     $getReq = func_get_args();
     $this->set('title', 'Articles :: View');
     if (empty($getReq[0])) {
@@ -79,10 +80,6 @@ class ArticlesController extends Controller
     empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
     $this->set('step', $step);
     $this->set('title', 'Articles :: Write');
-    
-    // Step 1
-    // Is existing article selected for editing?
-    
 
     // Step 2: Save article
     if ($step == 2) {
@@ -92,6 +89,9 @@ class ArticlesController extends Controller
       
       // @todo Not sure where to put user ID.. 1=anon
       $data['userID'] = 1;
+      
+      // Post time
+      $data['articleDatePublished'] = Utility::getDateTimeUTC();
 
       // Gets input data from post, must begin with "inp_"
       foreach ($_POST as $k=>$v) {
@@ -126,8 +126,57 @@ class ArticlesController extends Controller
               
       // Set previous bodies to inactive
       $this->Article->setBodyContentActive($articleID, $bodyContentID);
-
     }
+  }
+  
+  /**
+   * Edit
+   */
+  public function edit() {
+    
+    // Get step or assume 1st step
+    empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
+    $this->set('step', $step);
 
+    // Step 2: Save article
+    if ($step == 2) {
+      self::write();
+    }
+    
+    // Step 1 & after Step 2: Load article
+    #if ($step == 1) {
+      $getReq = func_get_args();
+      if (!empty($getReq[0])) {
+        $articleID = $getReq[0];
+        $this->set('articleID', $articleID);
+
+        // Get article info
+        $article = $this->Article->getArticleInfo($articleID);
+        if (empty($article)
+            || $article['articleActive'] == 0) {
+          $this->set('resultsMsg', 'Article not found...');
+          $this->set('article', NULL);
+          $this->set('articleBody', NULL);
+          return;
+        }
+
+        // Get article body
+        $articleBody = $this->Article->getBodyContents($articleID);
+        
+        // Template variables
+        foreach ($article as $a=>$b) {
+          $this->set($a, $b);
+        }
+        foreach ($articleBody as $body) {
+          if ($body['bodyContentActive'] == 1) {
+            $this->set('articleBody', $body);
+            break;
+          }
+        }
+      }
+    #}
+    
+    // Title gets set in step 2 so this stays at end
+    $this->set('title', 'Articles :: Edit');
   }
 }

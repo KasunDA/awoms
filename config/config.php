@@ -12,7 +12,7 @@ ini_set('log_errors', 'On');
 ini_set('error_log', ROOT . DS . 'tmp' . DS . 'logs' . DS . 'error.log');
 
 // Error handling
-define('ERROR_LEVEL', 8);
+define('ERROR_LEVEL', 9);
 define('ERROR_EMAIL', 'brock@awoms.com');
 require_once(ROOT . DS . 'library' . DS . 'errors.class.php');
 error_reporting(-1);
