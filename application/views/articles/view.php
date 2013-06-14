@@ -16,11 +16,13 @@
     </header>
     <section>
       <p><?php
-      foreach ($articleBody as $body) {
-        if ($body['bodyContentActive'] != 1) {
-          continue;
+      if (!empty($articleBody)) {
+        foreach ($articleBody as $body) {
+          if ($body['bodyContentActive'] != 1) {
+            continue;
+          }
+          echo $body['bodyContentText'];
         }
-        echo $body['bodyContentText'];
       }?></p>
       <hr />
     </section>
