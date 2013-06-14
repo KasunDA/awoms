@@ -14,6 +14,11 @@ class Errors
      * @var string $email
      */
     public static $email = ERROR_EMAIL;
+    
+    /**
+     * @var string $devEnv
+     */
+    public static $devEnv = DEVELOPMENT_ENVIRONMENT;
 
     /**
      * debugLogger
@@ -23,9 +28,14 @@ class Errors
      * @param mixed $data
      */
     public static function debugLogger($errorLevel, $data) {
-      if (ERROR_LEVEL == 10) {
-        var_dump($data);
+      if (self::$devEnv === TRUE) {
+        if (self::$errorLevel == 10) {
+          var_dump($data);
+        }
+        return;
       }
+      
+      // Txt file or database for non-devenv?
     }
     
     /**
@@ -91,13 +101,15 @@ class Errors
       </tr>
 		</table>";
         // Message handling
-        if (self::$errorLevel > 0) {
-            echo $htmlBody;
-            if (self::$errorLevel == 10) {
-              echo "<h4>debug_backtrace()</h4>";
-              var_dump(debug_backtrace());
-            }
-            return false; // false = stops script, true = continues... use with caution
+        if (self::$devEnv === TRUE) {
+          if (self::$errorLevel > 0) {
+              echo $htmlBody;
+              if (self::$errorLevel == 10) {
+                echo "<h4>debug_backtrace()</h4>";
+                var_dump(debug_backtrace());
+              }
+              return false; // false = stops script, true = continues... use with caution
+          }
         } else {
             Email::sendEmail(self::$email, self::$email, self::$email, NULL, NULL, $subject, $htmlBody);
             die("
@@ -163,13 +175,15 @@ class Errors
       <td colspan='2'>/end</td></tr>
 		</table>";
         // Message handling
-        if (self::$errorLevel > 0) {
-            echo $htmlBody;
-            if (self::$errorLevel == 10) {
-              echo '<h4>debug_backtrace()</h4>';
-              var_dump(debug_backtrace());
-            }
-            return false; // false = stops script, true = continues... use with caution
+        if (self::$devEnv === TRUE) {
+          if (self::$errorLevel > 0) {
+              echo $htmlBody;
+              if (self::$errorLevel == 10) {
+                echo '<h4>debug_backtrace()</h4>';
+                var_dump(debug_backtrace());
+              }
+              return false; // false = stops script, true = continues... use with caution
+          }
         } else {
             Email::sendEmail(self::$email, self::$email, self::$email, NULL, NULL, $subject, $htmlBody);
             die("
@@ -222,13 +236,15 @@ class Errors
                 </tr>
                 </table>";
             // Message handling
-            if (self::$errorLevel > 0) {
-                echo $htmlBody;
-                if (self::$errorLevel == 10) {
-                  echo '<h4>debug_backtrace()</h4>';
-                  var_dump(debug_backtrace());
-                }
-                return false; // false = stops script, true = continues... use with caution
+            if (self::$devEnv === TRUE) {
+              if (self::$errorLevel > 0) {
+                  echo $htmlBody;
+                  if (self::$errorLevel == 10) {
+                    echo '<h4>debug_backtrace()</h4>';
+                    var_dump(debug_backtrace());
+                  }
+                  return false; // false = stops script, true = continues... use with caution
+              }
             } else {
                 Email::sendEmail(self::$email, self::$email, self::$email, NULL, NULL, $subject, $htmlBody);
                 die("
