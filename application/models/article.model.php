@@ -22,6 +22,17 @@ class Article extends Model
     $order = 'articleID DESC';
     return self::select($cols, $where, $order);
   }
-
+ 
+  public function getArticleComments($articleID, $commentID = NULL) {
+    $cols = 'commentID';
+    if (empty($commentID)) {
+      $where = 'parentItemID = '.$articleID.' AND parentItemTypeID = 1';
+    } else {
+      $where = 'parentItemID = '.$commentID.' AND parentItemTypeID = 2';
+    }
+    $order = 'commentDatePublished';
+    $table = 'comments';
+    return self::select($cols, $where, $order, $table);
+  }
   
 }

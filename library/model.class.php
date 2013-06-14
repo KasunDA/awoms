@@ -161,6 +161,9 @@ class Model extends Database
    * @return int Body ID
    */
   public function saveBodyContents($parentItemID, $parentItemTypeID, $bodyContentText, $userID) {
+    echo 'SAVING';
+    var_dump(func_get_args());
+    
     $table = 'bodyContents';
     $bodyContentActive = 1;
     $bodyContentDateModified = Utility::getDateTimeUTC();
@@ -188,17 +191,20 @@ class Model extends Database
    * @version v00.00.0000
    * 
    * @param int $parentItemID
+   * @param int $parentItemTypeID
    * @param int $bodyContentID Optional where clause
    * @param int $bodyContentActive Optional
    * 
    * @return array SQL results
    */
-  public function getBodyContents($parentItemID, $bodyContentID = NULL, $bodyContentActive = NULL) {
+  public function getBodyContents($parentItemID, $parentItemTypeID, $bodyContentID = NULL, $bodyContentActive = NULL) {
     $this->sql = "
       SELECT bodyContentID, parentItemID, parentItemTypeID, bodyContentActive, bodyContentDateModified, bodyContentText, userID
       FROM bodyContents
-      WHERE parentItemID = :parentItemID";
-    $this->sqlData = array(':parentItemID' => $parentItemID);
+      WHERE parentItemID = :parentItemID
+        AND parentItemTypeID = :parentItemTypeID";
+    $this->sqlData = array(':parentItemID' => $parentItemID,
+      ':parentItemTypeID' => $parentItemTypeID);
 
     // bodyContentID
     if ($bodyContentID !== NULL) {
@@ -219,18 +225,22 @@ class Model extends Database
    * setBodyContentActive
    * 
    * Sets all other body contents to inactive to make the chosen id active
+   * 
    * @param int $parentItemID
+   * @param int $parentItemTypeID
    * @param int $bodyContentID
    * 
    * @return type
    */
-  public function setBodyContentActive($parentItemID, $bodyContentID) {
+  public function setBodyContentActive($parentItemID, $parentItemTypeID, $bodyContentID) {
     $this->sql = "
       UPDATE bodyContents
       SET bodyContentActive = :bodyContentActive
       WHERE parentItemID = :parentItemID
+        AND parentItemTypeID = :parentItemTypeID
         AND bodyContentID != :bodyContentID";
     $this->sqlData = array(':parentItemID' => $parentItemID,
+      ':parentItemTypeID' => $parentItemTypeID,
       ':bodyContentActive' => 0,
       ':bodyContentID' => $bodyContentID);
     return $this->query($this->sql, $this->sqlData);

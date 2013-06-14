@@ -9,16 +9,36 @@
         <meta http-equiv="Content-Language" content="en-us">
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">        
         
-        <title><?php echo BRAND; ?></title>
+        <title><?php
+          if (!empty($article['articleName'])) {
+            echo $article['articleName'];
+          } else {
+            echo $title;
+          }?></title>
         
-        <meta name="description" content="">
-        <meta name="keywords" content="keywords, here">
+        <meta name="description" content="<?php
+          if (empty($article['articleLongDescription'])) {
+            if (empty($article['articleShortDescription'])) {
+              // Use default description
+              echo "Write articles anonymously, discuss important things in live and improve our knowledge and communities.";
+            } else {
+              // Use Short Description
+              echo $article['articleShortDescription'];
+            }
+          } else {
+            // Use Long Description
+            echo $article['articleLongDescription'];
+          }
+          ?>">
+        <meta name="keywords" content="<?php echo $article['articleName']; ?>">
         <meta name="viewport" content="width=device-width">
 
         <link rel="stylesheet" href="/css/normalize.min.css">
         <link rel="stylesheet" href="/css/main.css">
 
         <script src="/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+
+        <meta name="google-site-verification" content="jlehl4fO3VCrbnp_0GUYNKvJgbBiYacd-JhZGH7HmEI" />
     </head>
     <body>
         <!--[if lt IE 7]>

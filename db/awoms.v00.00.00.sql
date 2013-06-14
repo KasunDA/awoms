@@ -19,7 +19,7 @@ CREATE  TABLE IF NOT EXISTS `awoms`.`users` (
   PRIMARY KEY (`userID`) ,
   UNIQUE INDEX `userID_UNIQUE` (`userID` ASC) )
 ENGINE = InnoDB
-AUTO_INCREMENT = 1
+AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
@@ -32,12 +32,12 @@ DROP TABLE IF EXISTS `awoms`.`articles` ;
 CREATE  TABLE IF NOT EXISTS `awoms`.`articles` (
   `articleID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `articleName` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
-  `articleActive` TINYINT(1) NULL DEFAULT NULL ,
+  `articleActive` TINYINT(1) UNSIGNED NOT NULL ,
   `articleShortDescription` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
   `articleLongDescription` TEXT CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
-  `articleDatePublished` DATETIME NULL DEFAULT NULL ,
-  `articleDateLastReviewed` DATETIME NULL DEFAULT NULL ,
-  `articleDateLastUpdated` DATETIME NULL DEFAULT NULL ,
+  `articleDatePublished` DATETIME NOT NULL ,
+  `articleDateLastReviewed` DATETIME NOT NULL ,
+  `articleDateLastUpdated` DATETIME NOT NULL ,
   `articleDateExpires` DATETIME NULL DEFAULT NULL ,
   `userID` BIGINT(20) UNSIGNED NOT NULL ,
   PRIMARY KEY (`articleID`) ,
@@ -49,7 +49,7 @@ CREATE  TABLE IF NOT EXISTS `awoms`.`articles` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 1
+AUTO_INCREMENT = 12
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
@@ -65,7 +65,7 @@ CREATE  TABLE IF NOT EXISTS `awoms`.`refParentItemTypes` (
   PRIMARY KEY (`refParentItemTypeID`) ,
   UNIQUE INDEX `refParentItemTypeID_UNIQUE` (`refParentItemTypeID` ASC) )
 ENGINE = InnoDB
-AUTO_INCREMENT = 1
+AUTO_INCREMENT = 4
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
@@ -80,7 +80,7 @@ CREATE  TABLE IF NOT EXISTS `awoms`.`bodyContents` (
   `parentItemID` BIGINT(20) UNSIGNED NOT NULL ,
   `parentItemTypeID` BIGINT(20) UNSIGNED NOT NULL ,
   `bodyContentActive` TINYINT(1) UNSIGNED NOT NULL ,
-  `bodyContentDateModified` DATETIME NULL DEFAULT NULL ,
+  `bodyContentDateModified` DATETIME NOT NULL ,
   `bodyContentText` TEXT CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
   `userID` BIGINT(20) UNSIGNED NOT NULL ,
   PRIMARY KEY (`bodyContentID`, `parentItemID`, `bodyContentActive`) ,
@@ -98,7 +98,7 @@ CREATE  TABLE IF NOT EXISTS `awoms`.`bodyContents` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 1
+AUTO_INCREMENT = 18
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
@@ -144,6 +144,9 @@ CREATE  TABLE IF NOT EXISTS `awoms`.`comments` (
   `commentID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '	' ,
   `parentItemID` BIGINT(20) UNSIGNED NOT NULL COMMENT 'Comment belongs to parentID' ,
   `parentItemTypeID` BIGINT(20) UNSIGNED NOT NULL ,
+  `commentActive` TINYINT(1) UNSIGNED NOT NULL ,
+  `commentDatePublished` DATETIME NOT NULL ,
+  `commentDateLastUpdated` DATETIME NOT NULL ,
   `userID` BIGINT(20) UNSIGNED NOT NULL ,
   PRIMARY KEY (`commentID`, `parentItemID`) ,
   UNIQUE INDEX `commentID_UNIQUE` (`commentID` ASC) ,

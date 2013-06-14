@@ -33,11 +33,50 @@ class ArticlesController extends Controller
     }
 
     // Get article body
-    $articleBody = $this->Article->getBodyContents($articleID);
+    $articleBody = $this->Article->getBodyContents($articleID, 1);
+    
+    // Get article comments
+    $articleComments = $this->Article->getArticleComments($articleID);
+    $articleCommentsList = array();
+    
+    $comment = new Comment();
+    
+    // Check each comment for children, construct ordered list with levels
+    for ($ac=0; $ac<count($articleComments); $ac++) {
+      $tid = $articleComments[$ac]['commentID'];
+      
+      $thisComment = $comment->getBodyContents($tid, 2, NULL, 1);
+      if (!empty($thisComment[0]['bodyContentText'])) {
+          $body = $thisComment[0]['bodyContentText'];
+        } else {
+          $body = "Empty......";
+        }
+      $articleCommentsList[] = array('level' => 1,
+        'commentID' => $tid,
+        'commentBodyText' => $body);
+      
+      $level = 1;
+      while (count($as = $this->Article->getArticleComments($articleID, $tid)) > 0) {
+        $level++;
+        $tid = $as[0]['commentID'];
+        
+        $thisComment = $comment->getBodyContents($tid, 2, NULL, 1);
+        if (!empty($thisComment[0]['bodyContentText'])) {
+          $body = $thisComment[0]['bodyContentText'];
+        } else {
+          $body = "Empty......";
+        }
+        $articleCommentsList[] = array('level' => $level,
+          'commentID' => $tid,
+          'commentBodyText' => $body);
+      }
+      
+    }
 
     // Template data
     $this->set('article', $article);
     $this->set('articleBody', $articleBody);
+    $this->set('articleComments', $articleCommentsList);
   }
   
   /**
@@ -62,7 +101,7 @@ class ArticlesController extends Controller
 
     // Get all article bodies (active only)
     foreach ($articleIDs as $a) {
-      $articleBody = $this->Article->getBodyContents($a['articleID'], NULL, 1);
+      $articleBody = $this->Article->getBodyContents($a['articleID'], 1, NULL, 1);
       $articleBodies[] = $articleBody;
     }
 
@@ -121,11 +160,12 @@ class ArticlesController extends Controller
       $this->set('articleID', $articleID);
       
       // Save article body
-      $bodyContentID = $this->Article->saveBodyContents($articleID, 1, $inp_articleBody, $data['userID']);
+      $bodyType = 1; // Article=1
+      $bodyContentID = $this->Article->saveBodyContents($articleID, $bodyType, $inp_articleBody, $data['userID']);
       $this->set('bodyContentID', $bodyContentID);
               
       // Set previous bodies to inactive
-      $this->Article->setBodyContentActive($articleID, $bodyContentID);
+      $this->Article->setBodyContentActive($articleID, $bodyType, $bodyContentID);
     }
   }
   
@@ -161,7 +201,7 @@ class ArticlesController extends Controller
         }
 
         // Get article body
-        $articleBody = $this->Article->getBodyContents($articleID);
+        $articleBody = $this->Article->getBodyContents($articleID, 1);
         
         // Template variables
         foreach ($article as $a=>$b) {
