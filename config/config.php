@@ -1,6 +1,11 @@
 <?php
 // Configuration Variables
-define ('DEVELOPMENT_ENVIRONMENT',false);
+if ($_SERVER['SERVER_ADDR'] == '127.0.0.1') {
+  define ('DEVELOPMENT_ENVIRONMENT',TRUE);
+} else {
+  define ('DEVELOPMENT_ENVIRONMENT',FALSE);
+}
+
 define('DB_NAME', 'awoms');
 define('DB_USER', 'awoms');
 define('DB_PASSWORD', 'dra?retr?pep-s+uvu92-g!p-2aswe3refretE**fr$-hus8anase9r+swate');

@@ -29,9 +29,35 @@
     
     <section>
       <h2>Comments</h2>
-      <p>Be the first to <a href='<?=BRANDURL;?>comments/write/<?=$article['articleID'];?>'>add a comment!</a></p>
-      <?php var_dump($articleComments); ?>
-      
+      <?php
+        if (empty($articleComments)) {
+          echo "<p>Be the first to <a href='".BRANDURL."comments/write/".$article['articleID']."'>add a comment!</a></p>";
+        } else {
+          echo "<p><a href='".BRANDURL."comments/write/".$article['articleID']."'>Add a comment!</a></p>
+            <ul>";
+          $ci = 0;
+          $clvl = 0;
+          foreach ($articleComments as $comment) {
+            $ci++;
+            // What level of comment are we on
+            if ($comment['level'] > $clvl) {
+              $clvl = $comment['level'];
+              echo '<ul>';
+            } elseif ($comment['level'] < $clvl) {
+              for ($u=0; $u<($clvl-$comment['level']); $u++) {
+                echo "</ul>";
+              }
+              echo '</ul><ul>';
+              $clvl = 1;
+            }
+            echo "
+              <li><a name='".$comment['commentID']."'>#</a>".$ci." ".$comment['commentBodyText']."
+                <br /><a href='".BRANDURL."comments/write/".$article['articleID']."/".$comment['commentID']."'>reply</a>
+              </li>";
+          }
+          echo '</ul>';
+        }
+      ?>
     </section>
   </article>
   

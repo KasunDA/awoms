@@ -161,8 +161,6 @@ class Model extends Database
    * @return int Body ID
    */
   public function saveBodyContents($parentItemID, $parentItemTypeID, $bodyContentText, $userID) {
-    echo 'SAVING';
-    var_dump(func_get_args());
     
     $table = 'bodyContents';
     $bodyContentActive = 1;

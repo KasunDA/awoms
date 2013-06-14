@@ -4,7 +4,7 @@
   if (isset($commentID)
     && $commentID != 'DEFAULT') {
     echo "
-      Comment (#".$commentID.") updated! (Copy #".$bodyContentID.") <a href='".BRANDURL."comments/view/".$commentID."'>View Comment</a><hr />";
+      Comment (#".$commentID.") updated! (Copy #".$bodyContentID.") <a href='".BRANDURL."comments/view/".$commentID."'>View Comment</a> or <a href='".BRANDURL."articles/view/".$articleID."#".$commentID."'>View Article</a><hr />";
   }
   ?>
 </div>

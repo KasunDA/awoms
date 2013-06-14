@@ -151,7 +151,8 @@ class CommentsController extends Controller
       $this->set('bodyContentID', $bodyContentID);
 
       // Set previous bodies to inactive
-      $this->Comment->setBodyContentActive($parentItemID, $bodyType, $bodyContentID);
+      // @todo ... only if updated on initial write
+      #$this->Comment->setBodyContentActive($parentItemID, $bodyType, $bodyContentID);
     }
   }
   
