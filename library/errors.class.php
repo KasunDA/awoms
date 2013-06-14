@@ -112,13 +112,13 @@ class Errors
           }
         } else {
             Email::sendEmail(self::$email, self::$email, self::$email, NULL, NULL, $subject, $htmlBody);
-            die("
+            echo "
                 <div class='alert alert-block alert-error span6 offset3'>
                     <button type='button' class='close' data-dismiss='alert'>&times;</button>
                     <h4>Sorry!</h4>
                     We're very sorry but there seems to be an issue with your request. Details have been logged and emailed to the administrator.
                 </div>
-            ");
+            ";
         }
         // Don't execute PHP internal error handler
         return true;
