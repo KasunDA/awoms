@@ -30,7 +30,12 @@
             echo $article['articleLongDescription'];
           }
           ?>">
-        <meta name="keywords" content="<?php echo $article['articleName']; ?>">
+        <meta name="keywords" content="<?php
+          if (!empty($article['articleName'])) {
+            echo $article['articleName'];
+          } else {
+            echo "articles, forums, interesting things of life, anonymous contributions";
+          }?>">
         <meta name="viewport" content="width=device-width">
 
         <link rel="stylesheet" href="/css/normalize.min.css">
