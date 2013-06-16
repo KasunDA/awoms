@@ -1,10 +1,16 @@
 <?php
+/**
+ * Load: Config
+ * Read: Brand, Url
+ * Set: DS, ROOT, BRAND, BRANDURL
+ * Call: Bootstrap
+ */
 
 // Global definitions
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', dirname(dirname(__FILE__)));
 
-// Config
+// Load Config
 require_once (ROOT . DS . 'config' . DS . 'config.php');
 
 // Read $_GET request
