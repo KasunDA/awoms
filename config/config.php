@@ -15,7 +15,7 @@ ini_set('error_log', ROOT . DS . 'tmp' . DS . 'logs' . DS . 'error.log');
 
 // Error handling
 define('ERROR_LEVEL', 9);
-define('ERROR_EMAIL', 'brock@awoms.com');
+define('ERROR_EMAIL', 'errors@awoms.com');
 require_once(ROOT . DS . 'library' . DS . 'errors.class.php');
 error_reporting(-1);
 set_error_handler(array('Errors', 'captureNormal'));

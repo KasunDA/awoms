@@ -6,7 +6,7 @@
  *
  * PHP version 5
  *
- * @author    Brock Hensley <brock.hensley@gmail.com>
+ * @author    dirt <dirt@awoms.com>
  * @license   MIT/X see LICENSE
  * @version   v00.00.00
  */
