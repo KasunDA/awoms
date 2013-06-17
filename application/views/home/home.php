@@ -6,8 +6,9 @@
   </li>
 </ul>
 
-
-<div id='lastRefreshTime'></div>
+<cite>
+  Latest Articles last refreshed at <div id='lastRefreshTime'></div>
+</cite>
 <div id='homeTopArticles'></div>
 
 <?php
