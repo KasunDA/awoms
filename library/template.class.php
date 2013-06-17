@@ -78,15 +78,25 @@ class Template
     // Views folder
     $viewsFolder = ROOT . DS . 'application' . DS . 'views' . DS;
 
-    // Header
-    if (file_exists($viewsFolder . BRAND . DS . $this->controller . DS . 'header.php')) {
-      include ($viewsFolder . BRAND . DS . $this->controller . DS . 'header.php');
-    } elseif (file_exists($viewsFolder . BRAND . DS . 'header.php')) {
-      include ($viewsFolder . BRAND . DS . 'header.php');
-    } elseif (file_exists($viewsFolder . $this->controller . DS . 'header.php')) {
-      include ($viewsFolder . $this->controller . DS . 'header.php');
-    } else {
-      include ($viewsFolder . 'header.php');
+    // Header if not in ajax mode
+    if (
+      (!isset($_GET['m'])
+        || strtolower($_GET['m']) != 'ajax')
+      &&
+      (!isset($_POST['m'])
+        || strtolower($_POST['m']) != 'ajax')
+      ) {
+
+      if (file_exists($viewsFolder . BRAND . DS . $this->controller . DS . 'header.php')) {
+        include ($viewsFolder . BRAND . DS . $this->controller . DS . 'header.php');
+      } elseif (file_exists($viewsFolder . BRAND . DS . 'header.php')) {
+        include ($viewsFolder . BRAND . DS . 'header.php');
+      } elseif (file_exists($viewsFolder . $this->controller . DS . 'header.php')) {
+        include ($viewsFolder . $this->controller . DS . 'header.php');
+      } else {
+        include ($viewsFolder . 'header.php');
+      }
+          
     }
 
     // Action
@@ -96,16 +106,27 @@ class Template
       include ($viewsFolder . $this->controller . DS . $this->action . '.php');
     }
 
-    // Footer
-    if (file_exists($viewsFolder . BRAND . DS . $this->controller . DS . 'footer.php')) {
-      include ($viewsFolder . BRAND . DS . $this->controller . DS . 'footer.php');
-    } elseif (file_exists($viewsFolder . BRAND . DS . 'footer.php')) {
-      include ($viewsFolder . BRAND . DS . 'footer.php');
-    } elseif (file_exists($viewsFolder . $this->controller . DS . 'footer.php')) {
-      include ($viewsFolder . $this->controller . DS . 'footer.php');
-    } else {
-      include ($viewsFolder . 'footer.php');
+    // Footer if not in ajax mode
+    if (
+      (!isset($_GET['m'])
+        || strtolower($_GET['m']) != 'ajax')
+      &&
+      (!isset($_POST['m'])
+        || strtolower($_POST['m']) != 'ajax')
+      ) {
+      
+      if (file_exists($viewsFolder . BRAND . DS . $this->controller . DS . 'footer.php')) {
+        include ($viewsFolder . BRAND . DS . $this->controller . DS . 'footer.php');
+      } elseif (file_exists($viewsFolder . BRAND . DS . 'footer.php')) {
+        include ($viewsFolder . BRAND . DS . 'footer.php');
+      } elseif (file_exists($viewsFolder . $this->controller . DS . 'footer.php')) {
+        include ($viewsFolder . $this->controller . DS . 'footer.php');
+      } else {
+        include ($viewsFolder . 'footer.php');
+      }
+      
     }
+    
   }
 
 }

@@ -83,6 +83,14 @@ class ArticlesController extends Controller
    * View All
    */
   public function viewall() {
+    Errors::debugLogger(10, __METHOD__.'@'.__LINE__);
+    
+    // "Top 10" or similar latest LIMIT <--- @todo
+    $getReq = func_get_args();
+    if (!empty($getReq[0])) {
+      
+    }    
+    
     $this->set('title', 'Articles :: View All');
     $articleIDs = $this->Article->getArticleIDs('articleActive=1');
     $articles = array();
