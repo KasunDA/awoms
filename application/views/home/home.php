@@ -1,10 +1,10 @@
+<div id='divResults'></div>
 <h1>Welcome to <?= BRAND; ?>, world!</h1>
 
-<ul>
-  <li>
-    Check out <b>Articles</b> where you can <a href="<?= BRANDURL; ?>articles/viewall">view</a> or <a href="<?= BRANDURL; ?>articles/write">write</a> anything, even <b>anonymously</b> with no login
-  </li>
-</ul>
+<?php
+// Write Modal
+include(ROOT.DS.'application'.DS.'views'.DS.'articles'.DS.'writeForm.php');
+?>
 
 <cite>
   Latest Articles last refreshed at <div id='lastRefreshTime'></div>
@@ -13,8 +13,11 @@
 
 <?php
 $pageJavaScript[] = "
-  var divResults = $('#homeTopArticles');
-  var divRefreshTimeResults = $('#lastRefreshTime');
+  /**
+   * Get latest articles
+   */
+  var divResultsArticles = $('#homeTopArticles');
+  var divResultsRefreshTime = $('#lastRefreshTime');
   // Ajax call
   function getLatestArticles() {
     var go = $.ajax({
@@ -26,9 +29,9 @@ $pageJavaScript[] = "
     })
     .done(function(results) {
         var now = new Date();
-        divRefreshTimeResults.html(now.toString());
-        divResults.html(results);
-        divResults.css('border', '3px solid black');
+        divResultsRefreshTime.html(now.toString());
+        divResultsArticles.html(results);
+        divResultsArticles.css('border', '3px solid black');
     })
     .fail(function(msg) {
         alert('Error: ' + msg);
@@ -39,5 +42,6 @@ $pageJavaScript[] = "
   // Initial Load
   getLatestArticles();
   // Timer
-  setInterval(getLatestArticles, 3000); // 1000 = 1s
+  setInterval(getLatestArticles, 30000); // 1000 = 1s
+  
 ";

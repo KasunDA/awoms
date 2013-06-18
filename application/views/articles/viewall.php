@@ -1,11 +1,16 @@
-<!-- Results -->
-<div id='results'>
-  <?php
-    if (isset($resultsMsg)) {
-      var_dump($resultsMsg);
-    }
-  ?>
-</div>
+<?php
+// Skip if in ajax mode
+if (
+  (!isset($_GET['m'])
+    || strtolower($_GET['m']) != 'ajax')
+  &&
+  (!isset($_POST['m'])
+  || strtolower($_POST['m']) != 'ajax'))
+  {
+    // Write Modal
+    include(ROOT.DS.'application'.DS.'views'.DS.'articles'.DS.'writeForm.php');
+  }
+?>
 
 <!-- Template Output -->
 <div id='view'>
@@ -26,18 +31,4 @@
   <?php
   }
 ?>
-</div>
-  
-<?php
-// Can be used for multi-step 1.2..3..4.....5 inner-templates
-/*
-// Loads appropriate template file if exists otherwise goes straight to default template
-$tplPath = ROOT.DS.'application/views'.DS.$this->controller.DS.$this->action.'.step'.$step.'.php';
-if (is_file($tplPath)) {
-  include($tplPath);
-}
- * 
- */
-?>
-
 </div>

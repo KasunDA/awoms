@@ -24,7 +24,7 @@ class Article extends Model
   }
  
   public function getArticleComments($articleID, $commentID = NULL) {
-    $cols = 'commentID';
+    $cols = 'commentID, commentDatePublished';
     if (empty($commentID)) {
       $where = 'parentItemID = '.$articleID.' AND parentItemTypeID = 1';
     } else {

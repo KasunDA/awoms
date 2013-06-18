@@ -44,22 +44,24 @@ class ArticlesController extends Controller
     // Check each comment for children, construct ordered list with levels
     for ($ac=0; $ac<count($articleComments); $ac++) {
       $tid = $articleComments[$ac]['commentID'];
-      
       $thisComment = $comment->getBodyContents($tid, 2, NULL, 1);
       if (!empty($thisComment[0]['bodyContentText'])) {
-          $body = $thisComment[0]['bodyContentText'];
-        } else {
-          $body = "Empty......";
-        }
+        $body = $thisComment[0]['bodyContentText'];
+      } else {
+        $body = "Empty......";
+      }
+      $commentDatePublished = $articleComments[$ac]['commentDatePublished'];
       $articleCommentsList[] = array('level' => 1,
         'commentID' => $tid,
+        'commentDatePublished' => $commentDatePublished,
         'commentBodyText' => $body);
       
+      // Nested loop
       $level = 1;
       while (count($as = $this->Article->getArticleComments($articleID, $tid)) > 0) {
         $level++;
         $tid = $as[0]['commentID'];
-        
+        $commentDatePublished = $as[0]['commentDatePublished'];
         $thisComment = $comment->getBodyContents($tid, 2, NULL, 1);
         if (!empty($thisComment[0]['bodyContentText'])) {
           $body = $thisComment[0]['bodyContentText'];
@@ -68,6 +70,7 @@ class ArticlesController extends Controller
         }
         $articleCommentsList[] = array('level' => $level,
           'commentID' => $tid,
+          'commentDatePublished' => $commentDatePublished,
           'commentBodyText' => $body);
       }
       

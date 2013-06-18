@@ -51,8 +51,9 @@
               $clvl = 1;
             }
             echo "
-              <li><a name='".$comment['commentID']."'>#</a>".$ci." ".$comment['commentBodyText']."
-                <br /><a href='".BRANDURL."comments/write/".$article['articleID']."/".$comment['commentID']."'>reply</a>
+              <li>
+                <cite><a name='".$comment['commentID']."'>#</a>".$comment['commentID']." ".$comment['commentDatePublished']."</cite> <a href='".BRANDURL."comments/write/".$article['articleID']."/".$comment['commentID']."'>reply</a>
+                <br />".$comment['commentBodyText']."
               </li>";
           }
           echo '</ul>';

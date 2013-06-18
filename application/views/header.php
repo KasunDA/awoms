@@ -38,11 +38,15 @@
           }?>">
         <meta name="viewport" content="width=device-width">
 
+        <!-- Styles -->
         <link rel="stylesheet" href="/css/normalize.min.css">
+        <link rel="stylesheet" href="/css/le-frog/jquery-ui-1.10.3.custom.min.css">
         <link rel="stylesheet" href="/css/main.css">
 
+        <!-- Modernizr -->
         <script src="/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 
+        <!-- Site Verification -->
         <meta name="google-site-verification" content="jlehl4fO3VCrbnp_0GUYNKvJgbBiYacd-JhZGH7HmEI" />
     </head>
     <body>
@@ -55,14 +59,13 @@
                 <h1 class="title"><?php echo $title; ?></h1>
                 <nav>
                     <ul>
-                        <li><a href='<?php echo BRANDURL; ?>home'><?= BRAND; ?></a></li>
+                        <li><a href='<?php echo BRANDURL; ?>'><?= BRAND; ?></a></li>
                         <li><a href='<?php echo BRANDURL; ?>articles/viewall'>Articles</a></li>
-                        <li><a href='<?php echo BRANDURL; ?>articles/write'>Write</a></li>
+                        <li><a type='button' class='openModal' name='frmWriteArticle'>Write</a></li>
                     </ul>
                 </nav>
             </header>
         </div>
-
         
         <div class="main-container">
             <div class="main wrapper clearfix">
