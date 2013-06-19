@@ -1,4 +1,13 @@
-            </div> <!-- #main -->
+<?php
+// Articles :: Write Modal
+include(ROOT.DS.'application'.DS.'views'.DS.'articles'.DS.'writeForm.php');
+$pageJavaScript[] = "
+  // Open Modal Cursor
+  $('.openModal').css('cursor', 'pointer');
+";
+?>
+
+          </div> <!-- #main -->
         </div> <!-- #main-container -->
 
         <div class="footer-container">

@@ -1,17 +1,3 @@
-<?php
-// Skip if in ajax mode
-if (
-  (!isset($_GET['m'])
-    || strtolower($_GET['m']) != 'ajax')
-  &&
-  (!isset($_POST['m'])
-  || strtolower($_POST['m']) != 'ajax'))
-  {
-    // Write Modal
-    include(ROOT.DS.'application'.DS.'views'.DS.'articles'.DS.'writeForm.php');
-  }
-?>
-
 <!-- Template Output -->
 <div id='view'>
   
@@ -31,4 +17,6 @@ if (
   <?php
   }
 ?>
+  </ul>
+
 </div>

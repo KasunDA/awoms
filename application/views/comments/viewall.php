@@ -24,6 +24,8 @@
   <?php
   }
 ?>
+  </ul>
+
 </div>
   
 <?php
@@ -37,5 +39,3 @@ if (is_file($tplPath)) {
  * 
  */
 ?>
-
-</div>

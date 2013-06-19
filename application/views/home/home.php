@@ -1,11 +1,6 @@
 <div id='divResults'></div>
 <h1>Welcome to <?= BRAND; ?>, world!</h1>
 
-<?php
-// Write Modal
-include(ROOT.DS.'application'.DS.'views'.DS.'articles'.DS.'writeForm.php');
-?>
-
 <cite>
   Latest Articles last refreshed at <div id='lastRefreshTime'></div>
 </cite>
@@ -43,5 +38,4 @@ $pageJavaScript[] = "
   getLatestArticles();
   // Timer
   setInterval(getLatestArticles, 30000); // 1000 = 1s
-  
 ";
