@@ -82,7 +82,6 @@ class Bootstrap
     if (method_exists($controller, $action)) {
       call_user_func_array(array($dispatch, $action), $queryString);
     } else {      
-      echo 'CCCCCCCCCCC';
       // Does Not Exist
       $errorMsg = "
         <h1>Error!</h1>
