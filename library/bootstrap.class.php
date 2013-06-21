@@ -74,13 +74,17 @@ class Bootstrap
     $model          = rtrim($controller, 's');
     $controller .= 'Controller';
 
-    $dispatch = new $controller($controllerName, $model, $action);
-
+    if (class_exists($controller, TRUE)) {
+      $dispatch = new $controller($controllerName, $model, $action);
+    } 
+    
+    // Execute!
     if (method_exists($controller, $action)) {
       call_user_func_array(array($dispatch, $action), $queryString);
-    } else {
-      // ERROR
-      trigger_error("
+    } else {      
+      echo 'CCCCCCCCCCC';
+      // Does Not Exist
+      $errorMsg = "
         <h1>Error!</h1>
         <h2>Method does not exist</h2>
         <div class='error'>
@@ -90,7 +94,12 @@ class Bootstrap
           <br />
           Controller: " . $controller . "<br />
           Action: " . $action . "
-        </div>", E_USER_ERROR);
+        </div>";
+      if (empty($dispatch)) {
+        trigger_error($errorMsg, E_USER_ERROR);
+        return false;
+      }
+      $dispatch->set('resultsMsg', $errorMsg);
     }
   }
 

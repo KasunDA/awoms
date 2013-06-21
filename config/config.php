@@ -1,9 +1,11 @@
 <?php
 // Configuration Variables
 if ($_SERVER['SERVER_ADDR'] == '127.0.0.1') {
-  define ('DEVELOPMENT_ENVIRONMENT',TRUE);
+  define ('DEVELOPMENT_ENVIRONMENT',TRUE); // SET TO TRUE
+  define('ERROR_LEVEL', 10);
 } else {
   define ('DEVELOPMENT_ENVIRONMENT',FALSE);
+  define('ERROR_LEVEL', 9);
 }
 
 // Load DB Config
@@ -14,7 +16,6 @@ ini_set('log_errors', 'On');
 ini_set('error_log', ROOT . DS . 'tmp' . DS . 'logs' . DS . 'error.log');
 
 // Error handling
-define('ERROR_LEVEL', 9);
 define('ERROR_EMAIL', 'errors@awoms.com');
 require_once(ROOT . DS . 'library' . DS . 'errors.class.php');
 error_reporting(-1);

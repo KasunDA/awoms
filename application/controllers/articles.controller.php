@@ -145,6 +145,12 @@ class ArticlesController extends Controller
 
       // Gets input data from post, must begin with "inp_"
       foreach ($_POST as $k=>$v) {
+        if ($k == 'botrequired') {
+          if ($v != '') {
+            trigger_error('Big success!', E_USER_ERROR);
+            exit;
+          }
+        }
         if (!preg_match('/^inp_(.*)/', $k, $m)) {
           continue;
         }

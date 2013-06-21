@@ -6,7 +6,8 @@ if (!isset($articleID)) {
 <form id='frmWriteArticle' method='POST'>
   <input type='hidden' name='step' value='2' />
   <input type='hidden' name='inp_articleID' value='<?php echo $articleID; ?>' />
-
+  <input type='text' class='botrequired' name='botrequired' value='' />
+  
   <table cellpadding='2' cellspacing='0'>
 
     <tr>

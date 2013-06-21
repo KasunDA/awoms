@@ -69,3 +69,8 @@
         
         <div class="main-container">
             <div class="main wrapper clearfix">
+
+<?php
+if (!empty($resultsMsg)) {
+  echo $resultsMsg;
+}
