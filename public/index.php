@@ -43,7 +43,8 @@ if ($brand == 'localhost') {
 $brand = str_replace('dev.', '', $brand);
 define('BRAND', $brand);
 
-if (ERROR_LEVEL == 10) {
+if (ERROR_LEVEL == 10
+  && empty($_REQUEST['m'])) {
   var_dump($_GET, $_REQUEST, $brand, $url, BRAND, BRANDURL);
 }
 
