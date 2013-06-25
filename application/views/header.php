@@ -13,6 +13,9 @@
           if (!empty($article['articleName'])) {
             echo $article['articleName'];
           } else {
+            if (empty($title)) {
+              $title = 'DEBUG';
+            }
             echo $title;
           }?></title>
         

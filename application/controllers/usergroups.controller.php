@@ -9,23 +9,36 @@ class UsergroupsController extends Controller
   public function viewall() {
     Errors::debugLogger(10, __METHOD__.'@'.__LINE__);
 
+    // Template data
     $this->set('title', 'Usergroups :: View All');
+    
+    // Brand selection
+    $brands = new BrandsController('brands', 'brand', 'getBrandList');
+    
+    
+    $brandsList = $brands->getBrandList();
+    if (empty($brandsList)) {
+      $brandChoiceList = "<option value=''>--None--</option>";
+    } else {
+      $brandChoiceList = '';
+      foreach ($brandsList as $brand) {
+        $brandChoiceList .= "<option value='".$brand['brandID']."'>".$brand['brandName']."</option>";
+      }
+    }
+    $this->set('brandChoiceList', $brandChoiceList);    
+    
+    // Usergroup info
     $usergroupIDs = $this->Usergroup->getUsergroupIDs('usergroupActive=1');
     $usergroups = array();
-
-    // Get all usergroup info
     foreach ($usergroupIDs as $b) {
       $usergroup = $this->Usergroup->getUsergroupInfo($b['usergroupID']);
       $usergroups[] = $usergroup;
-    }
+    }    
     if (empty($usergroups)) {
       $this->set('resultsMsg', 'No usergroups yet!');
-      $this->set('usergroups', $usergroups);
-      return;
     }
-
-    // Template data
     $this->set('usergroups', $usergroups);
+
   }
   
   /**
@@ -37,7 +50,7 @@ class UsergroupsController extends Controller
     empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
     $this->set('step', $step);
     $this->set('title', 'Usergroups :: Create');
-
+    
     // Step 2: Save usergroup
     if ($step == 2) {
 

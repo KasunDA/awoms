@@ -11,6 +11,18 @@ if (!isset($usergroupID)) {
 
     <tr>
       <td>
+        <!-- Brand -->
+        Brand (STEP: <?=$step;?>)
+      </td>
+      <td>
+        <select name='inp_usergroupBrand'>
+          <?=$brandChoiceList;?>
+        </select>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
         <!-- Usergroup -->
         Usergroup Name
       </td>

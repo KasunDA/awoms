@@ -7,17 +7,69 @@ CREATE SCHEMA IF NOT EXISTS `awoms` DEFAULT CHARACTER SET utf8 COLLATE utf8_unic
 USE `awoms` ;
 
 -- -----------------------------------------------------
+-- Table `awoms`.`brands`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `awoms`.`brands` ;
+
+CREATE  TABLE IF NOT EXISTS `awoms`.`brands` (
+  `brandID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `brandName` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL ,
+  `brandActive` TINYINT(1) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`brandID`, `brandName`, `brandActive`) ,
+  UNIQUE INDEX `brandID_UNIQUE` (`brandID` ASC) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `awoms`.`usergroups`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `awoms`.`usergroups` ;
+
+CREATE  TABLE IF NOT EXISTS `awoms`.`usergroups` (
+  `usergroupID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `brandID` BIGINT(20) UNSIGNED NOT NULL ,
+  `usergroupName` VARCHAR(255) NULL ,
+  `usergroupActive` TINYINT(1) NULL ,
+  `parentUserGroupID` BIGINT UNSIGNED NULL ,
+  PRIMARY KEY (`usergroupID`) ,
+  UNIQUE INDEX `usergroupID_UNIQUE` (`usergroupID` ASC) ,
+  INDEX `fk_usergroups_brands1` (`brandID` ASC) ,
+  INDEX `fk_usergroups_usergroups1` (`parentUserGroupID` ASC) ,
+  CONSTRAINT `fk_usergroups_brands1`
+    FOREIGN KEY (`brandID` )
+    REFERENCES `awoms`.`brands` (`brandID` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_usergroups_usergroups1`
+    FOREIGN KEY (`parentUserGroupID` )
+    REFERENCES `awoms`.`usergroups` (`usergroupID` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `awoms`.`users`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `awoms`.`users` ;
 
 CREATE  TABLE IF NOT EXISTS `awoms`.`users` (
   `userID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `userActive` TINYINT(1) NULL DEFAULT NULL ,
-  `username` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
+  `usergroupID` BIGINT UNSIGNED NOT NULL ,
+  `username` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL ,
+  `userActive` TINYINT(1) NOT NULL ,
+  `userEmail` VARCHAR(255) NOT NULL ,
   `passphrase` CHAR(128) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
-  PRIMARY KEY (`userID`) ,
-  UNIQUE INDEX `userID_UNIQUE` (`userID` ASC) )
+  PRIMARY KEY (`userID`, `usergroupID`, `username`, `userActive`, `userEmail`) ,
+  UNIQUE INDEX `userID_UNIQUE` (`userID` ASC) ,
+  INDEX `fk_users_usergroups1` (`usergroupID` ASC) ,
+  CONSTRAINT `fk_users_usergroups1`
+    FOREIGN KEY (`usergroupID` )
+    REFERENCES `awoms`.`usergroups` (`usergroupID` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8
@@ -40,12 +92,19 @@ CREATE  TABLE IF NOT EXISTS `awoms`.`articles` (
   `articleDateLastUpdated` DATETIME NOT NULL ,
   `articleDateExpires` DATETIME NULL DEFAULT NULL ,
   `userID` BIGINT(20) UNSIGNED NOT NULL ,
-  PRIMARY KEY (`articleID`) ,
+  `brandID` BIGINT(20) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`articleID`, `articleActive`, `brandID`) ,
   UNIQUE INDEX `articleID_UNIQUE` (`articleID` ASC) ,
   INDEX `fk_articles_users1` (`userID` ASC) ,
+  INDEX `fk_articles_brands1` (`brandID` ASC) ,
   CONSTRAINT `fk_articles_users1`
     FOREIGN KEY (`userID` )
     REFERENCES `awoms`.`users` (`userID` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_articles_brands1`
+    FOREIGN KEY (`brandID` )
+    REFERENCES `awoms`.`brands` (`brandID` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -83,7 +142,7 @@ CREATE  TABLE IF NOT EXISTS `awoms`.`bodyContents` (
   `bodyContentDateModified` DATETIME NOT NULL ,
   `bodyContentText` TEXT CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
   `userID` BIGINT(20) UNSIGNED NOT NULL ,
-  PRIMARY KEY (`bodyContentID`, `parentItemID`, `bodyContentActive`) ,
+  PRIMARY KEY (`bodyContentID`, `parentItemID`, `bodyContentActive`, `parentItemTypeID`) ,
   UNIQUE INDEX `commentBodyID_UNIQUE` (`bodyContentID` ASC) ,
   INDEX `fk_bodyContents_refParentItemTypes1` (`parentItemTypeID` ASC) ,
   INDEX `fk_bodyContents_users1` (`userID` ASC) ,
@@ -104,22 +163,6 @@ COLLATE = utf8_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `awoms`.`brands`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `awoms`.`brands` ;
-
-CREATE  TABLE IF NOT EXISTS `awoms`.`brands` (
-  `brandID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `brandName` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL ,
-  `brandActive` TINYINT(1) NULL DEFAULT NULL ,
-  PRIMARY KEY (`brandID`, `brandName`) ,
-  UNIQUE INDEX `brandID_UNIQUE` (`brandID` ASC) )
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci;
-
-
--- -----------------------------------------------------
 -- Table `awoms`.`categories`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `awoms`.`categories` ;
@@ -127,8 +170,8 @@ DROP TABLE IF EXISTS `awoms`.`categories` ;
 CREATE  TABLE IF NOT EXISTS `awoms`.`categories` (
   `categoryID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `categoryName` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
-  `categoryActive` TINYINT(1) NULL DEFAULT NULL ,
-  PRIMARY KEY (`categoryID`) ,
+  `categoryActive` TINYINT(1) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`categoryID`, `categoryActive`) ,
   UNIQUE INDEX `categoryID_UNIQUE` (`categoryID` ASC) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
@@ -148,7 +191,7 @@ CREATE  TABLE IF NOT EXISTS `awoms`.`comments` (
   `commentDatePublished` DATETIME NOT NULL ,
   `commentDateLastUpdated` DATETIME NOT NULL ,
   `userID` BIGINT(20) UNSIGNED NOT NULL ,
-  PRIMARY KEY (`commentID`, `parentItemID`) ,
+  PRIMARY KEY (`commentID`, `parentItemID`, `commentActive`) ,
   UNIQUE INDEX `commentID_UNIQUE` (`commentID` ASC) ,
   INDEX `fk_comments_refParentItemTypes1` (`parentItemTypeID` ASC) ,
   INDEX `fk_comments_users1` (`userID` ASC) ,
@@ -175,8 +218,8 @@ DROP TABLE IF EXISTS `awoms`.`domains` ;
 CREATE  TABLE IF NOT EXISTS `awoms`.`domains` (
   `domainID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `domainName` VARCHAR(255) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL ,
-  `domainActive` TINYINT(1) NULL DEFAULT NULL ,
-  PRIMARY KEY (`domainID`, `domainName`) ,
+  `domainActive` TINYINT(1) UNSIGNED NOT NULL ,
+  PRIMARY KEY (`domainID`, `domainName`, `domainActive`) ,
   UNIQUE INDEX `domainID_UNIQUE` (`domainID` ASC) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
@@ -327,6 +370,42 @@ CREATE  TABLE IF NOT EXISTS `awoms`.`refKeywords` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `awoms`.`rights`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `awoms`.`rights` ;
+
+CREATE  TABLE IF NOT EXISTS `awoms`.`rights` (
+  `right` VARCHAR(255) NOT NULL ,
+  PRIMARY KEY (`right`) ,
+  UNIQUE INDEX `rightID_UNIQUE` (`right` ASC) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `awoms`.`acl`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `awoms`.`acl` ;
+
+CREATE  TABLE IF NOT EXISTS `awoms`.`acl` (
+  `usergroupID` BIGINT UNSIGNED NOT NULL ,
+  `right` VARCHAR(255) NOT NULL ,
+  `hasRight` TINYINT(1) UNSIGNED NULL ,
+  PRIMARY KEY (`usergroupID`) ,
+  INDEX `fk_acl_rights1` (`right` ASC) ,
+  CONSTRAINT `fk_acl_usergroups1`
+    FOREIGN KEY (`usergroupID` )
+    REFERENCES `awoms`.`usergroups` (`usergroupID` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_acl_rights1`
+    FOREIGN KEY (`right` )
+    REFERENCES `awoms`.`rights` (`right` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
 
 

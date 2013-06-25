@@ -16,9 +16,8 @@ if (!isset($articleID)) {
         Brand
       </td>
       <td>
-        <select disabled>
-          <option>Coming Soon!</option>
-        </select>
+        <!-- Dynamic Brand Select -->
+        <select id='inp_brandID' name='inp_brandID'></select>
       </td>
     </tr>
     
@@ -119,85 +118,5 @@ if (!isset($articleID)) {
 </form>
 
 <?php
-$pageJavaScript[] = "
-/**
- * Form modal
- */
-
-/**
- * Ajax call to get brands
- */
-function getBrands() {
-  var go = $.ajax({
-      type: 'POST',
-      url: '".BRANDURL."brands/get',
-      data: frmInput
-  })
-  .done(function(results) {
-      divResults.html(results);
-      divResults.css('border', '3px solid green');
-  })
-  .fail(function(msg) {
-      alert('Error: ' + msg);
-  })
-  .always(function() {
-  });
-}
-
-/**
- * Ajax call to save article
- */
-function writeArticle(frmID) {
-  var divResults = $('#divResults');
-  var frmInput = $('#'+frmID).serialize();
-  frmInput += '&m=ajax';
-  console.log('WriteArticle');
-  var go = $.ajax({
-      type: 'POST',
-      url: '".BRANDURL."articles/write',
-      data: frmInput
-  })
-  .done(function(results) {
-      divResults.html(results);
-      divResults.css('border', '3px solid green');
-  })
-  .fail(function(msg) {
-      alert('Error: ' + msg);
-  })
-  .always(function() {
-  });
-}
-
-/**
- * Turn form into dialog modal
- **/
-$( '#frmWriteArticle' ).dialog({
-  autoOpen: false,
-  height: 600,
-  width: 850,
-  modal: true,
-  title: 'Write an Article',
-  buttons: {
-    'Save Article': function() {
-      console.log('Saving');
-      writeArticle($(this).attr('id'));
-      $( this ).dialog( 'close' );
-    },
-    Cancel: function() {
-      $( this ).dialog( 'close' );
-    }
-  }
-});
-
-/**
- * Open Modal Button Handler
- */
-$( '.openModal' ).click(function() {
-  console.log('modal..');
-  var modalID = $(this).val();
-  if (modalID == '') {
-    modalID = $(this).attr('name');
-  }
-  $('#'+modalID).dialog('open');
-});
-";
+$thisDir = dirname(__FILE__);
+$pageJavaScript[] = file_get_contents($thisDir.DS.'writeForm.js');

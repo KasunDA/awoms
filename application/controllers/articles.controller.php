@@ -3,8 +3,48 @@
 class ArticlesController extends Controller
 {
   
+  /**
+   * Home
+   */
   public function home() {
     $this->set('title', 'Articles :: Home');
+  }
+  
+  /**
+   * Get Articles
+   */
+  public function getArticles() {
+    Errors::debugLogger(10, __METHOD__.'@'.__LINE__);
+    
+    // "Top 10" or similar latest LIMIT <--- @todo
+    // @todo arguments
+    // $getReq = func_get_args();  
+
+    // Get all article IDs (active only)
+    $articleIDs = $this->Article->getArticleIDs('articleActive=1');
+    $articles = array();
+
+    // Get all article info
+    foreach ($articleIDs as $a) {
+      $article = $this->Article->getArticleInfo($a['articleID']);
+      $articles[] = $article;
+    }
+    
+    // Return false if no articles
+    if (empty($articles)) {
+      return false;
+    }
+
+    // Get all article bodies (active only)
+    foreach ($articleIDs as $a) {
+      $articleBody = $this->Article->getBodyContents($a['articleID'], 1, NULL, 1);
+      $articleBodies[] = $articleBody;
+    }
+    
+    // Return data
+    $res['articles'] = $articles;
+    $res['articleBodies'] = $articleBodies;
+    $this->set('results', $res);
   }
 
   /**

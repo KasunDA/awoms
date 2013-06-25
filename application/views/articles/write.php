@@ -1,5 +1,5 @@
 <!-- Results -->
-<div id='results'>
+<div id='divResults'>
   <?php
   if (isset($articleID)
     && $articleID != 'DEFAULT') {
