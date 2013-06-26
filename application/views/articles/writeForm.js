@@ -21,7 +21,6 @@ function populateBrandSelectList(results) {
             .text(brandName));
   });
 }
-;
 
 /**
  * Call API on click
