@@ -16,7 +16,7 @@ class Brand extends Model
 
   public function getBrandIDs($where = NULL) {
     $cols = 'brandID';
-    $order = 'brandID DESC';
+    $order = 'brandName ASC';
     return self::select($cols, $where, $order);
   }
 
