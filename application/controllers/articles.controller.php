@@ -182,12 +182,15 @@ class ArticlesController extends Controller
       
       // Post time
       $data['articleDatePublished'] = Utility::getDateTimeUTC();
+      $data['articleDateLastReviewed'] = Utility::getDateTimeUTC();
+      $data['articleDateLastUpdated'] = Utility::getDateTimeUTC();
 
       // Gets input data from post, must begin with "inp_"
       foreach ($_POST as $k=>$v) {
         if ($k == 'botrequired') {
           if ($v != '') {
-            trigger_error('Big success!', E_USER_ERROR);
+            Errors::debugLogger(1, $_POST);
+            trigger_error('Big success! ;)', E_USER_ERROR);
             exit;
           }
         }

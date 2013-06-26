@@ -7,7 +7,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta http-equiv="Content-Language" content="en-us">
-        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">        
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         
         <title><?php
           if (!empty($article['articleName'])) {
@@ -47,10 +47,14 @@
         <link rel="stylesheet" href="/css/main.css">
 
         <!-- Modernizr -->
-        <script src="/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+        <script src="/js/libs/modernizr-respond/2.6.2-respond-1.1.0/modernizr-respond.min.js"></script>
 
-        <!-- Site Verification -->
-        <meta name="google-site-verification" content="jlehl4fO3VCrbnp_0GUYNKvJgbBiYacd-JhZGH7HmEI" />
+        <?php
+        // Site Verification
+        if (file_exists('googleSiteVerification.php')) {
+          include('googleSiteVerification.php');
+        }
+        ?>
     </head>
     <body>
         <!--[if lt IE 7]>

@@ -103,18 +103,16 @@ $( '#frmWriteArticle' ).dialog({
  * Open Modal Button Handler
  */
 $( '.openModal' ).click(function() {
-  console.log('modal..');
+
   var modalID = $(this).val();
   if (modalID === '') {
     modalID = $(this).attr('name');
   }
   
-  // Controller = name
-  var controller = $(this).attr('name');
-  // Action = value
-  var action = $(this).val();
-  // Call API
+  // Populate Brand Select List
   callAPI('brands', 'getBrands', populateBrandSelectList);
   
+  // Open Dialog
+  $('#'+modalID).removeClass('hidden');
   $('#'+modalID).dialog('open');
 });

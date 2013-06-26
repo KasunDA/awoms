@@ -3,7 +3,7 @@ if (!isset($articleID)) {
   $articleID = 'DEFAULT';
 }?>
 
-<form id='frmWriteArticle' method='POST'>
+<form id='frmWriteArticle' class='hidden' method='POST'>
   <input type='hidden' name='step' value='2' />
   <input type='hidden' name='inp_articleID' value='<?php echo $articleID; ?>' />
   <input type='text' class='botrequired' name='botrequired' value='' />
@@ -13,7 +13,7 @@ if (!isset($articleID)) {
     <tr>
       <td>
         <!-- Brand -->
-        Brand
+        Site
       </td>
       <td>
         <!-- Dynamic Brand Select -->
@@ -63,9 +63,9 @@ if (!isset($articleID)) {
       </td>
     </tr>
 
+    <!-- Keywords
     <tr>
       <td>
-        <!-- Keywords -->
         Keywords
       </td>
       <td>
@@ -76,6 +76,7 @@ if (!isset($articleID)) {
         ?>' size='60' placeholder='Coming Soon!' disabled />
       </td>
     </tr>
+    -->
     
     <tr>
       <td>
@@ -91,7 +92,8 @@ if (!isset($articleID)) {
       </td>
     </tr>
 
-  <!-- Adv Options -->
+    <input type='hidden' name='inp_articleActive' value='1' />
+  <!-- Adv Options
     <tr>
       <td>
           Active
@@ -113,6 +115,7 @@ if (!isset($articleID)) {
           </select>
       </td>
     </tr>
+  -->
 
   </table>
 </form>

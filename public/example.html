@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="en-us">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>AWOMS API Example Usage</title>
+    <meta name="description" content="awoms api usage examples, view source">
+    <meta name="keywords" content="awoms, api, usage, examples, documentation, docs, source">
+    <meta name="viewport" content="width=device-width">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/normalize.min.css">
+    <link rel="stylesheet" href="/css/le-frog/jquery-ui-1.10.3.custom.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <!-- Modernizr -->
+    <script src="/js/libs/modernizr-respond/2.6.2-respond-1.1.0/modernizr-respond.min.js"></script>
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+        <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="header-container">
+      <header class="wrapper clearfix">
+        <h1 class="title">AWOMS API Example Usage</h1>
+        <nav>
+          <ul>
+            <li>
+              <a href='/'>Home</a>
+            </li>
+            <li>
+              <a href='/example.html'>API</a>
+            </li>
+          </ul>
+        </nav>
+      </header>
+    </div>
+
+    <div class="main-container">
+      <div class="main wrapper clearfix">
+        
+        <div class='row'>row</div>
+        
+        <!-- Call API Trigger Buttons -->
+        <ul>
+            <li>
+              <!-- Get Articles Button -->
+              <button
+                class='callAPI'
+                name='articles'
+                value='getArticles'>Articles :: getArticles</button>
+            </li>
+            <li>
+              <!-- Get Brands Button -->
+              <button
+                class='callAPI'
+                name='brands'
+                value='getBrands'>Brands :: getBrands</button>
+            </li>
+          </ul>
+
+          <!-- Results -->
+          <div id='divResults'></div>
+
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="/js/libs/jquery-1.9.1/jquery.min.js"><\/script>')</script>
+    <!-- jQuery UI -->
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+    <!-- Page JS -->
+    <script type='text/javascript'>
+      $(document).ready(function() {
+
+        /**
+         * Declare Results div
+         */
+        var divResults = $('#divResults');
+
+        /**
+         * Call API on click
+         * 
+         * @uses callAPI
+         * 
+         * Sends controller and action as parameters
+         * received from this elements name/value attributes
+         */
+        $('.callAPI').click(function() {
+          // Controller = name
+          var controller = $(this).attr('name');
+          // Action = value
+          var action = $(this).val();
+          // Clear/Hide results div
+          divResults.hide().html('');
+          // Call API
+          callAPI(controller, action);
+        });
+
+        /**
+         * Call API Ajax Handler
+         * 
+         * Sends request to API controller/action
+         * 
+         * @uses handleAPIResults
+         * 
+         * @param {string} controller
+         * @param {string} action
+         */
+        function callAPI(controller, action) {
+          console.debug('callAPI: controller: ' + controller + ' action: ' + action);
+
+          // Ajax execute
+          var go = $.ajax({
+            type: 'POST',
+            url: 'http://dev.awoms.com/' + controller + '/' + action,
+            dataType: 'json',
+            data: {
+              m: 'ajax'
+            }
+          })
+                  .done(function(results) {
+            // Handle Results
+            handleAPIResults(controller, action, results);
+          })
+                  .fail(function(msg) {
+            // Error results
+            divResults.append('Sorry! We ran into an issue processing your request. The webmaster has been alerted.');
+            console.debug(msg);
+            // CSS
+            divResults.css('border', '3px solid red');
+          })
+                  .always(function() {
+          });
+        }
+
+        /**
+         * Handle API Results
+         * 
+         * Formats results for output. Custom blocks per controller/action.
+         * 
+         * @param {string} controller
+         * @param {string} action
+         * @param {results} results
+         */
+        function handleAPIResults(controller, action, results) {
+          console.debug('handleAPIResults controller: ' + controller + ' action: ' + action);
+
+          // Articles
+          if (controller === 'articles') {
+
+            // Get Articles
+            if (action === 'getArticles') {
+
+              // Each Article
+              $.each(results['articles'], function(index, element) {
+                var articleName = element['articleName'];
+                console.debug('index: ' + index);
+                console.debug(results['articleBodies']);
+                var articleBody = results['articleBodies'][index][0]['bodyContentText'];
+                var articleBodyDate = results['articleBodies'][index][0]['bodyContentDateModified'];
+                divResults.append('<br />AName: ' + articleName + ' (' + articleBodyDate + ') ' +
+                        '<br />' + articleBody + '<hr />');
+              });
+
+            }
+
+          }
+
+          // Brands
+          else if (controller === 'brands') {
+
+            // Get Brands
+            if (action === 'getBrands') {
+
+              // Each Article
+              $.each(results, function(index, element) {
+                var brandID = element['brandID'];
+                var brandName = element['brandName'];
+                divResults.append('<br />BName: ' + brandName + ' #' + brandID + '<hr />');
+              });
+
+            }
+          }
+
+          // CSS
+          divResults.css('border', '3px solid green');
+          // Show results div
+          divResults.show();
+        }
+
+      });
+    </script>
+
+  </body>
+</html>

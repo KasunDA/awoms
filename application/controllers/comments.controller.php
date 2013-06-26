@@ -117,6 +117,7 @@ class CommentsController extends Controller
       
       // Post time
       $data['commentDatePublished'] = Utility::getDateTimeUTC();
+      $data['commentDateLastUpdated'] = Utility::getDateTimeUTC();
 
       // Gets input data from post, must begin with "inp_"
       foreach ($_POST as $k=>$v) {
