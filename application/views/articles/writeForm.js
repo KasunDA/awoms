@@ -117,11 +117,17 @@ function handleAPIResults(controller, action, results) {
     // Get Brands
     if (action === 'getBrands') {
 
-      // Each Article
+    // Each Brand
+    console.debug('each brand: ');
       $.each(results, function(index, element) {
         var brandID = element['brandID'];
         var brandName = element['brandName'];
-        divResults.append('<br />BName: ' + brandName + ' #' + brandID + '<hr />');
+        console.debug('brandName: ' + brandName);
+        // Append selection
+        $('#inp_brandID')
+                .append($("<option></option>")
+                .attr("value", brandID)
+                .text(brandName));
       });
 
     }
