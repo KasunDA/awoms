@@ -15,7 +15,7 @@ function callAPI(controller, action, callback) {
   // Ajax execute
   var go = $.ajax({
      type: 'POST',
-     url: 'http://dev.awoms.com/' + controller + '/' + action,
+     url: 'http://api.awoms.com/' + controller + '/' + action,
      dataType: 'json',
      data: {
         m: 'ajax'
