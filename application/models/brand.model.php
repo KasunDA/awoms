@@ -14,6 +14,13 @@ class Brand extends Model
     return $res[0];
   }
 
+  /**
+   * 
+   * @param type $where
+   * @return type
+   * 
+   * @todo Prepared statements
+   */
   public function getBrandIDs($where = NULL) {
     $cols = 'brandID';
     $order = 'brandName ASC';

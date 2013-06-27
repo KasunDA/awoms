@@ -6,15 +6,20 @@ class BrandsController extends Controller
   /**
    * Get Brand List
    * 
-   * Returns array of all active brands and their info
+   * @version v00.00.00
    * 
-   * @return array
+   * Returns array of all active brands and their info
+   * Also sets template variable 'brands' with array results
+   * 
+   * @param int $brandID Optional Brand ID
+   * 
+   * @return array Brand info
    */
-  public function getBrands() {
+  public function getBrands($brandID = NULL) {
     Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
 
     // Brand info
-    $brandIDs = $this->Brand->getBrandIDs('brandActive=1');
+    $brandIDs = $this->Brand->getBrandIDs("brandActive=1 AND brandID = ".$brandID);
     $brands   = array();
     foreach ($brandIDs as $b) {
       $brand    = $this->Brand->getBrandInfo($b['brandID']);

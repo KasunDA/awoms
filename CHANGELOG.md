@@ -1,0 +1,16 @@
+#v00.00.00
+ - [x] humans.txt
+ - [x] robots.txt
+ - [x] 403,404,500.html
+ - [x] MVC API Framework
+ - [x] Articles
+ - [x] Brands
+ - [x] Comments
+ - [x] Usergroups
+ - [x] Users
+ - [x] example.html
+ - [ ] Brand -> Site lookup table, HTTP_HOST?
+ - [ ] Detect URL -> Brand ID -> Restrict getArticles to that brand ID
+ - [ ] Brand selection list (ACL to view/change)
+ - [ ] Sanitization
+ - [ ] PDO Prepared Statements

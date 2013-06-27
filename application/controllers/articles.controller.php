@@ -18,7 +18,7 @@ class ArticlesController extends Controller
     
     // "Top 10" or similar latest LIMIT <--- @todo
     // @todo arguments
-    // $getReq = func_get_args();  
+    // $getReq = func_get_args();
 
     // Get all article IDs (active only)
     $articleIDs = $this->Article->getArticleIDs('articleActive=1');
