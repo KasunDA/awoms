@@ -19,7 +19,12 @@ class BrandsController extends Controller
     Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
 
     // Brand info
-    $brandIDs = $this->Brand->getBrandIDs("brandActive=1 AND brandID = ".$brandID);
+    if ($brandID === NULL) {
+      $where = '';
+    } else {
+      $where = ' AND brandID = '.$brandID;
+    }
+    $brandIDs = $this->Brand->getBrandIDs("brandActive=1".$where);
     $brands   = array();
     foreach ($brandIDs as $b) {
       $brand    = $this->Brand->getBrandInfo($b['brandID']);
