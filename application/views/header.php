@@ -23,7 +23,7 @@
           if (empty($article['articleLongDescription'])) {
             if (empty($article['articleShortDescription'])) {
               // Use default description
-              echo "Write articles anonymously, discuss important things in live and improve our knowledge and communities.";
+              echo "Write articles anonymously, discuss important things in life and improve our knowledge and communities. Imagine.";
             } else {
               // Use Short Description
               echo $article['articleShortDescription'];
