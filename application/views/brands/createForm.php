@@ -11,13 +11,27 @@ if (!isset($brandID)) {
 
     <tr>
       <td>
-        <!-- Brand -->
-        Brand Name
+        <!-- Name -->
+        Name
       </td>
       <td>
         <input type='text' id='inp_brandName' name='inp_brandName' value='<?php
           if (isset($inp_brandName)) {
             echo $inp_brandName;
+          }
+        ?>' size='60' />
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
+        <!-- Description -->
+        Description
+      </td>
+      <td>
+        <input type='text' id='inp_brandDescription' name='inp_brandDescription' value='<?php
+          if (isset($inp_brandDescription)) {
+            echo $inp_brandDescription;
           }
         ?>' size='60' />
       </td>

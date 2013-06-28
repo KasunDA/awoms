@@ -14,11 +14,12 @@ function populateBrandSelectList(results) {
   $.each(results, function(index, element) {
     var brandID = element['brandID'];
     var brandName = element['brandName'];
+    var brandDescription = element['brandDescription'];    
     // Append selection
     $('#inp_brandID')
             .append($("<option></option>")
             .attr("value", brandID)
-            .text(brandName));
+            .text(brandName + ' - ' + brandDescription));
   });
 }
 
@@ -53,11 +54,18 @@ $('.callAPI').click(function() {
  */
 function callAPI(controller, action) {
   console.debug('callAPI: controller: ' + controller + ' action: ' + action);
+  
+  // Dev or live
+  if (location.host === 'dev.awoms.com') {
+    var apiURL = 'http://dev.awoms.com/';
+  } else {
+    var apiURL = 'http://api.awoms.com/';
+  }
 
   // Ajax execute
   var go = $.ajax({
     type: 'POST',
-    url: 'http://api.awoms.com/' + controller + '/' + action,
+    url: apiURL  + controller + '/' + action,
     dataType: 'json',
     data: {
       m: 'ajax'
@@ -116,20 +124,8 @@ function handleAPIResults(controller, action, results) {
 
     // Get Brands
     if (action === 'getBrands') {
-
-    // Each Brand
-    console.debug('each brand: ');
-      $.each(results, function(index, element) {
-        var brandID = element['brandID'];
-        var brandName = element['brandName'];
-        console.debug('brandName: ' + brandName);
-        // Append selection
-        $('#inp_brandID')
-                .append($("<option></option>")
-                .attr("value", brandID)
-                .text(brandName));
-      });
-
+      console.debug('populate');
+      populateBrandSelectList(results);
     }
   }
 
@@ -197,7 +193,7 @@ $('.openModal').click(function() {
   }
 
   // Populate Brand Select List
-  callAPI('brands', 'getBrands', populateBrandSelectList);
+  callAPI('brands', 'getBrands');
 
   // Open Dialog
   $('#' + modalID).removeClass('hidden');

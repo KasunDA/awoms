@@ -3,9 +3,11 @@
 if ($_SERVER['SERVER_ADDR'] == '127.0.0.1') {
   define ('DEVELOPMENT_ENVIRONMENT',TRUE); // SET TO TRUE
   define('ERROR_LEVEL', 9);
+  define('APIURL', 'http://dev.awoms.com/');
 } else {
   define ('DEVELOPMENT_ENVIRONMENT',FALSE);
-  define('ERROR_LEVEL', 9);
+  define('ERROR_LEVEL', 5);
+  define('APIURL', 'http://api.awoms.com/');
 }
 
 // Load DB Config

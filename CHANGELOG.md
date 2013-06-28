@@ -8,11 +8,11 @@
  - [x] Comments
  - [x] Usergroups
  - [x] Users
+ - [x] API URL
  - [x] example.html
- - [ ] ACL
  - [ ] Brand -> Site lookup table, HTTP_HOST?
+ - [ ] ACL
  - [ ] Detect URL -> Brand ID -> Restrict getArticles to that brand ID
  - [ ] Brand selection list (ACL to view/change)
  - [ ] Sanitization
  - [ ] PDO Prepared Statements
- - [ ] API URL dev.awoms = dev.awoms... awoms.com = api.awoms.com
