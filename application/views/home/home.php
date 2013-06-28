@@ -17,7 +17,7 @@ $pageJavaScript[] = "
   function getLatestArticles() {
     var go = $.ajax({
         type: 'POST',
-        url: '".BRANDURL."articles/viewall',
+        url: '".DOMAINURL."articles/viewall',
         data: {
             m: 'ajax'
         }

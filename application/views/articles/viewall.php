@@ -5,7 +5,7 @@
 <?php
   for ($i=0; $i<count($articles); $i++) {
     $articleDate = str_replace('-','/',substr($articles[$i]['articleDatePublished'], 0, 10));
-    $articleLink = BRANDURL.'articles/view/'.$articles[$i]['articleID'].'/'.$articleDate.'/'.str_replace(' ', '-', $articles[$i]['articleName']);
+    $articleLink = DOMAINURL.'articles/view/'.$articles[$i]['articleID'].'/'.$articleDate.'/'.str_replace(' ', '-', $articles[$i]['articleName']);
 ?>
     <li>
       <a href='<?=$articleLink;?>'>

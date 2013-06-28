@@ -2,7 +2,7 @@
 /**
  * Load: Config
  * Read: Brand, Url
- * Set: DS, ROOT, BRAND, BRANDURL
+ * Set: DS, ROOT, BRAND, DOMAINURL
  * Call: Bootstrap
  */
 
@@ -13,39 +13,27 @@ define('ROOT', dirname(dirname(__FILE__)));
 // Load Config
 require_once (ROOT . DS . 'config' . DS . 'config.php');
 
-// Read $_GET request
-if (!empty($_GET['brand'])) {
-  // Get Brand from htaccess rewrite
-  $brand = $_GET['brand'];
-} else {
-  // Invalid? htaccess rewrite not working?
-  $brand = str_replace('.com', '', $_SERVER['HTTP_HOST']);
+// Read $_GET request from htaccess rewrite
+if (!filter_has_var(INPUT_GET, 'domain')
+  && !filter_has_var(INPUT_GET, 'url')) {
+  Errors::debugLogger(1, 'Invalid request @ '.__FILE__.':'.__LINE__);
+  trigger_error('Invalid request', E_USER_ERROR);
 }
-if (!empty($_GET['url'])) {
-  // Get Url from htaccess rewrite
-  $url = $_GET['url'];
-} else {
-  // Invalid? htaccess rewrite not working?
-  $url = 'home';
-}
+$domain = str_replace('dev.', '', $_GET['domain']);
+$url = $_GET['url'];
 
-// For local development we send brand in url otherwise brand is taken from htaccess
-if ($brand == 'localhost') {
-  $matches = explode('/', $url);
-  $brand = $matches[0];
-  $url = str_replace($brand.'/', '', $url);
-  define('BRANDURL', 'http://localhost/awoms/'.$brand.'/');
-} else {
-  // Remove '.com' from brand received from HTTP_HOST/htaccess
-  $brand = str_replace('.com', '', $brand);
-  define('BRANDURL', 'http://'.$_SERVER['HTTP_HOST'].'/');
-}
-$brand = str_replace('dev.', '', $brand);
-define('BRAND', $brand);
+// Domain info
+define('DOMAINURL', 'http://'.$_SERVER['HTTP_HOST'].'/');
+define('DOMAIN', $domain);
+$domains = new DomainsController('Domains', 'domain', 'getDomains');
+$domain = $domains->getDomains(NULL, $domain);
+var_dump($domain);
+#define('BRAND', $test);
 
+// Debug Info
 if (ERROR_LEVEL == 10
   && empty($_REQUEST['m'])) {
-  var_dump($_GET, $_REQUEST, $brand, $url, BRAND, BRANDURL);
+  var_dump($_REQUEST, $domain, $url, BRAND, DOMAINURL);
 }
 
 // Handle page request via Bootstrap

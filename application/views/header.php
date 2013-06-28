@@ -66,8 +66,8 @@
                 <h1 class="title"><?php echo $title; ?></h1>
                 <nav>
                     <ul>
-                        <li><a href='<?php echo BRANDURL; ?>'><?= BRAND; ?></a></li>
-                        <li><a href='<?php echo BRANDURL; ?>articles/viewall'>Articles</a></li>
+                        <li><a href='<?php echo DOMAINURL; ?>'><?= BRAND; ?></a></li>
+                        <li><a href='<?php echo DOMAINURL; ?>articles/viewall'>Articles</a></li>
                         <li><a type='button' class='openModal' name='frmWriteArticle'>Write</a></li>
                     </ul>
                 </nav>

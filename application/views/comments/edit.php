@@ -3,7 +3,7 @@
   <?php
   if ($step == 2) {
     echo "
-      Article (#".$articleID.") updated! (Copy #".$bodyContentID.") <a href='".BRANDURL."articles/view/".$articleID."'>View Article</a><hr />";
+      Article (#".$articleID.") updated! (Copy #".$bodyContentID.") <a href='".DOMAINURL."articles/view/".$articleID."'>View Article</a><hr />";
   }
   ?>
 </div>

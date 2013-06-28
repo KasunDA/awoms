@@ -2,7 +2,7 @@
 // Configuration Variables
 if ($_SERVER['SERVER_ADDR'] == '127.0.0.1') {
   define ('DEVELOPMENT_ENVIRONMENT',TRUE); // SET TO TRUE
-  define('ERROR_LEVEL', 9);
+  define('ERROR_LEVEL', 10);
   define('APIURL', 'http://dev.awoms.com/');
 } else {
   define ('DEVELOPMENT_ENVIRONMENT',FALSE);

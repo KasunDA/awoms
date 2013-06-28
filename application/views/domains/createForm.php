@@ -1,11 +1,11 @@
 <?php
-if (!isset($brandID)) {
-  $brandID = 'DEFAULT';
+if (!isset($domainID)) {
+  $domainID = 'DEFAULT';
 }?>
 
-<form id='frmCreateBrand' method='POST'>
+<form id='frmCreateDomain' method='POST'>
   <input type='hidden' name='step' value='2' />
-  <input type='hidden' name='inp_brandID' value='<?php echo $brandID; ?>' />
+  <input type='hidden' name='inp_domainID' value='<?php echo $domainID; ?>' />
 
   <table cellpadding='2' cellspacing='0'>
 
@@ -15,9 +15,9 @@ if (!isset($brandID)) {
         Name
       </td>
       <td>
-        <input type='text' id='inp_brandName' name='inp_brandName' value='<?php
-          if (isset($inp_brandName)) {
-            echo $inp_brandName;
+        <input type='text' id='inp_domainName' name='inp_domainName' value='<?php
+          if (isset($inp_domainName)) {
+            echo $inp_domainName;
           }
         ?>' size='60' />
       </td>
@@ -29,9 +29,9 @@ if (!isset($brandID)) {
         Description
       </td>
       <td>
-        <input type='text' id='inp_brandDescription' name='inp_brandDescription' value='<?php
-          if (isset($inp_brandDescription)) {
-            echo $inp_brandDescription;
+        <input type='text' id='inp_domainDescription' name='inp_domainDescription' value='<?php
+          if (isset($inp_domainDescription)) {
+            echo $inp_domainDescription;
           }
         ?>' size='60' />
       </td>
@@ -39,20 +39,43 @@ if (!isset($brandID)) {
 
     <tr>
       <td>
+          <!-- Brand -->
+          Brand
+      </td>
+      <td>
+          <select id='inp_brandID' name='inp_brandID'>
+            <option value='1'<?php
+              if (!isset($inp_brandID)
+                || $inp_brandID == 1) {
+                echo ' selected';
+              }
+            ?>>Activ222222e</option>
+            <option value='0'<?php
+              if (isset($inp_brandID)
+                && $inp_brandID == 0) {
+                echo ' selected';
+              }
+            ?>>Inactiv222222222e</option>
+          </select>
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
           <!-- Active -->
           Active
       </td>
       <td>
-          <select id='inp_brandActive' name='inp_brandActive'>
+          <select id='inp_domainActive' name='inp_domainActive'>
             <option value='1'<?php
-              if (!isset($inp_brandActive)
-                || $inp_brandActive == 1) {
+              if (!isset($inp_domainActive)
+                || $inp_domainActive == 1) {
                 echo ' selected';
               }
             ?>>Active</option>
             <option value='0'<?php
-              if (isset($inp_brandActive)
-                && $inp_brandActive == 0) {
+              if (isset($inp_domainActive)
+                && $inp_domainActive == 0) {
                 echo ' selected';
               }
             ?>>Inactive</option>
@@ -70,16 +93,16 @@ $pageJavaScript[] = "
  */
 
 /**
- * Ajax call to save brand
+ * Ajax call to save domain
  */
-function createBrand(frmID) {
+function createDomain(frmID) {
   var divResults = $('#divResults');
   var frmInput = $('#'+frmID).serialize();
   frmInput += '&m=ajax';
-  console.log('CreateBrand');
+  console.log('CreateDomain');
   var go = $.ajax({
       type: 'POST',
-      url: '".DOMAINURL."brands/create',
+      url: '".DOMAINURL."domains/create',
       data: frmInput
   })
   .done(function(results) {
@@ -97,16 +120,16 @@ function createBrand(frmID) {
 /**
  * Turn form into dialog modal
  **/
-$( '#frmCreateBrand' ).dialog({
+$( '#frmCreateDomain' ).dialog({
   autoOpen: false,
   height: 300,
   width: 650,
   modal: true,
-  title: 'Create a Brand',
+  title: 'Create a Domain',
   buttons: {
-    'Save Brand': function() {
+    'Save Domain': function() {
       console.log('Saving');
-      createBrand($(this).attr('id'));
+      createDomain($(this).attr('id'));
       $( this ).dialog( 'close' );
     },
     Cancel: function() {

@@ -8,7 +8,7 @@
   <ul>
 <?php
   for ($i=0; $i<count($brands); $i++) {
-    $brandLink = BRANDURL.'brands/view/'.$brands[$i]['brandID'].'/'.str_replace(' ', '-', $brands[$i]['brandName']);
+    $brandLink = DOMAINURL.'brands/view/'.$brands[$i]['brandID'].'/'.str_replace(' ', '-', $brands[$i]['brandName']);
 ?>
     <li>
       <a href='<?=$brandLink;?>'>

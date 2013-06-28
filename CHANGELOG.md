@@ -10,9 +10,8 @@
  - [x] Users
  - [x] API URL
  - [x] example.html
- - [ ] Brand -> Site lookup table, HTTP_HOST?
+ - [/] Detect URL -> DomainName HTTP_HOST -> DomainID -> Brand ID -> Restrict getArticles to that brand ID
  - [ ] ACL
- - [ ] Detect URL -> Brand ID -> Restrict getArticles to that brand ID
  - [ ] Brand selection list (ACL to view/change)
  - [ ] Sanitization
  - [ ] PDO Prepared Statements

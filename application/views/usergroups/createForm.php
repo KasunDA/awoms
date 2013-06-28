@@ -77,7 +77,7 @@ function createUsergroup(frmID) {
   console.log('CreateUsergroup');
   var go = $.ajax({
       type: 'POST',
-      url: '".BRANDURL."usergroups/create',
+      url: '".DOMAINURL."usergroups/create',
       data: frmInput
   })
   .done(function(results) {

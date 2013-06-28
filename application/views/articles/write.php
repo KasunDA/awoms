@@ -4,7 +4,7 @@
   if (isset($articleID)
     && $articleID != 'DEFAULT') {
     echo "
-      Article (#".$articleID.") updated! (Copy #".$bodyContentID.") <a href='".BRANDURL."articles/view/".$articleID."/".str_replace(' ', '-', $inp_articleName)."'>View Article</a><hr />";
+      Article (#".$articleID.") updated! (Copy #".$bodyContentID.") <a href='".DOMAINURL."articles/view/".$articleID."/".str_replace(' ', '-', $inp_articleName)."'>View Article</a><hr />";
   }
   ?>
 </div>

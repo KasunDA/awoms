@@ -24,7 +24,7 @@
     
     <section>
       <h2>Comments</h2>
-      <p><a href='<?=BRANDURL;?>comments/write/<?=$comment['parentItemID'];?>/<?=$comment['commentID'];?>'>add a comment!</a></p>
+      <p><a href='<?=DOMAINURL;?>comments/write/<?=$comment['parentItemID'];?>/<?=$comment['commentID'];?>'>add a comment!</a></p>
     </section>
   </comment>
   
@@ -33,7 +33,7 @@
     <br />
     <cite>Author: anonymous</cite>
     <br />
-    <a href='<?=BRANDURL;?>comments/edit/<?=$comment['commentID'];?>'>Edit Comment</a>
+    <a href='<?=DOMAINURL;?>comments/edit/<?=$comment['commentID'];?>'>Edit Comment</a>
   </aside>
 
 </div>

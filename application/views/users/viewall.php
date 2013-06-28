@@ -8,7 +8,7 @@
   <ul>
 <?php
   for ($i=0; $i<count($users); $i++) {
-    $userLink = BRANDURL.'users/view/'.$users[$i]['userID'].'/'.str_replace(' ', '-', $users[$i]['userName']);
+    $userLink = DOMAINURL.'users/view/'.$users[$i]['userID'].'/'.str_replace(' ', '-', $users[$i]['userName']);
 ?>
     <li>
       <a href='<?=$userLink;?>'>

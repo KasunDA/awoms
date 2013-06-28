@@ -65,7 +65,7 @@ function createUser(frmID) {
   console.log('CreateUser');
   var go = $.ajax({
       type: 'POST',
-      url: '".BRANDURL."users/create',
+      url: '".DOMAINURL."users/create',
       data: frmInput
   })
   .done(function(results) {

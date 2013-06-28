@@ -8,7 +8,7 @@
   <ul>
 <?php
   for ($i=0; $i<count($usergroups); $i++) {
-    $usergroupLink = BRANDURL.'usergroups/view/'.$usergroups[$i]['usergroupID'].'/'.str_replace(' ', '-', $usergroups[$i]['usergroupName']);
+    $usergroupLink = DOMAINURL.'usergroups/view/'.$usergroups[$i]['usergroupID'].'/'.str_replace(' ', '-', $usergroups[$i]['usergroupName']);
 ?>
     <li>
       <a href='<?=$usergroupLink;?>'>
