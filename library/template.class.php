@@ -75,9 +75,11 @@ class Template
     // Converts all data to variables for template to use
     extract($this->data);
 
-    // Views folder
+    // Variables
     $viewsFolder = ROOT . DS . 'application' . DS . 'views' . DS;
-
+    $brand = strtolower(BRAND);
+    $controller = strtolower($this->controller);
+    
     // Header if not in ajax mode
     if (
       (!isset($_GET['m'])
@@ -87,12 +89,12 @@ class Template
         || strtolower($_POST['m']) != 'ajax')
       ) {
 
-      if (file_exists($viewsFolder . BRAND . DS . $this->controller . DS . 'header.php')) {
-        include ($viewsFolder . BRAND . DS . $this->controller . DS . 'header.php');
-      } elseif (file_exists($viewsFolder . BRAND . DS . 'header.php')) {
-        include ($viewsFolder . BRAND . DS . 'header.php');
-      } elseif (file_exists($viewsFolder . $this->controller . DS . 'header.php')) {
-        include ($viewsFolder . $this->controller . DS . 'header.php');
+      if (file_exists($viewsFolder . $brand . DS . $controller . DS . 'header.php')) {
+        include ($viewsFolder . $brand . DS . $controller . DS . 'header.php');
+      } elseif (file_exists($viewsFolder . $brand . DS . 'header.php')) {
+        include ($viewsFolder . $brand . DS . 'header.php');
+      } elseif (file_exists($viewsFolder . $controller . DS . 'header.php')) {
+        include ($viewsFolder . $controller . DS . 'header.php');
       } else {
         include ($viewsFolder . 'header.php');
       }
@@ -100,10 +102,10 @@ class Template
     }
 
     // Action
-    if (file_exists($viewsFolder . BRAND . DS . $this->controller . DS . $this->action . '.php')) {
-      include ($viewsFolder . BRAND . DS . $this->controller . DS . $this->action . '.php');
+    if (file_exists($viewsFolder . $brand . DS . $controller . DS . $this->action . '.php')) {
+      include ($viewsFolder . $brand . DS . $controller . DS . $this->action . '.php');
     } else {
-      include ($viewsFolder . $this->controller . DS . $this->action . '.php');
+      include ($viewsFolder . $controller . DS . $this->action . '.php');
     }
 
     // Footer if not in ajax mode
@@ -115,12 +117,12 @@ class Template
         || strtolower($_POST['m']) != 'ajax')
       ) {
       
-      if (file_exists($viewsFolder . BRAND . DS . $this->controller . DS . 'footer.php')) {
-        include ($viewsFolder . BRAND . DS . $this->controller . DS . 'footer.php');
-      } elseif (file_exists($viewsFolder . BRAND . DS . 'footer.php')) {
-        include ($viewsFolder . BRAND . DS . 'footer.php');
-      } elseif (file_exists($viewsFolder . $this->controller . DS . 'footer.php')) {
-        include ($viewsFolder . $this->controller . DS . 'footer.php');
+      if (file_exists($viewsFolder . $brand . DS . $controller . DS . 'footer.php')) {
+        include ($viewsFolder . $brand . DS . $controller . DS . 'footer.php');
+      } elseif (file_exists($viewsFolder . $brand . DS . 'footer.php')) {
+        include ($viewsFolder . $brand . DS . 'footer.php');
+      } elseif (file_exists($viewsFolder . $controller . DS . 'footer.php')) {
+        include ($viewsFolder . $controller . DS . 'footer.php');
       } else {
         include ($viewsFolder . 'footer.php');
       }
