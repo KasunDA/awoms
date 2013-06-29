@@ -29,7 +29,7 @@ class DomainsController extends Controller
     if ($domainName === NULL) {
       $where = '';
     } else {
-      $where = ' AND domainName = '.$domainName;
+      $where = " AND domainName = '".$domainName."'";
     }
     $domainIDs = $this->Domain->getDomainIDs("domainActive=1".$where);
     $domains   = array();
@@ -42,6 +42,9 @@ class DomainsController extends Controller
     $this->set('domains', $domains);
 
     // Return info
+    if (count($domains) === 1) {
+      return $domains[0];
+    }
     return $domains;
   }
 

@@ -35,6 +35,9 @@ class BrandsController extends Controller
     $this->set('brands', $brands);
 
     // Return info
+    if (count($brands) === 1) {
+      return $brands[0];
+    }
     return $brands;
   }
 

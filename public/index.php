@@ -13,22 +13,57 @@ define('ROOT', dirname(dirname(__FILE__)));
 // Load Config
 require_once (ROOT . DS . 'config' . DS . 'config.php');
 
-// Read $_GET request from htaccess rewrite
-if (!filter_has_var(INPUT_GET, 'domain')
-  && !filter_has_var(INPUT_GET, 'url')) {
-  Errors::debugLogger(1, 'Invalid request @ '.__FILE__.':'.__LINE__);
-  trigger_error('Invalid request', E_USER_ERROR);
+// Domain (from .htaccess)
+if (filter_has_var(INPUT_GET, 'domain')) {
+  $domain = $_GET['domain'];
+} else {
+  $domain = $_SERVER['HTTP_HOST'];
 }
-$domain = str_replace('dev.', '', $_GET['domain']);
-$url = $_GET['url'];
+// DEV
+$domain = str_replace('dev.', '', $domain);
+
+// URL (from .htaccess)
+if (filter_has_var(INPUT_GET, 'url')) {
+  $url = $_GET['url'];
+} else {
+  $url = 'home';
+}
 
 // Domain info
-define('DOMAINURL', 'http://'.$_SERVER['HTTP_HOST'].'/');
-define('DOMAIN', $domain);
-$domains = new DomainsController('Domains', 'domain', 'getDomains');
-$domain = $domains->getDomains(NULL, $domain);
-var_dump($domain);
-#define('BRAND', $test);
+$domains = new DomainsController('Domains', 'Domain', 'getDomains');
+$domainInfo = $domains->getDomains(NULL, $domain);
+$deny = TRUE;
+if (!empty($domainInfo)) {
+  if ((int)$domainInfo['domainActive'] === 1) {
+    $deny = FALSE;
+    $brandID = $domainInfo['brandID'];
+    define('DOMAINURL', 'http://'.$_SERVER['HTTP_HOST'].'/');
+    define('DOMAIN', $domainInfo['domainName']);
+  }
+}
+
+// Stop if domain not found
+if ($deny === TRUE) {
+  trigger_error('Domain not found: '.$domain, E_USER_ERROR);
+  die();
+}
+
+// Brand info
+$brands = new BrandsController('Brands', 'Brand', 'getBrands');
+$brandInfo = $brands->getBrands($brandID);
+$deny = TRUE;
+if (!empty($brandInfo)) {
+  if ((int)$brandInfo['brandActive'] === 1) {
+    $deny = FALSE;
+    define('BRAND', $brandInfo['brandName']);
+  }
+}
+
+// Stop if brand not found
+if ($deny === TRUE) {
+  trigger_error('Brand not found: '.$brandID, E_USER_ERROR);
+  die();
+}
 
 // Debug Info
 if (ERROR_LEVEL == 10

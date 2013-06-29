@@ -120,6 +120,8 @@ class Model extends Database
    * @param string $table Optional table to specify otherwise uses $this->model
    * 
    * @return array SQL results
+   * 
+   * @todo prepared statements
    */
   public function select($columns, $where = NULL, $order = NULL, $table = NULL) {
     if (is_array($columns)) {

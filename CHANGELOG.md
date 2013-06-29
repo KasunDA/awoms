@@ -10,7 +10,8 @@
  - [x] Users
  - [x] API URL
  - [x] example.html
- - [/] Detect URL -> DomainName HTTP_HOST -> DomainID -> Brand ID -> Restrict getArticles to that brand ID
+ - [x] Detect URL -> DomainName HTTP_HOST -> DomainID -> Brand ID
+ - [ ] Restrict getArticles to that brand ID
  - [ ] ACL
  - [ ] Brand selection list (ACL to view/change)
  - [ ] Sanitization
