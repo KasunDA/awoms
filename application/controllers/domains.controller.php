@@ -8,8 +8,7 @@ class DomainsController extends Controller
    * 
    * @version v00.00.00
    * 
-   * Returns array of all active domains and their info
-   * Also sets template variable 'domains' with array results
+   * Sets template data of array of all active domains and their info
    * 
    * @param int $domainID Optional Domain ID
    * @param string $domainName Option Domain Name
@@ -37,33 +36,45 @@ class DomainsController extends Controller
       $domain    = $this->Domain->getDomainInfo($d['domainID']);
       $domains[] = $domain;
     }
-
-    // Template data
     $this->set('domains', $domains);
+  }
+  
+/**
+   * Lookup Domain List
+   * 
+   * @version v00.00.00
+   * 
+   * Returns array of all active domains and their info
+   * 
+   * @param int $domainID Optional Domain ID
+   * @param string $domainName Option Domain Name
+   * 
+   * @return array Domain info
+   */
+  public function lookupDomains($domainID = NULL, $domainName = NULL) {
+    Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
 
-    // Return info
-    if (count($domains) === 1) {
-      return $domains[0];
+    // Domain info
+    if ($domainID === NULL) {
+      $where = '';
+    } else {
+      $where = ' AND domainID = '.$domainID;
+    }
+    // Domain name
+    if ($domainName === NULL) {
+      $where = '';
+    } else {
+      $where = " AND domainName = '".$domainName."'";
+    }
+    $domainIDs = $this->Domain->getDomainIDs("domainActive=1".$where);
+    $domains   = array();
+    foreach ($domainIDs as $d) {
+      $domain    = $this->Domain->getDomainInfo($d['domainID']);
+      $domains[] = $domain;
     }
     return $domains;
   }
-
-  /**
-   * View All
-   */
-  public function viewall() {
-    Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
-
-    // Get domain list
-    $domains = $this->getDomains();
-
-    // Template data
-    if (empty($domains)) {
-      $this->set('resultsMsg', 'No domains yet!');
-    }
-    $this->set('title', 'Domains :: View All');
-    $this->set('domains', $domains);
-  }
+  
 
   /**
    * Create

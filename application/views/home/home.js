@@ -1,3 +1,4 @@
+
 /**
  * Get Latest Articles
  */
@@ -7,7 +8,7 @@ var divResultsRefreshTime = $('#lastRefreshTime');
 function getLatestArticles() {
  var go = $.ajax({
      type: 'POST',
-     url: 'APIURL/articles/viewall',
+     url: 'APIURL/articles/getArticles',
      data: {
          m: 'ajax'
      }

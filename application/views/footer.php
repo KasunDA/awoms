@@ -22,6 +22,7 @@ $pageJavaScript[] = "
         <script>window.jQuery || document.write('<script src="/js/libs/jquery/1.9.1/jquery.min.js"><\/script>')</script>
         <!-- jQuery UI -->
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <script>window.jQueryUI || document.write('<script src="/js/libs/jqueryui/1.10.3/jquery-ui.min.js"><\/script>')</script>
 
 <?php
 if (!empty($pageJavaScript)) {

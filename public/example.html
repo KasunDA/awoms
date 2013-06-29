@@ -45,8 +45,6 @@
     <div class="main-container">
       <div class="main wrapper clearfix">
         
-        <div class='row'>row</div>
-        
         <!-- Call API Trigger Buttons -->
         <ul>
             <li>
@@ -62,6 +60,13 @@
                 class='callAPI'
                 name='brands'
                 value='getBrands'>Brands :: getBrands</button>
+            </li>
+            <li>
+              <!-- Get Domains Button -->
+              <button
+                class='callAPI'
+                name='domains'
+                value='getDomains'>Domains :: getDomains</button>
             </li>
           </ul>
 
@@ -121,7 +126,7 @@
           // Ajax execute
           var go = $.ajax({
             type: 'POST',
-            url: 'http://api.awoms.com/' + controller + '/' + action,
+            url: 'http://dev.awoms.com/' + controller + '/' + action,
             dataType: 'json',
             data: {
               m: 'ajax'
@@ -159,7 +164,7 @@
 
             // Get Articles
             if (action === 'getArticles') {
-
+divResults.append('Found: '+ results['articles'].length);
               // Each Article
               $.each(results['articles'], function(index, element) {
                 var articleName = element['articleName'];
@@ -180,12 +185,28 @@
 
             // Get Brands
             if (action === 'getBrands') {
-
+divResults.append('Found: '+ results.length);
               // Each Article
               $.each(results, function(index, element) {
                 var brandID = element['brandID'];
                 var brandName = element['brandName'];
                 divResults.append('<br />BName: ' + brandName + ' #' + brandID + '<hr />');
+              });
+
+            }
+          }
+
+          // Domains
+          else if (controller === 'domains') {
+
+            // Get Domains
+            if (action === 'getDomains') {
+divResults.append('Found: '+ results.length);
+              // Each Domain
+              $.each(results, function(index, element) {
+                var domainID = element['domainID'];
+                var domainName = element['domainName'];
+                divResults.append('<br />DName: ' + domainName + ' #' + domainID + '<hr />');
               });
 
             }

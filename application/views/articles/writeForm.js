@@ -1,3 +1,4 @@
+
 /**
  * Declare Results div
  */
@@ -10,6 +11,7 @@ var divResults = $('#divResults');
  * @returns {undefined} */
 //window['populateBrandSelectList'] = function (results) {
 function populateBrandSelectList(results) {
+  console.debug('populateBrandSelectList');
   // Handle Results
   $.each(results, function(index, element) {
     var brandID = element['brandID'];
@@ -104,6 +106,7 @@ function handleAPIResults(controller, action, results) {
     // Get Articles
     if (action === 'getArticles') {
 
+      console.debug('getArticles');
       // Each Article
       $.each(results['articles'], function(index, element) {
         var articleName = element['articleName'];
@@ -111,7 +114,7 @@ function handleAPIResults(controller, action, results) {
         console.debug(results['articleBodies']);
         var articleBody = results['articleBodies'][index][0]['bodyContentText'];
         var articleBodyDate = results['articleBodies'][index][0]['bodyContentDateModified'];
-        divResults.append('<br />AName: ' + articleName + ' (' + articleBodyDate + ') ' +
+        divResults.append('<hr />AName: ' + articleName + ' (' + articleBodyDate + ') ' +
                 '<br />' + articleBody + '<hr />');
       });
 
@@ -124,7 +127,7 @@ function handleAPIResults(controller, action, results) {
 
     // Get Brands
     if (action === 'getBrands') {
-      console.debug('populate');
+      console.debug('getBrands');
       populateBrandSelectList(results);
     }
   }

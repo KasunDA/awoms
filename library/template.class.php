@@ -7,7 +7,7 @@
  *
  * PHP version 5.4
  * 
- * @author    Brock Hensley <Brock@AWOMS.com>
+ * @author    dirt <dirt@awoms.com>
  * 
  * @version   v00.00.0000
  * 
@@ -71,7 +71,7 @@ class Template
    * @version v00.00.0000
    */
   function render() {
-    
+
     // Converts all data to variables for template to use
     extract($this->data);
 
@@ -79,7 +79,7 @@ class Template
     $viewsFolder = ROOT . DS . 'application' . DS . 'views' . DS;
     $brand = strtolower(BRAND);
     $controller = strtolower($this->controller);
-    
+
     // Header if not in ajax mode
     if (
       (!isset($_GET['m'])
@@ -88,7 +88,7 @@ class Template
       (!isset($_POST['m'])
         || strtolower($_POST['m']) != 'ajax')
       ) {
-
+      
       if (file_exists($viewsFolder . $brand . DS . $controller . DS . 'header.php')) {
         include ($viewsFolder . $brand . DS . $controller . DS . 'header.php');
       } elseif (file_exists($viewsFolder . $brand . DS . 'header.php')) {

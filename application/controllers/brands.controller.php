@@ -33,30 +33,39 @@ class BrandsController extends Controller
 
     // Template data
     $this->set('brands', $brands);
-
-    // Return info
-    if (count($brands) === 1) {
-      return $brands[0];
-    }
-    return $brands;
   }
-
-  /**
-   * View All
+  
+/**
+   * Lookup Brand List
+   * 
+   * @version v00.00.00
+   * 
+   * Returns array of all active brands and their info
+   * Also sets template variable 'brands' with array results
+   * 
+   * @param int $brandID Optional Brand ID
+   * 
+   * @return array Brand info
    */
-  public function viewall() {
+  public function lookupBrands($brandID = NULL) {
     Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
 
-    // Get brand list
-    $brands = $this->getBrands();
-
-    // Template data
-    if (empty($brands)) {
-      $this->set('resultsMsg', 'No brands yet!');
+    // Brand info
+    if ($brandID === NULL) {
+      $where = '';
+    } else {
+      $where = ' AND brandID = '.$brandID;
     }
-    $this->set('title', 'Brands :: View All');
-    $this->set('brands', $brands);
-  }
+    $brandIDs = $this->Brand->getBrandIDs("brandActive=1".$where);
+    $brands   = array();
+    foreach ($brandIDs as $b) {
+      $brand    = $this->Brand->getBrandInfo($b['brandID']);
+      $brands[] = $brand;
+    }
+
+    // Return info
+    return $brands;
+  }  
 
   /**
    * Create

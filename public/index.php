@@ -1,8 +1,8 @@
 <?php
 /**
  * Load: Config
- * Read: Brand, Url
- * Set: DS, ROOT, BRAND, DOMAINURL
+ * Read: Domain, Url
+ * Set: DS, ROOT, DOMAIN, DOMAINURL
  * Call: Bootstrap
  */
 
@@ -29,9 +29,11 @@ if (filter_has_var(INPUT_GET, 'url')) {
   $url = 'home';
 }
 
+/*
+ * 
 // Domain info
 $domains = new DomainsController('Domains', 'Domain', 'getDomains');
-$domainInfo = $domains->getDomains(NULL, $domain);
+$domainInfo = $domains->lookupDomains(NULL, $domain)[0];
 $deny = TRUE;
 if (!empty($domainInfo)) {
   if ((int)$domainInfo['domainActive'] === 1) {
@@ -50,7 +52,7 @@ if ($deny === TRUE) {
 
 // Brand info
 $brands = new BrandsController('Brands', 'Brand', 'getBrands');
-$brandInfo = $brands->getBrands($brandID);
+$brandInfo = $brands->lookupBrands($brandID)[0];
 $deny = TRUE;
 if (!empty($brandInfo)) {
   if ((int)$brandInfo['brandActive'] === 1) {
@@ -64,7 +66,12 @@ if ($deny === TRUE) {
   trigger_error('Brand not found: '.$brandID, E_USER_ERROR);
   die();
 }
-
+ * 
+ */
+define('DOMAINURL', 'http://'.$_SERVER['HTTP_HOST'].'/');
+define('DOMAIN', $domain);
+define('BRAND', $domain);
+    
 // Debug Info
 if (ERROR_LEVEL == 10
   && empty($_REQUEST['m'])) {
