@@ -37,44 +37,8 @@ class DomainsController extends Controller
       $domains[] = $domain;
     }
     $this->set('domains', $domains);
-  }
-  
-/**
-   * Lookup Domain List
-   * 
-   * @version v00.00.00
-   * 
-   * Returns array of all active domains and their info
-   * 
-   * @param int $domainID Optional Domain ID
-   * @param string $domainName Option Domain Name
-   * 
-   * @return array Domain info
-   */
-  public function lookupDomains($domainID = NULL, $domainName = NULL) {
-    Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
-
-    // Domain info
-    if ($domainID === NULL) {
-      $where = '';
-    } else {
-      $where = ' AND domainID = '.$domainID;
-    }
-    // Domain name
-    if ($domainName === NULL) {
-      $where = '';
-    } else {
-      $where = " AND domainName = '".$domainName."'";
-    }
-    $domainIDs = $this->Domain->getDomainIDs("domainActive=1".$where);
-    $domains   = array();
-    foreach ($domainIDs as $d) {
-      $domain    = $this->Domain->getDomainInfo($d['domainID']);
-      $domains[] = $domain;
-    }
     return $domains;
-  }
-  
+  }  
 
   /**
    * Create

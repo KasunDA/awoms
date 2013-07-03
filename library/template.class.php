@@ -22,8 +22,9 @@ class Template
    * @var array $data Array holding any class data used in get/set
    * @var string $controller Controller
    * @var string $action Action
+   * @var string $template Template
    */
-  protected $data = array(), $controller, $action;
+  protected $data = array(), $controller, $action, $template;
 
   /**
    * __construct
@@ -36,10 +37,12 @@ class Template
    * 
    * @param string $controller Controller name
    * @param string $action Action name
+   * @param string $template Template (json by default)
    */
-  public function __construct($controller, $action) {
+  public function __construct($controller, $action, $template) {
     $this->controller = $controller;
     $this->action     = $action;
+    $this->template = $template;
   }
 
   public function __set($key, $value) {
@@ -87,6 +90,8 @@ class Template
       &&
       (!isset($_POST['m'])
         || strtolower($_POST['m']) != 'ajax')
+      &&
+      $this->template != 'json'
       ) {
       
       if (file_exists($viewsFolder . $brand . DS . $controller . DS . 'header.php')) {
@@ -99,6 +104,10 @@ class Template
         include ($viewsFolder . 'header.php');
       }
           
+    }
+    
+    if ($this->template == 'json') {
+      
     }
 
     // Action
@@ -115,6 +124,8 @@ class Template
       &&
       (!isset($_POST['m'])
         || strtolower($_POST['m']) != 'ajax')
+      &&
+      $this->template != 'json'
       ) {
       
       if (file_exists($viewsFolder . $brand . DS . $controller . DS . 'footer.php')) {

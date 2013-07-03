@@ -11,6 +11,7 @@
  - [x] API URL
  - [x] example.html
  - [x] Detect URL -> DomainName HTTP_HOST -> DomainID -> Brand ID
+ - [x] Optional $template variable added to Controller class to allow specifying whether to load header/footer, useful for AJAX requests returning JSON datatype
  - [ ] Restrict getArticles to that brand ID
  - [ ] ACL
  - [ ] Brand selection list (ACL to view/change)

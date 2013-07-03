@@ -41,9 +41,13 @@ class Controller
    * @param string $controller Controller name
    * @param string $model Model name
    * @param string $action Action name
+   * @param string $template Template (json by default)
    */
-  public function __construct($controller, $model, $action) {
-    self::routeRequest($controller, $model, $action);
+  public function __construct($controller, $model, $action, $template = NULL) {
+    if ($template === NULL) {
+      #$template = 'default';
+    }
+    self::routeRequest($controller, $model, $action, $template);
   }
 
   /**
@@ -92,13 +96,14 @@ class Controller
    * @param string $controller Controller name
    * @param string $model Model name
    * @param string $action Action name
+   * @param boolean|string $template Display template (json by default)
    */
-  public function routeRequest($controller, $model, $action) {
+  public function routeRequest($controller, $model, $action, $template) {
     $this->controller = $controller;
     $this->model      = $model;
     $this->action     = $action;
     $this->$model     = new $model;
-    $this->template   = new Template($controller, $action);
+    $this->template   = new Template($controller, $action, $template);
   }
 
   /**

@@ -73,9 +73,15 @@ class Bootstrap
     $controller     = ucwords($controller);
     $model          = rtrim($controller, 's');
     $controller .= 'Controller';
+    if (isset($_REQUEST['m'])
+      && strtolower($_REQUEST['m']) == 'ajax') {
+      $template = 'json';
+    } else {
+      $template = NULL;
+    }
 
     if (class_exists($controller, TRUE)) {
-      $dispatch = new $controller($controllerName, $model, $action);
+      $dispatch = new $controller($controllerName, $model, $action, $template);
     } 
     
     // Execute!
