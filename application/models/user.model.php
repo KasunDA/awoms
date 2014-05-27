@@ -3,14 +3,19 @@
 class User extends Model
 {
   protected static function getUserColumns() {
-    $cols = array('userID', 'userName', 'userActive');
+    $cols = array('userID', 'usergroupID', 'userName', 'userActive', 'userEmail', 'passphrase');
     return $cols;
   }
 
-  public function getUserInfo($userID) {
+  public function getUserInfo($userID, $LoadUsergroup = FALSE) {
     $cols = self::getUserColumns();
     $where = 'userID = '.$userID;
     $res = self::select($cols, $where); // Dereferencing not available until php v5.4-5.5
+    if ($LoadUsergroup)
+    {
+        $Usergroup = new Usergroup();
+        $res['0']['usergroup'] = $Usergroup->getUsergroupInfo($res[0]['usergroupID']);
+    }
     return $res[0];
   }
 

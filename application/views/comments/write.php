@@ -1,10 +1,10 @@
 <!-- Results -->
-<div id='results'>
+<div id='divResults'>
   <?php
   if (isset($commentID)
     && $commentID != 'DEFAULT') {
     echo "
-      Comment (#".$commentID.") updated! (Copy #".$bodyContentID.") <a href='".DOMAINURL."comments/view/".$commentID."'>View Comment</a> or <a href='".DOMAINURL."articles/view/".$articleID."#".$commentID."'>View Article</a><hr />";
+      Comment (#".$commentID.") updated! (Copy #".$bodyContentID.") <a href='".BRANDURL."comments/view/".$commentID."'>View Comment</a> or <a href='".BRANDURL."articles/view/".$articleID."#".$commentID."'>View Article</a><hr />";
   }
   ?>
 </div>
@@ -14,6 +14,8 @@
 
   <form method='POST'>
     <input type='hidden' name='step' value='2' />
+    <input type='text' class='botrequired' name='botrequired' value='' />
+    
     <?php
     if (!isset($commentID)) {
       $commentID = 'DEFAULT';

@@ -121,6 +121,17 @@ class CommentsController extends Controller
 
       // Gets input data from post, must begin with "inp_"
       foreach ($_POST as $k=>$v) {
+          
+          
+        if ($k == 'botrequired') {
+            if ($v != '') {
+                Errors::debugLogger(1, $_POST);
+                trigger_error('Big success! ;)', E_USER_ERROR);
+                exit;
+            }
+        }
+                
+                
         if (!preg_match('/^inp_(.*)/', $k, $m)) {
           continue;
         }
@@ -147,7 +158,7 @@ class CommentsController extends Controller
       $this->set('commentID', $commentID);
       
       // Save comment body
-      $bodyType = 2; // Comment=2
+      $bodyType = $this->Comment->getCommentTypeID();
       $bodyContentID = $this->Comment->saveBodyContents($commentID, $bodyType, $inp_commentBody, $data['userID']);
       $this->set('bodyContentID', $bodyContentID);
 

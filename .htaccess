@@ -30,9 +30,6 @@
 
 <IfModule mod_headers.c>
   Header set Access-Control-Allow-Origin "*"
-  Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
-  Header set Access-Control-Max-Age "1000"
-  Header set Access-Control-Allow-Headers "Content-Type"
 </IfModule>
 
 
@@ -511,7 +508,7 @@ AddCharset utf-8 .atom .css .js .json .rss .vtt .xml
 # php_value session.name sid
 
 # Disable magic quotes (This feature has been DEPRECATED as of PHP 5.3.0 and REMOVED as of PHP 5.4.0.)
-php_flag magic_quotes_gpc Off
+# php_flag magic_quotes_gpc Off
 
 # Do not show you are using PHP
 # Note: Move this line to php.ini since it won't work in .htaccess
@@ -531,7 +528,7 @@ php_flag magic_quotes_gpc Off
 
 # Format errors in plain text
 # Note: Leave this setting 'On' for xdebug's var_dump() output
-php_flag html_errors On
+# php_flag html_errors On
 
 # Show multiple occurrence of error
 # php_flag ignore_repeated_errors Off
@@ -549,18 +546,18 @@ php_flag html_errors On
 # php_value error_append_string " "
 
 # Increase cookie security
-<IfModule php5_module>
-  php_value session.cookie_httponly true
-</IfModule>
+#<IfModule php5_module>
+#  php_value session.cookie_httponly true
+#</IfModule>
 
 # Enable short tags
-<IfModule mod_php5.c>
-  php_value short_open_tag 1
-</IfModule>
+#<IfModule mod_php5.c>
+#  php_value short_open_tag 1
+#</IfModule>
 
 # Finall, Send all calls to public folder <--------- Main Redirect
-<IfModule mod_rewrite.c>
+#<IfModule mod_rewrite.c>
   RewriteEngine on
   RewriteRule ^$ public/ [L]
   RewriteRule (.*) public/$1 [L]
-</IfModule>
+#</IfModule>

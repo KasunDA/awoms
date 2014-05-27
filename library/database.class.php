@@ -157,7 +157,7 @@ class Database
       }
       // Else: Return number of affected rows
       else {
-        $results = $this->db->lastQueryRowCount();
+        $results = $sth->rowCount();   //->lastQueryRowCount();
       }
       
       //

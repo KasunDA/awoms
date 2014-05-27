@@ -3,14 +3,20 @@
 class Usergroup extends Model
 {
   protected static function getUsergroupColumns() {
-    $cols = array('usergroupID', 'usergroupName', 'usergroupActive');
+    $cols = array('usergroupID', 'brandID', 'usergroupName', 'usergroupActive', 'parentUserGroupID');
     return $cols;
   }
 
-  public function getUsergroupInfo($usergroupID) {
+  public function getUsergroupInfo($usergroupID, $LoadBrand = FALSE) {
     $cols = self::getUsergroupColumns();
     $where = 'usergroupID = '.$usergroupID;
     $res = self::select($cols, $where); // Dereferencing not available until php v5.4-5.5
+    //$res[0]['brand'] = self::getBrandByGroup($usergroupID);
+    if ($LoadBrand)
+    {
+        $Brand = new Brand();
+        $res['0']['brand'] = $Brand->getBrandInfo($res[0]['brandID']);
+    }
     return $res[0];
   }
 
@@ -19,5 +25,4 @@ class Usergroup extends Model
     $order = 'usergroupID DESC';
     return self::select($cols, $where, $order);
   }
-
 }

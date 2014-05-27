@@ -10,6 +10,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         
         <title><?php
+        //@TODO
           if (!empty($article['articleName'])) {
             echo $article['articleName'];
           } else {
@@ -23,7 +24,7 @@
           if (empty($article['articleLongDescription'])) {
             if (empty($article['articleShortDescription'])) {
               // Use default description
-              echo "Write articles anonymously, discuss important things in life and improve our knowledge and communities. Imagine.";
+              echo "Default description";
             } else {
               // Use Short Description
               echo $article['articleShortDescription'];
@@ -37,14 +38,15 @@
           if (!empty($article['articleName'])) {
             echo $article['articleName'];
           } else {
-            echo "articles, forums, interesting things of life, anonymous contributions";
+            echo "default, keywords";
           }?>">
         <meta name="viewport" content="width=device-width">
 
         <!-- Styles -->
         <link rel="stylesheet" href="/css/normalize.min.css">
-        <link rel="stylesheet" href="/css/le-frog/jquery-ui-1.10.3.custom.min.css">
-        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/css/gpfc/jquery-ui-1.10.4.custom.min.css">
+        <!-- <link rel="stylesheet" href="/css/main.css"> -->
+        <link rel="stylesheet" href="/css/custom.css">
 
         <!-- Modernizr -->
         <script src="/js/libs/modernizr-respond/2.6.2-respond-1.1.0/modernizr-respond.min.js"></script>
@@ -65,11 +67,75 @@
             <header class="wrapper clearfix">
                 <h1 class="title"><?php echo $title; ?></h1>
                 <nav>
-                    <ul>
-                        <li><a href='<?php echo DOMAINURL; ?>'><?= BRAND; ?></a></li>
-                        <li><a href='<?php echo DOMAINURL; ?>articles/viewall'>Articles</a></li>
-                        <li><a type='button' class='openModal' name='frmWriteArticle'>Write</a></li>
-                    </ul>
+                    
+                    <!-- CSS Menu from http://cssmenumaker.com/builder/1917619 -->
+                    <div id='cssmenu'>
+                        <ul>
+                            <li class='active'><a href='<?php echo BRANDURL; ?>'>Home</a></li>
+                            <li class='has-sub'>
+                                <a href='<?php echo BRANDURL; ?>users/viewall'>Users</a>
+                                <ul>
+                                    <li class='has-sub'>
+                                        <a href='<?php echo BRANDURL; ?>users/viewall'>Users</a>
+                                        <ul>
+                                            <li><a href='<?php echo BRANDURL; ?>users/create'>Add User</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class='has-sub'>
+                                        <a href='<?php echo BRANDURL; ?>usergroups/viewall'>Groups</a>
+                                        <ul>
+                                            <li><a href='<?php echo BRANDURL; ?>usergroups/create'>Add Group</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class='has-sub'>
+                                <a href='<?php echo BRANDURL; ?>brands/viewall'>Brands</a>
+                                <ul>
+                                    <li class='has-sub'>
+                                        <a href='<?php echo BRANDURL; ?>brands/viewall'>Brands</a>
+                                        <ul>
+                                            <li><a href='<?php echo BRANDURL; ?>brands/create'>Add Brand</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class='has-sub'>
+                                        <a href='<?php echo BRANDURL; ?>domains/viewall'>Domains</a>
+                                        <ul>
+                                            <li><a href='<?php echo BRANDURL; ?>domains/create'>Add Domain</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            
+                            <li class='has-sub'>
+                                <a href='<?php echo BRANDURL; ?>pages/viewall'>Pages</a>
+                                <ul>
+                                    <li class='has-sub'>
+                                        <a href='<?php echo BRANDURL; ?>pages/viewall'>Pages</a>
+                                        <ul>
+                                            <li><a href='<?php echo BRANDURL; ?>pages/create'>Add Page</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class='has-sub'>
+                                <a href='<?php echo BRANDURL; ?>articles/viewall'>Articles</a>
+                                <ul>
+                                    <li class='has-sub'>
+                                        <a href='<?php echo BRANDURL; ?>articles/viewall'>Articles</a>
+                                        <ul>
+                                            <li><a href='<?php echo BRANDURL; ?>articles/create'>Add Article</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            
+                            <li class='last'><a href='<?php echo BRANDURL; ?>comments/viewall'>Comments</a></li>
+                        </ul>
+                    </div>
+
                 </nav>
             </header>
         </div>
@@ -81,3 +147,15 @@
 if (!empty($resultsMsg)) {
   echo $resultsMsg;
 }
+
+$pageJavaScript[] = "
+    $('#cssmenu').prepend('<div id=\"menu-button\">Menu</div>');
+        $('#cssmenu #menu-button').on('click', function(){
+            var menu = $(this).next('ul');
+            if (menu.hasClass('open')) {
+                menu.removeClass('open');
+            }
+            else {
+                menu.addClass('open');
+            }
+        });";

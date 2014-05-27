@@ -1,8 +1,8 @@
 <?php
 /**
  * Load: Config
- * Read: Domain, Url
- * Set: DS, ROOT, DOMAIN, DOMAINURL
+ * Read: Brand, Url
+ * Set: DS, ROOT, BRAND, BRANDURL
  * Call: Bootstrap
  */
 
@@ -13,64 +13,37 @@ define('ROOT', dirname(dirname(__FILE__)));
 // Load Config
 require_once (ROOT . DS . 'config' . DS . 'config.php');
 
-// Domain (from .htaccess)
-if (filter_has_var(INPUT_GET, 'domain')) {
-  $domain = $_GET['domain'];
-} else {
-  $domain = $_SERVER['HTTP_HOST'];
+// URL from ../.htaccess
+$global = array();
+if ($_SERVER['REQUEST_METHOD'] == "GET")
+{
+    $global['input'] = $_GET;
 }
-// DEV
-$domain = str_replace('dev.', '', $domain);
-
-// URL (from .htaccess)
-if (filter_has_var(INPUT_GET, 'url')) {
-  $url = $_GET['url'];
-} else {
-  $url = 'home';
+elseif ($_SERVER['REQUEST_METHOD'] == "POST")
+{
+    $global['input'] = $_POST;
 }
-
-// Domain info
-$domains = new DomainsController('Domains', 'Domain', 'getDomains', 'json');
-$domainInfo = $domains->getDomains(NULL, $domain)[0];
-$deny = TRUE;
-if (!empty($domainInfo)) {
-  if ((int)$domainInfo['domainActive'] === 1) {
-    $deny = FALSE;
-    $brandID = $domainInfo['brandID'];
-    define('DOMAINURL', 'http://'.$_SERVER['HTTP_HOST'].'/');
-    define('DOMAIN', $domainInfo['domainName']);
-  }
+else
+{
+    trigger_error("Unknown Request Method '".$_SERVER['REQUEST_METHOD']."'");
+    die();exit();
 }
 
-// Stop if domain not found
-if ($deny === TRUE) {
-  trigger_error('Domain not found: '.$domain, E_USER_ERROR);
-  die();
-}
+// Default Page or Requested URL (sanitized)
+$defaultPage = "home";
+$global['input']['url'] = filter_input(INPUT_GET, "url", FILTER_SANITIZE_STRING) ?: $defaultPage;
 
-// Brand info
-$brands = new BrandsController('Brands', 'Brand', 'getBrands', 'json');
-$brandInfo = $brands->getBrands($brandID)[0];
-$deny = TRUE;
-if (!empty($brandInfo)) {
-  if ((int)$brandInfo['brandActive'] === 1) {
-    $deny = FALSE;
-    define('BRAND', $brandInfo['brandName']);
-  }
-}
+// @TODO (get post data into 'Query' bootstrapper variable
+//$_GET = null;
+//$_POST = null;
 
-// Stop if brand not found
-if ($deny === TRUE) {
-  trigger_error('Brand not found: '.$brandID, E_USER_ERROR);
-  die();
-}
-    
-// Debug Info
-if (ERROR_LEVEL == 10
-  && empty($_REQUEST['m'])) {
-  var_dump($_REQUEST, $domain, $url, BRAND, DOMAINURL);
-}
-
-// Handle page request via Bootstrap
+// Handle page request via Bootstrap MVC
 require_once (ROOT . DS . 'library' . DS . 'bootstrap.class.php');
-new Bootstrap($url);
+new Bootstrap($global['input']['url']);
+
+// Debug
+if (ERROR_LEVEL >= 9
+  && empty($global['input']['m'])) {
+    echo "<hr /><h5>Debug:</h5>";
+  var_dump($global, BRAND, BRANDURL);
+}

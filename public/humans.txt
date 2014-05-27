@@ -3,14 +3,14 @@
 
 # TEAM
 
-    dirt - dirt@awoms.com
+    Brock Hensley - brock@brockhensley.com  
 
 # THANKS
 
-    2600
-    The Internet
+    2600  
+    The Internet  
 
 # TECHNOLOGY COLOPHON
 
-    HTML5, CSS3
-    jQuery, Modernizr
+    HTML5, CSS3  
+    jQuery, Modernizr  

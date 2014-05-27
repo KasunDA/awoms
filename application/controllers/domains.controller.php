@@ -2,82 +2,168 @@
 
 class DomainsController extends Controller
 {
-
-  /**
-   * Get Domain List
-   * 
-   * @version v00.00.00
-   * 
-   * Sets template data of array of all active domains and their info
-   * 
-   * @param int $domainID Optional Domain ID
-   * @param string $domainName Option Domain Name
-   * 
-   * @return array Domain info
-   */
-  public function getDomains($domainID = NULL, $domainName = NULL) {
-    Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
-
-    // Domain info
-    if ($domainID === NULL) {
-      $where = '';
-    } else {
-      $where = ' AND domainID = '.$domainID;
+    public function __construct($controller, $model, $action, $template = NULL)
+    {
+        parent::__construct($controller, $model, $action, $template);
     }
-    // Domain name
-    if ($domainName === NULL) {
-      $where = '';
-    } else {
-      $where = " AND domainName = '".$domainName."'";
+
+    /**
+     * View All
+     */
+    public function viewall()
+    {
+        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+
+        // Template data
+        $this->set('title', 'Domains :: View All');
+
+        // Get domains list
+        $this->set('domains', $this->getDomains());
+
+        // Prepare Create Form
+        parent::prepareForm(NULL, "ALL");
     }
-    $domainIDs = $this->Domain->getDomainIDs("domainActive=1".$where);
-    $domains   = array();
-    foreach ($domainIDs as $d) {
-      $domain    = $this->Domain->getDomainInfo($d['domainID']);
-      $domains[] = $domain;
-    }
-    $this->set('domains', $domains);
-    return $domains;
-  }  
 
-  /**
-   * Create
-   */
-  public function create() {
+    /**
+     * Create
+     */
+    public function create()
+    {
+        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
 
-    // Get step or assume 1st step
-    empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
-    $this->set('step', $step);
-    $this->set('title', 'Domains :: Create');
+        // Get step or assume 1st step
+        empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
+        $this->set('step', $step);
+        $this->set('title', 'Domains :: Create');
 
-    // Step 2: Save domain
-    if ($step == 2) {
+        // Step 1: Create/Edit form
+        if ($step == 1) {
 
-      // Data array to be passed to sql
-      $data = array();
-
-      // Gets input data from post, must begin with "inp_"
-      foreach ($_POST as $k => $v) {
-        if (!preg_match('/^inp_(.*)/', $k, $m)) {
-          continue;
+            // Prepare Create Form
+            parent::prepareForm(NULL, "ALL");
         }
-        $this->set($k, $v);
-        // Domain id (new or existing)
-        if ($k == 'inp_domainID') {
-          $inp_domainID = $v;
-        }
-        // Domain info col/data
-        $data[$m[1]] = $v;
-      }
 
-      // Save domain info, getting ID
-      $domainID = $this->Domain->update($data);
-      if ($inp_domainID != 'DEFAULT') {
-        // Updated (existing ID)
-        $domainID = $inp_domainID;
-      }
-      $this->set('domainID', $domainID);
+        // Step 2: Save domain
+        elseif ($step == 2) {
+
+            // Data array to be passed to sql
+            $data                 = array();
+            $data['domainActive'] = 1;
+
+            // Gets input data from post, must begin with "inp_"
+            foreach ($_POST as $k => $v) {
+                if (!preg_match('/^inp_(.*)/', $k, $m)) {
+                    continue;
+                }
+
+                $this->set($k, $v);
+
+                // Domain id (new or existing)
+                if ($k == 'inp_domainID') {
+                    $inp_domainID = $v;
+                }
+
+                // Domain info col/data
+                $data[$m[1]] = $v;
+            }
+
+            // Save domain info, getting ID
+            $domainID = $this->Domain->update($data);
+            if ($inp_domainID != 'DEFAULT') {
+                // Updated (existing ID)
+                $domainID = $inp_domainID;
+            }
+
+            $this->set('domainID', $domainID);
+        }
+
+        // Get updated list
+        $this->set('domains', $this->getDomains());
     }
-  }
+
+    /**
+     * Edit
+     */
+    public function edit()
+    {
+        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+
+        // Get step or assume 1st step
+        empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
+        $this->set('step', $step);
+        $this->set('title', 'Domains :: Edit');
+
+        $args = func_get_args();
+        if (!empty($args)) {
+            $ID = $args[0];
+            $this->set('domainID', $ID);
+        }
+
+        $res = TRUE;
+        if ($step == 1) {
+            $domain = $this->Domain->getDomainInfo($ID);
+            $this->set('domain', $domain);
+
+            // Get domain list
+            $this->set('domains', $this->getDomains());
+
+            // Gets input data from post, must begin with "inp_" 
+            foreach ($domain as $k => $v) {
+                if ($k == "brandID") {
+                    $selectedBrandID = $v;
+                }
+                $this->set("inp_" . $k, $v);
+            }
+
+            // Prepare Create Form
+            parent::prepareForm($ID, $selectedBrandID);
+        } elseif ($step == 2) {
+            // Use create method to edit existing
+            $res = $this->create();
+        }
+
+        return $res;
+    }
+
+    /**
+     * Get Domain List
+     * 
+     * Returns array of all active domains and their info
+     * 
+     * @return array
+     */
+    public function getDomains()
+    {
+        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        $domainIDs = $this->Domain->getDomainIDs('domainActive=1');
+        $domains   = array();
+        foreach ($domainIDs as $b) {
+            $domain    = $this->Domain->getDomainInfo($b['domainID']);
+            $domains[] = $domain;
+        }
+        return $domains;
+    }
+
+    /**
+     * Generates <option> list for Domain select list use in template
+     */
+    public function GetDomainChoiceList($SelectedID = FALSE)
+    {
+        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        $domainsList = $this->getDomains();
+        if (empty($domainsList)) {
+            $domainChoiceList = "<option value=''>--None--</option>";
+        } else {
+            $domainChoiceList = '';
+            foreach ($domainsList as $domain) {
+                $selected = '';
+                if ($SelectedID != FALSE && $SelectedID != "ALL" && $domain['domainID'] == $SelectedID) {
+                    $selected = " selected";
+                }
+                $domainChoiceList .= "<option value='" . $domain['domainID'] . "'" . $selected . ">" . $domain['domainName'] . "</option>";
+            }
+        }
+        return $domainChoiceList;
+    }
 
 }

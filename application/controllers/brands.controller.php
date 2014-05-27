@@ -2,78 +2,169 @@
 
 class BrandsController extends Controller
 {
-
-  /**
-   * Get Brand List
-   * 
-   * @version v00.00.00
-   * 
-   * Returns array of all active brands and their info
-   * Also sets template variable 'brands' with array results
-   * 
-   * @param int $brandID Optional Brand ID
-   * 
-   * @return array Brand info
-   */
-  public function getBrands($brandID = NULL) {
-    Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
-
-    // Brand info
-    if ($brandID === NULL) {
-      $where = '';
-    } else {
-      $where = ' AND brandID = '.$brandID;
-    }
-    $brandIDs = $this->Brand->getBrandIDs("brandActive=1".$where);
-    $brands   = array();
-    foreach ($brandIDs as $b) {
-      $brand    = $this->Brand->getBrandInfo($b['brandID']);
-      $brands[] = $brand;
+    public function __construct($controller, $model, $action, $template = NULL)
+    {
+        parent::__construct($controller, $model, $action, $template);
     }
 
-    // Template data
-    $this->set('brands', $brands);
-    return $brands;
-  }
+    /**
+     * View All
+     */
+    public function viewall()
+    {
+        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
 
-  /**
-   * Create
-   */
-  public function create() {
+        // Template data
+        $this->set('title', 'Brands :: View All');
 
-    // Get step or assume 1st step
-    empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
-    $this->set('step', $step);
-    $this->set('title', 'Brands :: Create');
+        // Get brand list
+        $this->set('brands', $this->getBrands());
 
-    // Step 2: Save brand
-    if ($step == 2) {
+        // Prepare Create Form
+        parent::prepareForm();
+    }
 
-      // Data array to be passed to sql
-      $data = array();
+    /**
+     * Create
+     */
+    public function create()
+    {
+        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
 
-      // Gets input data from post, must begin with "inp_"
-      foreach ($_POST as $k => $v) {
-        if (!preg_match('/^inp_(.*)/', $k, $m)) {
-          continue;
+        // Get step or assume 1st step
+        empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
+        $this->set('step', $step);
+        $this->set('title', 'Brands :: Create');
+
+        // Step 1: Create/Edit form
+        if ($step == 1) {
+
+            // Prepare Create Form
+            parent::prepareForm();
         }
-        $this->set($k, $v);
-        // Brand id (new or existing)
-        if ($k == 'inp_brandID') {
-          $inp_brandID = $v;
-        }
-        // Brand info col/data
-        $data[$m[1]] = $v;
-      }
 
-      // Save brand info, getting ID
-      $brandID = $this->Brand->update($data);
-      if ($inp_brandID != 'DEFAULT') {
-        // Updated (existing ID)
-        $brandID = $inp_brandID;
-      }
-      $this->set('brandID', $brandID);
+        // Step 2: Save brand
+        elseif ($step == 2) {
+
+            // Data array to be passed to sql
+            $data                = array();
+            $data['brandActive'] = 1;
+
+            // Gets input data from post, must begin with "inp_"
+            foreach ($_POST as $k => $v) {
+                if (!preg_match('/^inp_(.*)/', $k, $m)) {
+                    continue;
+                }
+
+                $this->set($k, $v);
+
+                // Brand id (new or existing)
+                if ($k == 'inp_brandID') {
+                    $inp_brandID = $v;
+                }
+
+                // Brand info col/data
+                $data[$m[1]] = $v;
+            }
+
+            // Save brand info, getting ID
+            $brandID = $this->Brand->update($data);
+            if ($inp_brandID != 'DEFAULT') {
+                // Updated (existing ID)
+                $brandID = $inp_brandID;
+            }
+
+            $this->set('brandID', $brandID);
+        }
+
+        // Get updated list
+        $this->set('brands', $this->getBrands());
     }
-  }
+
+    /**
+     * Edit
+     */
+    public function edit()
+    {
+        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+
+        // Get step or assume 1st step
+        empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
+        $this->set('step', $step);
+        $this->set('title', 'Brands :: Edit');
+
+        $args = func_get_args();
+        if (!empty($args)) {
+            $ID = $args[0];
+            $this->set('brandID', $ID);
+        }
+
+        $res = TRUE;
+        if ($step == 1) {
+            $brand = $this->Brand->getBrandInfo($ID);
+            $this->set('brand', $brand);
+
+            // Get brand list
+            $this->set('brands', $this->getBrands());
+
+            // Gets input data from post, must begin with "inp_"
+            foreach ($brand as $k => $v) {
+                $this->set("inp_" . $k, $v);
+            }
+
+            // Prepare Create Form
+            parent::prepareForm($ID);
+        } elseif ($step == 2) {
+            // Use create method to edit existing
+            $res = $this->create();
+        }
+
+        return $res;
+    }
+
+    /**
+     * Get Brand List
+     * 
+     * Returns array of all active brands and their info
+     * 
+     * @return array
+     */
+    public function getBrands()
+    {
+        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        $brandIDs = $this->Brand->getBrandIDs('brandActive=1');
+        $brands   = array();
+        foreach ($brandIDs as $b) {
+            $brand    = $this->Brand->getBrandInfo($b['brandID']);
+            $brands[] = $brand;
+        }
+        return $brands;
+    }
+
+    /**
+     * Generates <option> list for Brand select list use in template
+     * 
+     * @example 
+     * $brands     = new BrandsController('brands', 'Brand', NULL, 'json');
+     * $brandsList = $brands->GetBrandChoiceList();
+     */
+    public function GetBrandChoiceList($SelectedID = FALSE)
+    {
+        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        $brandsList = $this->getBrands();
+        if (empty($brandsList)) {
+            $brandChoiceList = "<option value=''>--None--</option>";
+        } else {
+            $brandChoiceList = '';
+            foreach ($brandsList as $brand) {
+                $selected = '';
+                if ($SelectedID != FALSE && $SelectedID != "ALL" && $brand['brandID'] == $SelectedID) {
+                    $selected = " selected";
+                }
+                $brandChoiceList .= "<option value='" . $brand['brandID'] . "'" . $selected . ">" . $brand['brandName'] . "</option>";
+            }
+        }
+        return $brandChoiceList;
+    }
 
 }

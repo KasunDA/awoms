@@ -1,8 +1,10 @@
+# Custom
 dbconfig.php
 googleAnalytics.php
 googleSiteVerification.php
 
 # Logs
+logs/
 *.log
 *_log
 

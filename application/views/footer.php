@@ -1,11 +1,3 @@
-<?php
-// Articles :: Write Modal
-include(ROOT.DS.'application'.DS.'views'.DS.'articles'.DS.'writeForm.php');
-$pageJavaScript[] = "
-  // Open Modal Cursor
-  $('.openModal').css('cursor', 'pointer');
-";
-?>
 
           </div> <!-- #main -->
         </div> <!-- #main-container -->
@@ -18,13 +10,35 @@ $pageJavaScript[] = "
         </div>
 
         <!-- jQuery -->
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="/js/libs/jquery/1.9.1/jquery.min.js"><\/script>')</script>
+<?php
+        if (DEVELOPMENT_ENVIRONMENT)
+        {
+            echo "<script src='/js/libs/jquery/1.11.1/jquery.min.js'></script>";
+        }
+        else
+        {
+            echo "<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>";
+        }
+?>
+        <script>window.jQuery || document.write('<script src="/js/libs/jquery/1.11.1/jquery.min.js"><\/script>')</script>
+
         <!-- jQuery UI -->
-        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-        <script>window.jQueryUI || document.write('<script src="/js/libs/jqueryui/1.10.3/jquery-ui.min.js"><\/script>')</script>
+        <script src='/js/libs/jqueryui/1.10.4/jquery-ui.min.js'></script>
 
 <?php
+// GLOBAL: API Action
+ include(ROOT.DS."application".DS."views".DS."API".DS."API_include.php");
+
+// GLOBAL: API JS
+array_unshift($pageJavaScript, file_get_contents(ROOT.DS."application".DS."views".DS."API".DS."API.js"));
+
+// GLOBAL: Form Cursor
+$pageJavaScript[] = "
+  // Open Modal Cursor
+  $('.openModal').css('cursor', 'pointer');
+";
+
+// GLOBAL: Load Page JS
 if (!empty($pageJavaScript)) {
     echo "
       <script type='text/javascript'>
@@ -40,9 +54,7 @@ if (!empty($pageJavaScript)) {
         });
       </script>";
 }
-?>
 
-<?php
 // Analytics
 if (file_exists('googleAnalytics.php')) {
   include('googleAnalytics.php');

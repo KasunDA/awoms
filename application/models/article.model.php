@@ -2,18 +2,34 @@
 
 class Article extends Model
 {
+  public function getArticleTypeID() {
+    $r = self::select("refParentItemTypeID", "parentTypeLabel = 'Article'", NULL, "refParentItemTypes");
+    return $r[0]['refParentItemTypeID'];
+  }  
+  
   protected static function getArticleColumns() {
-    $cols = array('articleID', 'articleActive', 'articleName', 'articleShortDescription', 'articleLongDescription', 'articleDatePublished', 'articleDateLastReviewed', 'articleDateLastUpdated', 'articleDateExpires', 'userID');
+    $cols = array('articleID', 'articleActive', 'articleName', 'articleShortDescription', 'articleLongDescription',
+        'articleDatePublished', 'articleDateLastReviewed', 'articleDateLastUpdated', 'articleDateExpires', 'userID', 'brandID');
     return $cols;
   }
   public function saveArticleInfo($data) {
     return self::update($data);
   }
 
-  public function getArticleInfo($articleID) {
+  public function getArticleInfo($articleID, $LoadBrand = FALSE, $LoadUser = FALSE) {
     $cols = self::getArticleColumns();
     $where = 'articleID = '.$articleID;
     $res = self::select($cols, $where); // Dereferencing not available until php v5.4-5.5
+    if ($LoadBrand)
+    {
+        $Brand = new Brand();
+        $res['0']['brand'] = $Brand->getBrandInfo($res[0]['brandID']);
+    }
+    if ($LoadUser)
+    {
+        $User = new User();
+        $res['0']['user'] = $User->getUserInfo($res[0]['userID']);
+    }
     return $res[0];
   }
   
@@ -26,9 +42,12 @@ class Article extends Model
   public function getArticleComments($articleID, $commentID = NULL) {
     $cols = 'commentID, commentDatePublished';
     if (empty($commentID)) {
-      $where = 'parentItemID = '.$articleID.' AND parentItemTypeID = 1';
+        $articleTypeID = $this->getArticleTypeID();
+        $where      = 'parentItemID = ' . $articleID . ' AND parentItemTypeID = ' . $articleTypeID;
     } else {
-      $where = 'parentItemID = '.$commentID.' AND parentItemTypeID = 2';
+        $Comment       = new Comment();
+        $commentTypeID = $Comment->getCommentTypeID();
+        $where         = 'parentItemID = ' . $commentID . ' AND parentItemTypeID = ' . $commentTypeID;
     }
     $order = 'commentDatePublished';
     $table = 'comments';
