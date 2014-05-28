@@ -79,7 +79,10 @@
         Body
       </td>
       <td>
-        <textarea id='inp_pageBody' name='inp_pageBody' cols='60' rows='8'><?php
+        <textarea id='inp_pageBody' name='inp_pageBody' cols='60' rows='8' class="tinymce"><?php
+        
+          $tinyMCEInputID = "inp_pageBody";
+        
           if (isset($inp_pageBody)) {
             echo $inp_pageBody['bodyContentText']; // @todo [] NL to BR ---- WYSIWYG!
           }

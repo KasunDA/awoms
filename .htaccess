@@ -323,8 +323,8 @@ SetEnvIf brokenvary 1 force-no-vary
 # performance impact: http://goo.gl/Mluzd
 
 <IfModule mod_rewrite.c>
-  Options +FollowSymlinks
-# Options +SymLinksIfOwnerMatch
+#  Options +FollowSymlinks
+  Options +SymLinksIfOwnerMatch
   RewriteEngine On
 # RewriteBase /
 </IfModule>

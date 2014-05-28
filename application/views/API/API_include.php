@@ -21,7 +21,8 @@ $find = array("@@".$loadFile."FrmID@@",
     "@@".$loadFile."Title@@",
     "@@".$loadFile."Controller@@",
     "@@".$loadFile."Action@@",
-    "@@".$loadFile."SaveText@@");
+    "@@".$loadFile."SaveText@@",
+    "@@".$loadFile."TinyMCEInputID@@");
 
 // Title
 $controller = rtrim(strtolower($this->controller), "s");
@@ -31,11 +32,13 @@ if ($titleLabel == "Usergroup") {
 }
 $title = $titlePrefix.$titleLabel;
 $saveLabel = "Save ".$titleLabel;
+$tinyMCEInputID = isset($tinyMCEInputID) ? $tinyMCEInputID : NULL;
 $replace = array($formID,
     $title,
     $this->controller,
     $loadAction, // desired action, not current action
-    $saveLabel);
+    $saveLabel,
+    $tinyMCEInputID);
 
 $actionJS = file_get_contents(ROOT.DS."application".DS."views".DS."API".DS.$loadFile.".js");
 $finalJS = str_replace($find,$replace,$actionJS);

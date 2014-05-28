@@ -91,7 +91,6 @@ class PagesController extends Controller
             $this->set('pageID', $pageID);
 
             // Save page body
-            // @TODO Type Lookup!
             $bodyType = $this->Page->getPageTypeID();
             $bodyContentID = $this->Page->saveBodyContents($pageID, $bodyType, $inp_pageBody, $data['userID']);
             $this->set('bodyContentID', $bodyContentID);

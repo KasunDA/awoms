@@ -79,7 +79,10 @@
         Body
       </td>
       <td>
-        <textarea id='inp_articleBody' name='inp_articleBody' cols='60' rows='8'><?php
+        <textarea id='inp_articleBody' name='inp_articleBody' cols='60' rows='8' class="tinymce"><?php
+        
+            $tinyMCEInputID = "inp_articleBody";
+            
           if (isset($inp_articleBody)) {
             echo $inp_articleBody['bodyContentText']; // @todo [] NL to BR
           }

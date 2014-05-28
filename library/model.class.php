@@ -114,6 +114,7 @@ class Model extends Database
         }
 
         $this->sql .= $dups;
+
         return $this->query($this->sql, $this->sqlData);
     }
 

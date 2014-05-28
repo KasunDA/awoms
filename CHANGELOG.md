@@ -2,18 +2,21 @@
  - [x] humans.txt
  - [x] robots.txt
  - [x] 403,404,500.html
- - [x] MVC API Framework
- - [x] Articles
+ - [x] MVC API Framework accessible via PHP or AJAX for dynamic content
  - [x] Brands
- - [x] Comments
+ - [x] Domains
  - [x] Usergroups
  - [x] Users
- - [x] API URL
- - [x] example.html
+ - [x] Pages
+ - [x] Articles
+ - [x] Comments
  - [x] Detect URL -> DomainName HTTP_HOST -> DomainID -> Brand ID
  - [x] Optional $template variable added to Controller class to allow specifying whether to load header/footer, useful for AJAX requests returning JSON datatype
- - [ ] Restrict getArticles to that brand ID
+ 
+ - [/] WYSIWYG (TinyMCE + Responsive File Manager)
+ - [ ] Restrict content (Pages, Articles) to that brand ID
  - [ ] ACL
  - [ ] Brand selection list (ACL to view/change)
  - [ ] Sanitization
  - [ ] PDO Prepared Statements
+ - [ ] URL Rewrites => /about <==> /pages/view/2/2014/05/23/about-page

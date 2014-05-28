@@ -33,10 +33,6 @@ else
 $defaultPage = "home";
 $global['input']['url'] = filter_input(INPUT_GET, "url", FILTER_SANITIZE_STRING) ?: $defaultPage;
 
-// @TODO (get post data into 'Query' bootstrapper variable
-//$_GET = null;
-//$_POST = null;
-
 // Handle page request via Bootstrap MVC
 require_once (ROOT . DS . 'library' . DS . 'bootstrap.class.php');
 new Bootstrap($global['input']['url']);
