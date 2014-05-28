@@ -62,13 +62,13 @@ class Bootstrap
                 define('BRAND', $domain['brand']['brandName']);
                 define('BRANDURL', PROTOCOL.$domain['domainName'].'/');
                 define('BRANDLABEL', $domain['brand']['brandLabel']);
-                
+                define('BRANDTHEME', $domain['brand']['activeTheme']);
                 break; // @todo $api->getSingleByID($id) instead of loading all every time
             }
         }
 
         if (!$foundDomainBrandMatch) {
-            trigger_error("Domain not found that matches ".$_SERVER['HTTP_HOST']."...");
+            trigger_error("Domain not found that matches ".$_SERVER['HTTP_HOST']);
             die();exit();
         }
     }

@@ -96,35 +96,34 @@ class Template
                 (!isset($_POST['m']) || strtolower($_POST['m']) != 'ajax')
         ) {
 
-            if (file_exists($viewsFolder . BRANDLABEL . DS . $this->controller . DS . 'header.php')) {
-                include ($viewsFolder . BRANDLABEL . DS . $this->controller . DS . 'header.php');
-                
-            } elseif (file_exists($viewsFolder . BRANDLABEL . DS . 'header.php')) {
-                include ($viewsFolder . BRANDLABEL . DS . 'header.php');
-                
-            } elseif (file_exists($viewsFolder . BRAND . DS . $this->controller . DS . 'header.php')) {
-                include ($viewsFolder . BRAND . DS . $this->controller . DS . 'header.php');
-                
-            } elseif (file_exists($viewsFolder . BRAND . DS . 'header.php')) {
-                include ($viewsFolder . BRAND . DS . 'header.php');
-                
-            } elseif (file_exists($viewsFolder . $this->controller . DS . 'header.php')) {
-                include ($viewsFolder . $this->controller . DS . 'header.php');
-                
-            } else {
-                include ($viewsFolder . 'header.php');
+            // Header template
+            $templates = array();
+            $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . $this->controller . DS . 'header.php';
+            $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . 'header.php';
+            $templates[] = $viewsFolder . 'header.php';
+            foreach ($templates as $template)
+            {
+                if (file_exists($template))
+                {
+                    include($template);
+                    break;
+                }
             }
         }
 
-        // Action
-        if (file_exists($viewsFolder . BRAND . DS . $this->controller . DS . $this->action . '.php')) {
-            include ($viewsFolder . BRAND . DS . $this->controller . DS . $this->action . '.php');
-            
-        } elseif (file_exists($viewsFolder . DS . $this->controller . DS . $this->action . '.php')) {
-            include ($viewsFolder . DS . $this->controller . DS . $this->action . '.php');
-            
-        } else {
-            include ($viewsFolder . DS . $this->action . '.php');
+        // Action template
+        $templates = array();
+        $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . $this->controller . DS . $this->action . '.php';
+        $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . $this->action .'.php';
+        $templates[] = $viewsFolder . $this->controller . DS . $this->action . '.php';
+        $templates[] = $viewsFolder . $this->action . '.php';
+        foreach ($templates as $template)
+        {
+            if (file_exists($template))
+            {
+                include($template);
+                break;
+            }
         }
 
         // Footer if not in ajax mode
@@ -134,23 +133,18 @@ class Template
                 (!isset($_POST['m']) || strtolower($_POST['m']) != 'ajax')
         ) {
 
-            if (file_exists($viewsFolder . BRANDLABEL . DS . $this->controller . DS . 'footer.php')) {
-                include ($viewsFolder . BRANDLABEL . DS . $this->controller . DS . 'footer.php');
-                
-            } elseif (file_exists($viewsFolder . BRANDLABEL . DS . 'footer.php')) {
-                include ($viewsFolder . BRANDLABEL . DS . 'footer.php');
-                
-            } elseif (file_exists($viewsFolder . BRAND . DS . $this->controller . DS . 'footer.php')) {
-                include ($viewsFolder . BRAND . DS . $this->controller . DS . 'footer.php');
-                
-            } elseif (file_exists($viewsFolder . BRAND . DS . 'footer.php')) {
-                include ($viewsFolder . BRAND . DS . 'footer.php');
-                
-            } elseif (file_exists($viewsFolder . $this->controller . DS . 'footer.php')) {
-                include ($viewsFolder . $this->controller . DS . 'footer.php');
-                
-            } else {
-                include ($viewsFolder . 'footer.php');
+            // Footer template
+            $templates = array();
+            $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . $this->controller . DS . 'footer.php';
+            $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . 'footer.php';
+            $templates[] = $viewsFolder . 'footer.php';
+            foreach ($templates as $template)
+            {
+                if (file_exists($template))
+                {
+                    include($template);
+                    break;
+                }
             }
         }
     }

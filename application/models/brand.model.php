@@ -3,7 +3,7 @@
 class Brand extends Model
 {
   protected static function getBrandColumns() {
-    $cols = array('brandID', 'brandName', 'brandActive', 'brandLabel');
+    $cols = array('brandID', 'brandName', 'brandActive', 'brandLabel', 'activeTheme');
     return $cols;
   }
 

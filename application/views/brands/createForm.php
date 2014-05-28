@@ -30,6 +30,21 @@
         ?>' size='60' />
       </td>
     </tr>
+    
+    <tr>
+      <td>
+        Active Theme
+      </td>
+      <td>
+        <input type='text' id='inp_activeTheme' name='inp_activeTheme' value='<?php
+          if (isset($inp_activeTheme)) {
+            echo $inp_activeTheme;
+          } else {
+              echo "default";
+          }
+        ?>' size='60' />
+      </td>
+    </tr>
 
   </table>
 </form>
