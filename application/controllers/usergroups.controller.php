@@ -12,7 +12,7 @@ class UsergroupsController extends Controller
      */
     public function viewall()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Template data
         $this->set('title', 'Groups :: View All');
@@ -29,7 +29,7 @@ class UsergroupsController extends Controller
      */
     public function create()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
@@ -86,7 +86,7 @@ class UsergroupsController extends Controller
      */
     public function edit()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
@@ -134,7 +134,7 @@ class UsergroupsController extends Controller
      */
     public function getUsergroups()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $usergroupIDs = $this->Usergroup->getUsergroupIDs('usergroupActive=1');
         $usergroups   = array();
         foreach ($usergroupIDs as $ug) {
@@ -149,7 +149,7 @@ class UsergroupsController extends Controller
      */
     public function GetUsergroupChoiceList($SelectedID = FALSE)
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $usergroupsList = $this->getUsergroups();
         if (empty($usergroupsList)) {
             $usergroupChoiceList = "<option value=''>--None--</option>";

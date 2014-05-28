@@ -98,8 +98,8 @@ class Template
 
             // Header template
             $templates = array();
-            $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . $this->controller . DS . 'header.php';
-            $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . 'header.php';
+            $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->controller . DS . 'header.php';
+            $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . 'header.php';
             $templates[] = $viewsFolder . 'header.php';
             foreach ($templates as $template)
             {
@@ -113,8 +113,8 @@ class Template
 
         // Action template
         $templates = array();
-        $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . $this->controller . DS . $this->action . '.php';
-        $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . $this->action .'.php';
+        $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->controller . DS . $this->action . '.php';
+        $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->action .'.php';
         $templates[] = $viewsFolder . $this->controller . DS . $this->action . '.php';
         $templates[] = $viewsFolder . $this->action . '.php';
         foreach ($templates as $template)
@@ -135,8 +135,8 @@ class Template
 
             // Footer template
             $templates = array();
-            $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . $this->controller . DS . 'footer.php';
-            $templates[] = $viewsFolder . 'templates' . DS . BRANDLABEL . DS . BRANDTHEME . DS . 'footer.php';
+            $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->controller . DS . 'footer.php';
+            $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . 'footer.php';
             $templates[] = $viewsFolder . 'footer.php';
             foreach ($templates as $template)
             {

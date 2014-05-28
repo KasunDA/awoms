@@ -12,7 +12,7 @@ class ArticlesController extends Controller
      */
     public function viewall()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Template data
         $this->set('title', 'Articles :: View All');
@@ -107,7 +107,7 @@ class ArticlesController extends Controller
      */
     public function edit()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
@@ -163,7 +163,7 @@ class ArticlesController extends Controller
      */
     public function getArticles()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // "Top 10" or similar latest LIMIT <--- @todo
         // @todo arguments
@@ -206,7 +206,7 @@ class ArticlesController extends Controller
      */
     public function view()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $getReq = func_get_args();
         $this->set('title', 'Articles :: View');
         if (empty($getReq[0])) {

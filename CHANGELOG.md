@@ -13,10 +13,32 @@
  - [x] Detect URL -> DomainName HTTP_HOST -> DomainID -> Brand ID
  - [x] Optional $template variable added to Controller class to allow specifying whether to load header/footer, useful for AJAX requests returning JSON datatype
  
- - [/] WYSIWYG (TinyMCE + Responsive File Manager)
- - [ ] Restrict content (Pages, Articles) to that brand ID
- - [ ] ACL
- - [ ] Brand selection list (ACL to view/change)
+ - [x] WYSIWYG (TinyMCE + Responsive File Manager)
+ - [/] Restrict content (Pages, Articles) to that brand ID
+ - [/] ACL
+ - [ ] (dynamic) Brand (domain etc) selection list (ACL to view/change)
  - [ ] Sanitization
- - [ ] PDO Prepared Statements
  - [ ] URL Rewrites => /about <==> /pages/view/2/2014/05/23/about-page
+ 
+ 
+ 
+ - [ ] Sessions
+ 
+ - [x] Brand Theme folder support
+ - [ ] ... CSS style
+ - [ ] favicon (per brand) 
+ 
+ACL Class?
+-CRUD
+-Brand/Page/Article/User etc.
+ 
+ ACL:
+ 
+ x DOMAIN
+ x BRAND
+ USER
+ USERGROUP
+ ACL
+ 
+ (logs for acl)
+ 

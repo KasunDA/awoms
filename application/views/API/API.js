@@ -45,11 +45,11 @@ function callAPI(controller, action, formID) {
         url: '/' + controller + '/' + action,
         data: frmInput
     })
-            .done(function(results) {
+    .done(function(results) {
         // Handle Results
         handleAPIResults(controller, action, formID, results);
     })
-            .fail(function(msg) {
+    .fail(function(msg) {
         // Error results
         var divResults = $('#divResults');
         divResults.append('Sorry! We ran into an issue processing your request. The webmaster has been alerted.');
@@ -57,7 +57,7 @@ function callAPI(controller, action, formID) {
         // CSS
         divResults.css('border', '3px solid red');
     })
-            .always(function() {
+    .always(function() {
     });
 }
 
@@ -72,12 +72,6 @@ function callAPI(controller, action, formID) {
  */
 function handleAPIResults(controller, action, formID, results) {
     console.debug('handleAPIResults controller: ' + controller + ' action: ' + action + ' formID: ' + formID + ' results: ' + results);
-    
-    //divResults.html(results);
-    //divResults.show();
-    
-    //alert('done!');
-    
     var divResults = $('#divResults');
     divResults.html(results);
     divResults.show();

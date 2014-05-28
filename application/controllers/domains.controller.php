@@ -12,7 +12,7 @@ class DomainsController extends Controller
      */
     public function viewall()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Template data
         $this->set('title', 'Domains :: View All');
@@ -29,7 +29,7 @@ class DomainsController extends Controller
      */
     public function create()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
@@ -86,7 +86,7 @@ class DomainsController extends Controller
      */
     public function edit()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
@@ -134,7 +134,7 @@ class DomainsController extends Controller
      */
     public function getDomains()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $domainIDs = $this->Domain->getDomainIDs('domainActive=1');
         $domains   = array();
         foreach ($domainIDs as $b) {
@@ -149,7 +149,7 @@ class DomainsController extends Controller
      */
     public function GetDomainChoiceList($SelectedID = FALSE)
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $domainsList = $this->getDomains();
         if (empty($domainsList)) {
             $domainChoiceList = "<option value=''>--None--</option>";

@@ -12,7 +12,7 @@ class UsersController extends Controller
      */
     public function viewall()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Template data
         $this->set('title', 'Users :: View All');
@@ -29,7 +29,7 @@ class UsersController extends Controller
      */
     public function create()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
@@ -85,7 +85,7 @@ class UsersController extends Controller
      */
     public function edit()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
@@ -133,7 +133,7 @@ class UsersController extends Controller
      */
     public function getUsers()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $userIDs = $this->User->getUserIDs('userActive=1');
         $users   = array();
         foreach ($userIDs as $ug) {
@@ -148,7 +148,7 @@ class UsersController extends Controller
      */
     public function GetUserChoiceList($SelectedID = FALSE)
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $usersList = $this->getUsers();
         if (empty($usersList)) {
             $userChoiceList = "<option value=''>--None--</option>";

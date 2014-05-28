@@ -1,7 +1,9 @@
 # Custom
-dbconfig.php
+dbConfig.php
+extraConfig.php
 googleAnalytics.php
 googleSiteVerification.php
+files/
 
 # Logs
 logs/

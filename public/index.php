@@ -2,7 +2,7 @@
 /**
  * Load: Config
  * Read: Brand, Url
- * Set: DS, ROOT, BRAND, BRANDURL
+ * Set: DS, ROOT, BRAND, BRAND_URL
  * Call: Bootstrap
  */
 
@@ -41,5 +41,5 @@ new Bootstrap($global['input']['url']);
 if (ERROR_LEVEL >= 9
   && empty($global['input']['m'])) {
     echo "<hr /><h5>Debug:</h5>";
-  var_dump($global, BRAND, BRANDURL);
+  var_dump($global, BRAND, BRAND_URL);
 }

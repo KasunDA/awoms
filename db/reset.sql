@@ -1,4 +1,4 @@
-USE gpfc;
+USE `GPFC`;
 
 DELETE FROM users
 WHERE userID > 1;
@@ -17,6 +17,9 @@ WHERE pageID > 1;
 
 DELETE FROM articles
 WHERE articleID > 1;
+
+DELETE FROM sessions
+WHERE sessionID > 0;
 
 DELETE FROM brands
 WHERE brandID > 1;

@@ -3,7 +3,7 @@
 for ($i=0; $i<count($pages); $i++)
 {
     $pageDate = str_replace('-','/',substr($pages[$i]['pageDatePublished'], 0, 10));
-    $link = BRANDURL.'pages/edit/'.$pages[$i]['pageID'].'/'.$pageDate.'/'.str_replace(' ', '-', $pages[$i]['pageName']);
+    $link = BRAND_URL.'pages/edit/'.$pages[$i]['pageID'].'/'.$pageDate.'/'.str_replace(' ', '-', $pages[$i]['pageName']);
 ?>
     <li>
       <a href='<?=$link;?>'>

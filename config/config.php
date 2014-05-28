@@ -1,27 +1,25 @@
 <?php
-// Configuration Variables
-if ($_SERVER['SERVER_ADDR'] == '127.0.0.1') {
-  define ('DEVELOPMENT_ENVIRONMENT',TRUE); // SET TO TRUE
-  define('ERROR_LEVEL', 9); // NOTE: 10 will break ajax
-} else {
-  define ('DEVELOPMENT_ENVIRONMENT',FALSE);
-  define('ERROR_LEVEL', 1);
-}
+/****
+// No need to edit this file
+// Instead you need to edit 'dbConfig' and 'extraConfig'
+****/
 
 // Load DB Config
-include(ROOT.DS.'config/dbconfig.php');
+require_once(ROOT . DS . 'config' . DS . 'dbConfig.php');
 
 // Logs
 ini_set('log_errors', 'On');
 ini_set('error_log', ROOT . DS . 'tmp' . DS . 'logs' . DS . 'error.log');
 
+// Load Error Config
+require_once(ROOT . DS . 'config' . DS . 'extraConfig.php');
+
 // Error handling
-define('ERROR_EMAIL', 'brock@goinpostal.com');
 require_once(ROOT . DS . 'library' . DS . 'errors.class.php');
 error_reporting(-1);
 set_error_handler(array('Errors', 'captureNormal'));
 set_exception_handler(array('Errors', 'captureException'));
-register_shutdown_function(array('Errors', 'captureShutdown'));    
+register_shutdown_function(array('Errors', 'captureShutdown'));
 ini_set('display_errors', 'On');
 
 // Autoloader
@@ -29,5 +27,8 @@ require_once(ROOT . DS . 'library' . DS . 'autoloader.class.php');
 spl_autoload_register(array('Autoloader', 'loadClass'));
 
 // Encoding
-date_default_timezone_set('America/New_York');
 mb_internal_encoding('UTF-8');
+
+// Load Version
+define('ProductName', 'AWOMS PHP MVC');
+define('Version', file_get_contents(ROOT.DS.'config'.DS.'version.txt'));

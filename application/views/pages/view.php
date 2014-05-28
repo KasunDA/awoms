@@ -1,11 +1,7 @@
-<!-- Results -->
-<div id='divResults'>
-  <?php
-    if (isset($resultsMsg)) {
-      var_dump($resultsMsg);
-    }
-  ?>
-</div>
+<?php
+if (!empty($page))
+{
+?>
 
 <!-- Template Output -->
 <div id='view'>
@@ -31,9 +27,9 @@
       <h2>Comments</h2>
       <?php
         if (empty($pageComments)) {
-          echo "<p>Be the first to <a href='".BRANDURL."comments/write/".$page['pageID']."'>add a comment!</a></p>";
+          echo "<p>Be the first to <a href='".BRAND_URL."comments/write/".$page['pageID']."'>add a comment!</a></p>";
         } else {
-          echo "<p><a href='".BRANDURL."comments/write/".$page['pageID']."'>Add a comment!</a></p>
+          echo "<p><a href='".BRAND_URL."comments/write/".$page['pageID']."'>Add a comment!</a></p>
             <ul>";
           $ci = 0;
           $clvl = 0;
@@ -52,7 +48,7 @@
             }
             echo "
               <li>
-                <cite><a name='".$comment['commentID']."'>#</a>".$comment['commentID']." ".$comment['commentDatePublished']."</cite> <a href='".BRANDURL."comments/write/".$page['pageID']."/".$comment['commentID']."'>reply</a>
+                <cite><a name='".$comment['commentID']."'>#</a>".$comment['commentID']." ".$comment['commentDatePublished']."</cite> <a href='".BRAND_URL."comments/write/".$page['pageID']."/".$comment['commentID']."'>reply</a>
                 <br />".$comment['commentBodyText']."
               </li>";
           }
@@ -67,7 +63,7 @@
     <br />
     <cite>Author: anonymous</cite>
     <br />
-    <a href='<?=BRANDURL;?>pages/edit/<?=$page['pageID'];?>'>Edit Page</a>
+    <a href='<?=BRAND_URL;?>pages/edit/<?=$page['pageID'];?>'>Edit Page</a>
     
     <?php
     // Page Long Description?
@@ -82,3 +78,7 @@
   </aside>
 
 </div>
+
+<?php
+}
+?>

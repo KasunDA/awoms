@@ -72,14 +72,14 @@
                     <!-- CSS Menu from http://cssmenumaker.com/builder/1917619 -->
                     <div id='cssmenu'>
                         <ul>
-                            <li class='active'><a href='<?php echo BRANDURL; ?>'>Home</a></li>
+                            <li class='active'><a href='<?php echo BRAND_URL; ?>'>Home</a></li>
                             <li class='has-sub'>
-                                <a href='<?php echo BRANDURL; ?>pages/viewall'>Pages</a>
+                                <a href='<?php echo BRAND_URL; ?>pages/viewall'>Pages</a>
                                 <ul>
                                     <li class='has-sub'>
-                                        <a href='<?php echo BRANDURL; ?>pages/viewall'>Pages</a>
+                                        <a href='<?php echo BRAND_URL; ?>pages/viewall'>Pages</a>
                                         <ul>
-                                            <li><a href='<?php echo BRANDURL; ?>pages/create'>Add Page</a></li>
+                                            <li><a href='<?php echo BRAND_URL; ?>pages/create'>Add Page</a></li>
                                         </ul>
                                     </li>
                                 </ul>

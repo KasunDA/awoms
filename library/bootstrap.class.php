@@ -17,6 +17,13 @@
 class Bootstrap
 {
     /**
+     * Class data
+     *
+     * @var array $data Array holding any class data used in get/set
+     */
+    protected $data = array();
+    
+    /**
      * __construct
      * 
      * Magic method executed on new class
@@ -28,49 +35,79 @@ class Bootstrap
      * @uses callHook()
      * 
      * @param string $url Url
-     * 
-     * @todo Session handler?
      */
     public function __construct($url)
     {
+        # Look up the requested domain and its matching brand
+        # @TODO No way to bypass this and obtain from session data, as we use brand label as cookie name :x
         self::lookupDomainBrand();
+
+        # Session start/resume
+            # If has session - no need to re-lookup domain/brand info
+            # If no session - save lookupDomainBrand info
+        $this->Session = new Session();
+
+        # Process MVC request
         self::callHook($url);
     }
     
+    public function __set($key, $value)
+    {
+        $this->data[$key] = $value;
+    }
+
+    public function __get($key)
+    {
+        if ($this->__isset($key)) {
+            return $this->data[$key];
+        }
+        return false;
+    }
+
+    public function __isset($key)
+    {
+        if (array_key_exists($key, $this->data)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Defines brand constants used throughout application
+     */
     public function lookupDomainBrand()
     {
         $Domain    = new Domain();
-        $domainIDs = $Domain->getDomainIDs('domainActive=1');
-        $domains   = array();
 
-        $foundDomainBrandMatch = FALSE;
-        foreach ($domainIDs as $d) {
-            $domain    = $Domain->getDomainInfo($d['domainID'], TRUE);
-            if ($domain['domainName'] == "") continue; # blank entry protection
-            $domains[] = $domain;
-            if (!$foundDomainBrandMatch && preg_match("/".$domain['domainName']."/i", $_SERVER['HTTP_HOST']))
-            {
-                $foundDomainBrandMatch = TRUE;
-                if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443)
-                {
-                    define('HTTPS', TRUE);
-                    define('PROTOCOL', 'https://');
-                } else {
-                    define('HTTPS', FALSE);
-                    define('PROTOCOL', 'http://');
-                }
-                define('BRAND', $domain['brand']['brandName']);
-                define('BRANDURL', PROTOCOL.$domain['domainName'].'/');
-                define('BRANDLABEL', $domain['brand']['brandLabel']);
-                define('BRANDTHEME', $domain['brand']['activeTheme']);
-                break; // @todo $api->getSingleByID($id) instead of loading all every time
-            }
-        }
+        // @TODO Sanitize $_SERVER['HTTP_HOST']
+        $lookupDomain = $_SERVER['HTTP_HOST'];
+        $where = "domainActive=1 AND domainName='".$lookupDomain."'";
+        $d = $Domain->getDomainIDs($where);
 
-        if (!$foundDomainBrandMatch) {
-            trigger_error("Domain not found that matches ".$_SERVER['HTTP_HOST']);
+        if (count($d) == 0)
+        {
+            trigger_error("Domain not found that matches ".$lookupDomain);
             die();exit();
         }
+
+        $domain    = $Domain->getDomainInfo($d[0]['domainID'], TRUE);
+        if ($domain['domainName'] == "") continue; # blank entry protection
+
+        if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443)
+        {
+            define('HTTPS', TRUE);
+            define('PROTOCOL', 'https://');
+        } else {
+            define('HTTPS', FALSE);
+            define('PROTOCOL', 'http://');
+        }
+        define('BRAND_ID', $domain['brand']['brandID']);
+        define('BRAND', $domain['brand']['brandName']);
+        define('BRAND_URL', PROTOCOL.$domain['domainName'].'/');
+        define('BRAND_DOMAIN', $domain['domainName']);
+        define('BRAND_LABEL', $domain['brand']['brandLabel']);
+        define('BRAND_THEME', $domain['brand']['activeTheme']);
     }
 
     /**

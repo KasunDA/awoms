@@ -12,7 +12,7 @@ class BrandsController extends Controller
      */
     public function viewall()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Template data
         $this->set('title', 'Brands :: View All');
@@ -29,7 +29,7 @@ class BrandsController extends Controller
      */
     public function create()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
@@ -86,7 +86,7 @@ class BrandsController extends Controller
      */
     public function edit()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
@@ -131,7 +131,7 @@ class BrandsController extends Controller
      */
     public function getBrands()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $brandIDs = $this->Brand->getBrandIDs('brandActive=1');
         $brands   = array();
         foreach ($brandIDs as $b) {
@@ -150,7 +150,7 @@ class BrandsController extends Controller
      */
     public function GetBrandChoiceList($SelectedID = FALSE)
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $brandsList = $this->getBrands();
         if (empty($brandsList)) {
             $brandChoiceList = "<option value=''>--None--</option>";

@@ -71,68 +71,68 @@
                     <!-- CSS Menu from http://cssmenumaker.com/builder/1917619 -->
                     <div id='cssmenu'>
                         <ul>
-                            <li class='active'><a href='<?php echo BRANDURL; ?>'>Home</a></li>
+                            <li class='active'><a href='<?php echo BRAND_URL; ?>'>Home</a></li>
                             <li class='has-sub'>
-                                <a href='<?php echo BRANDURL; ?>users/viewall'>Users</a>
+                                <a href='<?php echo BRAND_URL; ?>users/viewall'>Users</a>
                                 <ul>
                                     <li class='has-sub'>
-                                        <a href='<?php echo BRANDURL; ?>users/viewall'>Users</a>
+                                        <a href='<?php echo BRAND_URL; ?>users/viewall'>Users</a>
                                         <ul>
-                                            <li><a href='<?php echo BRANDURL; ?>users/create'>Add User</a></li>
+                                            <li><a href='<?php echo BRAND_URL; ?>users/create'>Add User</a></li>
                                         </ul>
                                     </li>
                                     <li class='has-sub'>
-                                        <a href='<?php echo BRANDURL; ?>usergroups/viewall'>Groups</a>
+                                        <a href='<?php echo BRAND_URL; ?>usergroups/viewall'>Groups</a>
                                         <ul>
-                                            <li><a href='<?php echo BRANDURL; ?>usergroups/create'>Add Group</a></li>
+                                            <li><a href='<?php echo BRAND_URL; ?>usergroups/create'>Add Group</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
 
                             <li class='has-sub'>
-                                <a href='<?php echo BRANDURL; ?>brands/viewall'>Brands</a>
+                                <a href='<?php echo BRAND_URL; ?>brands/viewall'>Brands</a>
                                 <ul>
                                     <li class='has-sub'>
-                                        <a href='<?php echo BRANDURL; ?>brands/viewall'>Brands</a>
+                                        <a href='<?php echo BRAND_URL; ?>brands/viewall'>Brands</a>
                                         <ul>
-                                            <li><a href='<?php echo BRANDURL; ?>brands/create'>Add Brand</a></li>
+                                            <li><a href='<?php echo BRAND_URL; ?>brands/create'>Add Brand</a></li>
                                         </ul>
                                     </li>
                                     <li class='has-sub'>
-                                        <a href='<?php echo BRANDURL; ?>domains/viewall'>Domains</a>
+                                        <a href='<?php echo BRAND_URL; ?>domains/viewall'>Domains</a>
                                         <ul>
-                                            <li><a href='<?php echo BRANDURL; ?>domains/create'>Add Domain</a></li>
+                                            <li><a href='<?php echo BRAND_URL; ?>domains/create'>Add Domain</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             
                             <li class='has-sub'>
-                                <a href='<?php echo BRANDURL; ?>pages/viewall'>Pages</a>
+                                <a href='<?php echo BRAND_URL; ?>pages/viewall'>Pages</a>
                                 <ul>
                                     <li class='has-sub'>
-                                        <a href='<?php echo BRANDURL; ?>pages/viewall'>Pages</a>
+                                        <a href='<?php echo BRAND_URL; ?>pages/viewall'>Pages</a>
                                         <ul>
-                                            <li><a href='<?php echo BRANDURL; ?>pages/create'>Add Page</a></li>
+                                            <li><a href='<?php echo BRAND_URL; ?>pages/create'>Add Page</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
 
                             <li class='has-sub'>
-                                <a href='<?php echo BRANDURL; ?>articles/viewall'>Articles</a>
+                                <a href='<?php echo BRAND_URL; ?>articles/viewall'>Articles</a>
                                 <ul>
                                     <li class='has-sub'>
-                                        <a href='<?php echo BRANDURL; ?>articles/viewall'>Articles</a>
+                                        <a href='<?php echo BRAND_URL; ?>articles/viewall'>Articles</a>
                                         <ul>
-                                            <li><a href='<?php echo BRANDURL; ?>articles/create'>Add Article</a></li>
+                                            <li><a href='<?php echo BRAND_URL; ?>articles/create'>Add Article</a></li>
                                         </ul>
                                     </li>
                                 </ul>
                             </li>
                             
-                            <li class='last'><a href='<?php echo BRANDURL; ?>comments/viewall'>Comments</a></li>
+                            <li class='last'><a href='<?php echo BRAND_URL; ?>comments/viewall'>Comments</a></li>
                         </ul>
                     </div>
 

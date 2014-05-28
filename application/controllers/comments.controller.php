@@ -12,7 +12,7 @@ class CommentsController extends Controller
      */
     public function viewall()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Template data
         $this->set('title', 'Comments :: View All');
@@ -29,7 +29,7 @@ class CommentsController extends Controller
      */
     public function getComments()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         $commentIDs = $this->Comment->getCommentIDs('commentActive=1');
         $comments   = array();
@@ -69,7 +69,7 @@ class CommentsController extends Controller
      */
     public function view()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $getReq = func_get_args();
         $this->set('title', 'Comments :: View');
         if (empty($getReq[0])) {
@@ -104,7 +104,7 @@ class CommentsController extends Controller
      */
     public function create()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];

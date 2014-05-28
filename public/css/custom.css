@@ -284,7 +284,13 @@
 /***********************************************/
 .main-container
 {
-    margin-top: 20px;
+    /* margin-top: 20px; */
+    padding: 20px 0;
+}
+
+.footer-container footer
+{
+    padding: 20px 0;
 }
 
 .botrequired {
@@ -296,6 +302,14 @@
 {
     border: 5px solid green;
     background-color: limegreen;
+    width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}
+.failure
+{
+    border: 5px solid red;
+    background-color: lightcoral;
     width: 500px;
     margin: 0 auto;
     text-align: center;

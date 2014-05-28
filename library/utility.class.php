@@ -38,8 +38,8 @@ class Utility
     public static function handleFileUpload($htmlFilesName, $fileType, $storeID, $productID = NULL, $categoryID = NULL,
                                             $customerID = NULL, $userID = NULL)
     {
-        Error::debugLogger(__METHOD__, 10);
-        Error::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(func_get_args(), 10);
         //
         // File Type
         //
@@ -230,8 +230,8 @@ class Utility
      */
     public static function createNestedDirectory($dirPath)
     {
-        Error::debugLogger(__METHOD__, 10);
-        Error::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(func_get_args(), 10);
         if (!is_dir($dirPath) && !@mkdir($dirPath, 0777, true)) {
             trigger_error('Could not create folder: ' . $dirPath, E_USER_ERROR);
             return false;
@@ -278,8 +278,8 @@ class Utility
      */
     public static function getServerDateTimeFromUTCDateTime($utcDateTime, $dateTimeZone = NULL, $format = NULL)
     {
-        Error::debugLogger(__METHOD__, 10);
-        Error::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(func_get_args(), 10);
         // Default timezone
         if ($dateTimeZone === NULL) {
             // Attempt to use date.timezone declared in servers php.ini
@@ -314,8 +314,8 @@ class Utility
      */
     public static function getPastDateTimeUTC($days, $start = NULL, $format = NULL)
     {
-        Error::debugLogger(__METHOD__, 10);
-        Error::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(func_get_args(), 10);
         if (empty($start)) {
             $start = self::getDateTimeUTC();
         }
@@ -342,8 +342,8 @@ class Utility
      */
     public static function getFormattedNumber($number, $decimals = NULL, $decimalPoint = NULL, $thousandsSep = NULL, $locale = NULL)
     {
-        Error::debugLogger(__METHOD__, 10);
-        Error::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(func_get_args(), 10);
         // Default Decimals
         if ($decimals === NULL) {
             $decimals = 2;
@@ -378,8 +378,8 @@ class Utility
      */
     public static function getVisitorIP()
     {
-        Error::debugLogger(__METHOD__, 10);
-        Error::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(func_get_args(), 10);
         $ip = $_SERVER['REMOTE_ADDR'];
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -402,8 +402,8 @@ class Utility
      */
     public static function convertNLToBR($string)
     {
-        Error::debugLogger(__METHOD__, 10);
-        Error::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(func_get_args(), 10);
         return str_ireplace(PHP_EOL, "<br />", $string);
     }
 
@@ -420,8 +420,8 @@ class Utility
      */
     public static function convertBRToNL($string)
     {
-        Error::debugLogger(__METHOD__, 10);
-        Error::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(func_get_args(), 10);
         $breaks = array("<br />", "<br>", "<br/>", "&lt;br /&gt;", "&lt;br/&gt;", "&lt;br&gt;");
         $r      = str_ireplace($breaks, PHP_EOL, $string);
         //var_dump($breaks, $string, $r);
@@ -441,8 +441,8 @@ class Utility
      */
     public static function stripBR($string)
     {
-        Error::debugLogger(__METHOD__, 10);
-        Error::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(func_get_args(), 10);
         $breaks = array("<br />", "<br>", "<br/>", "<br />", "&lt;br /&gt;", "&lt;br/&gt;", "&lt;br&gt;");
         return str_ireplace($breaks, '', $string);
     }
@@ -493,7 +493,7 @@ class Utility
      */
     public static function getStateList()
     {
-        Error::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 10);
         $stateList = array(
             '-- UNITED STATES --' => '-- UNITED STATES --',
             'AL'                  => 'Alabama',
@@ -582,7 +582,7 @@ class Utility
      */
     public static function getCountryList()
     {
-        Error::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 10);
         $countryList = array(
             'US' => 'United States',
             'UM' => 'United States Minor Outlying Islands',

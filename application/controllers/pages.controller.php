@@ -12,13 +12,16 @@ class PagesController extends Controller
      */
     public function viewall()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Template data
         $this->set('title', 'Pages :: View All');
 
         // Get pages list
         $this->getPages();
+        
+        // ACL: Allowed to view list by default
+        $this->set('ACLAllowed', TRUE);
 
         // Prepare Create Form
         parent::prepareForm(NULL, "ALL");
@@ -37,9 +40,10 @@ class PagesController extends Controller
 
         // Step 1: Create/Edit form
         if ($step == 1) {
-
+            
             // Prepare Create Form
             parent::prepareForm(NULL, "ALL");
+
         }
 
         // Step 2: Save page
@@ -49,9 +53,12 @@ class PagesController extends Controller
             $data               = array();
             $data['pageActive'] = 1;
 
-            // @todo Not sure where to put user ID.. 1=anon
+            // @TODO Not sure where to put user ID.. 1=anon
             $data['userID'] = 1;
-
+            
+            // @TODO: Ensure brandID hasn't been changed (post.inp_brandID should == BRAND_ID)
+            
+            
             // Post time
             $now                          = Utility::getDateTimeUTC();
             $data['pageDatePublished']    = $now;
@@ -64,6 +71,22 @@ class PagesController extends Controller
                     continue;
                 }
 
+                // ACL
+                if ($k == "inp_brandID")
+                {
+                    if ($v != BRAND_ID)
+                    {
+                        // Final success status (failure)
+                        $this->set('success', "Not allowed to post to this brand...");
+                        $this->set('ACLAllowed', FALSE);
+                        return false;
+                    }
+                    else
+                    {
+                        $this->set('ACLAllowed', TRUE);
+                    }
+                }
+                
                 $this->set($k, $v);
 
                 // Page id (new or existing)
@@ -97,6 +120,9 @@ class PagesController extends Controller
 
             // Set previous bodies to inactive
             $this->Page->setBodyContentActive($pageID, $bodyType, $bodyContentID);
+            
+            // Final success status
+            $this->set('success', TRUE);
         }
 
         // Get updated list
@@ -108,7 +134,7 @@ class PagesController extends Controller
      */
     public function edit()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
@@ -120,11 +146,19 @@ class PagesController extends Controller
             $ID = $args[0];
             $this->set('pageID', $ID);
         }
-
+        
         $res = TRUE;
         if ($step == 1) {
             // Get page info
             $page = $this->Page->getPageInfo($ID);
+            
+            // ACL
+            if ($page['brandID'] != BRAND_ID) {
+                $this->set('resultsMsg', "Page not found...");
+                $this->set('ACLAllowed', FALSE);
+                return;
+            }
+            
             $this->set('page', $page);
 
             // Get page body
@@ -163,13 +197,11 @@ class PagesController extends Controller
      */
     public function getPages()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
-        // "Top 10" or similar latest LIMIT <--- @todo
-        // @todo arguments
-        // $getReq = func_get_args();  
-        // Get all article IDs (active only)
-        $pageIDs = $this->Page->getPageIDs('pageActive=1');
+        // Get all article IDs (active only, this brand only)
+        // ACL
+        $pageIDs = $this->Page->getPageIDs('pageActive=1 AND brandID='.BRAND_ID);
         $pages   = array();
 
         // Get all page info
@@ -204,7 +236,7 @@ class PagesController extends Controller
      */
     public function view()
     {
-        Errors::debugLogger(10, __METHOD__ . '@' . __LINE__);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $getReq = func_get_args();
         $this->set('title', 'Pages :: View');
         if (empty($getReq[0])) {
@@ -217,8 +249,12 @@ class PagesController extends Controller
 
         // Get page info
         $page = $this->Page->getPageInfo($pageID);
-        if (empty($page) || $page['pageActive'] == 0) {
+        if (empty($page)
+                || $page['pageActive'] == 0
+                // ACL
+                || $page['brandID'] != BRAND_ID) {
             $this->set('resultsMsg', 'Page not found...');
+            $this->set('ACLAllowed', FALSE);            
             $this->set('page', NULL);
             $this->set('pageBody', NULL);
             return;

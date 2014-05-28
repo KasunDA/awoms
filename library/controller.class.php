@@ -45,6 +45,8 @@ class Controller
     public function __construct($controller, $model, $action, $template = NULL)
     {
         self::routeRequest($controller, $model, $action, $template);
+        // ACL: Deny by default
+        $this->set('ACLAllowed', FALSE);
     }
 
     /**
@@ -123,6 +125,8 @@ class Controller
      * Prepares form ID and item ID for create/edit
      * 
      * @param int $ID Existing item ID if edit form otherwise NULL for DEFAULT
+     * 
+     * @TODO Restrict results by UserID/UsergroupID permissions
      */
     public function prepareForm($ID = NULL, $BrandChoiceList = FALSE, $DomainChoiceList = FALSE, $UsergroupChoiceList = FALSE)
     {
