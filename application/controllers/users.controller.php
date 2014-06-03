@@ -30,21 +30,18 @@ class UsersController extends Controller
     public function create()
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-        
-        // Get step or assume 1st step
-        empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
-        $this->set('step', $step);
+
         $this->set('title', 'Users :: Create');
 
         // Step 1: Create/Edit form
-        if ($step == 1) {
+        if ($this->step == 1) {
 
             // Prepare Create Form
             parent::prepareForm(NULL, NULL, NULL, "ALL");
         }
         
         // Step 2: Save user
-        elseif ($step == 2) {
+        elseif ($this->step == 2) {
 
             // Data array to be passed to sql
             $data = array();
@@ -87,9 +84,6 @@ class UsersController extends Controller
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
-        // Get step or assume 1st step
-        empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
-        $this->set('step', $step);
         $this->set('title', 'Users :: Edit');
 
         $args = func_get_args();
@@ -99,7 +93,7 @@ class UsersController extends Controller
         }
 
         $res = TRUE;
-        if ($step == 1) {
+        if ($this->step == 1) {
             $user = $this->User->getUserInfo($ID);
             $this->set('user', $user);
 
@@ -116,7 +110,7 @@ class UsersController extends Controller
 
             // Prepare Create Form
             parent::prepareForm($ID, NULL, NULL, $selectedUsergroupID);
-        } elseif ($step == 2) {
+        } elseif ($this->step == 2) {
             // Use create method to edit existing
             $res = $this->create();
         }
@@ -159,10 +153,69 @@ class UsersController extends Controller
                 if ($SelectedID != FALSE && $SelectedID != "ALL" && $user['userID'] == $SelectedID) {
                     $selected = " selected";
                 }
-                $userChoiceList .= "<option value='" . $user['userID'] . "'" . $selected . ">" . $user['userName'] . "</option>";
+                $userChoiceList .= "<option value='" . $user['userID'] . "'" . $selected . ">" . $user['userName'] . "(".$user['userEmail'].")</option>";
             }
         }
         return $userChoiceList;
+    }
+    
+    /**
+     * Login
+     */
+    public function login()
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+
+        $this->set('title', 'Users :: Login');
+
+        // Prepare Login Form
+        $this->set('formID', "frmLoginUsers");
+
+        $this->set('step', $this->step);
+        
+        if ($this->step == 1) {
+            
+            $this->set('success', TRUE);
+            
+            // Check session / Login Form
+            if (isset($_SESSION['user_logged_in'])
+                    && $_SESSION['user_logged_in'] === TRUE)
+            {
+                // User is already logged in....
+                echo "<h1>You are already logged in!</h1>";
+                echo "Click <a href='/users/logout'>here</a> to Log Out";
+            } else {
+                // Prepare Login Form
+                //$this->set('formID', "frmLoginUsers");
+            }
+            
+        } elseif ($this->step == 2) {
+            
+            //$this->set('step', 1);
+            //$this->set('success', FALSE);
+            
+            $this->set('success', TRUE);
+
+            // Check login / save session
+            //$_SESSION['user_logged_in'] = TRUE;
+            //Session::saveSessionToDB();
+        }
+    }
+    
+    /**
+     * Logout
+     */
+    public function logout()
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+
+        $this->set('title', 'Users :: Logout');
+
+        $_SESSION['user_logged_in'] = FALSE;
+        
+        Session::saveSessionToDB();
+        
+        header('Location: /users/login');
     }
 
 }

@@ -1230,16 +1230,16 @@ class imageLib
 
     // *** Fade
     if ($stretch) {
-      $step = 100/($reflectionHeight + $startingTransparency);
+      $this->step = 100/($reflectionHeight + $startingTransparency);
     } else{
-      $step = 100/$reflectionHeight;
+      $this->step = 100/$reflectionHeight;
     }
     for($i=0; $i<=$reflectionHeight; $i++){
 
       if($startingTransparency>100) $startingTransparency = 100;
       if($startingTransparency< 1) $startingTransparency = 1;
       imagecopymerge($bg, $li, 0, $i, 0, 0, $this->width, 1, $startingTransparency);
-      $startingTransparency+=$step;
+      $startingTransparency+=$this->step;
     }
 
     // *** Apply fade

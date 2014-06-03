@@ -1,11 +1,4 @@
 <?php
-/**
- * Load: Config
- * Read: Brand, Url
- * Set: DS, ROOT, BRAND, BRAND_URL
- * Call: Bootstrap
- */
-
 // Global definitions
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', dirname(dirname(__FILE__)));
@@ -35,11 +28,24 @@ $global['input']['url'] = filter_input(INPUT_GET, "url", FILTER_SANITIZE_STRING)
 
 // Handle page request via Bootstrap MVC
 require_once (ROOT . DS . 'library' . DS . 'bootstrap.class.php');
-new Bootstrap($global['input']['url']);
+
+Errors::debugLogger("*************** RAW URL: " . serialize($global['input']));
+
+$m = NULL;
+if (!empty($global['input']['m']))
+{
+    Errors::debugLogger("*************** RAW M: " . $global['input']['m']);
+    $m = $global['input']['m'];
+}
+$BS = new Bootstrap($global['input']['url'], $m);
 
 // Debug
 if (ERROR_LEVEL >= 9
   && empty($global['input']['m'])) {
     echo "<hr /><h5>Debug:</h5>";
   var_dump($global, BRAND, BRAND_URL);
+  if (!empty($_SESSION)) {
+      echo "<hr />Session:<br />";
+      var_dump($_SESSION);
+  }
 }

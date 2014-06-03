@@ -20,7 +20,7 @@ class Session
      *
      * @var array $data Array holding any class data used in get/set
      */
-    protected $data = array();
+    public $data = array();
 
     /**
      * __construct
@@ -34,8 +34,7 @@ class Session
     public function __construct()
     {
         Errors::debugLogger(__METHOD__, 10);
-        $this->data['session']['brandID'] = BRAND_ID;
-        $this->DB                         = new Database();
+        $this->DB = new Database();
         $this->doIKnowYou();
     }
 
@@ -60,7 +59,7 @@ class Session
             return false;
         }
     }
-    
+
     /**
      * doIKnowYou
      *
@@ -75,18 +74,25 @@ class Session
     public function doIKnowYou()
     {
         Errors::debugLogger(__METHOD__, 10);
-        if (isset($_SERVER['HTTP_COOKIE'])
-                && !empty($_COOKIE[BRAND_LABEL])) {
-            Errors::debugLogger(__METHOD__ . ':  Cookie found: ' . $_COOKIE[BRAND_LABEL] . ' validating...', 10);
-            if ($this->validateVisitor()) {
-                Errors::debugLogger(__METHOD__ . ':  Yes! Welcome back! Resuming session...', 10);
-                $this->resumeSession();
-                return true;
+        if (isset($_SERVER['HTTP_COOKIE']) && !empty($_COOKIE[BRAND_LABEL])) {
+
+            Errors::debugLogger(__METHOD__ . ':  Cookie found: ' . $_COOKIE[BRAND_LABEL] . ' getting session from DB...', 10);
+            if (self::getSessionFromDB()) {
+
+                Errors::debugLogger(__METHOD__ . ':  Session found in DB, validating IP...', 10);
+                if ($this->validateVisitor()) {
+
+                    Errors::debugLogger(__METHOD__ . ':  [Yes!] Welcome back! Resuming session...', 10);
+                    if ($this->startSession()) {
+                        return true;
+                    }
+                }
             }
         } else {
-            Errors::debugLogger(__METHOD__ . ':  No cookie found...'.serialize($_COOKIE), 10);
+            Errors::debugLogger(__METHOD__ . ':  No cookie found...' . serialize($_COOKIE), 10);
         }
-        Errors::debugLogger(__METHOD__ . ':  No. Hello! Starting session...', 10);
+
+        Errors::debugLogger(__METHOD__ . ':  [No.] Hello! Starting session...', 10);
         $this->startNewSession();
         return false;
     }
@@ -104,35 +110,38 @@ class Session
     public function startNewSession()
     {
         Errors::debugLogger(__METHOD__, 10);
-        // Make new fingerprint for visitor
-        $this->makeFingerprint();
-        // Set cookie with new set/expiration dates
-        $this->setCookie();
-        // Save visitor information to database, associated with cookie id/fingerprint		
-        $this->saveSession();
+        self::makeFingerprint();
+        self::startSession();
+        self::saveSessionToDB();
         return true;
     }
 
     /**
-     * saveSession
+     * saveSessionToDB
      *
      * Saves session data to database
      *
      * @return boolean
      */
-    public function saveSession()
+    public static function saveSessionToDB()
     {
         Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
-        Errors::debugLogger(__METHOD__.' fingerprint: '.$this->data['session']['fingerprint'], 10);
+
+        if (empty($_SESSION)
+                || empty($_SESSION['fingerprint']))
+        {
+            Errors::debugLogger(__METHOD__ . ':  *ERROR* Empty Session!', 1, true);
+            trigger_error("Error #S000 (saveSessionToDB): Invalid results.", E_USER_ERROR);
+            return false;
+        }
         
-        unset($this->DB);
-        $this->DB = null;
+        $sessionData = $_SESSION;
+        $sessionData['sessionSaveTime'] = time();
+
         $Encryption = new Encryption();
-        $enc = $Encryption->encrypt($this->data['session']['expiresTime'], $this->data['session']['fingerprint'], serialize($this->data));
-        $this->DB                         = new Database();
-        
-        $this->sql = "INSERT INTO `sessions`
+        $enc        = $Encryption->encrypt($sessionData['expiresTime'], $sessionData['fingerprint'], serialize($sessionData));
+        $DB   = new Database();
+        $sql  = "INSERT INTO `sessions`
 					(`fingerprint`, `brandID`, `setTime`, `expiresTime`, `visitorIP`, `session`)
 					VALUES
 					(:fingerprint, :brandID, :setTime, :expiresTime, :visitorIP, :session)
@@ -143,52 +152,90 @@ class Session
 						`expiresTime` = :expiresTime,
 						`visitorIP` = :visitorIP,
 						`session` = :session";
-        $sql_data  = array(':fingerprint' => $this->data['session']['fingerprint'],
-            ':brandID'     => $this->data['session']['brandID'],
-            ':setTime'     => $this->data['session']['setTime'],
-            ':expiresTime' => $this->data['session']['expiresTime'],
-            ':visitorIP'   => $this->data['session']['visitorIP'],
-            ':session'        => $enc);
-        $results   = $this->DB->query($this->sql, $sql_data);
+        $sql_data   = array(':fingerprint' => $sessionData['fingerprint'],
+            ':brandID'     => $sessionData['brandID'],
+            ':setTime'     => $sessionData['setTime'],
+            ':expiresTime' => $sessionData['expiresTime'],
+            ':visitorIP'   => $sessionData['visitorIP'],
+            ':session'     => $enc);
+        $results    = $DB->query($sql, $sql_data);
         if (!isset($results)) {
-            Errors::debugLogger(__METHOD__ . ':  *ERROR* Query:' . PHP_EOL . '--------------------' . PHP_EOL . $this->sql . PHP_EOL . '--------------------');
-            trigger_error("Error #C000 (save_session): Invalid results.", E_USER_ERROR);
+            Errors::debugLogger(__METHOD__ . ':  *ERROR* Query:' . PHP_EOL . '--------------------' . PHP_EOL . $sql . PHP_EOL . '--------------------');
+            trigger_error("Error #C000 (saveSessionToDB): Invalid results.", E_USER_ERROR);
             return false;
         }
         return true;
     }
 
     /**
-     * resumeSession
-     *
-     * Resumes existing session data from database
-     *
-     * @uses decrypt
-     * @return boolean
+     * getSessionFromDB
+     * 
+     * Retrieves session from database, decrypts and stores into $this->data
+     * 
+     * @return bool
      */
-    public function resumeSession()
+    public function getSessionFromDB()
     {
         Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
-        $this->sql = "
-			SELECT `expiresTime`, `session`
-			FROM `sessions`
-			WHERE `brandID` = :brandID
-				AND `fingerprint` = :fingerprint";
-        $sql_data  = array(':brandID'     => $this->data['session']['brandID'],
-            ':fingerprint' => $this->data['session']['fingerprint']);
-        $results   = $this->DB->query($this->sql, $sql_data);
+
+        $fingerprint = $_COOKIE[BRAND_LABEL];
+        $this->sql   = "
+			SELECT brandID, setTime, expiresTime, visitorIP, session
+			FROM sessions
+			WHERE brandID = :brandID
+              AND fingerprint = :fingerprint";
+        $sql_data    = array(':brandID'     => BRAND_ID,
+            ':fingerprint' => $fingerprint);
+        $results     = $this->DB->query($this->sql, $sql_data);
+
         if (empty($results)) {
-            trigger_error("Error #C000 (resume_session): Invalid results.", E_USER_ERROR);
+            Errors::debugLogger(__METHOD__ . ':  Cant find session in DB: ' . $fingerprint, 1);
             return false;
         }
-        
+        $session = $results[0];
+        Errors::debugLogger(__METHOD__ . ':  Session found in DB! setTime: ' . $session['setTime'] . ' expiresTime: ' . $session['expiresTime'] . ' fingerprint: ' . $fingerprint,
+                            1);
+
         $Encryption = new Encryption();
-        $dec = $Encryption->decrypt($results[0]['expiresTime'], $this->data['session']['fingerprint'], $results[0]['session']);
-        $this->data                          = unserialize($dec);
-        
-        // Force current theme
+        $decSession = $Encryption->decrypt($session['expiresTime'], $fingerprint, $session['session']);
+        $this->data['session'] = unserialize($decSession);
+
+        // Force current theme (@TODO Global theme vs User theme)
         $this->data['session']['storeTheme'] = BRAND_THEME;
+        
+        if (!isset($this->data['session']['user_logged_in']))
+        {
+            $this->data['session']['user_logged_in'] = FALSE;
+        }
+        Errors::debugLogger(__METHOD__ . ':  Session user_is_logged_in: ' . $this->data['session']['user_logged_in'], 1, true);
+        return true;
+    }
+
+    /**
+     * startSession
+     *
+     * Starts custom php session, regens id if not in ajax mode
+     *
+     * @return boolean
+     */
+    public function startSession()
+    {
+        Errors::debugLogger(__METHOD__, 10);
+        
+        self::setCookie();
+        Errors::debugLogger(__METHOD__ . ':  session name: ' . $this->data['session']['name'] . ' session ID: ' . $this->data['session']['fingerprint'] . '...',
+                            10);
+        session_id($this->data['session']['fingerprint']); // Fingerprint matches DB entry
+        session_name($this->data['session']['name']); // Sets the session name
+
+        if (!@session_start()) {
+            Errors::debugLogger(__METHOD__ . ':  ***** SESSION_START FAIL ***** ' . serialize($this->data['session']));
+            trigger_error("Error #C000 (session_start): Invalid results.", E_USER_ERROR);
+            return false;
+        }
+
+        $_SESSION = $this->data['session'];
+
         return true;
     }
 
@@ -206,29 +253,18 @@ class Session
     private function validateVisitor()
     {
         Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
-        $this->sql = "
-			SELECT brandID, setTime, expiresTime, visitorIP
-			FROM sessions
-			WHERE fingerprint = :fingerprint";
-        $sql_data  = array(':fingerprint' => $_COOKIE[BRAND_LABEL]);
-        $results   = $this->DB->query($this->sql, $sql_data);
-        if (!empty($results)) {
-            $this->getVisitorIP();
-            Errors::debugLogger(__METHOD__ . ':  Comparing get_visitorIP (' . $this->data['session']['visitorIP'] . ') with DB (' . $results[0]['visitorIP'] . ')',
-                               10);
-            if ($this->data['session']['visitorIP'] == $results[0]['visitorIP']) {
-                Errors::debugLogger(__METHOD__ . ':  Visitor IP matches what we stored from last session!', 10);
-                // Visitor Validated
-                $this->data['session']['fingerprint'] = $_COOKIE[BRAND_LABEL];
-                return true;
-            } else {
-                Errors::debugLogger(__METHOD__ . ':  Visitor IP does NOT match what we stored from last session! *** ALERT ***: ' . $this->sql, 1);
-            }
-        } else {
-            Errors::debugLogger(__METHOD__ . ':  Cant find session: ' . $_COOKIE[BRAND_LABEL], 1);
+
+        $liveIP = Utility::getVisitorIP();
+        Errors::debugLogger(__METHOD__ . ':  Comparing get_visitorIP (' . $liveIP . ') with DB (' . $this->data['session']['visitorIP'] . ')',
+                            10);
+        if ($liveIP == $this->data['session']['visitorIP']) {
+            Errors::debugLogger(__METHOD__ . ':  Visitor IP matches what we stored from last session!', 10);
+            return true;
         }
-        // Visitor is not recognized
+
+        // Visitor IP changed, need to re-login (if this isn't a login attempt)
+        Errors::debugLogger(__METHOD__ . ':  Visitor IP does NOT match what we stored from last session! *** ALERT ***: ' . $this->sql,
+                            1);
         return false;
     }
 
@@ -243,38 +279,17 @@ class Session
     private function makeFingerprint()
     {
         Errors::debugLogger(__METHOD__, 10);
-        $this->getVisitorIP();
+        $this->data['session']['visitorIP']   = Utility::getVisitorIP();
         $this->data['session']['fingerprint'] = hash('sha512',
-                                                    $this->data['session']['visitorIP'] + uniqid(mt_rand(1, mt_getrandmax()),
-                                                                                                                true));
-        Errors::debugLogger(__METHOD__.' fingerprint: '.$this->data['session']['fingerprint'], 10);
+                                                     $this->data['session']['visitorIP'] + uniqid(mt_rand(1, mt_getrandmax()), true));
+        Errors::debugLogger(__METHOD__ . ' fingerprint: ' . $this->data['session']['fingerprint'], 10);
         return $this->data['session']['fingerprint'];
-    }
-
-    /**
-     * getVisitorIP
-     *
-     * Gets visitor IP address
-     *
-     * @return string Visitor IP address
-     */
-    private function getVisitorIP()
-    {
-        Errors::debugLogger(__METHOD__, 10);
-        $ip = $_SERVER['REMOTE_ADDR'];
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-        $this->data['session']['visitorIP'] = $ip;
-        return $ip;
     }
 
     /**
      * setCookie
      *
-     * Saves cookie with session identifier on visitor browser
+     * Configures cookie to be saved or resumed
      * 
      * @version v01.04.02
      *
@@ -286,29 +301,38 @@ class Session
     private function setCookie()
     {
         Errors::debugLogger(__METHOD__, 1, true);
-        $this->data['session']['name']        = BRAND_LABEL;
-        $this->data['session']['setTime']     = time();
-        $this->data['session']['expiresTime'] = $this->data['session']['setTime'] + (60 * 60 * 24 * 365);
-        $this->data['session']['storeTheme']  = BRAND_THEME;
-        $this->data['session']['https'] = 0;
+
+        if (empty($this->data['session']['setTime'])) {
+            Errors::debugLogger(__METHOD__ . ':  New Expires Time', 10);
+            $this->data['session']['setTime']     = time();
+            $expires                              = 60 * 60 * 24 * 7; // 1 week
+            $this->data['session']['expiresTime'] = $expires;
+        } else {
+            Errors::debugLogger(__METHOD__ . ':  Existing Expires Time', 10);
+            // expires = expires - seconds since setTime
+            $now     = time();
+            $diff    = $now - $this->data['session']['setTime'];
+            $expires = $this->data['session']['expiresTime'] - $diff;
+            Errors::debugLogger(__METHOD__ . ':  Updated Expires Time: ' . $expires, 10);
+        }
+
+        // Cookie parameters
+        $this->data['session']['brandID']    = BRAND_ID;
+        $this->data['session']['name']       = BRAND_LABEL;
+        $this->data['session']['domain']     = "." . BRAND_DOMAIN; // Leading "." allows all sub-domains
+        $this->data['session']['storeTheme'] = BRAND_THEME;
+        $this->data['session']['https']      = 0;
         if (HTTPS) {
             $this->data['session']['https'] = 1;
         }
         $httponly = true; // This stops javascript being able to access the session id.
-        $domain = BRAND_DOMAIN;
-        Errors::debugLogger(__METHOD__.' fingerprint: '.$this->data['session']['fingerprint'], 1, true);
-        if (!setcookie($this->data['session']['name'],
-                $this->data['session']['fingerprint'],
-                $this->data['session']['expiresTime'],
-                '/',
-                $domain, $this->data['session']['https'],
-                $httponly)
-                ) {
-            Errors::debugLogger(__METHOD__ . ':  ***** FAIL ***** ' . serialize($this->data['session']));
-            trigger_error("Error #C000 (set_cookie): Invalid results.", E_USER_WARNING);
-            return false;
-        }
-        return true;
+        $path     = '/';
+
+        // Set custom cookie settings
+        Errors::debugLogger(__METHOD__ . ' fingerprint: ' . $this->data['session']['fingerprint'], 1, true);
+        ini_set('session.use_only_cookies', 1); // Forces sessions to only use cookies.
+        //$cookieParams = session_get_cookie_params(); // Gets current cookies params.
+        session_set_cookie_params($expires, $path, $this->data['session']['domain'], $this->data['session']['https'], $httponly);
     }
 
     /**
@@ -328,7 +352,7 @@ class Session
             foreach ($cookies as $cookie) {
                 $parts = explode('=', $cookie);
                 $name  = trim($parts[0]);
-                if ($name != BRAND_LABEL) {
+                if ($name != BRAND_LABEL) { // $this->data['session']['name'] ?
                     continue;
                 }
                 setcookie($name, '', time() - 1000);
@@ -338,4 +362,5 @@ class Session
         }
         return true;
     }
+
 }

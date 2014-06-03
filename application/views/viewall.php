@@ -91,7 +91,7 @@ if ($this->step == 2)
 {
 ?>
     <script>
-        console.debug('Hiding original page output...');
+        console.log('Hiding original page output...');
         $('div.main_viewall:first > div.main_output').hide();
         $('#openModalCreate<?php echo ucfirst($this->controller); ?>').hide();
     </script>

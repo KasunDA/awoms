@@ -105,10 +105,7 @@ class CommentsController extends Controller
     public function create()
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-        
-        // Get step or assume 1st step
-        empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
-        $this->set('step', $step);
+
         $this->set('title', 'Comments :: Write');
 
         $getReq = func_get_args();
@@ -132,7 +129,7 @@ class CommentsController extends Controller
         }
 
         // Step 2: Save comment
-        if ($step == 2) {
+        if ($this->step == 2) {
 
             // Data array to be passed to sql
             $data = array();
@@ -205,17 +202,13 @@ class CommentsController extends Controller
     public function edit()
     {
 
-        // Get step or assume 1st step
-        empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
-        $this->set('step', $step);
-
         // Step 2: Save comment
-        if ($step == 2) {
+        if ($this->step == 2) {
             self::write();
         }
 
         // Step 1 & after Step 2: Load comment
-        #if ($step == 1) {
+        #if ($this->step == 1) {
         $getReq = func_get_args();
         if (!empty($getReq[0])) {
             $commentID = $getReq[0];

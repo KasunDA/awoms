@@ -19,7 +19,7 @@
     <tr>
       <td>
         <!-- User -->
-        User Name
+        Username
       </td>
       <td>
         <input type='text' id='inp_userName' name='inp_userName' value='<?php

@@ -116,7 +116,7 @@
          * @param {string} action
          */
         function callAPI(controller, action) {
-          console.debug('callAPI: controller: ' + controller + ' action: ' + action);
+          console.log('callAPI: controller: ' + controller + ' action: ' + action);
 
           // Ajax execute
           var go = $.ajax({
@@ -134,7 +134,7 @@
                   .fail(function(msg) {
             // Error results
             divResults.append('Sorry! We ran into an issue processing your request. The webmaster has been alerted.');
-            console.debug(msg);
+            console.log(msg);
             // CSS
             divResults.css('border', '3px solid red');
           })
@@ -152,7 +152,7 @@
          * @param {results} results
          */
         function handleAPIResults(controller, action, results) {
-          console.debug('handleAPIResults controller: ' + controller + ' action: ' + action);
+          console.log('handleAPIResults controller: ' + controller + ' action: ' + action);
 
           // Articles
           if (controller === 'articles') {
@@ -163,8 +163,8 @@
               // Each Article
               $.each(results['articles'], function(index, element) {
                 var articleName = element['articleName'];
-                console.debug('index: ' + index);
-                console.debug(results['articleBodies']);
+                console.log('index: ' + index);
+                console.log(results['articleBodies']);
                 var articleBody = results['articleBodies'][index][0]['bodyContentText'];
                 var articleBodyDate = results['articleBodies'][index][0]['bodyContentDateModified'];
                 divResults.append('<br />AName: ' + articleName + ' (' + articleBodyDate + ') ' +

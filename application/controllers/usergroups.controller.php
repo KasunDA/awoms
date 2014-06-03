@@ -31,20 +31,17 @@ class UsergroupsController extends Controller
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
-        // Get step or assume 1st step
-        empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
-        $this->set('step', $step);
         $this->set('title', 'Groups :: Create');
 
         // Step 1: Create/Edit form
-        if ($step == 1) {
+        if ($this->step == 1) {
 
             // Prepare Create Form
             parent::prepareForm(NULL, "ALL");
         }
 
         // Step 2: Save usergroup
-        elseif ($step == 2) {
+        elseif ($this->step == 2) {
 
             // Data array to be passed to sql
             $data                    = array();
@@ -88,9 +85,6 @@ class UsergroupsController extends Controller
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
-        // Get step or assume 1st step
-        empty($_REQUEST['step']) ? $step = 1 : $step = $_REQUEST['step'];
-        $this->set('step', $step);
         $this->set('title', 'Groups :: Edit');
 
         $args = func_get_args();
@@ -100,7 +94,7 @@ class UsergroupsController extends Controller
         }
 
         $res = TRUE;
-        if ($step == 1) {
+        if ($this->step == 1) {
             $usergroup = $this->Usergroup->getUsergroupInfo($ID);
             $this->set('usergroup', $usergroup);
 
@@ -117,7 +111,7 @@ class UsergroupsController extends Controller
 
             // Prepare Create Form
             parent::prepareForm($ID, $selectedBrandID);
-        } elseif ($step == 2) {
+        } elseif ($this->step == 2) {
             // Use create method to edit existing
             $res = $this->create();
         }

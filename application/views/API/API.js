@@ -7,7 +7,7 @@
  * received from this elements name/value attributes
  */
 $('.callAPI').click(function() {
-    console.debug('.callAPI Clicked...');
+    console.log('.callAPI Clicked...');
     // Controller = name
     var controller = $(this).attr('name');
     // Action = value
@@ -33,7 +33,7 @@ $('.callAPI').click(function() {
  * @param {int} formID
  */
 function callAPI(controller, action, formID) {
-    console.debug('callAPI: controller: ' + controller + ' action: ' + action + ' formID: ' + formID);
+    console.log('callAPI: controller: ' + controller + ' action: ' + action + ' formID: ' + formID);
 
     // Serialized form data with ajax method appended
     var frmInput = $('#' + formID).serialize();
@@ -53,7 +53,7 @@ function callAPI(controller, action, formID) {
         // Error results
         var divResults = $('#divResults');
         divResults.append('Sorry! We ran into an issue processing your request. The webmaster has been alerted.');
-        console.debug(msg);
+        console.log(msg);
         // CSS
         divResults.css('border', '3px solid red');
     })
@@ -71,7 +71,7 @@ function callAPI(controller, action, formID) {
  * @param {results} results
  */
 function handleAPIResults(controller, action, formID, results) {
-    console.debug('handleAPIResults controller: ' + controller + ' action: ' + action + ' formID: ' + formID + ' results: ' + results);
+    console.log('handleAPIResults controller: ' + controller + ' action: ' + action + ' formID: ' + formID + ' results: ' + results);
     var divResults = $('#divResults');
     divResults.html(results);
     divResults.show();

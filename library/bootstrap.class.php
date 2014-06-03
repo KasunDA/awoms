@@ -22,7 +22,7 @@ class Bootstrap
      * @var array $data Array holding any class data used in get/set
      */
     protected $data = array();
-    
+
     /**
      * __construct
      * 
@@ -36,21 +36,22 @@ class Bootstrap
      * 
      * @param string $url Url
      */
-    public function __construct($url)
+    public function __construct($url, $template)
     {
+        
+        Errors::debugLogger("*************** BS URL: " . $url . " template(m): ".$template);
+        
+        
         # Look up the requested domain and its matching brand
-        # @TODO No way to bypass this and obtain from session data, as we use brand label as cookie name :x
         self::lookupDomainBrand();
 
         # Session start/resume
-            # If has session - no need to re-lookup domain/brand info
-            # If no session - save lookupDomainBrand info
-        $this->Session = new Session();
+        new Session();
 
         # Process MVC request
-        self::callHook($url);
+        self::callHook($url, $template);
     }
-    
+
     public function __set($key, $value)
     {
         $this->data[$key] = $value;
@@ -72,30 +73,29 @@ class Bootstrap
             return false;
         }
     }
-    
+
     /**
      * Defines brand constants used throughout application
      */
     public function lookupDomainBrand()
     {
-        $Domain    = new Domain();
+        $Domain = new Domain();
 
         // @TODO Sanitize $_SERVER['HTTP_HOST']
         $lookupDomain = $_SERVER['HTTP_HOST'];
-        $where = "domainActive=1 AND domainName='".$lookupDomain."'";
-        $d = $Domain->getDomainIDs($where);
+        $where        = "domainActive=1 AND domainName='" . $lookupDomain . "'";
+        $d            = $Domain->getDomainIDs($where);
 
-        if (count($d) == 0)
-        {
-            trigger_error("Domain not found that matches ".$lookupDomain);
-            die();exit();
+        if (count($d) == 0) {
+            trigger_error("Domain not found that matches " . $lookupDomain);
+            die();
+            exit();
         }
 
-        $domain    = $Domain->getDomainInfo($d[0]['domainID'], TRUE);
-        if ($domain['domainName'] == "") continue; # blank entry protection
+        $domain = $Domain->getDomainInfo($d[0]['domainID'], TRUE);
+        if ($domain['domainName'] == "") continue;# blank entry protection
 
-        if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443)
-        {
+        if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) {
             define('HTTPS', TRUE);
             define('PROTOCOL', 'https://');
         } else {
@@ -104,7 +104,7 @@ class Bootstrap
         }
         define('BRAND_ID', $domain['brand']['brandID']);
         define('BRAND', $domain['brand']['brandName']);
-        define('BRAND_URL', PROTOCOL.$domain['domainName'].'/');
+        define('BRAND_URL', PROTOCOL . $domain['domainName'] . '/');
         define('BRAND_DOMAIN', $domain['domainName']);
         define('BRAND_LABEL', $domain['brand']['brandLabel']);
         define('BRAND_THEME', $domain['brand']['activeTheme']);
@@ -125,7 +125,7 @@ class Bootstrap
      * 
      * @param string $url Url
      */
-    public function callHook($url)
+    public function callHook($url, $template)
     {
         $urlArray   = explode("/", $url);
         $controller = $urlArray[0];
@@ -143,27 +143,28 @@ class Bootstrap
         $controller     = ucwords($controller);
         $model          = rtrim($controller, 's');
         $controller .= 'Controller';
-        
+
+        // Construct
         if (class_exists($controller, TRUE)) {
-            $dispatch = new $controller($controllerName, $model, $action);
+            $dispatch = new $controller($controllerName, $model, $action, $template);
         }
 
-        // Execute!
+        // Execute Action
         if (method_exists($controller, $action)) {
             call_user_func_array(array($dispatch, $action), $queryString);
         } else {
             // Does Not Exist
             $errorMsg = "
-        <h1>Error!</h1>
-        <h2>Method does not exist</h2>
-        <div class='error'>
-          File: " . __FILE__ . "<br />
-          Line: " . __LINE__ . "<br />
-          Details: " . "<br />
-          <br />
-          Controller: " . $controller . "<br />
-          Action: " . $action . "
-        </div>";
+                <h1>Error!</h1>
+                <h2>Method does not exist</h2>
+                <div class='error'>
+                  File: " . __FILE__ . "<br />
+                  Line: " . __LINE__ . "<br />
+                  Details: " . "<br />
+                  <br />
+                  Controller: " . $controller . "<br />
+                  Action: " . $action . "
+                </div>";
             if (empty($dispatch)) {
                 trigger_error($errorMsg, E_USER_ERROR);
                 return false;
@@ -171,5 +172,4 @@ class Bootstrap
             $dispatch->set('resultsMsg', $errorMsg);
         }
     }
-
 }

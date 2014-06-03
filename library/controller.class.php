@@ -22,8 +22,9 @@ class Controller
      * @var string $model Model name
      * @var string $action Action name
      * @var string $template Template name
+     * @var int    $step Step 
      */
-    protected $controller, $model, $action, $template;
+    protected $controller, $model, $action, $template, $step;
 
     /**
      * __construct
@@ -45,8 +46,9 @@ class Controller
     public function __construct($controller, $model, $action, $template = NULL)
     {
         self::routeRequest($controller, $model, $action, $template);
-        // ACL: Deny by default
-        $this->set('ACLAllowed', FALSE);
+        
+        // Get step or assume 1st step
+        empty($_REQUEST['step']) ? $this->step = 1 : $this->step = $_REQUEST['step'];
     }
 
     /**

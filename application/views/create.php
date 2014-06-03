@@ -1,6 +1,6 @@
 <?php
 // Handle submitted form
-if ($step == 2)
+if ($this->step == 2)
 {
     // Custom Label
     $label = trim(ucfirst($this->controller), "s");

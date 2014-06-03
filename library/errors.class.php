@@ -37,8 +37,9 @@ class Errors
             $reportLevel = 1;
         }
 
+        // Uncomment to show on screen instead of just in log
         if (self::$devEnv === TRUE && self::$errorLevel >= 10) {
-            var_dump($string);
+            //var_dump($string);
         }
       
         // Check global debug level settings compared to this alert to log or not
@@ -78,18 +79,34 @@ class Errors
      */
     public function dbLogger($msg, $brandID = NULL, $type = NULL, $file = NULL, $line = NULL)
     {
-        $this->sql     = "
-            INSERT INTO messageLog
-            (messageDateTime, messageBrandID, messageType, messageBody, messageFile, messageLine)
-            VALUES
-            (:messageDateTime, :messageBrandID, :messageType, :messageBody, :messageFile, :messageLine)";
-        $this->sqlData = array(':messageDateTime' => Util::getDateTimeUTC(),
-            ':messageBrandID'  => $brandID,
-            ':messageType'     => $type,
-            ':messageBody'     => $msg,
-            ':messageFile'     => $file,
-            ':messageLine'     => $line);
-        return $this->DB->query($this->sql, $this->sqlData);
+        try
+        {
+            if (empty($this->DB))
+            {
+                Errors::debugLogger('Unable to write to messageLog (No DB): '.$msg, 0, TRUE);
+                return;
+            }
+            $this->sql     = "
+                INSERT INTO messageLog
+                (messageDateTime, messageBrandID, messageType, messageBody, messageFile, messageLine)
+                VALUES
+                (:messageDateTime, :messageBrandID, :messageType, :messageBody, :messageFile, :messageLine)";
+            $this->sqlData = array(':messageDateTime' => Utility::getDateTimeUTC(),
+                ':messageBrandID'  => $brandID,
+                ':messageType'     => $type,
+                ':messageBody'     => $msg,
+                ':messageFile'     => $file,
+                ':messageLine'     => $line);
+            return $this->DB->query($this->sql, $this->sqlData);
+        }
+        catch (PDOException $pe)
+        {
+            Errors::debugLogger('Unable to write to messageLog (PDO: '.$pe->getMessage().'): '.$msg, 0, TRUE);
+        }
+        catch (Exception $e)
+        {
+            Errors::debugLogger('Unable to write to messageLog ('.$e->getMessage().'): '.$msg, 0, TRUE);
+        }
     }
     
     /**
@@ -107,7 +124,7 @@ class Errors
     public static function captureNormal($number, $message, $file, $line)
     {
         self::debugLogger(__METHOD__, 1, true);
-        $visitorIP = Util::getVisitorIP();
+        $visitorIP = Utility::getVisitorIP();
         $halt = TRUE;
         
         // Determine Type
@@ -161,41 +178,9 @@ class Errors
 		</table>";
         
         /* Message Handling */
-        // Brand ID
-        $brandID = BRAND_ID;
-        // Record in database
-        $e = new self();
-        $e->dbLogger($message, $brandID, $subject, $file, $line);
-        // Record in cartDebug.log
-        self::debugLogger($txtBody);
-        // If in debug mode: show detailed message
-        if (self::$devEnv === TRUE) {
-            if (self::$errorLevel > 0) {
-                echo $htmlBody;
-            }
-            if (self::$errorLevel == 10) {
-                echo '<h4>Custom debug_backtrace()</h4>';
-                var_dump(debug_backtrace());
-            }
-            return false; // false = stops script, true = continues... use with caution
-        // If in live mode: email alert and display friendly error message
-        } else {
-            // Email notify and die with friendly error message
-            if ($halt === TRUE) {
-                $emailError = ERROR_EMAIL;
-                Email::sendEmail($emailError, $emailError, $emailError, NULL, NULL, $subject, $htmlBody);
-                die("
-                    <div class='alert alert-block alert-error span6 offset3'>
-                        <button type='button' class='close' data-dismiss='alert'>&times;</button>
-                        <h4>Sorry!</h4>
-                        We're very sorry but there seems to be an issue with your request. Details have been logged and emailed to the administrator. Click <a href='" . cartPublicUrl . "'>here</a> to return to Store.
-                    </div>
-                ");
-            }
-        }
-
-        // Don't execute PHP internal error handler
-        return true;
+        self::handleErrorMessage($txtBody, $htmlBody, $subject, $message, $file, $line, $halt);
+        
+        return false; // false = stops script, true = continues... use with caution
     }
 
     /**
@@ -210,7 +195,7 @@ class Errors
     public static function captureException($exception)
     {
         self::debugLogger(__METHOD__, 1, true);
-        $visitorIP = Util::getVisitorIP();
+        $visitorIP = Utility::getVisitorIP();
         $message  = $exception->getMessage();
         $file     = $exception->getFile();
         $line     = $exception->getLine();
@@ -250,43 +235,12 @@ class Errors
       <tr>
       <td colspan='2'>/end</td></tr>
 		</table>";
-        
-        /* Message Handling */
-        // Brand ID
-        $brandID = BRAND_ID;
-        // Record in database
-        $e = new self();
-        $e->dbLogger($message, $brandID, $subject, $file, $line);
-        // Record in cartDebug.log
-        self::debugLogger($txtBody);
-        // If in debug mode: show detailed message
-        if (self::$devEnv === TRUE) {
-            if (self::$errorLevel > 0) {
-                echo $htmlBody;
-            }
-            if (self::$errorLevel == 10) {
-                echo '<h4>Custom debug_backtrace()</h4>';
-                var_dump(debug_backtrace());
-            }
-            return false; // false = stops script, true = continues... use with caution
-        // If in live mode: email alert and display friendly error message
-        } else {
-            // Email notify and die with friendly error message
-            if ($halt === TRUE) {
-                $emailError = ERROR_EMAIL;
-                Email::sendEmail($emailError, $emailError, $emailError, NULL, NULL, $subject, $htmlBody);
-                die("
-                    <div class='alert alert-block alert-error span6 offset3'>
-                        <button type='button' class='close' data-dismiss='alert'>&times;</button>
-                        <h4>Oops!</h4>
-                        We're very sorry but there seems to be an issue with your request. Details have been logged and emailed to the administrator. Click <a href='" . cartPublicUrl . "'>here</a> to return to Store.
-                    </div>
-                ");
-            }
-        }
 
-        // Don't execute PHP internal error handler
-        return true;
+        /* Message Handling */
+        $halt = true;
+        self::handleErrorMessage($txtBody, $htmlBody, $subject, $message, $file, $line, $halt);
+        
+        return false; // false = stops script, true = continues... use with caution
     }
 
     /**
@@ -300,7 +254,7 @@ class Errors
     {
         if ($error = error_get_last()) {
             self::debugLogger(__METHOD__, 1, true);
-            $visitorIP = Util::getVisitorIP();
+            $visitorIP = Utility::getVisitorIP();
             $subject  = 'Shutdown';
             $txtBody  = "
                 [Shutdown]
@@ -330,40 +284,51 @@ class Errors
                 </table>";
             
             /* Message Handling */
-            // Brand ID
-            $brandID = BRAND_ID;
-            // Record in database
+            $halt = true;
+            self::handleErrorMessage($txtBody, $htmlBody, $subject, $error['message'], $error['file'], $error['line'], $halt);
+
+            return false; // false = stops script, true = continues... use with caution
+        }
+    }
+    
+    public static function handleErrorMessage($txtBody, $htmlBody, $subject, $message, $file, $line, $halt)
+    {
+        /* Message Handling */
+        $brandID = NULL;
+        #$brandURL = "/";
+        if (defined("BRAND_ID")) $brandID = BRAND_ID; # Needed in case error is db related
+        #if (defined("BRAND_URL")) $brandURL = BRAND_URL;
+        // Record in cartDebug.log
+        self::debugLogger($txtBody);
+        // If in debug mode: show detailed message
+        if (self::$devEnv === TRUE) {
+            if (self::$errorLevel > 0) {
+                echo $htmlBody;
+            }
+            if (self::$errorLevel == 10) {
+                echo '<h4>Custom debug_backtrace()</h4>';
+                var_dump(debug_backtrace());
+            }
+        // If in live mode: email alert and display friendly error message
+        } else {
+        
+            // Email error
+            $emailError = ERROR_EMAIL;
+            Email::sendEmail($emailError, $emailError, $emailError, NULL, NULL, $subject, $htmlBody);
+            
+            // Record error in database (last because if db issue then rest of things can complete before this fails)
             $e = new self();
-            $e->dbLogger($error['message'], $brandID, $subject, $error['file'], $error['line']);
-            // Record in cartDebug.log
-            self::debugLogger($txtBody);
-            // If in debug mode: show detailed message
-            if (self::$devEnv === TRUE) {
-                if (self::$errorLevel > 0) {
-                    echo $htmlBody;
-                }
-                if (self::$errorLevel == 10) {
-                    echo '<h4>Custom debug_backtrace()</h4>';
-                    var_dump(debug_backtrace());
-                }
-                return false; // false = stops script, true = continues... use with caution
-            // If in live mode: email alert and display friendly error message
-            } else {
-                // Email notify and die with friendly error message
-                $emailError = ERROR_EMAIL;
-                Email::sendEmail($emailError, $emailError, $emailError, NULL, NULL, $subject, $htmlBody);
+            $e->dbLogger($message, $brandID, $subject, $file, $line);
+            
+            // Halt
+            if ($halt === TRUE) {
                 die("
-                    <div class='alert alert-block alert-error span6 offset3'>
-                        <button type='button' class='close' data-dismiss='alert'>&times;</button>
-                        <h4>Error!</h4>
-                        We're very sorry but there seems to be an issue with your request. Details have been logged and emailed to the administrator. Click <a href='" . cartPublicUrl . "'>here</a> to return to Store.
+                    <div class='failure'>
+                        <h4>Sorry!</h4>
+                        We're very sorry but there seems to be an issue with your request. Details have been logged and emailed to the administrator. Click <a href='javascript:history.go(-1)'>here</a> to go back.
                     </div>
                 ");
-                return false;
             }
-
-            // Don't execute PHP internal error handler
-            return true;
         }
     }
 }

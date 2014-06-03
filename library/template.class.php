@@ -80,21 +80,21 @@ class Template
         // Converts all data to variables for template to use
         extract($this->data);
 
-        // Stop if json template
-        if ($this->template == "json")
+        // Omit header/footer if ajax call
+        $m = FALSE;
+        if ($this->template == "json"
+                || $this->template == "ajax"
+                || $this->template == "m")
         {
-            return;
+            $m = TRUE;
         }
                 
         // Views folder
         $viewsFolder = ROOT . DS . 'application' . DS . 'views' . DS;
 
         // Header if not in ajax/json mode
-        if (
-                (!isset($_GET['m']) || strtolower($_GET['m']) != 'ajax')
-                &&
-                (!isset($_POST['m']) || strtolower($_POST['m']) != 'ajax')
-        ) {
+        if (!$m)
+        {
 
             // Header template
             $templates = array();
@@ -127,11 +127,8 @@ class Template
         }
 
         // Footer if not in ajax mode
-        if (
-                (!isset($_GET['m']) || strtolower($_GET['m']) != 'ajax')
-                &&
-                (!isset($_POST['m']) || strtolower($_POST['m']) != 'ajax')
-        ) {
+        if (!$m)
+        {
 
             // Footer template
             $templates = array();

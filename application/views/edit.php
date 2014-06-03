@@ -1,5 +1,5 @@
 <?php
-if ($step == 2)
+if ($this->step == 2)
 {
 ?>
     <!-- Results -->

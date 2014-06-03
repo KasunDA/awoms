@@ -1,7 +1,7 @@
 <?php
 /****
 // No need to edit this file
-// Instead you need to edit 'dbConfig' and 'extraConfig'
+// Instead you need to edit 'dbConfig' and 'customConfig'
 ****/
 
 // Load DB Config
@@ -12,7 +12,7 @@ ini_set('log_errors', 'On');
 ini_set('error_log', ROOT . DS . 'tmp' . DS . 'logs' . DS . 'error.log');
 
 // Load Error Config
-require_once(ROOT . DS . 'config' . DS . 'extraConfig.php');
+require_once(ROOT . DS . 'config' . DS . 'customConfig.php');
 
 // Error handling
 require_once(ROOT . DS . 'library' . DS . 'errors.class.php');
@@ -30,5 +30,7 @@ spl_autoload_register(array('Autoloader', 'loadClass'));
 mb_internal_encoding('UTF-8');
 
 // Load Version
-define('ProductName', 'AWOMS PHP MVC');
-define('Version', file_get_contents(ROOT.DS.'config'.DS.'version.txt'));
+$versionFile = ROOT.DS.'config'.DS.'version.txt';
+if (file_exists($versionFile)){$version = file_get_contents($versionFile);}else{$version = "v00.00.00";}
+define('ProductName', 'PHP MVC');
+define('Version', $version);
