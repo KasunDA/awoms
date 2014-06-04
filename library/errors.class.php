@@ -125,7 +125,6 @@ class Errors
     {
         self::debugLogger(__METHOD__, 1, true);
         $visitorIP = Utility::getVisitorIP();
-        $halt = TRUE;
         
         // Determine Type
         switch ($number) {
@@ -146,7 +145,6 @@ class Errors
                 break;
             case E_NOTICE:
                 $subject = 'Notice (PHP)';
-                $halt    = FALSE;
                 break;
             default:
                 $subject = 'Unknown (' . $number . ')';
@@ -177,10 +175,7 @@ class Errors
       </tr>
 		</table>";
         
-        /* Message Handling */
-        self::handleErrorMessage($txtBody, $htmlBody, $subject, $message, $file, $line, $halt);
-        
-        return false; // false = stops script, true = continues... use with caution
+        return self::handleErrorMessage($txtBody, $htmlBody, $subject, $message, $file, $line);
     }
 
     /**
@@ -236,11 +231,7 @@ class Errors
       <td colspan='2'>/end</td></tr>
 		</table>";
 
-        /* Message Handling */
-        $halt = true;
-        self::handleErrorMessage($txtBody, $htmlBody, $subject, $message, $file, $line, $halt);
-        
-        return false; // false = stops script, true = continues... use with caution
+        return self::handleErrorMessage($txtBody, $htmlBody, $subject, $message, $file, $line);
     }
 
     /**
@@ -282,33 +273,63 @@ class Errors
                         <td>Type:</td><td>" . $error['type'] . "</td>
                 </tr>
                 </table>";
-            
-            /* Message Handling */
-            $halt = true;
-            self::handleErrorMessage($txtBody, $htmlBody, $subject, $error['message'], $error['file'], $error['line'], $halt);
 
-            return false; // false = stops script, true = continues... use with caution
+            return self::handleErrorMessage($txtBody, $htmlBody, $subject, $error['message'], $error['file'], $error['line']);
         }
     }
     
-    public static function handleErrorMessage($txtBody, $htmlBody, $subject, $message, $file, $line, $halt)
+    /**
+     * 
+     * @param type $txtBody
+     * @param type $htmlBody
+     * @param type $subject
+     * @param type $message
+     * @param type $file
+     * @param type $line
+     * @return boolean True: prevent PHP handler (doesnt show xdebug msg) | False: continue to PHP handler (shows xdebug msg)
+     */
+    public static function handleErrorMessage($txtBody, $htmlBody, $subject, $message, $file, $line)
     {
         /* Message Handling */
         $brandID = NULL;
-        #$brandURL = "/";
         if (defined("BRAND_ID")) $brandID = BRAND_ID; # Needed in case error is db related
-        #if (defined("BRAND_URL")) $brandURL = BRAND_URL;
+        
+        // Special ignore case for PDO construct Notices: (moved to warning/notice section below changing halt to true)
+#        if (preg_match('/MySQL server has gone away/', $message)
+#                || preg_match('/An established connection was aborted by the software in your host machine/', $message))
+#        {
+#            self::debugLogger("Skipping DB notice '".$message."'");
+#            // return false; // false - shows xdebug (continues to php handler)
+#            return true; // true - doesnt show xdebug (prevents continuing to php handler)
+#        }
+        
         // Record in cartDebug.log
         self::debugLogger($txtBody);
-        // If in debug mode: show detailed message
+        
+        // Return halt status:
+        $halt = false;
+        if (preg_match('/Warning/', $subject)
+                || preg_match('/Notice/', $subject))
+        {
+            $halt = true;
+        }
+        
+        // If in debug mode: show detailed message (unless using XDebug)
         if (self::$devEnv === TRUE) {
-            if (self::$errorLevel > 0) {
-                echo $htmlBody;
+            
+            // Custom output
+            if (!USE_XDEBUG_OUTPUT)
+            {
+                if (self::$errorLevel > 0) {
+                    echo $htmlBody;
+                }
+                if (self::$errorLevel == 10) {
+                    echo '<h4>Custom debug_backtrace():</h4>';
+                    var_dump(debug_backtrace());
+                    echo '<hr />';
+                }
             }
-            if (self::$errorLevel == 10) {
-                echo '<h4>Custom debug_backtrace()</h4>';
-                var_dump(debug_backtrace());
-            }
+            
         // If in live mode: email alert and display friendly error message
         } else {
         
@@ -330,6 +351,9 @@ class Errors
                 ");
             }
         }
+        
+        // Returning true or false changes how script ends (whether php handlers take over or not... look up in manual)
+        return $halt;
     }
 }
 ?>

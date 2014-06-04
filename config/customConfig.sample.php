@@ -19,12 +19,16 @@ date_default_timezone_set('America/New_York');
  * 1 (Info) - If msg lvl undefined assumes level 1
  * 0 (None) - Disabled (Unless forced) - Recommended for production
  *****/
-if ($_SERVER['SERVER_ADDR'] == '127.0.0.1') {
+if ($_SERVER['SERVER_ADDR'] == '127.0.0.1' || $_SERVER['SERVER_ADDR'] == '::1') {
     // Localhost development settings (no need to change these)
     define('DEVELOPMENT_ENVIRONMENT', TRUE);
-    define('ERROR_LEVEL', 9);
+    define('ERROR_LEVEL', 10);
+    define('USE_XDEBUG_OUTPUT', TRUE); // Set to false if xdebug is not enabled
+    ini_set('display_errors', 'On');
 } else {
-    // Production settings (set ERROR_LEVEL as desired with notes above in mind, 0 recommended for live server)
+    // Production settings (set ERROR_LEVEL as desired with notes above in mind, 0-1 recommended for live server)
     define('DEVELOPMENT_ENVIRONMENT', FALSE);
-    define('ERROR_LEVEL', 0);
+    define('ERROR_LEVEL', 1);
+    define('USE_XDEBUG_OUTPUT', FALSE);
+    ini_set('display_errors', 'Off');
 }

@@ -53,7 +53,7 @@ class Database
           PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
           PDO::ATTR_EMULATE_PREPARES => true));
       } catch (PDOException $e) {
-        trigger_error("Error #D001: Database issue. " . $e->getMessage(), E_USER_ERROR);
+          trigger_error("Error #D001: Database issue. " . $e->getMessage(), E_USER_ERROR);
       }
     }
     return $this->db;

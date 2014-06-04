@@ -1,6 +1,6 @@
 <?php
 /****
-// No need to edit this file
+// DO NOT MODIFY THIS FILE!
 // Instead you need to edit 'dbConfig' and 'customConfig'
 ****/
 
@@ -20,7 +20,6 @@ error_reporting(-1);
 set_error_handler(array('Errors', 'captureNormal'));
 set_exception_handler(array('Errors', 'captureException'));
 register_shutdown_function(array('Errors', 'captureShutdown'));
-ini_set('display_errors', 'On');
 
 // Autoloader
 require_once(ROOT . DS . 'library' . DS . 'autoloader.class.php');
