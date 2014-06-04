@@ -29,12 +29,11 @@ $global['input']['url'] = filter_input(INPUT_GET, "url", FILTER_SANITIZE_STRING)
 // Handle page request via Bootstrap MVC
 require_once (ROOT . DS . 'library' . DS . 'bootstrap.class.php');
 
-Errors::debugLogger("*************** RAW URL: " . serialize($global['input']));
+#Errors::debugLogger("*************** RAW URL: " . serialize($global['input']));
 
 $m = NULL;
 if (!empty($global['input']['m']))
 {
-    Errors::debugLogger("*************** RAW M: " . $global['input']['m']);
     $m = $global['input']['m'];
 }
 $BS = new Bootstrap($global['input']['url'], $m);
@@ -42,10 +41,11 @@ $BS = new Bootstrap($global['input']['url'], $m);
 // Debug
 if (ERROR_LEVEL >= 9
   && empty($global['input']['m'])) {
-    echo "<hr /><h3>Footer Debug:</h3>";
+    echo "<div style='clear:both; width:90%; margin-left: 50px; margin-top:200px; background-color:yellow; color:red; text-align:left; font-size:10px;'><hr /><h3>Footer Debug:</h3>";
   var_dump($global, BRAND, BRAND_URL);
   if (!empty($_SESSION)) {
       echo "<hr /><h3>Session:</h3>";
       var_dump($_SESSION);
   }
+  echo "</div>";
 }
