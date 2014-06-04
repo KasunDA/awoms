@@ -76,6 +76,7 @@ class UsergroupsController extends Controller
 
         // Get usergroup list
         $this->set('usergroups', $this->getUsergroups());
+        $this->set('success', TRUE);
     }
 
     /**

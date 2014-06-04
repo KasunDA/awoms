@@ -72,6 +72,7 @@ class BrandsController extends Controller
             }
 
             $this->set('brandID', $brandID);
+            $this->set('success', TRUE);
         }
 
         // Get updated list

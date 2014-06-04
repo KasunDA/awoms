@@ -66,6 +66,10 @@ if (
     // Create Modal
     include(ROOT.DS.'application'.DS.'views'.DS.$this->controller.DS.'createForm.php');
 
+    #
+    # MOVED TO autoOpen property in API
+    #
+    /*
     // Open Modal if on Create page
     if (strtolower($this->action) == 'create')
     {
@@ -83,6 +87,7 @@ if (
         $('#' + modalID).removeClass('hidden');
         $('#' + modalID).dialog('open');";
     }
+    */
   }
 
 // Submitted form reloads list with new data which duplicates the forms etc.

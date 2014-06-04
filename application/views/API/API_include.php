@@ -1,15 +1,24 @@
 <?php
-if ($this->action == "viewall" || $this->action == "create")
+if ($this->action == "viewall")
 {
     $loadFile = 'create';
     $loadAction = 'create';
     $titlePrefix = "Add ";
+    $autoOpenForm = "false";
+}
+elseif ($this->action == "create")
+{
+    $loadFile = 'create';
+    $loadAction = 'create';
+    $titlePrefix = "Add ";
+    $autoOpenForm = "true";
 }
 elseif ($this->action == "edit")
 {
     $loadFile = 'create';
     $loadAction = 'edit';
     $titlePrefix = "Edit ";
+    $autoOpenForm = "true";
 }
 else
 {
@@ -22,7 +31,8 @@ $find = array("@@".$loadFile."FrmID@@",
     "@@".$loadFile."Controller@@",
     "@@".$loadFile."Action@@",
     "@@".$loadFile."SaveText@@",
-    "@@".$loadFile."TinyMCEInputID@@");
+    "@@".$loadFile."TinyMCEInputID@@",
+    "\"@@".$loadFile."AutoOpenForm@@\"");
 
 // Title
 $controller = rtrim(strtolower($this->controller), "s");
@@ -38,7 +48,8 @@ $replace = array($formID,
     $this->controller,
     $loadAction, // desired action, not current action
     $saveLabel,
-    $tinyMCEInputID);
+    $tinyMCEInputID,
+    $autoOpenForm);
 
 $actionJS = file_get_contents(ROOT.DS."application".DS."views".DS."API".DS.$loadFile.".js");
 $finalJS = str_replace($find,$replace,$actionJS);

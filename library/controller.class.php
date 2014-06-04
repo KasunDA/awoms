@@ -49,6 +49,8 @@ class Controller
         
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $this->step = 1 : $this->step = $_REQUEST['step'];
+        
+        $this->set('step', $this->step);
     }
 
     /**

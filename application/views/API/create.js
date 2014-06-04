@@ -8,12 +8,15 @@ var createController = "@@createController@@";
 var createAction = "@@createAction@@";
 var createSaveText = "@@createSaveText@@";
 var createTinyMCEInputID = "@@createTinyMCEInputID@@";
+var createAutoOpenForm = "@@createAutoOpenForm@@";
+
+// @TODO height, width, modal
 
 /**
  * Create.js - Apply 'Dialog' to form (jUI modal)
  **/
 $('#' + createFrmID).dialog({
-  autoOpen: false,
+  autoOpen: createAutoOpenForm,
   height: 600,
   width: 850,
   modal: true,

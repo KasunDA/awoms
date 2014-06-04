@@ -26,6 +26,7 @@
         <script src='/js/libs/jqueryui/1.10.4/jquery-ui.min.js'></script>
 
         <!-- WYSIWYG -->
+        <!-- @TODO Move to include only when needed -->
         <script type="text/javascript" src="/js/libs/tinymce/tinymce.min.js"></script>
         <script type="text/javascript">
             tinymce.init({
@@ -66,7 +67,9 @@ $pageJavaScript[] = "
 if (!empty($pageJavaScript)) {
     echo "
       <script type='text/javascript'>
-        $(document).ready(function() {";
+        $(document).ready(function() {
+        ";
+    
     if (is_array($pageJavaScript)) {
       foreach ($pageJavaScript as $js) {
         echo $js;
@@ -76,7 +79,8 @@ if (!empty($pageJavaScript)) {
     }
     echo "
         });
-      </script>";
+      </script>
+      ";
 }
 
 // Analytics

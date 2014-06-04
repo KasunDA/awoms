@@ -76,6 +76,7 @@ class DomainsController extends Controller
 
         // Get updated list
         $this->set('domains', $this->getDomains());
+        $this->set('success', TRUE);
     }
 
     /**

@@ -1,4 +1,5 @@
 <div id='divResults'></div>
+
 <?php
 if ($step == 1)
 {
@@ -10,19 +11,18 @@ if ($step == 1)
           <?php echo "<h1>Login Failed!</h1>"; ?>
         </div>
 <?php
-        return;
+    } else {
+        require('loginForm.php');
     }
-
-    require('loginForm.php');
 }
 elseif ($step == 2 && $success)
 {
 ?>
+    <!-- Success Results -->
+    <div id="divInnerResults" class="success">
+      <?php echo "<h1>Login Success!</h1>"; ?>
+    </div>
 
-<!-- Success Results -->
-<div id="divInnerResults" class="success">
-  <?php echo "<h1>Login Success!</h1>"; ?>
-</div>
-
+    <META http-equiv="refresh" content="1;URL=<?php echo $returnURL; ?>">
 <?php
 }

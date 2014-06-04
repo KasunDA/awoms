@@ -75,6 +75,7 @@ class UsersController extends Controller
         
         // Get updated list
         $this->set('users', $this->getUsers());
+        $this->set('success', TRUE);
     }
 
     /**
@@ -167,38 +168,33 @@ class UsersController extends Controller
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         $this->set('title', 'Users :: Login');
-
-        // Prepare Login Form
-        $this->set('formID', "frmLoginUsers");
-
         $this->set('step', $this->step);
+        $this->set('formID', "frmLoginUsers");
+        $this->set('success', TRUE);
         
-        if ($this->step == 1) {
-            
-            $this->set('success', TRUE);
-            
-            // Check session / Login Form
-            if (isset($_SESSION['user_logged_in'])
-                    && $_SESSION['user_logged_in'] === TRUE)
-            {
-                // User is already logged in....
-                echo "<h1>You are already logged in!</h1>";
-                echo "Click <a href='/users/logout'>here</a> to Log Out";
-            } else {
-                // Prepare Login Form
-                //$this->set('formID', "frmLoginUsers");
-            }
-            
+        if ($this->step == 1 
+                && isset($_SESSION['user_logged_in'])
+                && $_SESSION['user_logged_in'] === TRUE)
+        {
+            // User is already logged in....
+            header('Location: /');
+        
         } elseif ($this->step == 2) {
             
-            //$this->set('step', 1);
-            //$this->set('success', FALSE);
-            
-            $this->set('success', TRUE);
-
-            // Check login / save session
-            //$_SESSION['user_logged_in'] = TRUE;
-            //Session::saveSessionToDB();
+            // Validate login attempt...
+            $valid = TRUE;
+            if ($valid === TRUE)
+            {
+                $this->set('success', TRUE);
+                $_SESSION['user_logged_in'] = TRUE;
+                Session::saveSessionToDB();
+                $this->set('returnURL', "/");
+            }
+            else
+            {
+                $this->set('step', 1);
+                $this->set('success', FALSE);
+            }
         }
     }
     

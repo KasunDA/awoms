@@ -92,6 +92,8 @@ class ArticlesController extends Controller
 
             // Set previous bodies to inactive
             $this->Article->setBodyContentActive($articleID, $bodyType, $bodyContentID);
+            
+            $this->set('success', TRUE);
         }
 
         // Get updated list

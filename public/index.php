@@ -42,10 +42,10 @@ $BS = new Bootstrap($global['input']['url'], $m);
 // Debug
 if (ERROR_LEVEL >= 9
   && empty($global['input']['m'])) {
-    echo "<hr /><h5>Debug:</h5>";
+    echo "<hr /><h3>Footer Debug:</h3>";
   var_dump($global, BRAND, BRAND_URL);
   if (!empty($_SESSION)) {
-      echo "<hr />Session:<br />";
+      echo "<hr /><h3>Session:</h3>";
       var_dump($_SESSION);
   }
 }

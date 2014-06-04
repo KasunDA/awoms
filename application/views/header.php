@@ -132,7 +132,20 @@
                                 </ul>
                             </li>
                             
-                            <li class='last'><a href='<?php echo BRAND_URL; ?>comments/viewall'>Comments</a></li>
+                            <li><a href='<?php echo BRAND_URL; ?>comments/viewall'>Comments</a></li>
+                            
+<?php
+// User not logged in
+if (empty($_SESSION['user_logged_in']))
+{
+    echo "<li class='last'><a href='".BRAND_URL."users/login'>Log In</a></li>";
+}
+else
+{
+    echo "<li class='last'><a href='".BRAND_URL."users/logout'>Log Out</a></li>";
+}
+?>
+                            
                         </ul>
                     </div>
 
