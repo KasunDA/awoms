@@ -10,12 +10,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
         <title><?php
-            //@TODO
+            //@TODO Dynamic Meta / SEO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             if (!empty($article['articleName'])) {
                 echo $article['articleName'];
             } else {
                 if (empty($title)) {
-                    $title = 'DEBUG';
+                    $title = BRAND_DOMAIN;
                 }
                 echo $title;
             }
@@ -25,7 +25,7 @@
         if (empty($article['articleLongDescription'])) {
             if (empty($article['articleShortDescription'])) {
                 // Use default description
-                echo "Default description";
+                echo BRAND_DOMAIN;
             } else {
                 // Use Short Description
                 echo $article['articleShortDescription'];
@@ -39,7 +39,7 @@
         if (!empty($article['articleName'])) {
             echo $article['articleName'];
         } else {
-            echo "default, keywords";
+            echo BRAND_DOMAIN;
         }
         ?>">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -51,11 +51,12 @@
         
 <?php
 if (!empty($_SESSION['user_logged_in'])
-        && $_SESSION['user_logged_in'] == 1
-        && !empty($_SESSION['user_admin'])
-        && $_SESSION['user_admin'] == 1) // @TODO: Check for "IS_ADMIN"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        && $_SESSION['user_logged_in'] == 1)
 {
-    echo "<link rel='stylesheet' href='/css/admin/admin.css'>";
+    if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
+    {
+        echo "<link rel='stylesheet' href='/css/admin/admin.css'>";    
+    }
 }
 ?>    
 
