@@ -172,28 +172,41 @@ class UsersController extends Controller
         $this->set('formID', "frmLoginUsers");
         $this->set('success', TRUE);
         
+        if (!empty($_GET['logoutSuccess']))
+        {
+            // Show logout success message if directed here from logout page
+            $this->set('logoutSuccess', $_GET['logoutSuccess']);
+        }
+
         if ($this->step == 1 
                 && isset($_SESSION['user_logged_in'])
                 && $_SESSION['user_logged_in'] === TRUE)
         {
+            
             // User is already logged in....
             header('Location: /');
-        
-        } elseif ($this->step == 2) {
             
+        } elseif ($this->step == 2) {
+
             // Validate login attempt...
-            $valid = TRUE;
-            if ($valid === TRUE)
-            {
-                $this->set('success', TRUE);
-                $_SESSION['user_logged_in'] = TRUE;
-                Session::saveSessionToDB();
-                $this->set('returnURL', "/");
-            }
-            else
+            $username = $_POST['inp_userName'];
+            $passphrase = $_POST['inp_Passphrase'];
+            
+            $this->set('inp_userName', $username);
+            $this->set('inp_Passphrase', $passphrase);
+            
+            $valid = $this->User->ValidateLogin($username, $passphrase);
+            
+            if ($valid === FALSE)
             {
                 $this->set('step', 1);
                 $this->set('success', FALSE);
+            } else {
+                $this->set('success', TRUE);
+                $_SESSION['user_logged_in'] = TRUE;
+                $_SESSION['user'] = $valid;
+                Session::saveSessionToDB();
+                $this->set('returnURL', "/");
             }
         }
     }
@@ -211,7 +224,7 @@ class UsersController extends Controller
         
         Session::saveSessionToDB();
         
-        header('Location: /users/login');
+        header('Location: /users/login?logoutSuccess=1');
     }
 
 }

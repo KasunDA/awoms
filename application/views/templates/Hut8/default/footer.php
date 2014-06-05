@@ -121,8 +121,12 @@
         <!-- jQuery UI -->
         <script src='/js/libs/jqueryui/1.10.4/jquery-ui.min.js'></script>
 
+<?php
+        // Only include if logged in
+        if (!empty($_SESSION['user_logged_in']))
+        {
+?>
         <!-- WYSIWYG -->
-        <!-- @TODO Move to include only when needed -->
         <script type="text/javascript" src="/js/libs/tinymce/tinymce.min.js"></script>
         <script type="text/javascript">
             tinymce.init({
@@ -145,13 +149,19 @@
                 external_plugins: { "filemanager" : "/filemanager/plugin.min.js" }
             });
         </script>
-        
 <?php
+        }
+
 // GLOBAL: API Action
  include(ROOT.DS."application".DS."views".DS."API".DS."API_include.php");
 
 // GLOBAL: API JS
-array_unshift($pageJavaScript, file_get_contents(ROOT.DS."application".DS."views".DS."API".DS."API.js"));
+ if (!empty($pageJavaScript))
+ {
+    array_unshift($pageJavaScript, file_get_contents(ROOT.DS."application".DS."views".DS."API".DS."API.js"));
+ } else {
+    $pageJavaScript[] = file_get_contents(ROOT.DS."application".DS."views".DS."API".DS."API.js");
+ }
 
 // GLOBAL: Form Cursor
 $pageJavaScript[] = "
@@ -187,10 +197,17 @@ if (file_exists('googleAnalytics.php')) {
 /******************
  * BRAND SPECIFIC JS
  ******************/
+
+// Only include on front page
+if ($this->controller == "home")
+{
 ?>
-<!-- Wow slider -->
-<script src='/css/Hut8/old/wowslider/wowslider.js'></script>
-<script src='/css/Hut8/old/wowslider/script.js'></script>
+    <!-- Wow slider -->
+    <script src='/css/Hut8/old/wowslider/wowslider.js'></script>
+    <script src='/css/Hut8/old/wowslider/script.js'></script>
+<?php
+}
+?>
 
 <!-- Facebook Like Counter
 <script>(function(d, s, id) {

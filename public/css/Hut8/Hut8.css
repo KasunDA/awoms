@@ -581,3 +581,83 @@ ul.menu_footer_wood li a {
     opacity: 0.95;
     filter: alpha(opacity=95);
 }
+
+
+/************************************************************************/
+/* Login */
+.login_form
+{
+    height: 400px;
+}
+.login_form_left_col
+{
+    width: 300px;
+    margin-left: 100px;
+    float: left;    
+}
+.login_form_right_col
+{
+    width: 540px;
+    float: left;
+}
+.login_form .login_form_box
+{
+    padding-left: 20px;
+    padding-top: 15px;
+    
+    background-attachment: scroll;
+    background-image: url(./images/items/clear-box.png);
+    background-repeat: no-repeat;
+    background-position: 10px 5px;
+}
+.login_form button
+{
+    margin-top: 20px;
+}
+.login_form h1
+{
+    text-indent: 0px !important;
+    margin-top: 30px;
+    margin-bottom: 0px;
+}
+
+/************************************************************************/
+/* Success / Failure results message style */
+.alert {
+    border: 1px solid;
+    margin: 10px auto;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    width: 50%;
+    text-align: left;
+}
+.alert a {
+    color: #666;
+}
+.alert.info {
+    color: #00529B;
+    background-color: #BDE5F8;
+    background-image: url('./images/items/knobs/Knob Info.png');
+}
+.alert.success {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+    background-image:url('./images/items/knobs/Knob Valid Green.png');
+}
+.alert.warning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+    background-image: url('./images/items/knobs/Knob Attention.png');
+}
+.alert.error,
+.alert.failure {
+    color: #D8000C;
+    background-color: #FFBABA;
+    background-image: url('./images/items/knobs/Knob Cancel.png');
+}
+.alert.validation {
+    color: #D63301;
+    background-color: #FFCCBA;
+    background-image: url('./images/items/knobs/Knob Red.png');
+}

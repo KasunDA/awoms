@@ -41,7 +41,6 @@ class Bootstrap
         
         Errors::debugLogger("*************** BS URL: " . $url . " template(m): ".$template);
         
-        
         # Look up the requested domain and its matching brand
         self::lookupDomainBrand();
 

@@ -47,6 +47,14 @@ class Controller
     {
         self::routeRequest($controller, $model, $action, $template);
         
+        // ACL: force login
+        if (empty($_SESSION['user_logged_in']) &&
+                $controller != "users" &&
+                $action != "login")
+        {
+            #header('Location: /users/login');
+        }
+        
         // Get step or assume 1st step
         empty($_REQUEST['step']) ? $this->step = 1 : $this->step = $_REQUEST['step'];
         

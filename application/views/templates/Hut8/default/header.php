@@ -2,7 +2,7 @@
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -42,7 +42,7 @@
             echo "default, keywords";
         }
         ?>">
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <!-- Reset and Admin Styles -->
         <link rel="stylesheet" href="/css/normalize.min.css">
@@ -50,8 +50,10 @@
         <link rel="stylesheet" href="/css/admin/jquery-ui-1.10.4.custom.min.css">
         
 <?php
-if (!empty($_SESSION['user_is_logged_in'])
-        && $_SESSION['user_is_logged_in'] == 1) // @TODO: Check for "IS_ADMIN"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+if (!empty($_SESSION['user_logged_in'])
+        && $_SESSION['user_logged_in'] == 1
+        && !empty($_SESSION['user_admin'])
+        && $_SESSION['user_admin'] == 1) // @TODO: Check for "IS_ADMIN"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {
     echo "<link rel='stylesheet' href='/css/admin/admin.css'>";
 }
@@ -123,7 +125,7 @@ if (!empty($_SESSION['user_is_logged_in'])
                             <ul class="menu_horizontal menu_header menu_hover">
 
 <?php
-    if (!empty($_SESSION['user_is_logged_in']))
+    if (!empty($_SESSION['user_logged_in']))
     {
         // Authenticated User Navigation
 ?>

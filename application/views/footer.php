@@ -55,8 +55,13 @@
  include(ROOT.DS."application".DS."views".DS."API".DS."API_include.php");
 
 // GLOBAL: API JS
-array_unshift($pageJavaScript, file_get_contents(ROOT.DS."application".DS."views".DS."API".DS."API.js"));
-
+ if (!empty($pageJavaScript))
+ {
+    array_unshift($pageJavaScript, file_get_contents(ROOT.DS."application".DS."views".DS."API".DS."API.js"));
+ } else {
+    $pageJavaScript[] = file_get_contents(ROOT.DS."application".DS."views".DS."API".DS."API.js");
+ }
+ 
 // GLOBAL: Form Cursor
 $pageJavaScript[] = "
   // Open Modal Cursor

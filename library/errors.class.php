@@ -13,7 +13,7 @@ class Errors
     /**
      * @var string $email
      */
-    public static $email = ERROR_EMAIL;
+    public static $errorEmail = ERROR_EMAIL;
     
     /**
      * @var string $devEnv
@@ -81,10 +81,13 @@ class Errors
     {
         try
         {
+            if (self::$devEnv) return;
+            
             if (empty($this->DB))
             {
-                Errors::debugLogger('Unable to write to messageLog (No DB): '.$msg, 0, TRUE);
-                return;
+                $this->DB = new Database();
+                #Errors::debugLogger('Unable to write to messageLog (No DB): '.$msg, 0, TRUE);
+                #return false;
             }
             $this->sql     = "
                 INSERT INTO messageLog
@@ -243,7 +246,8 @@ class Errors
      */
     public static function captureShutdown()
     {
-        if ($error = error_get_last()) {
+        $error = error_get_last();
+        if ($error) {
             self::debugLogger(__METHOD__, 1, true);
             $visitorIP = Utility::getVisitorIP();
             $subject  = 'Shutdown';
@@ -305,55 +309,69 @@ class Errors
         
         // Record in cartDebug.log
         self::debugLogger($txtBody);
-        
-        // Return halt status:
-        $halt = false;
-        if (preg_match('/Warning/', $subject)
-                || preg_match('/Notice/', $subject))
+
+        $supressError = FALSE;
+        // Notices shhh
+        if (preg_match('/Notice/', $subject))
         {
-            $halt = true;
+            $supressError = TRUE;
         }
         
-        // If in debug mode: show detailed message (unless using XDebug)
-        if (self::$devEnv === TRUE) {
-            
-            // Custom output
+        // Show all errors/notices during dev
+        if (self::$devEnv)
+        {
+            $supressError = FALSE;
+            // Custom output w/o xdebug
             if (!USE_XDEBUG_OUTPUT)
             {
                 if (self::$errorLevel > 0) {
-                    echo $htmlBody;
-                }
-                if (self::$errorLevel == 10) {
-                    echo '<h4>Custom debug_backtrace():</h4>';
-                    var_dump(debug_backtrace());
-                    echo '<hr />';
-                }
-            }
-            
-        // If in live mode: email alert and display friendly error message
-        } else {
-        
-            // Email error
-            $emailError = ERROR_EMAIL;
-            Email::sendEmail($emailError, $emailError, $emailError, NULL, NULL, $subject, $htmlBody);
-            
-            // Record error in database (last because if db issue then rest of things can complete before this fails)
-            $e = new self();
-            $e->dbLogger($message, $brandID, $subject, $file, $line);
-            
-            // Halt
-            if ($halt === TRUE) {
-                die("
-                    <div class='failure'>
-                        <h4>Sorry!</h4>
-                        We're very sorry but there seems to be an issue with your request. Details have been logged and emailed to the administrator. Click <a href='javascript:history.go(-1)'>here</a> to go back.
+                    $_SESSION['ErrorMessage'] = "
+                    <div class='alert error'>
+                        ".$htmlBody."
                     </div>
-                ");
+                    ";
+
+                    if (self::$errorLevel == 10) {
+                        $backtrace = var_export(debug_backtrace(), true);
+                        $_SESSION['ErrorMessage'] .= "
+                            <div class='alert error'>
+                                <h3>Custom debug_backtrace():</h3>
+                                <pre>".$backtrace."</pre>
+                            </div>";
+                    }
+                }
+                return true;
             }
+            // Return False here lets PHP/XDebug take over and show us all warnings in dev mode
+            // Commenting this out will go to email/db error and show error as in live mode
+            return false; 
+        }
+
+        // Email error
+        if (!preg_match('/Failed to connect to mailserver/', $message))
+        {
+            $emailError = self::$errorEmail;
+            Email::sendEmail($emailError, $emailError, $emailError, NULL, NULL, $subject, $htmlBody);
+        }
+
+        // Record error in database (last because if db issue then rest of things can complete before this fails)
+        $e = new self();
+        $e->dbLogger($message, $brandID, $subject, $file, $line);
+
+        // Display error or not?
+        if ($supressError === FALSE)
+        {
+            $_SESSION['ErrorMessage'] = "
+                <div class='alert error'>
+                    <h2>Sorry!</h2>
+                    <p>We're very sorry but there seems to be an issue with your request. Details have been logged and emailed to the administrator.</p>
+                    <p>Click <a href='javascript:history.go(-1)'>here</a> to go back.</p>
+                </div>
+            ";
         }
         
-        // Returning true or false changes how script ends (whether php handlers take over or not... look up in manual)
-        return $halt;
+        // Always returning true to skip PHP error handler and allow template to finish
+        return true;
     }
 }
 ?>

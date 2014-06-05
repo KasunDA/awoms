@@ -38,7 +38,8 @@ class Email
         
         // Mail it
         try {
-            mail($to, $subject, $body, implode("\r\n", $headers), '-f '.$from);
+            // @TODO smtp server settings
+            @mail($to, $subject, $body, implode("\r\n", $headers), '-f '.$from);
             return true;
         } catch (\Exception $e) {
             trigger_error('Unable to send email. ' . $e->getMessage(), E_USER_WARNING);

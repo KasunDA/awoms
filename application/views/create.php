@@ -14,8 +14,8 @@ if ($this->step == 2)
     {
 ?>
         <!-- Success Results -->
-        <div id="divInnerResults" class="success">
-          <?php echo "<h1>".$label." created successfully!</h1>"; ?>
+        <div id="divInnerResults" class="alert success">
+          <?php echo "<p>".$label." created successfully!</p>"; ?>
         </div>
 <?php
     }
@@ -23,10 +23,10 @@ if ($this->step == 2)
     {
 ?>
         <!-- Failure Results -->
-        <div id="divInnerResults" class="failure">
+        <div id="divInnerResults" class="alert failure">
           <?php
-            echo "<h1>".$label." failed to create!</h1>";
-            if (!empty($success)) { echo $success; } // Reason msg
+            echo "<p>".$label." failed to create!</p>";
+            if (!empty($success)) { echo "<p>".$success."</p>"; } // Reason msg
           ?>
         </div>
 <?php

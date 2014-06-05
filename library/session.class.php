@@ -207,7 +207,7 @@ class Session
         {
             $this->data['session']['user_logged_in'] = FALSE;
         }
-        Errors::debugLogger(__METHOD__ . ':  Session user_is_logged_in: ' . $this->data['session']['user_logged_in'], 1, true);
+        Errors::debugLogger(__METHOD__ . ':  Session user_logged_in: ' . $this->data['session']['user_logged_in'], 1, true);
         return true;
     }
 
