@@ -1,16 +1,13 @@
-<h1>Goin' Postal Home Page</h1>
+<h1>GPFC Administration</h1>
 
 <?php
-
 if (empty($_SESSION['user_logged_in']))
 {
-    
-    echo "Welcome <strong>guest</strong>!";
+    echo "<p>Please click <a href='/users/login'>here</a> to log in.</p>";
     
 } else {
     
-    echo "Welcome back <strong>".$_SESSION['sessionSaveTime']."</strong>!";
+    echo "<p>Welcome back <strong>".$_SESSION['sessionSaveTime']."</strong>!</p>";
     
 }
-
 ?>

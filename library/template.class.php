@@ -78,7 +78,10 @@ class Template
     {
 
         // Converts all data to variables for template to use
-        extract($this->data);
+        extract($this->data);        
+        $_SESSION['controller'] = $this->controller;
+        $_SESSION['action'] = $this->action;
+        $_SESSION['template'] = $this->template;
 
         // Omit header/footer if ajax call
         $m = FALSE;
@@ -111,12 +114,8 @@ class Template
             }
         }
 
-        // Fatal error skips action template
-        if (!empty($_SESSION['ErrorMessage'])) {
-            
-            echo $_SESSION['ErrorMessage'];
-          
-        } else {
+        // Fatal error skips action template (error msg displayed via header template)
+        if (empty($_SESSION['ErrorMessage'])) {
         
             // Action template
             $templates = array();

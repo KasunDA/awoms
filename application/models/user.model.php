@@ -34,6 +34,8 @@ class User extends Model
    */
   public function ValidateLogin($username, $passphrase)
   {
+      Errors::debugLogger(__METHOD__);
+      
       // Get brands usergroups
       $cols = "usergroupID";
       $where = "brandID = '".BRAND_ID."' AND usergroupActive = 1";

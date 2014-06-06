@@ -1,6 +1,7 @@
 USE `GPFC`;
 
 -- Brands
+-- First brand is central umbrella brand
 INSERT INTO `brands` 
 (`brandID`, `brandName`, `brandActive`, `brandLabel`)
 VALUES
@@ -13,7 +14,8 @@ INSERT INTO `domains`
 (`domainID`, `brandID`, `domainName`, `domainActive`)
 VALUES
 (1, 1, 'dev.gpfc.com', 1),
-(2, 2, 'dev.hutno8.com', 1);
+(2, 2, 'dev.goinpostal.com', 1),
+(3, 3, 'dev.hutno8.com', 1);
 
 -- Usergroups
 INSERT INTO `usergroups`

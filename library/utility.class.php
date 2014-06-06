@@ -388,6 +388,48 @@ class Utility
         }
         return $ip;
     }
+    
+    /**
+     * loadTemplateFile
+     * 
+     * Searches for appropriate custom template file to load and includes the found file
+     * 
+     * Example:
+     *  views/templates/BRAND/THEME/CONTROLLER/name.php
+     *  views/templates/BRAND/THEME/name.php
+     *  views/name.php
+     * 
+     * @param string $name
+     * @param boolean $customFirst set to false to have default files be searched first
+     * @param boolean $includeAllFound set to true to include all found files
+     */
+    public static function loadTemplateFile($name, $customFirst = TRUE, $includeAllFound = FALSE)
+    {
+        // Views folder
+        $viewsFolder = ROOT . DS . 'application' . DS . 'views' . DS;
+
+        // Possible locations
+        $fileLocations = array();
+        
+        $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $_SESSION['controller'] . DS . $name .'.php';
+        $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $name .'.php';
+        $fileLocations[] = $viewsFolder .  $name .'.php';
+        
+        // Default or Custom takes precedence?
+        if (!$customFirst)
+        {
+            $fileLocations = array_reverse($fileLocations);
+        }
+        
+        foreach ($fileLocations as $fileLoc)
+        {
+            if (file_exists($fileLoc))
+            {
+                include($fileLoc);
+                if (!$includeAllFound){break;}
+            }
+        }
+    }
 
     /**
      * convertNLToBR
