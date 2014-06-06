@@ -78,10 +78,7 @@ class Template
     {
 
         // Converts all data to variables for template to use
-        extract($this->data);        
-        $_SESSION['controller'] = $this->controller;
-        $_SESSION['action'] = $this->action;
-        $_SESSION['template'] = $this->template;
+        extract($this->data);
 
         // Omit header/footer if ajax call
         $m = FALSE;

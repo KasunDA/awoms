@@ -38,10 +38,17 @@ class User extends Model
       
       // Get brands usergroups
       $cols = "usergroupID";
-      $where = "brandID = '".BRAND_ID."' AND usergroupActive = 1";
+      /**
+        * The hard coded 1 here allow for shared usergroups amongst all brands (groups created under main brand id 1 are shared)
+        * If the brand has its own custom groups it will look for them as well
+        */
+      $sharedBrandID = 1;
+      $where = "brandID IN (".$sharedBrandID.", ".BRAND_ID.")
+          AND usergroupActive = 1";
       $thisBrandsGroups = self::select($cols, $where, NULL, 'usergroups');
       if (empty($thisBrandsGroups)) return false;
       
+
       $w = "usergroupID IN (";
       foreach ($thisBrandsGroups as $group)
       {
@@ -57,7 +64,7 @@ class User extends Model
             AND userName = '".$username."'
             AND passphrase = '".$passphrase."'";
       $r = self::select($cols, $where);
-      
+
       if (empty($r[0]['userID']))
       {
           return false;

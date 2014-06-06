@@ -44,6 +44,12 @@
 // Error or results messages
 if (!empty($_SESSION['ErrorMessage'])) {
     echo $_SESSION['ErrorMessage'];
+    
+#    if (!empty($_SESSION['ErrorRedirect']))
+#    {
+#        echo "<META http-equiv='refresh' content='0;URL=".$_SESSION['ErrorRedirect']."'>";
+#    }
+
 }
 if (!empty($resultsMsg)) {
   echo $resultsMsg;

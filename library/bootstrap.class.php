@@ -38,7 +38,6 @@ class Bootstrap
      */
     public function __construct($url, $template)
     {
-        
         Errors::debugLogger("*************** BS URL: " . $url . " template(m): ".$template);
         
         # Look up the requested domain and its matching brand
@@ -46,7 +45,7 @@ class Bootstrap
 
         # Session start/resume
         new Session();
-
+        
         # Process MVC request
         self::callHook($url, $template);
     }
@@ -138,6 +137,12 @@ class Bootstrap
             $queryString = array();
         }
 
+        // Save for use throughout scripts
+        $_SESSION['controller'] = $controller;
+        $_SESSION['action'] = $action;
+        $_SESSION['query'] = $queryString;
+        $_SESSION['template'] = $template;
+                
         $controllerName = $controller;
         $controller     = ucwords($controller);
         $model          = rtrim($controller, 's');

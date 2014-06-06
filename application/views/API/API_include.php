@@ -53,4 +53,10 @@ $replace = array($formID,
 
 $actionJS = file_get_contents(ROOT.DS."application".DS."views".DS."API".DS.$loadFile.".js");
 $finalJS = str_replace($find,$replace,$actionJS);
-array_unshift($pageJavaScript, $finalJS);
+
+if (!empty($pageJavaScript))
+{
+   array_unshift($pageJavaScript, $finalJS);
+} else {
+   $pageJavaScript[] = $finalJS;
+}

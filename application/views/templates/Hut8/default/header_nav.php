@@ -11,7 +11,6 @@
 <?php
     if (!empty($_SESSION['user_logged_in']))
     {
-        // Authenticated User Navigation
 ?>
                             <li><a href="/" target="_parent" title="Home">Home</a></li>
                             <li><a href="/" target="_parent" title="Owners Home">Owners Home</a></li>

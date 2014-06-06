@@ -33,7 +33,7 @@ class Session
      */
     public function __construct()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 100);
         $this->DB = new Database();
         $this->doIKnowYou();
     }
@@ -73,26 +73,26 @@ class Session
      */
     public function doIKnowYou()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 100);
         if (isset($_SERVER['HTTP_COOKIE']) && !empty($_COOKIE[BRAND_LABEL])) {
 
-            Errors::debugLogger(__METHOD__ . ':  Cookie found: ' . $_COOKIE[BRAND_LABEL] . ' getting session from DB...', 10);
+            Errors::debugLogger(__METHOD__ . ':  Cookie found: ' . $_COOKIE[BRAND_LABEL] . ' getting session from DB...', 100);
             if (self::getSessionFromDB()) {
 
-                Errors::debugLogger(__METHOD__ . ':  Session found in DB, validating IP...', 10);
+                Errors::debugLogger(__METHOD__ . ':  Session found in DB, validating IP...', 100);
                 if ($this->validateVisitor()) {
 
-                    Errors::debugLogger(__METHOD__ . ':  [Yes!] Welcome back! Resuming session...', 10);
+                    Errors::debugLogger(__METHOD__ . ':  [Yes!] Welcome back! Resuming session...', 100);
                     if ($this->startSession()) {
                         return true;
                     }
                 }
             }
         } else {
-            Errors::debugLogger(__METHOD__ . ':  No cookie found...' . serialize($_COOKIE), 10);
+            Errors::debugLogger(__METHOD__ . ':  No cookie found...' . serialize($_COOKIE), 100);
         }
 
-        Errors::debugLogger(__METHOD__ . ':  [No.] Hello! Starting session...', 10);
+        Errors::debugLogger(__METHOD__ . ':  [No.] Hello! Starting session...', 100, true);
         $this->startNewSession();
         return false;
     }
@@ -109,7 +109,7 @@ class Session
      */
     public function startNewSession()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 100);
         self::makeFingerprint();
         self::startSession();
         self::saveSessionToDB();
@@ -125,7 +125,7 @@ class Session
      */
     public static function saveSessionToDB()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 100);
 
         if (empty($_SESSION)
                 || empty($_SESSION['fingerprint']))
@@ -176,7 +176,7 @@ class Session
      */
     public function getSessionFromDB()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 100);
 
         $fingerprint = $_COOKIE[BRAND_LABEL];
         $this->sql   = "
@@ -193,8 +193,7 @@ class Session
             return false;
         }
         $session = $results[0];
-        Errors::debugLogger(__METHOD__ . ':  Session found in DB! setTime: ' . $session['setTime'] . ' expiresTime: ' . $session['expiresTime'] . ' fingerprint: ' . $fingerprint,
-                            1);
+        Errors::debugLogger(__METHOD__ . ':  Session found in DB! setTime: ' . $session['setTime'] . ' expiresTime: ' . $session['expiresTime'] . ' fingerprint: ' . $fingerprint, 100);
 
         $Encryption = new Encryption();
         $decSession = $Encryption->decrypt($session['expiresTime'], $fingerprint, $session['session']);
@@ -207,7 +206,7 @@ class Session
         {
             $this->data['session']['user_logged_in'] = FALSE;
         }
-        Errors::debugLogger(__METHOD__ . ':  Session user_logged_in: ' . $this->data['session']['user_logged_in'], 1, true);
+        Errors::debugLogger(__METHOD__ . ':  Session user_logged_in: ' . $this->data['session']['user_logged_in'], 100);
         return true;
     }
 
@@ -220,11 +219,10 @@ class Session
      */
     public function startSession()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 100);
         
         self::setCookie();
-        Errors::debugLogger(__METHOD__ . ':  session name: ' . $this->data['session']['name'] . ' session ID: ' . $this->data['session']['fingerprint'] . '...',
-                            10);
+        Errors::debugLogger(__METHOD__ . ':  session name: ' . $this->data['session']['name'] . ' session ID: ' . $this->data['session']['fingerprint'] . '...', 100);
         session_id($this->data['session']['fingerprint']); // Fingerprint matches DB entry
         session_name($this->data['session']['name']); // Sets the session name
 
@@ -235,7 +233,7 @@ class Session
         }
 
         $_SESSION = $this->data['session'];
-
+        
         return true;
     }
 
@@ -252,19 +250,19 @@ class Session
      */
     private function validateVisitor()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 100);
 
         $liveIP = Utility::getVisitorIP();
         Errors::debugLogger(__METHOD__ . ':  Comparing get_visitorIP (' . $liveIP . ') with DB (' . $this->data['session']['visitorIP'] . ')',
-                            10);
+                            100);
         if ($liveIP == $this->data['session']['visitorIP']) {
-            Errors::debugLogger(__METHOD__ . ':  Visitor IP matches what we stored from last session!', 10);
+            Errors::debugLogger(__METHOD__ . ':  Visitor IP matches what we stored from last session!', 100);
             return true;
         }
 
         // Visitor IP changed, need to re-login (if this isn't a login attempt)
         Errors::debugLogger(__METHOD__ . ':  Visitor IP does NOT match what we stored from last session! *** ALERT ***: ' . $this->sql,
-                            1);
+                            1, TRUE);
         return false;
     }
 
@@ -278,11 +276,11 @@ class Session
      */
     private function makeFingerprint()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 100);
         $this->data['session']['visitorIP']   = Utility::getVisitorIP();
         $this->data['session']['fingerprint'] = hash('sha512',
                                                      $this->data['session']['visitorIP'] + uniqid(mt_rand(1, mt_getrandmax()), true));
-        Errors::debugLogger(__METHOD__ . ' fingerprint: ' . $this->data['session']['fingerprint'], 10);
+        Errors::debugLogger(__METHOD__ . ' fingerprint: ' . $this->data['session']['fingerprint'], 100);
         return $this->data['session']['fingerprint'];
     }
 
@@ -300,20 +298,20 @@ class Session
      */
     private function setCookie()
     {
-        Errors::debugLogger(__METHOD__, 1, true);
+        Errors::debugLogger(__METHOD__, 100);
 
         if (empty($this->data['session']['setTime'])) {
-            Errors::debugLogger(__METHOD__ . ':  New Expires Time', 10);
+            Errors::debugLogger(__METHOD__ . ':  New Expires Time', 100);
             $this->data['session']['setTime']     = time();
             $expires                              = 60 * 60 * 24 * 7; // 1 week
             $this->data['session']['expiresTime'] = $expires;
         } else {
-            Errors::debugLogger(__METHOD__ . ':  Existing Expires Time', 10);
+            Errors::debugLogger(__METHOD__ . ':  Existing Expires Time', 100);
             // expires = expires - seconds since setTime
             $now     = time();
             $diff    = $now - $this->data['session']['setTime'];
             $expires = $this->data['session']['expiresTime'] - $diff;
-            Errors::debugLogger(__METHOD__ . ':  Updated Expires Time: ' . $expires, 10);
+            Errors::debugLogger(__METHOD__ . ':  Updated Expires Time: ' . $expires, 100);
         }
 
         // Cookie parameters
@@ -329,7 +327,7 @@ class Session
         $path     = '/';
 
         // Set custom cookie settings
-        Errors::debugLogger(__METHOD__ . ' fingerprint: ' . $this->data['session']['fingerprint'], 1, true);
+        Errors::debugLogger(__METHOD__ . ' fingerprint: ' . $this->data['session']['fingerprint'], 100);
         ini_set('session.use_only_cookies', 1); // Forces sessions to only use cookies.
         //$cookieParams = session_get_cookie_params(); // Gets current cookies params.
         session_set_cookie_params($expires, $path, $this->data['session']['domain'], $this->data['session']['https'], $httponly);
@@ -344,9 +342,9 @@ class Session
      * 
      * @return boolean
      */
-    public function removeCookies()
+    public static function removeCookies()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 100);
         if (isset($_SERVER['HTTP_COOKIE'])) {
             $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
             foreach ($cookies as $cookie) {

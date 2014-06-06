@@ -38,8 +38,8 @@ class Utility
     public static function handleFileUpload($htmlFilesName, $fileType, $storeID, $productID = NULL, $categoryID = NULL,
                                             $customerID = NULL, $userID = NULL)
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 100);
+        Errors::debugLogger(func_get_args(), 100);
         //
         // File Type
         //
@@ -230,7 +230,7 @@ class Utility
      */
     public static function createNestedDirectory($dirPath)
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 0);
         Errors::debugLogger(func_get_args(), 10);
         if (!is_dir($dirPath) && !@mkdir($dirPath, 0777, true)) {
             trigger_error('Could not create folder: ' . $dirPath, E_USER_ERROR);
@@ -253,8 +253,8 @@ class Utility
      */
     public static function getDateTimeUTC($format = null)
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 100);
+        Errors::debugLogger(func_get_args(), 100);
         // Default format if none passed
         if ($format === NULL) {
             $format = "Y-m-d H:i:s";
@@ -378,8 +378,8 @@ class Utility
      */
     public static function getVisitorIP()
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 100);
+        Errors::debugLogger(func_get_args(), 100);
         $ip = $_SERVER['REMOTE_ADDR'];
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -420,7 +420,7 @@ class Utility
         {
             $fileLocations = array_reverse($fileLocations);
         }
-        
+
         foreach ($fileLocations as $fileLoc)
         {
             if (file_exists($fileLoc))

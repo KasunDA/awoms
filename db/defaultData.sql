@@ -29,8 +29,13 @@ VALUES
 INSERT INTO `users`
 (`userID`, `usergroupID`, `userActive`, `userName`, `passphrase`, `userEmail`)
 VALUES
-(1, 1, 1, 'GPAdmin', 'test', 'admin@goinpostal.com'),
-(2, 1, 1, 'HutAdmin', 'test', 'admin@goinpostal.com');
+(1, 1, 1, 'GPFCAdmin', 'test', 'admin@gpfc.com'),
+(2, 1, 1, 'GPAdmin', 'test', 'admin@goinpostal.com'),
+(3, 1, 1, 'Hut8Admin', 'test', 'admin@hutno8.com'),
+
+(4, 2, 1, 'GPStoreOwner', 'test', 'storeowner@goinpostal.com'),
+(5, 2, 1, 'Hut8StoreOwner', 'test', 'storeowner@hutno8.com'),
+(6, 3, 1, 'Hut8User', 'test', 'user@hutno8.com');
 
 -- Parent Item Types
 INSERT INTO `refParentItemTypes`
@@ -42,29 +47,30 @@ VALUES
 (4, 'Comment');
 
 -- Default ACLs
-INSERT INTO `aclDefaults`
+INSERT INTO `acl`
 (`brandID`, `usergroupID`, `userID`, `controller`, `create`, `read`, `update`, `delete`)
 VALUES
-(1, 1, NULL, 'brands', 1, 1, 1, 1),
-(1, 1, NULL, 'domains', 1, 1, 1, 1),
-(1, 1, NULL, 'usergroups', 1, 1, 1, 1),
-(1, 1, NULL, 'users', 1, 1, 1, 1),
-(1, 1, NULL, 'pages', 1, 1, 1, 1),
-(1, 1, NULL, 'articles', 1, 1, 1, 1),
-(1, 1, NULL, 'comments', 1, 1, 1, 1),
-
-(1, 2, NULL, 'brands', 0, 0, 0, 0),
-(1, 2, NULL, 'domains', 1, 1, 1, 1),
-(1, 2, NULL, 'usergroups', 1, 1, 1, 1),
-(1, 2, NULL, 'users', 1, 1, 1, 1),
-(1, 2, NULL, 'pages', 1, 1, 1, 1),
-(1, 2, NULL, 'articles', 1, 1, 1, 1),
-(1, 2, NULL, 'comments', 1, 1, 1, 1),
-
-(1, 3, NULL, 'brands', 0, 0, 0, 0),
-(1, 3, NULL, 'domains', 0, 0, 0, 0),
-(1, 3, NULL, 'usergroups', 0, 0, 0, 0),
-(1, 3, NULL, 'users', 0, 0, 0, 0),
-(1, 3, NULL, 'pages', 0, 0, 0, 0),
-(1, 3, NULL, 'articles', 1, 1, 1, 1),
-(1, 3, NULL, 'comments', 1, 1, 1, 1);
+-- 1: Admin defaults
+(NULL, 1, NULL, 'brands', 1, 1, 1, 1),
+(NULL, 1, NULL, 'domains', 1, 1, 1, 1),
+(NULL, 1, NULL, 'usergroups', 1, 1, 1, 1),
+(NULL, 1, NULL, 'users', 1, 1, 1, 1),
+(NULL, 1, NULL, 'pages', 1, 1, 1, 1),
+(NULL, 1, NULL, 'articles', 1, 1, 1, 1),
+(NULL, 1, NULL, 'comments', 1, 1, 1, 1),
+-- 2: Store Owner defaults
+(NULL, 2, NULL, 'brands', 0, 0, 0, 0),
+(NULL, 2, NULL, 'domains', 1, 1, 1, 1),
+(NULL, 2, NULL, 'usergroups', 1, 1, 1, 1),
+(NULL, 2, NULL, 'users', 1, 1, 1, 1),
+(NULL, 2, NULL, 'pages', 1, 1, 1, 1),
+(NULL, 2, NULL, 'articles', 1, 1, 1, 1),
+(NULL, 2, NULL, 'comments', 1, 1, 1, 1),
+-- 3: User defaults
+(NULL, 3, NULL, 'brands', 0, 0, 0, 0),
+(NULL, 3, NULL, 'domains', 0, 0, 0, 0),
+(NULL, 3, NULL, 'usergroups', 0, 0, 0, 0),
+(NULL, 3, NULL, 'users', 0, 0, 0, 0),
+(NULL, 3, NULL, 'pages', 0, 0, 0, 0),
+(NULL, 3, NULL, 'articles', 1, 1, 1, 1),
+(NULL, 3, NULL, 'comments', 1, 1, 1, 1);
