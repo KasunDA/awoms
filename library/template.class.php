@@ -111,18 +111,22 @@ class Template
             }
         }
 
-        // Action template
-        $templates = array();
-        $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->controller . DS . $this->action . '.php';
-        $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->action .'.php';
-        $templates[] = $viewsFolder . $this->controller . DS . $this->action . '.php';
-        $templates[] = $viewsFolder . $this->action . '.php';
-        foreach ($templates as $template)
-        {
-            if (file_exists($template))
+        // Fatal error skips action template (error msg displayed via header template)
+        if (empty($_SESSION['ErrorMessage'])) {
+        
+            // Action template
+            $templates = array();
+            $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->controller . DS . $this->action . '.php';
+            $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->action .'.php';
+            $templates[] = $viewsFolder . $this->controller . DS . $this->action . '.php';
+            $templates[] = $viewsFolder . $this->action . '.php';
+            foreach ($templates as $template)
             {
-                include($template);
-                break;
+                if (file_exists($template))
+                {
+                    include($template);
+                    break;
+                }
             }
         }
 

@@ -38,8 +38,8 @@ class Utility
     public static function handleFileUpload($htmlFilesName, $fileType, $storeID, $productID = NULL, $categoryID = NULL,
                                             $customerID = NULL, $userID = NULL)
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 100);
+        Errors::debugLogger(func_get_args(), 100);
         //
         // File Type
         //
@@ -230,7 +230,7 @@ class Utility
      */
     public static function createNestedDirectory($dirPath)
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, 0);
         Errors::debugLogger(func_get_args(), 10);
         if (!is_dir($dirPath) && !@mkdir($dirPath, 0777, true)) {
             trigger_error('Could not create folder: ' . $dirPath, E_USER_ERROR);
@@ -253,8 +253,8 @@ class Utility
      */
     public static function getDateTimeUTC($format = null)
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 100);
+        Errors::debugLogger(func_get_args(), 100);
         // Default format if none passed
         if ($format === NULL) {
             $format = "Y-m-d H:i:s";
@@ -378,8 +378,8 @@ class Utility
      */
     public static function getVisitorIP()
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, 100);
+        Errors::debugLogger(func_get_args(), 100);
         $ip = $_SERVER['REMOTE_ADDR'];
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -387,6 +387,48 @@ class Utility
             $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
         }
         return $ip;
+    }
+    
+    /**
+     * loadTemplateFile
+     * 
+     * Searches for appropriate custom template file to load and includes the found file
+     * 
+     * Example:
+     *  views/templates/BRAND/THEME/CONTROLLER/name.php
+     *  views/templates/BRAND/THEME/name.php
+     *  views/name.php
+     * 
+     * @param string $name
+     * @param boolean $customFirst set to false to have default files be searched first
+     * @param boolean $includeAllFound set to true to include all found files
+     */
+    public static function loadTemplateFile($name, $customFirst = TRUE, $includeAllFound = FALSE)
+    {
+        // Views folder
+        $viewsFolder = ROOT . DS . 'application' . DS . 'views' . DS;
+
+        // Possible locations
+        $fileLocations = array();
+        
+        $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $_SESSION['controller'] . DS . $name .'.php';
+        $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $name .'.php';
+        $fileLocations[] = $viewsFolder .  $name .'.php';
+        
+        // Default or Custom takes precedence?
+        if (!$customFirst)
+        {
+            $fileLocations = array_reverse($fileLocations);
+        }
+
+        foreach ($fileLocations as $fileLoc)
+        {
+            if (file_exists($fileLoc))
+            {
+                include($fileLoc);
+                if (!$includeAllFound){break;}
+            }
+        }
     }
 
     /**

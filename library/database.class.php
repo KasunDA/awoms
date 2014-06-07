@@ -13,7 +13,7 @@ class Database
   /**
    * Database data
    * 
-   * @var PDO $db Database connection
+   * @var PDO $db Database connection // @TODO should this be static for singleton?
    * @var string $sql Database query sql
    * @var array $sqlData Database query data
    */

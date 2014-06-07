@@ -63,6 +63,9 @@ class UsergroupsController extends Controller
                 // Usergroup info col/data
                 $data[$m[1]] = $v;
             }
+            $brand = 1;
+            $data['brandID'] = $brand; // @TODO Future Use: brand specific Usergroups
+            $this->set('inp_brandID', $brand);
 
             // Save usergroup info, getting ID
             $usergroupID = $this->Usergroup->update($data);

@@ -67,8 +67,8 @@ class Encryption
      */
     function encrypt($key, $authKey, $plain)
     {
-        Errors::debugLogger(__METHOD__, 9);
-        Errors::debugLogger(func_get_args(), 9);
+        Errors::debugLogger(__METHOD__, 99);
+        Errors::debugLogger(func_get_args(), 99);
         $size       = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CFB);
         $iv         = mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
         $cipherText = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $plain, MCRYPT_MODE_CFB, $iv);
@@ -86,8 +86,8 @@ class Encryption
      */
     function decrypt($key, $authKey, $encrypted)
     {
-        Errors::debugLogger(__METHOD__, 9);
-        Errors::debugLogger(func_get_args(), 9);
+        Errors::debugLogger(__METHOD__, 99);
+        Errors::debugLogger(func_get_args(), 99);
         $size       = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CFB);
         $encrypted  = base64_decode($encrypted);
         $iv         = substr($encrypted, 0, $size);

@@ -1,30 +1,39 @@
 
-          </div> <!-- #main -->
-        </div> <!-- #main-container -->
+            </div> <!-- #main-container -->
 
-        <div class="footer-container">
-            <footer class="wrapper">
-                <small>Copyright &copy; <?=date("Y").' '.BRAND;?> <a href='mailto:info@<?=BRAND_DOMAIN;?>'>info@<?=BRAND_DOMAIN;?></a></small><br />
-                <cite><br /><small>Powered by <?=ProductName.' '.Version;?></small></cite>
-            </footer>
-        </div>
+<?php
+    // Home page has different middle (doesnt have top to hang over wowslider images)
+    if ($this->action == 'home') {
+        $class = "middle";
+    } else {
+        $class = "middle-small";
+    }
+?>
+            <!-- Middle/Bottom border -->
+            <div class="<?php echo $class; ?>"></div>
+            
+<?php
+    // Load dynamic footer nav, custom first and stop when found
+    Utility::loadTemplateFile('footer_nav');
+?>
+        
+        </div> <!-- #wrapper -->
 
         <!-- jQuery -->
 <?php
-        if (DEVELOPMENT_ENVIRONMENT)
-        {
-            echo "<script src='/js/libs/jquery/1.11.1/jquery.min.js'></script>";
-        }
-        else
-        {
-            echo "<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>";
-        }
+        if (DEVELOPMENT_ENVIRONMENT) { echo "<script src='/js/libs/jquery/1.11.1/jquery.min.js'></script>"; }
+        else { echo "<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>"; }
 ?>
         <script>window.jQuery || document.write('<script src="/js/libs/jquery/1.11.1/jquery.min.js"><\/script>')</script>
 
         <!-- jQuery UI -->
         <script src='/js/libs/jqueryui/1.10.4/jquery-ui.min.js'></script>
 
+<?php
+        // Only include if logged in
+        if (!empty($_SESSION['user_logged_in']))
+        {
+?>
         <!-- WYSIWYG -->
         <!-- @TODO Move to include only when needed -->
         <script type="text/javascript" src="/js/libs/tinymce/tinymce.min.js"></script>
@@ -49,14 +58,20 @@
                 external_plugins: { "filemanager" : "/filemanager/plugin.min.js" }
             });
         </script>
-        
 <?php
+        }
+        
 // GLOBAL: API Action
  include(ROOT.DS."application".DS."views".DS."API".DS."API_include.php");
 
 // GLOBAL: API JS
-array_unshift($pageJavaScript, file_get_contents(ROOT.DS."application".DS."views".DS."API".DS."API.js"));
-
+ if (!empty($pageJavaScript))
+ {
+    array_unshift($pageJavaScript, file_get_contents(ROOT.DS."application".DS."views".DS."API".DS."API.js"));
+ } else {
+    $pageJavaScript[] = file_get_contents(ROOT.DS."application".DS."views".DS."API".DS."API.js");
+ }
+ 
 // GLOBAL: Form Cursor
 $pageJavaScript[] = "
   // Open Modal Cursor
@@ -83,10 +98,9 @@ if (!empty($pageJavaScript)) {
       ";
 }
 
-// Analytics
-if (file_exists('googleAnalytics.php')) {
-  include('googleAnalytics.php');
-}
+// Load Google Analytics (if exists)
+Utility::loadTemplateFile('googleAnalytics');
+
 ?>
 
     </body>

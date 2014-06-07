@@ -3,7 +3,7 @@ if ($this->step == 2)
 {
 ?>
     <!-- Results -->
-    <div id="divInnerResults" class="success">
+    <div id="divInnerResults" class="alert success">
       <?php
         $label = trim(ucfirst($this->controller), "s");
         if ($label == "Usergroup")
@@ -11,7 +11,7 @@ if ($this->step == 2)
             $label = "Group";
         }
         
-        echo "<h1>".$label." updated successfully!</h1>";
+        echo "<p>".$label." updated successfully!</p>";
       ?>
     </div>
 <?php

@@ -45,9 +45,12 @@ class Controller
      */
     public function __construct($controller, $model, $action, $template = NULL)
     {
+        // Perform ACL check prior to routing request
+        ACL::IsUserAuthorized();
+        
         self::routeRequest($controller, $model, $action, $template);
         
-        // Get step or assume 1st step
+        // Get step or assume 1st step (@TODO should this be above reouteRequest?)
         empty($_REQUEST['step']) ? $this->step = 1 : $this->step = $_REQUEST['step'];
         
         $this->set('step', $this->step);

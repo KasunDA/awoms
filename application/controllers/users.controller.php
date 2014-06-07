@@ -172,28 +172,64 @@ class UsersController extends Controller
         $this->set('formID', "frmLoginUsers");
         $this->set('success', TRUE);
         
+        if (!empty($_GET['logoutSuccess']))
+        {
+            // Show logout success message if directed here from logout page
+            $this->set('logoutSuccess', 1);
+        }
+
+        if (!empty($_GET['access']))
+        {
+            // Show access denied message if directed here from ACL/403
+            $this->set('access', 1);
+            
+            $returnURL = "/";
+            if (!empty($_GET['returnURL']))
+            {
+                $returnURL = $_GET['returnURL'];
+            }
+
+            $this->set('returnURL', $returnURL);
+        }
+        
         if ($this->step == 1 
                 && isset($_SESSION['user_logged_in'])
-                && $_SESSION['user_logged_in'] === TRUE)
+                && $_SESSION['user_logged_in'] === TRUE
+                && empty($_GET['access']))
         {
-            // User is already logged in....
-            header('Location: /');
-        
-        } elseif ($this->step == 2) {
             
+            // User is already logged in... ( and not dealing with ACL denied redirect )
+            header('Location: /');
+            exit(0);
+            
+        } elseif ($this->step == 2) {
+
             // Validate login attempt...
-            $valid = TRUE;
-            if ($valid === TRUE)
-            {
-                $this->set('success', TRUE);
-                $_SESSION['user_logged_in'] = TRUE;
-                Session::saveSessionToDB();
-                $this->set('returnURL', "/");
-            }
-            else
+            $username = $_POST['inp_userName'];
+            $passphrase = $_POST['inp_Passphrase'];
+            
+            $this->set('inp_userName', $username);
+            $this->set('inp_Passphrase', $passphrase);
+            
+            $valid = $this->User->ValidateLogin($username, $passphrase);
+            
+            if ($valid === FALSE)
             {
                 $this->set('step', 1);
                 $this->set('success', FALSE);
+            } else {
+                $this->set('success', TRUE);
+                $_SESSION['user_logged_in'] = TRUE;
+                $_SESSION['user'] = $valid;
+                Session::saveSessionToDB();
+                
+                $returnURL = "/";
+                if (!empty($_GET['returnURL']))
+                {
+                    $returnURL = $_GET['returnURL'];
+                }
+                
+                $this->set('returnURL', $returnURL);
             }
         }
     }
@@ -207,11 +243,15 @@ class UsersController extends Controller
 
         $this->set('title', 'Users :: Logout');
 
+        unset($_SESSION['user']);
         $_SESSION['user_logged_in'] = FALSE;
         
         Session::saveSessionToDB();
         
-        header('Location: /users/login');
+        Session::removeCookies();
+        
+        header('Location: /users/login?logoutSuccess=1');
+        exit(0);
     }
 
 }
