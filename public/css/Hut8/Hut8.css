@@ -184,6 +184,9 @@ a#vlb {
 
 /************************************************************************/
 /** Structure **/
+html {
+    line-height: normal;
+}
 body {
     margin-top: 0px;
     margin-bottom: 0px;
@@ -342,6 +345,14 @@ a:active {
 }
 
 /************************************************************************/
+/* Global Image Style */
+img
+{
+    border: 4px solid #FFF;
+    margin: 5px;
+}
+
+/************************************************************************/
 /* Text Styles */
 .body-text {
     font-family: EurostileRegular;
@@ -386,11 +397,13 @@ h1{
     font-size: 22px;
     color: #FC6;
     text-decoration: none;
-    text-indent: 45px;
+    /* text-indent: 45px; */
     text-transform: uppercase;
     text-align: left;
     padding-left: 45px;
     vertical-align: top;
+    
+    margin: 0px;
 }
 .eurostile-body-narrow {
     font-family: EurostileRegular;
@@ -660,4 +673,13 @@ ul.menu_footer_wood li a {
     color: #D63301;
     background-color: #FFCCBA;
     background-image: url('./images/items/knobs/Knob Red.png');
+}
+
+/************************************************************************/
+/* Table */
+table td
+{
+    padding-right:5px;
+    padding-left:0px;
+    vertical-align: top;
 }

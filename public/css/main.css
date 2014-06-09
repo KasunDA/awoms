@@ -68,12 +68,13 @@ body {
     margin-bottom: 0px;
     background-color: #FFF;
     color: #000;
-    
+
+        
+    /*
     font-family: EurostileRegular;
     font-size: 15px;
     text-align: justify;
-    
-    /*
+
     background-attachment: fixed;
     background-image: url(./images/structure/background.jpg);
     background-repeat: no-repeat;
@@ -278,7 +279,7 @@ h1{
     font-size: 22px;
     color: #FC6;
     text-decoration: none;
-    text-indent: 45px;
+    /* text-indent: 45px; */
     text-transform: uppercase;
     text-align: left;
     padding-left: 45px;

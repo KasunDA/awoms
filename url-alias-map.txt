@@ -1,0 +1,2 @@
+dev.hutno8.com/about /pages/view/12
+dev.hutno8.com/buy-sell-clothing /pages/view/13

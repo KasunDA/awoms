@@ -1,5 +1,3 @@
-Please <a href="/users/login">click here</a> to login. If you have forgotten your password <a href="">click here</a> to reset your password.
-
 <form id='<?php echo $formID; ?>'  method='POST'>
   <input type='hidden' name='step' value='2' />
 
@@ -31,41 +29,12 @@ Please <a href="/users/login">click here</a> to login. If you have forgotten you
       </td>
     </tr>
     
+    <tr>
+        <td colspan="2">
+            <button class="callAPI" name="users" value="login">Log In</button>
+        </td>
+    </tr>
+    
   </table>
 </form>
-
-
-<?php
-$pageJavaScript[] = <<<___EOF
-
-var createFrmID = "$formID";
-var createTitle = "User Login";
-var createController = "Users";
-var createAction = "Login";
-var createSaveText = "Login";
-
-/**
- * Apply 'Dialog' to form (jUI modal)
- **/
-$('#' + createFrmID).dialog({
-  autoOpen: true,
-  height: 250,
-  width: 400,
-  modal: true,
-  title: createTitle,
-  buttons: {
-    "Login": function() {
-
-      console.log('Calling API...');
-      callAPI(createController, createAction, createFrmID);
-      $(this).dialog('close');
-    },
-    Cancel: function() {
-      $(this).dialog('close');
-    }
-  }
-});
-
-___EOF;
-
-//tset
+<p><a href="/users/password">Lost Password?</a></p>

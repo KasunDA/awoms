@@ -41,6 +41,7 @@ if ($step == 1)
     $fileLocations = array();
     $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $_SESSION['controller'] . DS . 'loginForm.php';
     $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . 'loginForm.php';
+    $fileLocations[] = $viewsFolder . DS . $_SESSION['controller'] . DS . 'loginForm.php';
     $fileLocations[] = $viewsFolder . 'loginForm.php';
     foreach ($fileLocations as $fileLoc)
     {

@@ -174,6 +174,10 @@ class Bootstrap
                 return false;
             }
             $dispatch->set('resultsMsg', $errorMsg);
+            
+            # @TODO move to error handler
+            header('Location: /404.html');
+            exit(0);
         }
     }
 }

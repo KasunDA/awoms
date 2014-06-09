@@ -24,7 +24,7 @@ else
 
 // Default Page or Requested URL (sanitized)
 $defaultPage = "home";
-$global['input']['url'] = filter_input(INPUT_GET, "url", FILTER_SANITIZE_STRING) ?: $defaultPage;
+$global['input']['url'] = strtolower(filter_input(INPUT_GET, "url", FILTER_SANITIZE_STRING)) ?: $defaultPage;
 
 // Handle page request via Bootstrap MVC
 require_once (ROOT . DS . 'library' . DS . 'bootstrap.class.php');

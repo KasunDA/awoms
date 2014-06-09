@@ -67,6 +67,10 @@ class Autoloader
           Details: " . $result . "
         </div>", E_USER_ERROR);
       
+      #@TODO move to error handler      
+      header('Location: /404.html');
+      exit(0);
+      
     }
   }
 

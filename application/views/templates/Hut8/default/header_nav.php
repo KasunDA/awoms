@@ -24,8 +24,8 @@
         // Default Navigation
 ?>
                             <li><a href="/" target="_parent" title="Home">Home</a></li>
-                            <li><a href="/" target="_parent" title="About Hut no. 8">About Us</a></li>
-                            <li><a href="/" target="_parent" title="Buy &amp; Sell Clothing">Buy &amp; Sell Clothing</a></li>
+                            <li><a href="/about" target="_parent" title="About Hut no. 8">About Us</a></li>
+                            <li><a href="/buy-sell-clothing" target="_parent" title="Buy &amp; Sell Clothing">Buy &amp; Sell Clothing</a></li>
                             <li><a href="/" target="_parent" title="Franchises">Franchises</a></li>
                             <li><a href="/" target="_parent" title="Store Locator">Store Locator</a></li>
 <?php

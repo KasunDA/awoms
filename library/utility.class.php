@@ -413,6 +413,7 @@ class Utility
         
         $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $_SESSION['controller'] . DS . $name .'.php';
         $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $name .'.php';
+        $fileLocations[] = $viewsFolder . DS . $_SESSION['controller'] . DS . $name .'.php';
         $fileLocations[] = $viewsFolder .  $name .'.php';
         
         // Default or Custom takes precedence?

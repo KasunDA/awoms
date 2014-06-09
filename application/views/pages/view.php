@@ -11,7 +11,7 @@ if (!empty($page))
       <h1><?=$page['pageName'];?></h1>
     </header>
     <section>
-      <p><?php
+      <?php
       if (!empty($pageBody)) {
         foreach ($pageBody as $body) {
           if ($body['bodyContentActive'] != 1) {
@@ -19,10 +19,13 @@ if (!empty($page))
           }
           echo $body['bodyContentText'];
         }
-      }?></p>
-      <hr />
+      }?>
     </section>
     
+<?php
+/*
+ * @TODO configurable per page
+ * 
     <section>
       <h2>Comments</h2>
       <?php
@@ -77,6 +80,9 @@ if (!empty($page))
     ?>
   </aside>
 
+    */
+?>
+    
 </div>
 
 <?php

@@ -36,6 +36,15 @@
 ?>
         <!-- WYSIWYG -->
         <!-- @TODO Move to include only when needed -->
+        <script>
+        // Prevent jQuery UI dialog from blocking focusin
+        $(document).on('focusin', function(e) {
+            if ($(event.target).closest(".mce-window").length) {
+                e.stopImmediatePropagation();
+            }
+        });
+        </script>
+        
         <script type="text/javascript" src="/js/libs/tinymce/tinymce.min.js"></script>
         <script type="text/javascript">
             tinymce.init({
@@ -50,7 +59,7 @@
                     "emoticons template paste textcolor spellchecker responsivefilemanager"
                 ],
                 toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-                toolbar2: "link unlink anchor | image media responsivefilemanager | forecolor backcolor emoticons | print preview code",
+                toolbar2: "link unlink anchor | image media responsivefilemanager | forecolor backcolor emoticons | print preview code | fullscreen",
                 image_advtab: true,
                 external_filemanager_path:"/filemanager/",
                 filemanager_title:"Filemanager",
