@@ -17,8 +17,15 @@ class BrandsController extends Controller
         // Template data
         $this->set('title', 'Brands :: View All');
 
+        // Restrict viewing list if non-admin
+        $limit = NULL;
+        if ($_SESSION['user']['usergroup']['usergroupName'] != "Administrators")
+        {
+            $limit = "brandActive=1 AND brandID = ".$_SESSION['brandID'];
+        }
+        
         // Get brand list
-        $this->set('brands', $this->getBrands());
+        $this->set('brands', $this->getBrands($limit));
 
         // Prepare Create Form
         parent::prepareForm();
@@ -124,10 +131,11 @@ class BrandsController extends Controller
      * 
      * @return array
      */
-    public function getBrands()
+    public function getBrands($where = NULL)
     {
-        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-        $brandIDs = $this->Brand->getBrandIDs('brandActive=1');
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);        
+        if ($where == NULL) { $where = 'brandActive=1'; }
+        $brandIDs = $this->Brand->getBrandIDs($where);
         $brands   = array();
         foreach ($brandIDs as $b) {
             $brand    = $this->Brand->getBrandInfo($b['brandID']);

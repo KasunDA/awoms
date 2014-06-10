@@ -62,27 +62,40 @@ class ACL
     /**
      * Handle Access Denied
      * 
-     * @param type $redirect
+     * @param string $redirect
      * @return boolean
      */
-    public static function ReturnFailedAuth($redirect = "login")
+    public static function ReturnFailedAuth($redirect)
     {
-        if ($redirect == "login") {
+        #Errors::debugLogger(__METHOD__, 90);
+        if ($redirect == "login"
+                && empty($_SESSION['user'])) {
             #$_SESSION['ErrorMessage'] = "Login Required";
             #$_SESSION['ErrorRedirect'] = NULL;
             #$_SESSION['ErrorRedirect'] = "/users/login?returnURL=/" . $_SESSION['controller'] . "/" . $_SESSION['action'];
             #Session::saveSessionToDB();
             Errors::debugLogger("* ACL Returning False -> Login *");
-            header('Location: /users/login?returnURL=/' . $_SESSION['controller'] . '/' . $_SESSION['action']);
+            if ($_SESSION['controller'] == 'admin' && $_SESSION['action'] == 'home')
+            {
+                $returnURL = "owners";
+            } else {
+                $returnURL = $_SESSION['controller'] . '/' . $_SESSION['action'];
+            }
+            header('Location: /users/login?returnURL=/' . $returnURL);
             exit(0);
+        } elseif ($redirect == "403"
+                || ($redirect == "login" && !empty($_SESSION['user']))) {
+            #$_SESSION['ErrorMessage'] = "Access Denied";
+            #$_SESSION['ErrorRedirect'] = NULL;
+            #$_SESSION['ErrorRedirect'] = "/users/login?access=1&returnURL=/" . $_SESSION['controller'] . "/" . $_SESSION['action'];
+            #Session::saveSessionToDB();
+            Errors::debugLogger("* ACL Returning False -> 403 *");
+            header('Location: /users/login?access=1&returnURL=/' . $_SESSION['controller'] . '/' . $_SESSION['action']);
+            exit(0);
+        } else {
+            Errors::debugLogger("* ACL Returning False -> False *");
+            return false;
         }
-        #$_SESSION['ErrorMessage'] = "Access Denied";
-        #$_SESSION['ErrorRedirect'] = NULL;
-        #$_SESSION['ErrorRedirect'] = "/users/login?access=1&returnURL=/" . $_SESSION['controller'] . "/" . $_SESSION['action'];
-        #Session::saveSessionToDB();
-        Errors::debugLogger("* ACL Returning False -> 403 *");
-        header('Location: /users/login?access=1&returnURL=/' . $_SESSION['controller'] . '/' . $_SESSION['action']);
-        exit(0);
     }
 
     /**
@@ -92,64 +105,71 @@ class ACL
      * 
      * @param string $redirect What to return if no permissions: login | 403 | false
      * 
+     * @uses ReturnFailedAuth
+     * 
      * @return boolean|header(Location:...
      */
-    public static function IsUserAuthorized($redirect = "login")
+    public static function IsUserAuthorized($controller, $action, $redirect = NULL)
     {
-        Errors::debugLogger(__METHOD__, 10);
-
-        // Allow anonymous/everyone to read Home/Page/Article/Comment/Login/Logout
-        if (in_array($_SESSION['action'], array('home', 'login', 'logout', 'viewall', 'view'))
-                && in_array($_SESSION['controller'], array('home', 'users', 'pages', 'articles', 'comments'))) {
-            return true;
-        }
-
-        Errors::debugLogger("* Checking User ACL *");
-        
-        if (empty($_SESSION['user'])) { return self::ReturnFailedAuth(); }
-        
-        
-        
-        // ?????????????????????????????
-        // ?????????????????????????????        
-        if ($_SESSION['controller'] == 'admin'
-                && $_SESSION['action'] == 'home')
+        Errors::debugLogger(__METHOD__.': '.$controller.'/'.$action, 10);
+        // Allowed anonymous access:
+        if (
+                // Menus
+                ($controller == "menus"
+                    && $action == "admin")
+                ||
+                // Home
+                ($controller == "home"
+                    && $action == "home")
+                ||
+                // Users login
+                ($controller == "users"
+                    && in_array($action, array('login', 'logout')))
+                ||
+                // Anonymous Page/Article/Comment/
+                (empty($_SESSION['user'])
+                    && in_array($controller, array('pages', 'articles', 'comments'))
+                    && in_array($action, array('view', 'viewall')))
+                )
         {
             return true;
         }
-        // ?????????????????????????????
-        // ?????????????????????????????
+
+        #Errors::debugLogger("* Checking for Non-Anonymous User ACL *");
+        if (empty($_SESSION['user'])) { return self::ReturnFailedAuth($redirect); }
         
+        // User is logged in, allow access to /admin/home (/owners) - template does rest
+        if ($controller == 'admin' && $action == 'home') { return true; }
         
         /* User ACL check */
         $brandID     = BRAND_ID;
         $userID      = $_SESSION['user']['userID'];
         $usergroupID = $_SESSION['user']['usergroup']['usergroupID'];
-        $controller  = $_SESSION['controller'];
 
         // CRUD taken from controller/action
-        if ($_SESSION['action'] == 'create') {
+        if ($action == 'create') {
             $crud = "create";
-        } elseif ($_SESSION['action'] == 'viewall' || $_SESSION['action'] == 'view' || $_SESSION['action'] = 'home') {
+        } elseif ($action == 'viewall' || $action == 'view' || $action = 'home') {
             $crud = "read";
-        } elseif ($_SESSION['action'] == 'edit') {
+        } elseif ($action == 'edit') {
             $crud = "update";
-        } elseif ($_SESSION['action'] == 'delete') {
+        } elseif ($action == 'delete') {
             $crud = "delete";
         }
 
         // Search in order of user -> brand/group -> group defaults
         // Brand's User Defaults override?
-        if (self::PermissionCheckUserLevel($userID, $controller, $crud)) return true;
+        $test = self::PermissionCheckUserLevel($userID, $controller, $crud);
+        if ($test === TRUE) {return true;}
+        elseif ($test === FALSE) {return self::ReturnFailedAuth($redirect);}
         
         // Group Defaults:
-        if (self::PermissionCheckDefaultGroupLevel($usergroupID, $controller, $crud)) return true;
+        $test = self::PermissionCheckDefaultGroupLevel($usergroupID, $controller, $crud);
+        if ($test === TRUE) {return true;}
+        elseif ($test === FALSE) {return self::ReturnFailedAuth($redirect);}
 
-        var_dump($userID, $usergroupID, $controller, $crud, $_SESSION);
-        exit;
-        
         // No entry found for allow or deny so returning false (deny)
-        return self::ReturnFailedAuth();
+        return self::ReturnFailedAuth($redirect);
     }
 
     /**
@@ -175,15 +195,15 @@ class ACL
             ':controller' => $controller);
         $results  = self::$DB->query($sql, $sql_data);
         if (!empty($results)) {
-            Errors::debugLogger(__METHOD__ . ': Found user specific ACL (' . $results[0][$crud] . ')...', 10);
+            Errors::debugLogger(__METHOD__ . ': Found user specific ACL (' . $results[0][$crud] . ')...', 90);
             if ($results[0][$crud] == 1) {
                 // Access explicitly ALLOWED:
-                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 10);
+                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 90);
                 return true;
             }
             // Required access explicitly DENIED:
-            Errors::debugLogger(__METHOD__ . ': ACL DENIED', 10);
-            return self::ReturnFailedAuth("403");
+            Errors::debugLogger(__METHOD__ . ': ACL DENIED', 90);
+            return false;
         }
         // No entry found
         return null;
@@ -211,15 +231,15 @@ class ACL
             ':controller' => $controller);
         $results  = self::$DB->query($sql, $sql_data);
         if (!empty($results)) {
-            Errors::debugLogger(__METHOD__ . ': Found group specific ACL (' . $results[0][$crud] . ')...', 10);
+            Errors::debugLogger(__METHOD__ . ': Found group specific ACL (' . $results[0][$crud] . ')...', 90);
             if ($results[0][$crud] == 1) {
                 // Access explicitly ALLOWED:
-                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 10);
+                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 90);
                 return true;
             }
             // Required access explicitly DENIED:
-            Errors::debugLogger(__METHOD__ . ': ACL DENIED', 10);
-            return self::ReturnFailedAuth("403");
+            Errors::debugLogger(__METHOD__ . ': ACL DENIED', 90);
+            return false;
         }
         // No entry found
         return null;

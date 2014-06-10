@@ -10,10 +10,22 @@
         if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
         {
 ?>
-                        <li><a href="/admin/home">Admin</a></li>
+                        <li><a href="/owners">Admin</a></li>
 <?php
         }
-    }
+        else
+        {
+?>
+                        <li><a href="/owners">Owners Home</a></li>
+<?php
+        }
+        
+?>
+                        <li><a href="/users/home"><?php echo $_SESSION['user']['userName']; ?></a></li>
+                        <li><a href="/users/logout">Log Out</a></li>
+<?php
+        
+    } else {
 ?>
 
                         <li>
@@ -23,6 +35,9 @@
                         </li>
                         <li><a href="">Shopping Cart (0)</a></li>
                         <li><a href="">Checkout</a></li>
+<?php
+    }
+?>
                     </ul>
                 </div>
             </div>

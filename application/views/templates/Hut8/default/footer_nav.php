@@ -5,19 +5,19 @@
         <ul class="menu_footer" id="footer_menu_left">
             <li class="heading">Store Info</li>
             <li>
-                <a href="">About Us</a>
+                <a href="/about">About Us</a>
             </li>
             <li>
-                <a href="">Buy &amp; Sell Clothing</a>
+                <a href="/buy-sell-clothing">Buy &amp; Sell Clothing</a>
             </li>
             <li>
-                <a href="">Franchises</a>
+                <a href="/franchises">Franchises</a>
             </li>
             <li>
                 <a href="">Store Locator</a>
             </li>
             <li>
-                <a href="/users/login">Franchise Login</a>
+                <a href="/owners">Franchise Login</a>
             </li>
             <li>
                 <a href="">Fundraising</a>
@@ -90,13 +90,10 @@
 
 <?php
 // Only include Wowslider on front page
-if ($_SESSION['controller'] == "home")
+if ($this->controller == "home")
 {
-?>
-    <!-- Wow slider -->
-    <script src='/css/Hut8/old/wowslider/wowslider.js'></script>
-    <script src='/css/Hut8/old/wowslider/script.js'></script>
-<?php
+    $pageJavaScript[] = "<script src='/css/Hut8/old/wowslider/wowslider.js'></script>";
+    $pageJavaScript[] = "<script src='/css/Hut8/old/wowslider/script.js'></script>";
 }
 ?>
 

@@ -1,0 +1,205 @@
+@charset "utf-8";
+
+/************************************************************************/
+/** Style 2.0 by Brock <brock@brockhensley.com> **/
+/************************************************************************/
+
+/* All brands inherit from /public/css/main.css with customizations done here
+   for example replacing structure background images */
+
+/************************************************************************/
+/** Structure **/
+body {
+    color: #333;
+/*    
+    background-attachment: fixed;
+    background-image: url(./images/structure/background.jpg);
+    background-repeat: no-repeat;
+    background-position: center top;*/
+}
+
+/* Main Div */
+#wrapper {
+/*    background-repeat: repeat-y;
+    background-position: center center;
+    background-image: url(./images/structure/background-tile.jpg);*/
+}
+
+/* Top Nav */
+#top {
+/*    background-attachment: scroll;
+    background-image: url(./images/structure/top.jpg);
+    background-repeat: no-repeat;
+    background-position: center 0%;*/
+}
+
+/* Header */
+.header, .header-full {
+    padding-top: 475px;
+}
+.header {
+    background-image: url(http://goinpostalfranchisecorporation.com/wp-content/uploads/2014/01/header-graphic1.jpg);
+}
+.header-full {
+    background-image: url(http://goinpostalfranchisecorporation.com/wp-content/uploads/2014/01/header-graphic1.jpg);
+}
+
+/* Middle separator */
+.middle {
+/*    background-attachment: scroll;
+    background-image: url(./images/structure/middle.png);
+    background-repeat: no-repeat;
+    background-position: center;*/
+}
+.middle-full {
+/*    background-attachment: scroll;
+    background-image: url(./images/structure/middle-full.png);
+    background-repeat: no-repeat;
+    background-position: center;*/
+}
+.middle-small {
+/*    background-attachment: scroll;
+    background-image: url(./images/structure/middle-smaller.png);
+    background-repeat: no-repeat;
+    background-position: center;*/
+}
+
+/* Footer */
+.footer-container
+{    
+/*    background-image: url(./images/structure/background-tile.jpg);
+    background-repeat: repeat-y;
+    background-position: center;
+    background-attachment: scroll;*/
+}
+/* Wood background for departments footer menu */
+ul.menu_footer_wood li
+{
+    width           : 125px;
+    line-height     : 65px;
+    height          : 65px;
+
+    float: left;
+    
+    margin-left: 15px !important;
+    margin-bottom: 3px !important;
+    
+    background-image: url(./images/items/wood_tile.png);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    
+    text-align: center;
+}
+ul.menu_footer_wood li a {
+    display             : -moz-inline-box;  /* FF2 or lower */
+    display             : inline-block;     /* FF3, Opera, Safari */
+    line-height         : normal;
+    vertical-align      : middle;
+
+    padding: 10px 15px;
+    color: #333;
+    font-family: Daniel Bold, Daniel;
+    font-size: 1.1em;    
+    font-weight: normal;
+
+    *display  : inline; /* haslayout for IE6/7 */
+}
+ul.menu_hover li a {
+    height:20px;
+    margin:0;
+    padding:0;
+    color: #000;
+}
+ul.menu_hover li:hover {
+    color: #000;
+    background-color: lightblue;
+    background-image: none !important;
+    background-repeat: no-repeat !important;
+}
+
+/************************************************************************/
+/* Global Link Style */
+a:link {
+    color: #666;
+    text-decoration: none;
+}
+a:visited {
+    text-decoration: none;
+    color: #666;
+}
+a:hover {
+    text-decoration: none;
+    color: #333;
+}
+a:active {
+    text-decoration: none;
+    color: lightblue;
+}
+
+/************************************************************************/
+/* Text Styles */
+.body-text {
+    color: #333;
+}
+.body-text-bold {
+    color: #333;
+}
+.body-text-bold-nj {
+    color: #333;
+}
+.subheader-text-bold {
+    color: #333;
+}
+.body-text-small {
+    color: #333;
+}
+.header-text,
+h1{
+    color: #333;
+}
+
+/************************************************************************/
+/* Login */
+.login_form
+{
+    height: 400px;
+}
+.login_form_left_col
+{
+    width: 300px;
+    margin-left: 100px;
+    float: left;    
+}
+.login_form_right_col
+{
+    width: 540px;
+    float: left;
+}
+.login_form .login_form_box
+{
+    padding-left: 20px;
+    padding-top: 15px;
+    
+    background-attachment: scroll;
+    background-image: url(./images/items/clear-box.png);
+    background-repeat: no-repeat;
+    background-position: 10px 5px;
+}
+.login_form button
+{
+    margin-top: 20px;
+}
+.login_form h1
+{
+    text-indent: 0px !important;
+    margin-top: 30px;
+    margin-bottom: 0px;
+}
+
+/************************************************************************/
+/* Floating FDD */
+.floatingFDD {
+/*    background-image: url(./images/fdd-wood-bg.png);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;*/
+}

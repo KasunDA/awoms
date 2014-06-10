@@ -8,6 +8,17 @@ class UsersController extends Controller
     }
 
     /**
+     * Home
+     */
+    public function home()
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+
+        // Template data
+        $this->set('title', 'Users :: Home');
+    }
+    
+    /**
      * View All
      */
     public function viewall()
@@ -199,7 +210,7 @@ class UsersController extends Controller
         {
             
             // User is already logged in... ( and not dealing with ACL denied redirect )
-            header('Location: /');
+            header('Location: /owners');
             exit(0);
             
         } elseif ($this->step == 2) {
@@ -223,7 +234,7 @@ class UsersController extends Controller
                 $_SESSION['user'] = $valid;
                 Session::saveSessionToDB();
                 
-                $returnURL = "/";
+                $returnURL = "/owners";
                 if (!empty($_GET['returnURL']))
                 {
                     $returnURL = $_GET['returnURL'];

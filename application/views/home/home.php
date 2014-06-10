@@ -1,1 +1,2 @@
-Hello, you are <strong>home</strong>!
+
+Generic Home Template (View)

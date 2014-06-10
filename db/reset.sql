@@ -23,3 +23,6 @@ WHERE sessionID > 0;
 
 DELETE FROM brands
 WHERE brandID > 1;
+
+DELETE FROM menus
+WHERE menuID > 0;

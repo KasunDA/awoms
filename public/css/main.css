@@ -63,18 +63,20 @@ textarea {
 
 /************************************************************************/
 /** Structure **/
+html {
+    line-height: normal;
+}
 body {
     margin-top: 0px;
     margin-bottom: 0px;
     background-color: #FFF;
     color: #000;
 
-        
-    /*
     font-family: EurostileRegular;
     font-size: 15px;
     text-align: justify;
-
+    
+    /*
     background-attachment: fixed;
     background-image: url(./images/structure/background.jpg);
     background-repeat: no-repeat;
@@ -90,13 +92,13 @@ body {
     margin-right: auto;
     margin-bottom: 0px;
     margin-left: auto;
+    padding-bottom: 10px;
     
     /*
     background-repeat: repeat-y;
     background-position: center center;
     background-image: url(./images/structure/background-tile.jpg);
     */
-    padding-bottom: 10px;
 }
 
 /* Top Nav */
@@ -135,19 +137,19 @@ body {
 }
 .header nav, .header-full nav
 {
-    margin-left: 275px;
+    /*margin-left: 200px;*/
 }
 .header {
+    height: 86px;
     /*
     background-image: url(./images/structure/header.jpg);
     */
-    height: 86px;
 }
 .header-full {
+    height: 110px;
     /*
     background-image: url(./images/structure/header-full.png);
     */
-    height: 110px;
 }
 
 /* Main */
@@ -159,28 +161,31 @@ body {
 
 /* Middle separator */
 .middle {
+    height: 170px;
     /*
     background-attachment: scroll;
     background-image: url(./images/structure/middle.png);
     background-repeat: no-repeat;
     background-position: center;
     */
-    height: 170px;
-    
 }
 .middle-full {
-/*    background-attachment: scroll;
+    height: 180px;
+    /*    
+    background-attachment: scroll;
     background-image: url(./images/structure/middle-full.png);
     background-repeat: no-repeat;
-    background-position: center;*/
-    height: 180px;
+    background-position: center;
+    */
 }
 .middle-small {
-/*    background-attachment: scroll;
+    height: 133px;
+    /*
+    background-attachment: scroll;
     background-image: url(./images/structure/middle-smaller.png);
     background-repeat: no-repeat;
-    background-position: center;*/
-    height: 133px;
+    background-position: center;
+    */
 }
 
 /* Footer */
@@ -188,10 +193,12 @@ body {
 {    
     font-family: Arial, Helvetica, sans-serif;
     height: 209px;
-/*    background-image: url(./images/structure/background-tile.jpg);
+    /*
+    background-image: url(./images/structure/background-tile.jpg);
     background-repeat: repeat-y;
     background-position: center;
-    background-attachment: scroll;*/
+    background-attachment: scroll;
+    */
 }
 .footer-container #footer_menu_left
 {
@@ -235,6 +242,14 @@ a:active {
 }
 
 /************************************************************************/
+/* Global Image Style */
+img
+{
+    border: 4px solid #FFF;
+    margin: 5px;
+}
+
+/************************************************************************/
 /* Text Styles */
 .body-text {
     font-family: EurostileRegular;
@@ -245,7 +260,7 @@ a:active {
 }
 .body-text-bold {
     font-family: EurostileRegular;
-    color: #FFF;
+    color: #000;
     font-size: 16px;
     text-decoration: none;
     text-align: justify;
@@ -253,14 +268,14 @@ a:active {
 }
 .body-text-bold-nj {
     font-family: EurostileRegular;
-    color: #FFF;
+    color: #000;
     font-size: 16px;
     text-decoration: none;
     font-weight: bolder;
 }
 .subheader-text-bold {
     font-family: EurostileRegular;
-    color: #FFF;
+    color: #000;
     font-size: 20px;
     text-decoration: none;
     text-align: left;
@@ -268,7 +283,7 @@ a:active {
 }
 .body-text-small {
     font-family: EurostileRegular;
-    color: #FFF;
+    color: #000;
     font-size: 12px;
     text-decoration: none;
     text-align: justify;
@@ -277,7 +292,7 @@ a:active {
 h1{
     font-family: MisoBold;
     font-size: 22px;
-    color: #FC6;
+    color: #000;
     text-decoration: none;
     /* text-indent: 45px; */
     text-transform: uppercase;
@@ -401,38 +416,7 @@ ul.menu_footer li
     font-size: 14px !important;
     line-height: 23px;
 }
-/* Wood background for departments */
-ul.menu_footer_wood li
-{
-    width           : 125px;
-    line-height     : 65px;
-    height          : 65px;
 
-    float: left;
-    
-    margin-left: 15px !important;
-    margin-bottom: 3px !important;
-    
-    background-image: url(./images/items/wood_tile.png);
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    
-    text-align: center;
-}
-ul.menu_footer_wood li a {
-    display             : -moz-inline-box;  /* FF2 or lower */
-    display             : inline-block;     /* FF3, Opera, Safari */
-    line-height         : normal;
-    vertical-align      : middle;
-
-    padding: 10px 15px;
-    color: #FFF;
-    font-family: Daniel Bold, Daniel;
-    font-size: 1.1em;    
-    font-weight: normal;
-
-    *display  : inline; /* haslayout for IE6/7 */
-}
 /* Copyright */
 .footer-container #copyright
 {
@@ -487,6 +471,45 @@ ul.menu_footer_wood li a {
     background-image: url('./images/items/knobs/Knob Red.png');
 }
 
+/************************************************************************/
+/* Table */
+table td
+{
+    padding-right:5px;
+    padding-left:0px;
+    vertical-align: top;
+}
+
+/************************************************************************/
+/* Floating FDD */
+.floatingFDD {
+    position: fixed;
+    bottom: 1em;
+
+    margin: 0 auto;
+
+    left: 35%;
+
+    width: 350px;
+    height: 100px;
+
+    line-height: 20px;
+    z-index: 9999999;
+
+    padding-top: 25px;
+    line-height: 25px;
+    text-align: center;
+    font-size: 1.1em;
+
+    opacity: 0.95;
+    filter: alpha(opacity=95);
+    
+    /*
+    background-image: url(./images/fdd-wood-bg.png);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    */
+}
 
 /* ==========================================================================
    Media Queries

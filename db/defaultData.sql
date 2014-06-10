@@ -53,6 +53,7 @@ VALUES
 -- 1: Admin defaults
 (NULL, 1, NULL, 'brands', 1, 1, 1, 1),
 (NULL, 1, NULL, 'domains', 1, 1, 1, 1),
+(NULL, 1, NULL, 'menus', 1, 1, 1, 1),
 (NULL, 1, NULL, 'usergroups', 1, 1, 1, 1),
 (NULL, 1, NULL, 'users', 1, 1, 1, 1),
 (NULL, 1, NULL, 'pages', 1, 1, 1, 1),
@@ -61,6 +62,7 @@ VALUES
 -- 2: Store Owner defaults
 (NULL, 2, NULL, 'brands', 0, 0, 0, 0),
 (NULL, 2, NULL, 'domains', 1, 1, 1, 1),
+(NULL, 2, NULL, 'menus', 0, 1, 1, 0),
 (NULL, 2, NULL, 'usergroups', 1, 1, 1, 1),
 (NULL, 2, NULL, 'users', 1, 1, 1, 1),
 (NULL, 2, NULL, 'pages', 1, 1, 1, 1),
@@ -69,8 +71,29 @@ VALUES
 -- 3: User defaults
 (NULL, 3, NULL, 'brands', 0, 0, 0, 0),
 (NULL, 3, NULL, 'domains', 0, 0, 0, 0),
+(NULL, 3, NULL, 'menus', 0, 0, 0, 0),
 (NULL, 3, NULL, 'usergroups', 0, 0, 0, 0),
 (NULL, 3, NULL, 'users', 0, 0, 0, 0),
 (NULL, 3, NULL, 'pages', 0, 0, 0, 0),
 (NULL, 3, NULL, 'articles', 1, 1, 1, 1),
 (NULL, 3, NULL, 'comments', 1, 1, 1, 1);
+
+-- Default Menus
+/*
+INSERT INTO `menus`
+(`brandID`,
+`menuID`,
+`linkID`,
+`sortOrder`,
+`parentLinkID`,
+`display`,
+`url`,
+`menuActive`,
+`linkActive`)
+VALUES
+(1, 1, 1, 1, NULL, 'Home', '/', 1, 1),
+(2, 2, 2, 1, NULL, 'Home', '/', 1, 1),
+(3, 3, 3, 1, NULL, 'Home', '/', 1, 1),
+(3, 3, 4, 2, NULL, 'About Us', '/about', 1, 1),
+(3, 3, 5, 3, NULL, 'Buy & Sell Clothing', '/buy-sell-clothing', 1, 1);
+*/

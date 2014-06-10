@@ -33,24 +33,10 @@ if ($step == 1)
 <?php
     }
     
-    /* Show Form */
-
-    // Views folder
-    $viewsFolder = ROOT . DS . 'application' . DS . 'views' . DS;
-    // Possible locations
-    $fileLocations = array();
-    $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $_SESSION['controller'] . DS . 'loginForm.php';
-    $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . 'loginForm.php';
-    $fileLocations[] = $viewsFolder . DS . $_SESSION['controller'] . DS . 'loginForm.php';
-    $fileLocations[] = $viewsFolder . 'loginForm.php';
-    foreach ($fileLocations as $fileLoc)
-    {
-        if (file_exists($fileLoc))
-        {
-            include($fileLoc);
-            break;
-        }
-    }
+    /* Show Login Form */
+    $fileLocations = Utility::getTemplateFileLocations('loginForm');
+    foreach ($fileLocations as $fileLoc){include($fileLoc);}
+    
 }
 elseif ($step == 2 && $success)
 {

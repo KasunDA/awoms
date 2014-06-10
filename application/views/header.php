@@ -11,13 +11,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <?php
     // Load dynamic meta tags, custom first and stop when found
-    Utility::loadTemplateFile('header_meta');
-
+    $fileLocations = Utility::getTemplateFileLocations('header_meta');
+    foreach ($fileLocations as $fileLoc){include($fileLoc);}
+    
     // Load all styles, default first then custom
-    Utility::loadTemplateFile('header_style', FALSE, TRUE);
+    $fileLocations = Utility::getTemplateFileLocations('header_style', FALSE, TRUE);
+    foreach ($fileLocations as $fileLoc){include($fileLoc);}
     
     // Load Google Site Verification (if exists)
-    Utility::loadTemplateFile('googleSiteVerification');
+    $fileLocations = Utility::getTemplateFileLocations('googleSiteVerification');
+    foreach ($fileLocations as $fileLoc){include($fileLoc);}
 ?>
         <!-- Modernizr (keep after styles and in header) -->
         <script src="/js/libs/modernizr-respond/2.6.2-respond-1.1.0/modernizr-respond.min.js"></script>
@@ -31,10 +34,12 @@
 
 <?php
     // Load top template (if exists)
-    Utility::loadTemplateFile('header_top');
+    $fileLocations = Utility::getTemplateFileLocations('header_top');
+    foreach ($fileLocations as $fileLoc){include($fileLoc);}
     
     // Load navigation template
-    Utility::loadTemplateFile('header_nav');
+    $fileLocations = Utility::getTemplateFileLocations('header_nav');
+    foreach ($fileLocations as $fileLoc){include($fileLoc);}
 ?>
 
             <div id="main-container" class="body-text">

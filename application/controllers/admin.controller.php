@@ -6,12 +6,17 @@ class AdminController extends Controller
     public function home()
     {
         // ACL
-        if (empty($_SESSION['user_logged_in']) || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators") {
-            header('Location: /users/login?returnURL=/admin/home');
+        if (empty($_SESSION['user_logged_in'])) {
+            header('Location: /users/login?returnURL=/owners');
             exit(0);
         }
-
-        $this->set('title', BRAND . ' Administration');
+        
+        if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
+        {
+            $this->set('title', BRAND . ' Administration');
+        } else {
+            $this->set('title', BRAND . ' Owners');
+        }
     }
 
 }

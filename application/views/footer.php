@@ -3,26 +3,25 @@
 
 <?php
     // Home page has different middle (doesnt have top to hang over wowslider images)
-    if ($this->action == 'home') {
-        $class = "middle";
-    } else {
-        $class = "middle-small";
-    }
+    if ($_SESSION['controller'] == 'home'
+            && $_SESSION['action'] == 'home')
+        { $class = "middle"; } else { $class = "middle-small"; }
 ?>
             <!-- Middle/Bottom border -->
             <div class="<?php echo $class; ?>"></div>
             
 <?php
     // Load dynamic footer nav, custom first and stop when found
-    Utility::loadTemplateFile('footer_nav');
+    $fileLocations = Utility::getTemplateFileLocations('footer_nav');
+    foreach ($fileLocations as $fileLoc){include($fileLoc);}
 ?>
         
         </div> <!-- #wrapper -->
 
         <!-- jQuery -->
 <?php
-        if (DEVELOPMENT_ENVIRONMENT) { echo "<script src='/js/libs/jquery/1.11.1/jquery.min.js'></script>"; }
-        else { echo "<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>"; }
+        if (DEVELOPMENT_ENVIRONMENT) { echo "\n<script src='/js/libs/jquery/1.11.1/jquery.min.js'></script>"; }
+        else { echo "\n<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>"; }
 ?>
         <script>window.jQuery || document.write('<script src="/js/libs/jquery/1.11.1/jquery.min.js"><\/script>')</script>
 
@@ -96,6 +95,7 @@ if (!empty($pageJavaScript)) {
     
     if (is_array($pageJavaScript)) {
       foreach ($pageJavaScript as $js) {
+          if (preg_match('/^<script/', $js)) { continue; }
         echo $js;
       }
     } else {
@@ -105,10 +105,17 @@ if (!empty($pageJavaScript)) {
         });
       </script>
       ";
+    
+    // Load external <script src='.... references
+    foreach ($pageJavaScript as $js) {
+        if (!preg_match('/^<script/', $js)) { continue; }
+        echo $js;
+    }
 }
 
 // Load Google Analytics (if exists)
-Utility::loadTemplateFile('googleAnalytics');
+$fileLocations = Utility::getTemplateFileLocations('googleAnalytics');
+foreach ($fileLocations as $fileLoc){include($fileLoc);}
 
 ?>
 

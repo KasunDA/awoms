@@ -1,4 +1,3 @@
-
         <title><?php
         //@TODO
           if (!empty($article['articleName'])) {

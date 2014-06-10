@@ -390,9 +390,9 @@ class Utility
     }
     
     /**
-     * loadTemplateFile
+     * getTemplateFileLocations
      * 
-     * Searches for appropriate custom template file to load and includes the found file
+     * Searches for appropriate custom template files and returns array of valid file paths
      * 
      * Example:
      *  views/templates/BRAND/THEME/CONTROLLER/name.php
@@ -402,9 +402,12 @@ class Utility
      * @param string $name
      * @param boolean $customFirst set to false to have default files be searched first
      * @param boolean $includeAllFound set to true to include all found files
+     * 
+     * @returns array
      */
-    public static function loadTemplateFile($name, $customFirst = TRUE, $includeAllFound = FALSE)
+    public static function getTemplateFileLocations($name, $customFirst = TRUE, $includeAllFound = FALSE)
     {
+        
         // Views folder
         $viewsFolder = ROOT . DS . 'application' . DS . 'views' . DS;
 
@@ -422,14 +425,26 @@ class Utility
             $fileLocations = array_reverse($fileLocations);
         }
 
+        $i = 0;
         foreach ($fileLocations as $fileLoc)
         {
-            if (file_exists($fileLoc))
+            if (!file_exists($fileLoc))
             {
-                include($fileLoc);
-                if (!$includeAllFound){break;}
+                unset($fileLocations[$i]);
             }
+            else
+            {
+                if (!$includeAllFound)
+                {
+                    $fileLocations = array();
+                    $fileLocations[] = $fileLoc;
+                    break;
+                }
+            }
+            $i++;
         }
+        
+        return $fileLocations;
     }
 
     /**

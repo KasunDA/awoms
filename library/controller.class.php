@@ -46,7 +46,11 @@ class Controller
     public function __construct($controller, $model, $action, $template = NULL)
     {
         // Perform ACL check prior to routing request
-        ACL::IsUserAuthorized();
+        // action is empty if using controller within code loop (getDomains == new Brand() <-- empty action...)
+        if (!empty($controller) && !empty($action))
+        {
+            ACL::IsUserAuthorized($controller, $action, "login");
+        }
         
         self::routeRequest($controller, $model, $action, $template);
         

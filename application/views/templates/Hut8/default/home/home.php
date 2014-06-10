@@ -1,13 +1,13 @@
 <!-- Start WOWSlider.com BODY section id=wowslider-container1 -->
 <div id="wowslider-container1">
     <div class="ws_images">
-        <a href="http://www.hutno8.com/buy_sell.php" target="_parent">
+        <a href="/buy-sell-clothing" target="_parent">
             <img src="/css/Hut8/images/slider/images/slider1.jpg" alt="Buy and Sell Hut no. 8 Clothing" title="Buy and Sell Hut no. 8 Clothing" id="wows0"/>
         </a>
-        <a href="http://www.hutno8.com/locations/">
+        <a href="/locations">
             <img src="/css/Hut8/images/slider/images/slider2.jpg" alt="Hut no. 8 Locations" title="Hut no. 8 Locations" id="wows1"/>
         </a>
-        <a href="http://www.hutno8.com/franchises.php" target="_parent">
+        <a href="/franchises" target="_parent">
             <img src="/css/Hut8/images/slider/images/slider3.jpg" alt="Hut no. 8 Franchise Information" title="Hut no. 8 Franchise Information" id="wows2"/>
         </a>
     </div>

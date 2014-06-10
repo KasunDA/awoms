@@ -17,8 +17,15 @@ class DomainsController extends Controller
         // Template data
         $this->set('title', 'Domains :: View All');
 
+        // Restrict viewing list if non-admin
+        $limit = NULL;
+        if ($_SESSION['user']['usergroup']['usergroupName'] != "Administrators")
+        {
+            $limit = "domainActive=1 AND brandID = ".$_SESSION['brandID'];
+        }
+        
         // Get domains list
-        $this->set('domains', $this->getDomains());
+        $this->set('domains', $this->getDomains($limit));
 
         // Prepare Create Form
         parent::prepareForm(NULL, "ALL");
@@ -127,10 +134,11 @@ class DomainsController extends Controller
      * 
      * @return array
      */
-    public function getDomains()
+    public function getDomains($where = NULL)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-        $domainIDs = $this->Domain->getDomainIDs('domainActive=1');
+        if ($where == NULL) { $where = 'domainActive=1'; }
+        $domainIDs = $this->Domain->getDomainIDs($where);
         $domains   = array();
         foreach ($domainIDs as $b) {
             $domain    = $this->Domain->getDomainInfo($b['domainID']);
