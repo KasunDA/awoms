@@ -10,7 +10,7 @@
 /************************************************************************/
 /** Structure **/
 body {
-    color: #FFF;
+    /* color: #FFF; */
     
     background-attachment: fixed;
     background-image: url(./images/structure/background.jpg);

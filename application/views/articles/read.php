@@ -58,7 +58,7 @@
     <br />
     <cite>Author: anonymous</cite>
     <br />
-    <a href='<?=BRAND_URL;?>articles/edit/<?=$article['articleID'];?>'>Edit Article</a>
+    <a href='<?=BRAND_URL;?>articles/update/<?=$article['articleID'];?>'>Update Article</a>
     
     <?php
     // Article Long Description?

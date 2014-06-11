@@ -470,6 +470,49 @@ ul.menu_footer li
     background-color: #FFCCBA;
     background-image: url('./images/items/knobs/Knob Red.png');
 }
+.alert.up {
+    background-image: url('./images/items/knobs/Knob Upload.png');
+}
+.alert.down {
+    background-image: url('./images/items/knobs/Knob Download.png');
+}
+.alert.cancel {
+    background-image: url('./images/items/knobs/Knob Cancel.png');
+}
+.alert.add {
+    background-image: url('./images/items/knobs/Knob Add.png');
+}
+.alert.remove {
+    background-image: url('./images/items/knobs/Knob Remove Red.png');
+}
+.alert.red {
+    background-image: url('./images/items/knobs/Knob Red.png');
+}
+.alert.no-img {
+    background-image: none !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+    padding: 0px !important;
+    margin: 0px auto !important;
+}
+.alert.only-img
+{
+    background-color: none !important;
+    border: none !important;
+    
+    padding: 0px !important;
+    margin: 0px auto !important;
+    
+    text-align: right;
+    
+    width: 23px;
+    height: 23px;
+    
+    background-position: center center !important;
+    background-size: 23px 23px !important;
+    
+    font-size: 10px;
+}
 
 /************************************************************************/
 /* Table */
@@ -509,6 +552,26 @@ table td
     background-repeat: no-repeat;
     background-position: 50% 50%;
     */
+}
+
+/************************************************************************/
+/* Global */
+.center
+{
+    text-align: center;
+}
+
+/************************************************************************/
+/* jQuery UI */
+.ui-button.delete
+{
+    background: none !important;
+    border-color: #000 !important;
+    background-color: red !important;
+}
+.ui-button.delete:hover
+{
+    background-color: #FFBABA !important;
 }
 
 /* ==========================================================================

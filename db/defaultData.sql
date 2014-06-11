@@ -79,21 +79,16 @@ VALUES
 (NULL, 3, NULL, 'comments', 1, 1, 1, 1);
 
 -- Default Menus
-/*
 INSERT INTO `menus`
-(`brandID`,
-`menuID`,
-`linkID`,
-`sortOrder`,
-`parentLinkID`,
-`display`,
-`url`,
-`menuActive`,
-`linkActive`)
+(`menuID`,`brandID`,`menuName`,`menuActive`)
 VALUES
-(1, 1, 1, 1, NULL, 'Home', '/', 1, 1),
-(2, 2, 2, 1, NULL, 'Home', '/', 1, 1),
-(3, 3, 3, 1, NULL, 'Home', '/', 1, 1),
-(3, 3, 4, 2, NULL, 'About Us', '/about', 1, 1),
-(3, 3, 5, 3, NULL, 'Buy & Sell Clothing', '/buy-sell-clothing', 1, 1);
-*/
+(1, 1, 'Default Heading Navigation Menu', 1);
+
+-- Default Menu Links
+INSERT INTO `menulinks`
+(`linkID`,`menuID`,`sortOrder`,`parentLinkID`,`display`,`url`,`linkActive`)
+VALUES
+(1, 1, 1, NULL, 'Home', '/', 1),
+(2, 1, 2, NULL, 'About Us', '/about', 1),
+(3, 1, 3, NULL, 'Contact Us', '/contact', 1),
+(4, 1, 4, NULL, 'Franchise Login', '/owners', 1);

@@ -94,7 +94,7 @@ class Model extends Database
             $dups .= $col . " = :" . $col . ", ";
             $this->sqlData[':' . $col] = $val;
         }
-        $cols = substr($cols, 0, -2); // Trim last ', '
+        $cols = substr($cols, 0, -2); // Trim last ', ' ... @TODO rtrim(', ')
         $vals = substr($vals, 0, -2); // Trim last ', '
         $dups = substr($dups, 0, -2); // Trim last ', '
 
@@ -117,7 +117,7 @@ class Model extends Database
 
         return $this->query($this->sql, $this->sqlData);
     }
-
+    
     /**
      * select
      * 
@@ -136,30 +136,135 @@ class Model extends Database
      */
     public function select($columns, $where = NULL, $order = NULL, $table = NULL)
     {
+        // Columns
         if (is_array($columns)) {
             $cols = "`" . implode("`,`", $columns) . "`";
         } else {
             $cols = $columns;
         }
+        
+        // Table
         if ($table === NULL) {
             $table = $this->table;
         }
-        $this->sql = "
-      SELECT " . $cols . "
-      FROM " . $table;
-        if (!empty($where)) {
-            $this->sql .= "
-        WHERE " . $where;
-        }
-        if (!empty($order)) {
-            $this->sql .= "
-        ORDER BY " . $order;
+        
+        // Where
+        if ($where !== NULL)
+        {
+            // PDO Prepared Statements using array key => value
+            if (is_array($where))
+            {
+                $whrs = '';
+                $this->sqlData = array();        
+                foreach ($where as $col => $val) {
+                    // WHERE x = :x, y = :y
+                    $whrs .= $col . " = :" . $col . ", ";
+                    // ':x' = 'x123', ':y' = 'y321'
+                    $this->sqlData[':' . $col] = $val;
+                }
+                $where = rtrim($whrs, ", ");
+            }
         }
         
+        // Query
+        $this->sql = "
+            SELECT " . $cols . "
+            FROM " . $table;
+        
+        if (!empty($where)) {
+            $this->sql .= "
+            WHERE " . $where;
+        }
+        
+        if (!empty($order)) {
+            $this->sql .= "
+            ORDER BY " . $order;
+        }
+        
+        if (!empty($this->sqlData))
+        {
+            return $this->makeRawDbTextSafeForHtmlDisplay($this->query($this->sql, $this->sqlData));
+        }
         return $this->makeRawDbTextSafeForHtmlDisplay($this->query($this->sql));
     }
+
+    /**
+     * delete
+     * 
+     * Used to execute DELETE queries on a SINGLE table
+     * 
+     * @since v00.00.0000
+     * 
+     * @version v00.00.0000
+     * 
+     * @param array $data Data col=>data
+     * @param string $table Optional table to specify otherwise uses $this->model
+     * @param int $limit Optional limit clause
+     * 
+     * @return boolean
+     */
+    function delete($data, $table = NULL, $limit = FALSE)
+    {
+        $vals          = '';
+        $this->sqlData = array();
+        foreach ($data as $col => $val) {
+            if (empty($vals))
+            {
+                $vals = $col . " = :" . $col;
+            }
+            else
+            {
+                $vals .= " AND " . $col . " = :" . $col;
+            }
+            $this->sqlData[':' . $col] = $val;
+        }
+
+        if ($table === NULL) {
+            $table = $this->table;
+        }
+
+        $this->sql = "
+            DELETE FROM " . $table . "
+            WHERE " . $vals . " ";
+        
+        if ($limit != FALSE)
+        {
+            if ($limit == TRUE) {$limit = 1;}
+            $this->sql .= " LIMIT ".$limit;
+        }
+
+        return $this->query($this->sql, $this->sqlData);
+    }
+
+    public function getAll()
+    {
+        $cols = "*";
+        $where = NULL;
+        $order = NULL;
+        $table = NULL;
+        // ACL: Non-admins restricted list to active brand for these controllers (they have brandID field)
+        if (in_array($this->table, array('brands', 'domains', 'usergroups', 'menus', 'pages', 'articles')))
+        {
+            if ($_SESSION['user']['usergroup']['usergroupName'] != "Administrators") {
+                $where = array('brandID', $_SESSION['brandID']);
+            }
+        } else {
+            trigger_error("NotYetImplemented", E_USER_ERROR);
+            exit(0);
+        }
+
+        $all = self::select($cols, $where, $order, $table);
+        return $all;
+    }
     
-    // Ensures things like "Goin' Postal" are displayed as "Goin&#39 Postal"
+    /**
+     * Ensures things like "Goin' Postal" are displayed as "Goin&#39 Postal"
+     * 
+     * @uses htmlentities
+     * 
+     * @param array|string $raw
+     * @return array|string
+     */
     public function makeRawDbTextSafeForHtmlDisplay($raw)
     {
         array_walk_recursive($raw, function (&$value) {
@@ -167,7 +272,7 @@ class Model extends Database
         });
         return $raw;
     }
-
+    
     /**
      * saveBodyContents
      * 
@@ -272,51 +377,4 @@ class Model extends Database
         return $this->query($this->sql, $this->sqlData);
     }
 
-    /**
-     * delete
-     * 
-     * Used to execute DELETE queries on a SINGLE table
-     * 
-     * @since v00.00.0000
-     * 
-     * @version v00.00.0000
-     * 
-     * @param array $data Data col=>data
-     * @param string $table Optional table to specify otherwise uses $this->model
-     * @param int $limit Optional limit clause
-     * 
-     * @return boolean
-     */
-    function delete($data, $table = NULL, $limit = FALSE)
-    {
-        $vals          = '';
-        $this->sqlData = array();
-        foreach ($data as $col => $val) {
-            if (empty($vals))
-            {
-                $vals = $col . " = :" . $col;
-            }
-            else
-            {
-                $vals .= " AND " . $col . " = :" . $col;
-            }
-            $this->sqlData[':' . $col] = $val;
-        }
-
-        if ($table === NULL) {
-            $table = $this->table;
-        }
-
-        $this->sql = "
-            DELETE FROM " . $table . "
-            WHERE " . $vals . " LIMIT 1";
-        
-        if ($limit != FALSE)
-        {
-            if ($limit == TRUE) {$limit = 1;}
-            $this->sql .= " LIMIT ".$limit;
-        }
-
-        return $this->query($this->sql, $this->sqlData);
-    }
 }

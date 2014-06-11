@@ -66,7 +66,7 @@ if (!empty($page))
     <br />
     <cite>Author: anonymous</cite>
     <br />
-    <a href='<?=BRAND_URL;?>pages/edit/<?=$page['pageID'];?>'>Edit Page</a>
+    <a href='<?=BRAND_URL;?>pages/update/<?=$page['pageID'];?>'>Update Page</a>
     
     <?php
     // Page Long Description?

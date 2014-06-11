@@ -4,7 +4,7 @@ class Menu extends Model
 {
     protected static function getMenuColumns()
     {
-        $cols = array('brandID', 'menuID', 'linkID', 'sortOrder', 'parentLinkID', 'display', 'url', 'menuActive', 'linkActive');
+        $cols = array('menuID', 'brandID', 'menuName', 'menuActive');
         return $cols;
     }
 
@@ -13,20 +13,25 @@ class Menu extends Model
         return self::update($data);
     }
 
-    public function getMenu($menuID)
+    public function getMenuInfo($menuID, $LoadLinks = FALSE)
     {
         $cols  = self::getMenuColumns();
         $where = 'menuID = ' . $menuID;
-        $order = " sortOrder, display ASC";
+        $order = "menuName ASC";
         $res   = self::select($cols, $where, $order); // Dereferencing not available until php v5.4-5.5
-        return $res;
+        if (empty($res)) { return false; }
+        if ($LoadLinks)
+        {
+            $MenuLink = new MenuLink();
+            $res['0']['links'] = $MenuLink->getMenuLinks($menuID);
+        }
+        return $res[0];
     }
 
-    /* DISTINCT */
     public function getMenuIDs($where = NULL)
     {
-        $cols  = 'DISTINCT menuID';
-        $order = 'menuID DESC';
+        $cols  = 'menuID';
+        $order = 'menuID ASC'; // ASC - Oldest first
         return self::select($cols, $where, $order);
     }
 
@@ -34,7 +39,7 @@ class Menu extends Model
     {
         $where = " brandID = ".$_SESSION['brandID']." AND menuActive=1";
         $res = self::getMenuIDs($where);
-        return self::getMenu($res[0]['menuID']);
+        if (empty($res)) { return false; }
+        return self::getMenuInfo($res[0]['menuID'], TRUE);
     }
-
 }

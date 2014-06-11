@@ -129,7 +129,7 @@ class ACL
                 // Anonymous Page/Article/Comment/
                 (empty($_SESSION['user'])
                     && in_array($controller, array('pages', 'articles', 'comments'))
-                    && in_array($action, array('view', 'viewall')))
+                    && in_array($action, array('view', 'readall')))
                 )
         {
             return true;
@@ -149,9 +149,9 @@ class ACL
         // CRUD taken from controller/action
         if ($action == 'create') {
             $crud = "create";
-        } elseif ($action == 'viewall' || $action == 'view' || $action = 'home') {
+        } elseif ($action == 'readall' || $action == 'view' || $action = 'home') {
             $crud = "read";
-        } elseif ($action == 'edit') {
+        } elseif ($action == 'update') {
             $crud = "update";
         } elseif ($action == 'delete') {
             $crud = "delete";

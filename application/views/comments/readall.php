@@ -1,4 +1,4 @@
-<div class="main_viewall">
+<div class="main_readall">
     <div id='divResults'></div>
     <div class="main_output">
         
@@ -9,10 +9,10 @@
     $items = $$c;
     $lbl = trim(strtolower($this->controller), "s");
     for ($i=0; $i<count($items); $i++) {
-      $editLink = BRAND_URL.$this->controller.'/edit/'.$items[$i][$lbl.'ID'].'/'.str_replace(' ', '-', $items[$i][$lbl.'Name']);
+      $updateLink = BRAND_URL.$this->controller.'/update/'.$items[$i][$lbl.'ID'].'/'.str_replace(' ', '-', $items[$i][$lbl.'Name']);
 ?>
             <li>
-              <a href="<?=$editLink;?>">
+              <a href="<?=$updateLink;?>">
                 <?= $items[$i][$lbl.'Name']; ?>
               </a>
             </li>

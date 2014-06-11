@@ -81,21 +81,20 @@ class Template
         extract($this->data);
 
         // Omit header/footer if ajax call
-        $m = FALSE;
+        $omitHeaderFooter = FALSE;
         if ($this->template == "json"
                 || $this->template == "ajax"
                 || $this->template == "m")
         {
-            $m = TRUE;
+            $omitHeaderFooter = TRUE;
         }
                 
         // Views folder
         $viewsFolder = ROOT . DS . 'application' . DS . 'views' . DS;
 
         // Header if not in ajax/json mode
-        if (!$m)
+        if (!$omitHeaderFooter)
         {
-
             // Header template
             $templates = array();
             $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->controller . DS . 'header.php';
@@ -131,14 +130,14 @@ class Template
         }
 
         // Footer if not in ajax mode
-        if (!$m)
+        if (!$omitHeaderFooter)
         {
-
             // Footer template
             $templates = array();
             $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->controller . DS . 'footer.php';
             $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . 'footer.php';
             $templates[] = $viewsFolder . 'footer.php';
+            
             foreach ($templates as $template)
             {
                 if (file_exists($template))
@@ -148,6 +147,7 @@ class Template
                 }
             }
         }
+        
     }
 
 }

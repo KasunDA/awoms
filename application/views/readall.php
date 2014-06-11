@@ -1,11 +1,11 @@
-<div class="main_viewall">
+<div class="main_readall">
     <div id='divResults'></div>
     <div class="main_output">
         
 <?php
 $label = ucwords(trim($this->controller, "s"));
 if ($label == "Usergroup") { $label = "Group"; }
-if ($this->action == 'edit')
+if ($this->action == 'update')
 {
 ?>
         <button type='button' onClick="location.href='/<?php echo $this->controller."/create"; ?>'">Add <?php echo $label; ?></button>
@@ -17,13 +17,13 @@ if ($this->action == 'edit')
 }
 
 // Load custom template if exists
-if (file_exists(ROOT.DS.'application'.DS.'views'.DS.BRAND.DS.$this->controller.DS.'viewall_list.php'))
+if (file_exists(ROOT.DS.'application'.DS.'views'.DS.BRAND.DS.$this->controller.DS.'readall_list.php'))
 {
-    include(ROOT.DS.'application'.DS.'views'.DS.BRAND.DS.$this->controller.DS.'viewall_list.php');
+    include(ROOT.DS.'application'.DS.'views'.DS.BRAND.DS.$this->controller.DS.'readall_list.php');
 }
-elseif (file_exists(ROOT.DS.'application'.DS.'views'.DS.$this->controller.DS.'viewall_list.php'))
+elseif (file_exists(ROOT.DS.'application'.DS.'views'.DS.$this->controller.DS.'readall_list.php'))
 {
-    include(ROOT.DS.'application'.DS.'views'.DS.$this->controller.DS.'viewall_list.php');
+    include(ROOT.DS.'application'.DS.'views'.DS.$this->controller.DS.'readall_list.php');
 }
 else
 {
@@ -36,10 +36,10 @@ else
     $items = $$c;
     $lbl = trim(strtolower($this->controller), "s");
     for ($i=0; $i<count($items); $i++) {
-      $editLink = BRAND_URL.$this->controller.'/edit/'.$items[$i][$lbl.'ID'].'/'.str_replace(' ', '-', $items[$i][$lbl.'Name']);
+      $updateLink = BRAND_URL.$this->controller.'/update/'.$items[$i][$lbl.'ID'].'/'.str_replace(' ', '-', $items[$i][$lbl.'Name']);
 ?>
             <li>
-              <a href="<?=$editLink;?>">
+              <a href="<?=$updateLink;?>">
                 <?= $items[$i][$lbl.'Name']; ?>
               </a>
             </li>
@@ -76,12 +76,12 @@ if (
         $pageJavaScript[] = "$('#openModalCreate" . ucfirst($this->controller) . "').trigger('click');";
     }
     
-    // Open Modal if on Edit page
-    elseif (strtolower($this->action) == 'edit'
+    // Open Modal if on Update page
+    elseif (strtolower($this->action) == 'update'
             && $this->step == 1)
     {
         $pageJavaScript[] = "
-        var modalID = 'frmEdit".ucfirst($this->controller)."';
+        var modalID = 'frmUpdate".ucfirst($this->controller)."';
 
         // Open Dialog
         $('#' + modalID).removeClass('hidden');
@@ -91,13 +91,13 @@ if (
   }
 
 // Submitted form reloads list with new data which duplicates the forms etc.
-// This hides the orig viewall data and button
+// This hides the orig readall data and button
 if ($this->step == 2)
 {
 ?>
     <script>
         console.log('Hiding original page output...');
-        $('div.main_viewall:first > div.main_output').hide();
+        $('div.main_readall:first > div.main_output').hide();
         $('#openModalCreate<?php echo ucfirst($this->controller); ?>').hide();
     </script>
 <?php

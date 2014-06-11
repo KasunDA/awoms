@@ -15,7 +15,7 @@ if ($this->step == 2)
 ?>
         <!-- Success Results -->
         <div id="divInnerResults" class="alert success">
-          <?php echo "<p>".$label." created successfully!</p>"; ?>
+          <?php echo "<p>".$label." deleted successfully!</p>"; ?>
         </div>
 <?php
     }
@@ -25,7 +25,7 @@ if ($this->step == 2)
         <!-- Failure Results -->
         <div id="divInnerResults" class="alert failure">
           <?php
-            echo "<p>".$label." failed to create!</p>";
+            echo "<p>".$label." failed to delete!</p>";
             if (!empty($success)) { echo "<p>".$success."</p>"; } // Reason msg
           ?>
         </div>

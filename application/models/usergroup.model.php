@@ -11,7 +11,6 @@ class Usergroup extends Model
     $cols = self::getUsergroupColumns();
     $where = 'usergroupID = '.$usergroupID;
     $res = self::select($cols, $where); // Dereferencing not available until php v5.4-5.5
-    //$res[0]['brand'] = self::getBrandByGroup($usergroupID);
     if ($LoadBrand)
     {
         $Brand = new Brand();

@@ -8,14 +8,14 @@ class UsergroupsController extends Controller
     }
 
     /**
-     * View All
+     * Read All
      */
-    public function viewall()
+    public function readall()
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Template data
-        $this->set('title', 'Groups :: View All');
+        $this->set('title', 'Groups :: Read All');
 
         // Get usergroup list
         $this->set('usergroups', $this->getUsergroups());
@@ -27,13 +27,13 @@ class UsergroupsController extends Controller
     /**
      * Create
      */
-    public function create()
+    public function create($args = NULL)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         $this->set('title', 'Groups :: Create');
 
-        // Step 1: Create/Edit form
+        // Step 1: Create/Update form
         if ($this->step == 1) {
 
             // Prepare Create Form
@@ -83,18 +83,21 @@ class UsergroupsController extends Controller
     }
 
     /**
-     * Edit
+     * Update
      */
-    public function edit()
+    public function update()
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
-        $this->set('title', 'Groups :: Edit');
+        $this->set('title', 'Groups :: Update');
 
         $args = func_get_args();
         if (!empty($args)) {
             $ID = $args[0];
             $this->set('usergroupID', $ID);
+        } else {
+            header('Location: /usergroups/readall');
+            exit(0);
         }
 
         $res = TRUE;
@@ -116,7 +119,7 @@ class UsergroupsController extends Controller
             // Prepare Create Form
             parent::prepareForm($ID, $selectedBrandID);
         } elseif ($this->step == 2) {
-            // Use create method to edit existing
+            // Use create method to update existing
             $res = $this->create();
         }
 

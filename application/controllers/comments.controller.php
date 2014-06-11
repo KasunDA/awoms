@@ -8,14 +8,14 @@ class CommentsController extends Controller
     }
 
     /**
-     * View All
+     * Read All
      */
-    public function viewall()
+    public function readall()
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Template data
-        $this->set('title', 'Comments :: View All');
+        $this->set('title', 'Comments :: Read All');
 
         // Get comments list
         $this->getComments();
@@ -102,7 +102,7 @@ class CommentsController extends Controller
     /**
      * Create
      */
-    public function create()
+    public function create($args = NULL)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
@@ -199,9 +199,9 @@ class CommentsController extends Controller
     }
 
     /**
-     * Edit
+     * Update
      */
-    public function edit()
+    public function update()
     {
 
         // Step 2: Save comment
@@ -241,7 +241,7 @@ class CommentsController extends Controller
         }
         #}
         // Title gets set in step 2 so this stays at end
-        $this->set('title', 'Comments :: Edit');
+        $this->set('title', 'Comments :: Update');
     }
 
 }

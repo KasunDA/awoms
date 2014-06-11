@@ -1,5 +1,6 @@
 <?php
-if ($this->action == "viewall")
+/* Main API File */
+if ($this->action == "readall")
 {
     $loadFile = 'create';
     $loadAction = 'create';
@@ -13,11 +14,18 @@ elseif ($this->action == "create")
     $titlePrefix = "Add ";
     $autoOpenForm = "true";
 }
-elseif ($this->action == "edit")
+elseif ($this->action == "update")
 {
     $loadFile = 'create';
-    $loadAction = 'edit';
-    $titlePrefix = "Edit ";
+    $loadAction = 'update';
+    $titlePrefix = "Update ";
+    $autoOpenForm = "true";
+}
+elseif ($this->action == "delete")
+{
+    $loadFile = 'create';
+    $loadAction = 'delete';
+    $titlePrefix = "Delete ";
     $autoOpenForm = "true";
 }
 else

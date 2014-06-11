@@ -19,14 +19,14 @@ class UsersController extends Controller
     }
     
     /**
-     * View All
+     * Read All
      */
-    public function viewall()
+    public function readall()
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         // Template data
-        $this->set('title', 'Users :: View All');
+        $this->set('title', 'Users :: Read All');
         
         // Get users list
         $this->set('users', $this->getUsers());
@@ -38,13 +38,13 @@ class UsersController extends Controller
     /**
      * Create
      */
-    public function create()
+    public function create($args = NULL)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         $this->set('title', 'Users :: Create');
 
-        // Step 1: Create/Edit form
+        // Step 1: Create/Update form
         if ($this->step == 1) {
 
             // Prepare Create Form
@@ -90,18 +90,21 @@ class UsersController extends Controller
     }
 
     /**
-     * Edit
+     * Update
      */
-    public function edit()
+    public function update()
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
-        $this->set('title', 'Users :: Edit');
+        $this->set('title', 'Users :: Update');
 
         $args = func_get_args();
         if (!empty($args)) {
             $ID = $args[0];
             $this->set('userID', $ID);
+        } else {
+            header('Location: /users/readall');
+            exit(0);
         }
 
         $res = TRUE;
@@ -123,7 +126,7 @@ class UsersController extends Controller
             // Prepare Create Form
             parent::prepareForm($ID, NULL, NULL, $selectedUsergroupID);
         } elseif ($this->step == 2) {
-            // Use create method to edit existing
+            // Use create method to update existing
             $res = $this->create();
         }
 
