@@ -2,56 +2,61 @@
 
 class Article extends Model
 {
-  public function getArticleTypeID() {
-    $r = self::select("refParentItemTypeID", "parentTypeLabel = 'Article'", NULL, "refParentItemTypes");
-    return $r[0]['refParentItemTypeID'];
-  }  
-  
-  protected static function getArticleColumns() {
-    $cols = array('articleID', 'articleActive', 'articleName', 'articleShortDescription', 'articleLongDescription',
-        'articleDatePublished', 'articleDateLastReviewed', 'articleDateLastUpdated', 'articleDateExpires', 'userID', 'brandID');
-    return $cols;
-  }
-  public function saveArticleInfo($data) {
-    return self::update($data);
-  }
+    protected static function getArticleColumns()
+    {
+        $cols = array('articleID', 'articleActive', 'articleName', 'articleShortDescription', 'articleLongDescription',
+            'articleDatePublished', 'articleDateLastReviewed', 'articleDateLastUpdated', 'articleDateExpires', 'userID', 'brandID');
+        return $cols;
+    }
 
-  public function getArticleInfo($articleID, $LoadBrand = FALSE, $LoadUser = FALSE) {
-    $cols = self::getArticleColumns();
-    $where = 'articleID = '.$articleID;
-    $res = self::select($cols, $where); // Dereferencing not available until php v5.4-5.5
-    if ($LoadBrand)
+    public function getArticleTypeID()
     {
-        $Brand = new Brand();
-        $res['0']['brand'] = $Brand->getBrandInfo($res[0]['brandID']);
+        $r = self::select("refParentItemTypeID", "parentTypeLabel = 'Article'", NULL, "refParentItemTypes");
+        return $r[0]['refParentItemTypeID'];
     }
-    if ($LoadUser)
+
+    /**
+     * Load additional model specific info when getWhere is called
+     * 
+     * @param type $ID
+     */
+    public static function LoadExtendedItem($ID)
     {
-        $User = new User();
-        $res['0']['user'] = $User->getUserInfo($res[0]['userID']);
+        $res['articleBody'] = self::getArticleBody($ID);
+        $res['comments']    = self::getArticleComments($ID);
+        return $res;
     }
-    return $res[0];
-  }
-  
-  public function getArticleIDs($where = NULL) {
-    $cols = 'articleID';
-    $order = 'articleID DESC';
-    return self::select($cols, $where, $order);
-  }
- 
-  public function getArticleComments($articleID, $commentID = NULL) {
-    $cols = 'commentID, commentDatePublished';
-    if (empty($commentID)) {
-        $articleTypeID = $this->getArticleTypeID();
-        $where      = 'parentItemID = ' . $articleID . ' AND parentItemTypeID = ' . $articleTypeID;
-    } else {
+
+    private static function getArticleBody($articleID)
+    {
+        // Article Type ID
+        $Article       = new Article();
+        $articleTypeID = $Article->getArticleTypeID();
+
+        // BodyContent (Article)
+        $BodyContent = new BodyContent();
+        $res         = $BodyContent->getWhere(
+                array(
+                    'parentItemTypeID'  => $articleTypeID,
+                    'parentItemID'      => $articleID,
+                    'bodyContentActive' => 1));
+        return $res[0];
+    }
+
+    private static function getArticleComments($articleID, $commentID = NULL)
+    {
+        // Comment Type ID
         $Comment       = new Comment();
         $commentTypeID = $Comment->getCommentTypeID();
-        $where         = 'parentItemID = ' . $commentID . ' AND parentItemTypeID = ' . $commentTypeID;
+
+        // BodyContent (Comment)
+        $BodyContent = new BodyContent();
+        $res         = $BodyContent->getWhere(
+                array(
+                    'parentItemTypeID'  => $commentTypeID,
+                    'parentItemID'      => $articleID,
+                    'bodyContentActive' => 1));
+        return $res;
     }
-    $order = 'commentDatePublished';
-    $table = 'comments';
-    return self::select($cols, $where, $order, $table);
-  }
-  
+
 }

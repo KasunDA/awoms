@@ -1,8 +1,3 @@
-<?php
-if (!empty($page))
-{
-?>
-
 <!-- Template Output -->
 <div id='view'>
 
@@ -11,15 +6,9 @@ if (!empty($page))
       <h1><?=$page['pageName'];?></h1>
     </header>
     <section>
-      <?php
-      if (!empty($pageBody)) {
-        foreach ($pageBody as $body) {
-          if ($body['bodyContentActive'] != 1) {
-            continue;
-          }
-          echo $body['bodyContentText'];
-        }
-      }?>
+    <?php
+        echo html_entity_decode($page['pageBody']['bodyContentText'], ENT_NOQUOTES);
+    ?>
     </section>
     
 <?php
@@ -29,14 +18,14 @@ if (!empty($page))
     <section>
       <h2>Comments</h2>
       <?php
-        if (empty($pageComments)) {
-          echo "<p>Be the first to <a href='".BRAND_URL."comments/write/".$page['pageID']."'>add a comment!</a></p>";
+        if (empty($page['comments'])) {
+          echo "<p>Be the first to <a href='".BRAND_URL."comments/create/".$page['pageID']."'>add a comment!</a></p>";
         } else {
-          echo "<p><a href='".BRAND_URL."comments/write/".$page['pageID']."'>Add a comment!</a></p>
+          echo "<p><a href='".BRAND_URL."comments/create/".$page['pageID']."'>Add a comment!</a></p>
             <ul>";
           $ci = 0;
           $clvl = 0;
-          foreach ($pageComments as $comment) {
+          foreach ($page['comments'] as $comment) {
             $ci++;
             // What level of comment are we on
             if ($comment['level'] > $clvl) {
@@ -51,7 +40,7 @@ if (!empty($page))
             }
             echo "
               <li>
-                <cite><a name='".$comment['commentID']."'>#</a>".$comment['commentID']." ".$comment['commentDatePublished']."</cite> <a href='".BRAND_URL."comments/write/".$page['pageID']."/".$comment['commentID']."'>reply</a>
+                <cite><a name='".$comment['commentID']."'>#</a>".$comment['commentID']." ".$comment['commentDatePublished']."</cite> <a href='".BRAND_URL."comments/create/".$page['pageID']."/".$comment['commentID']."'>reply</a>
                 <br />".$comment['commentBodyText']."
               </li>";
           }
@@ -84,7 +73,3 @@ if (!empty($page))
 ?>
     
 </div>
-
-<?php
-}
-?>

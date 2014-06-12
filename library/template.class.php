@@ -95,6 +95,15 @@ class Template
         // Header if not in ajax/json mode
         if (!$omitHeaderFooter)
         {
+            // Load all styles, default first then custom
+            $headerStyle = self::buildHeader('header_style', FALSE, TRUE);
+            // Load Google Site Verification (if exists)
+            $headerGoogleSiteVerification = self::buildHeader('googleSiteVerification');
+            // Load top template (if exists)
+            $headerTop = self::buildHeader('header_top');
+            // Get dynamic menu
+            $Menu = new Menu();
+            $Menus['header_nav'] = $Menu->getMenu();
             // Header template
             $templates = array();
             $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->controller . DS . 'header.php';
@@ -148,6 +157,24 @@ class Template
             }
         }
         
+    }
+    
+    /**
+     * Returns contents of processed template file(s) into string to pass into template
+     * 
+     * @param string $name
+     * @param boolean $customFirst
+     * @param boolean $includeAllFound
+     * @return string
+     */
+    public static function buildHeader($name, $customFirst = TRUE, $includeAllFound = FALSE)
+    {
+        $fileLocations = Utility::getTemplateFileLocations($name, $customFirst, $includeAllFound);
+        $headerMeta = "";
+        foreach ($fileLocations as $fileLoc){
+            $headerMeta .= "\n".Utility::get_include_contents($fileLoc);
+        }
+        return $headerMeta;
     }
 
 }

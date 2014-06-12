@@ -142,6 +142,8 @@ class ACL
         if ($controller == 'admin' && $action == 'home') { return true; }
         
         /* User ACL check */
+        var_dump($_SESSION['user']);
+        
         $brandID     = BRAND_ID;
         $userID      = $_SESSION['user']['userID'];
         $usergroupID = $_SESSION['user']['usergroup']['usergroupID'];

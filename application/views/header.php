@@ -9,19 +9,18 @@
         <meta http-equiv="Content-Language" content="en-us">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<?php
-    // Load dynamic meta tags, custom first and stop when found
-    $fileLocations = Utility::getTemplateFileLocations('header_meta');
-    foreach ($fileLocations as $fileLoc){include($fileLoc);}
-    
-    // Load all styles, default first then custom
-    $fileLocations = Utility::getTemplateFileLocations('header_style', FALSE, TRUE);
-    foreach ($fileLocations as $fileLoc){include($fileLoc);}
-    
-    // Load Google Site Verification (if exists)
-    $fileLocations = Utility::getTemplateFileLocations('googleSiteVerification');
-    foreach ($fileLocations as $fileLoc){include($fileLoc);}
-?>
+        <?php
+        // Dynamic Meta Tags (from template 'header_meta'
+        // Note: include code needed here to read template data such as $template or $page
+        $fileLocations = Utility::getTemplateFileLocations('header_meta');
+        foreach ($fileLocations as $fileLoc){include $fileLoc;}
+
+        // Dynamic Meta Tags (from template 'header_style'
+        echo $headerStyle;
+
+        // Google Site Verification (from template 'googleSiteVerification'
+        echo $headerGoogleSiteVerification;
+        ?>
         <!-- Modernizr (keep after styles and in header) -->
         <script src="/js/libs/modernizr-respond/2.6.2-respond-1.1.0/modernizr-respond.min.js"></script>
     </head>
@@ -32,30 +31,28 @@
 
         <div id="wrapper">
 
-<?php
-    // Load top template (if exists)
-    $fileLocations = Utility::getTemplateFileLocations('header_top');
-    foreach ($fileLocations as $fileLoc){include($fileLoc);}
-    
-    // Load navigation template
-    $fileLocations = Utility::getTemplateFileLocations('header_nav');
-    foreach ($fileLocations as $fileLoc){include($fileLoc);}
-?>
+            <?php
+            // Dynamic Heading Top (from template 'header_top'
+            echo $headerTop;
+
+            // Dynamic Heading  Nav (from template 'header_nav'
+            // Note: include code needed here to read template data such as $template or $page
+            $fileLocations = Utility::getTemplateFileLocations('header_nav');
+            foreach ($fileLocations as $fileLoc){include $fileLoc;}
+            ?>
 
             <div id="main-container" class="body-text">
                 <a style="display:none" name='top'></a>
 
-<?php
-// Error or results messages
-if (!empty($_SESSION['ErrorMessage'])) {
-    echo $_SESSION['ErrorMessage'];
-    
-#    if (!empty($_SESSION['ErrorRedirect']))
-#    {
-#        echo "<META http-equiv='refresh' content='0;URL=".$_SESSION['ErrorRedirect']."'>";
-#    }
-
-}
-if (!empty($resultsMsg)) {
-  echo $resultsMsg;
-}
+                <?php
+                // Error or results messages
+                if (!empty($_SESSION['ErrorMessage'])) {
+                    echo $_SESSION['ErrorMessage'];
+                #    if (!empty($_SESSION['ErrorRedirect']))
+                #    {
+                #        echo "<META http-equiv='refresh' content='0;URL=".$_SESSION['ErrorRedirect']."'>";
+                #    }
+                }
+                if (!empty($resultsMsg)) {
+                    echo $resultsMsg;
+                }

@@ -30,7 +30,8 @@ foreach ($menus as $m)
     // Add Brand Column if Admin
     if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
     {
-        $b = $Brand->getBrandInfo($m['brandID']);
+        $brands = $Brand->getWhere(array('brandID' => $m['brandID']));
+        $b = $brands[0];
         echo "<td>&nbsp;".$b['brandName']."</td>";
     }
     

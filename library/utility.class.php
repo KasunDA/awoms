@@ -448,6 +448,38 @@ class Utility
     }
 
     /**
+     * Returns "include(x)" results into variable instead of instantly parsing them as the default include/get_file_contents (which shows code) does
+     * 
+     * @param type $filename
+     * 
+     * @return boolean
+     */
+    public static function get_include_contents($filename) {
+        if (is_file($filename)) {
+            ob_start();
+            include $filename;
+            return ob_get_clean();
+        }
+        return false;
+    }
+        
+    /**
+     * Ensures things like "Goin' Postal" are displayed as "Goin&#39 Postal"
+     * 
+     * @uses htmlentities
+     * 
+     * @param array|string $raw
+     * @return array|string
+     */
+    public static function makeRawDbTextSafeForHtmlDisplay($raw)
+    {
+        array_walk_recursive($raw, function (&$value) {
+            $value = htmlentities($value, ENT_QUOTES);
+        });
+        return $raw;
+    }
+    
+    /**
      * convertNLToBR
      * 
      * Converts newlines to <br />

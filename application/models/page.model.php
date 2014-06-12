@@ -8,57 +8,69 @@ class Page extends Model
             'pageDateLastUpdated', 'pageDateExpires', 'userID', 'brandID');
         return $cols;
     }
-    
-  public function getPageTypeID() {
-    $r = self::select("refParentItemTypeID", "parentTypeLabel = 'Page'", NULL, "refParentItemTypes");
-    return $r[0]['refParentItemTypeID'];
-  }  
 
-    public function savePageInfo($data)
+    public function getPageTypeID()
     {
-        return self::update($data);
+        $r = self::select("refParentItemTypeID", "parentTypeLabel = 'Page'", NULL, "refParentItemTypes");
+        return $r[0]['refParentItemTypeID'];
     }
 
-    public function getPageInfo($pageID, $LoadBrand = FALSE, $LoadUser = FALSE)
+    /**
+     * Load additional model specific info when getWhere is called
+     * 
+     * @param type $ID
+     */
+    public static function LoadExtendedItem($ID)
     {
-        $cols  = self::getPageColumns();
-        $where = 'pageID = ' . $pageID;
-        $res   = self::select($cols, $where); // Dereferencing not available until php v5.4-5.5
-        if ($LoadBrand)
-        {
-            $Brand = new Brand();
-            $res['0']['brand'] = $Brand->getBrandInfo($res[0]['brandID']);
-        }
-        if ($LoadUser)
-        {
-            $User = new User();
-            $res['0']['user'] = $User->getUserInfo($res[0]['userID']);
-        }
+        $res['pageBody'] = self::getPageBody($ID);
+        $res['comments'] = self::getPageComments($ID);
+        return $res;
+    }
+
+    private static function getPageBody($pageID)
+    {
+        // Page Type ID
+        $Page       = new Page();
+        $pageTypeID = $Page->getPageTypeID();
+
+        // BodyContent (Page)
+        $BodyContent = new BodyContent();
+        $res         = $BodyContent->getWhere(
+                array(
+                    'parentItemTypeID'  => $pageTypeID,
+                    'parentItemID'      => $pageID,
+                    'bodyContentActive' => 1));
         return $res[0];
     }
 
-    public function getPageIDs($where = NULL)
+    private static function getPageComments($pageID, $commentID = NULL)
     {
-        $cols  = 'pageID';
-        $order = 'pageID DESC';
-        return self::select($cols, $where, $order);
-    }
+        // Comment Type ID
+        $Comment       = new Comment();
+        $commentTypeID = $Comment->getCommentTypeID();
 
-    public function getPageComments($pageID, $commentID = NULL)
-    {
-        $cols = 'commentID, commentDatePublished';
-        if (empty($commentID)) {
-            $Page       = new Page();
-            $pageTypeID = $Page->getPageTypeID();
-            $where      = 'parentItemID = ' . $pageID . ' AND parentItemTypeID = ' . $pageTypeID;
-        } else {
-            $Comment       = new Comment();
-            $commentTypeID = $Comment->getCommentTypeID();
-            $where         = 'parentItemID = ' . $commentID . ' AND parentItemTypeID = ' . $commentTypeID;
-        }
-        $order = 'commentDatePublished';
-        $table = 'comments';
-        return self::select($cols, $where, $order, $table);
+        // BodyContent (Comment)
+        $BodyContent = new BodyContent();
+        $res         = $BodyContent->getWhere(
+                array(
+                    'parentItemTypeID'  => $commentTypeID,
+                    'parentItemID'      => $pageID,
+                    'bodyContentActive' => 1));
+        return $res;
+
+//        $cols = 'commentID, commentDatePublished';
+//        if (empty($commentID)) {
+//            $Page       = new Page();
+//            $pageTypeID = $Page->getPageTypeID();
+//            $where      = 'parentItemID = ' . $pageID . ' AND parentItemTypeID = ' . $pageTypeID;
+//        } else {
+//            $Comment       = new Comment();
+//            $commentTypeID = $Comment->getCommentTypeID();
+//            $where         = 'parentItemID = ' . $commentID . ' AND parentItemTypeID = ' . $commentTypeID;
+//        }
+//        $order = 'commentDatePublished';
+//        $table = 'comments';
+//        return self::select($cols, $where, $order, $table);
     }
 
 }

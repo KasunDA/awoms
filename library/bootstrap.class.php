@@ -38,14 +38,14 @@ class Bootstrap
      */
     public function __construct($url, $template)
     {
-        Errors::debugLogger("*************** BS URL: " . $url . " template(m): ".$template);
-        
+        Errors::debugLogger("*************** BS URL: " . $url . " template(m): " . $template);
+
         # Look up the requested domain and its matching brand
         self::lookupDomainBrand();
 
         # Session start/resume
         new Session();
-        
+
         # Process MVC request
         self::callHook($url, $template);
     }
@@ -74,25 +74,32 @@ class Bootstrap
 
     /**
      * Defines brand constants used throughout application
+     * 
+     * @TODO prevent lookup on every request...
      */
     public function lookupDomainBrand()
     {
-        $Domain = new Domain();
-
-        // @TODO Sanitize $_SERVER['HTTP_HOST']
-        $lookupDomain = $_SERVER['HTTP_HOST'];
-        $where        = "domainActive=1 AND domainName='" . $lookupDomain . "'";
-        $d            = $Domain->getDomainIDs($where);
-
-        if (count($d) == 0) {
-            trigger_error("Domain not found that matches " . $lookupDomain);
+        // Domain lookup
+        $Domain  = new Domain();
+        $domains = $Domain->getWhere(array('domainName' => $_SERVER['HTTP_HOST']));
+        if (empty($domains)) {
+            trigger_error("Domain not found that matches " . $_SERVER['HTTP_HOST']);
             die();
             exit();
         }
+        $domain = $domains[0];
 
-        $domain = $Domain->getDomainInfo($d[0]['domainID'], TRUE);
-        if ($domain['domainName'] == "") continue;# blank entry protection
+        // Brand lookup
+        $Brand  = new Brand();
+        $brands = $Brand->getWhere(array('brandID' => $domain['brandID']));
+        if (empty($brands)) {
+            trigger_error("Brand not found that matches " . $domain['brandID']);
+            die();
+            exit();
+        }
+        $brand = $brands[0];
 
+        // Define constants @TODO Move to session?
         if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) {
             define('HTTPS', TRUE);
             define('PROTOCOL', 'https://');
@@ -100,12 +107,12 @@ class Bootstrap
             define('HTTPS', FALSE);
             define('PROTOCOL', 'http://');
         }
-        define('BRAND_ID', $domain['brand']['brandID']);
-        define('BRAND', $domain['brand']['brandName']);
+        define('BRAND_ID', $brand['brandID']);
+        define('BRAND', $brand['brandName']);
         define('BRAND_URL', PROTOCOL . $domain['domainName'] . '/');
         define('BRAND_DOMAIN', $domain['domainName']);
-        define('BRAND_LABEL', $domain['brand']['brandLabel']);
-        define('BRAND_THEME', $domain['brand']['activeTheme']);
+        define('BRAND_LABEL', $brand['brandLabel']);
+        define('BRAND_THEME', $brand['activeTheme']);
     }
 
     /**
@@ -139,13 +146,14 @@ class Bootstrap
 
         // Save for use throughout scripts
         $_SESSION['controller'] = $controller;
-        $_SESSION['action'] = $action;
-        $_SESSION['query'] = $queryString;
-        $_SESSION['template'] = $template;
-                
-        $controllerName = $controller;
-        $controller     = ucwords($controller);
-        $model          = rtrim($controller, 's');
+        $_SESSION['action']     = $action;
+        $_SESSION['query']      = $queryString;
+        $_SESSION['template']   = $template;
+
+        $controllerName    = $controller;
+        $controller        = ucwords($controller);
+        $model             = rtrim($controller, 's');
+        $_SESSION['model'] = $model;
         $controller .= 'Controller';
 
         // Construct
@@ -174,10 +182,11 @@ class Bootstrap
                 return false;
             }
             $dispatch->set('resultsMsg', $errorMsg);
-            
+
             # @TODO move to error handler
             header('Location: /404.html');
             exit(0);
         }
     }
+
 }

@@ -61,7 +61,6 @@ class Model extends Database
     #public function __destruct() {
     // Triggers Database::__destruct [?]
     #}
-    
     /**
      * update
      * 
@@ -94,7 +93,7 @@ class Model extends Database
             $dups .= $col . " = :" . $col . ", ";
             $this->sqlData[':' . $col] = $val;
         }
-        $cols = substr($cols, 0, -2); // Trim last ', ' ... @TODO rtrim(', ')
+        $cols = substr($cols, 0, -2); // Trim last ', '
         $vals = substr($vals, 0, -2); // Trim last ', '
         $dups = substr($dups, 0, -2); // Trim last ', '
 
@@ -117,7 +116,7 @@ class Model extends Database
 
         return $this->query($this->sql, $this->sqlData);
     }
-    
+
     /**
      * select
      * 
@@ -142,50 +141,47 @@ class Model extends Database
         } else {
             $cols = $columns;
         }
-        
+
         // Table
         if ($table === NULL) {
             $table = $this->table;
         }
-        
+
         // Where
-        if ($where !== NULL)
-        {
+        if ($where !== NULL) {
             // PDO Prepared Statements using array key => value
-            if (is_array($where))
-            {
-                $whrs = '';
-                $this->sqlData = array();        
+            if (is_array($where)) {
+                $whrs          = '';
+                $this->sqlData = array();
                 foreach ($where as $col => $val) {
                     // WHERE x = :x, y = :y
-                    $whrs .= $col . " = :" . $col . ", ";
+                    $whrs .= $col . " = :" . $col . " AND ";
                     // ':x' = 'x123', ':y' = 'y321'
                     $this->sqlData[':' . $col] = $val;
                 }
-                $where = rtrim($whrs, ", ");
+                $where = substr($whrs, 0, -4); // Trim last ' AND '
             }
         }
-        
+
         // Query
         $this->sql = "
             SELECT " . $cols . "
             FROM " . $table;
-        
+
         if (!empty($where)) {
             $this->sql .= "
             WHERE " . $where;
         }
-        
+
         if (!empty($order)) {
             $this->sql .= "
             ORDER BY " . $order;
         }
-        
-        if (!empty($this->sqlData))
-        {
-            return $this->makeRawDbTextSafeForHtmlDisplay($this->query($this->sql, $this->sqlData));
+
+        if (!empty($this->sqlData)) {
+            return Utility::makeRawDbTextSafeForHtmlDisplay($this->query($this->sql, $this->sqlData));
         }
-        return $this->makeRawDbTextSafeForHtmlDisplay($this->query($this->sql));
+        return Utility::makeRawDbTextSafeForHtmlDisplay($this->query($this->sql));
     }
 
     /**
@@ -208,12 +204,9 @@ class Model extends Database
         $vals          = '';
         $this->sqlData = array();
         foreach ($data as $col => $val) {
-            if (empty($vals))
-            {
+            if (empty($vals)) {
                 $vals = $col . " = :" . $col;
-            }
-            else
-            {
+            } else {
                 $vals .= " AND " . $col . " = :" . $col;
             }
             $this->sqlData[':' . $col] = $val;
@@ -226,53 +219,104 @@ class Model extends Database
         $this->sql = "
             DELETE FROM " . $table . "
             WHERE " . $vals . " ";
-        
-        if ($limit != FALSE)
-        {
-            if ($limit == TRUE) {$limit = 1;}
-            $this->sql .= " LIMIT ".$limit;
-        }
 
-        return $this->query($this->sql, $this->sqlData);
+        if ($limit != FALSE) {
+            if ($limit == TRUE) {
+                $limit = 1;
+            }
+            $this->sql .= " LIMIT " . $limit;
+        }
+        $res = $this->query($this->sql, $this->sqlData);
+        if (!empty($res)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public function getAll()
+    /**
+     * ACL: Non-admins restricted list to active brand for these controllers (they have brandID field)
+     * 
+     * @return array|null
+     */
+    private function aclWhere()
     {
-        $cols = "*";
+        // No session if we are looking up domain so allow
+        if (empty($_SESSION)) {
+            return NULL;
+        }
+
+        // Non-Admins limited by brand
         $where = NULL;
-        $order = NULL;
-        $table = NULL;
-        // ACL: Non-admins restricted list to active brand for these controllers (they have brandID field)
-        if (in_array($this->table, array('brands', 'domains', 'usergroups', 'menus', 'pages', 'articles')))
-        {
-            if ($_SESSION['user']['usergroup']['usergroupName'] != "Administrators") {
-                $where = array('brandID', $_SESSION['brandID']);
+        if (in_array($this->table,
+                     array('brands', 'domains', 'usergroups', 'users', 'menus', 'menulinks', 'pages', 'articles',
+                    'bodycontents', 'comments'))) {
+            if (empty($_SESSION['user'])
+                    || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators") {
+                
+                // menulinks special allow for non-users as lacking brandID col
+                if (empty($_SESSION['user']) && in_array($this->table, array('menulinks', 'users'))) { return $where; }
+                 
+                $where = array('brandID' => $_SESSION['brandID']);
             }
         } else {
             trigger_error("NotYetImplemented", E_USER_ERROR);
             exit(0);
         }
+        return $where;
+    }
 
-        $all = self::select($cols, $where, $order, $table);
+    /**
+     * Gets all items
+     * 
+     * @uses aclWhere
+     * 
+     * @return array
+     */
+    public function getAll()
+    {
+        $cols     = "*";
+        $aclWhere = self::aclWhere();
+        // Can append/merge: $aclWhere['col'] = 'val';
+        $order    = NULL;
+        $table    = NULL;
+        $all      = self::select($cols, $aclWhere, $order, $table);
         return $all;
     }
-    
+
     /**
-     * Ensures things like "Goin' Postal" are displayed as "Goin&#39 Postal"
+     * Gets items matching where clause
      * 
-     * @uses htmlentities
+     * @uses aclWhere
      * 
-     * @param array|string $raw
-     * @return array|string
+     * @param array $where = array('col' => 'findMe');
+     * 
+     * @return array
      */
-    public function makeRawDbTextSafeForHtmlDisplay($raw)
+    public function getWhere($where)
     {
-        array_walk_recursive($raw, function (&$value) {
-            $value = htmlentities($value, ENT_QUOTES);
-        });
-        return $raw;
+        $cols     = "*";
+        $aclWhere = self::aclWhere();
+        if (is_array($aclWhere)) {
+            $where = array_merge($where, $aclWhere);
+        }
+        // Can append/merge: $aclWhere['col'] = 'val';
+        $order = NULL;
+        $table = NULL;
+        $all   = self::select($cols, $where, $order, $table);
+        return $all;
     }
-    
+
+    /**
+     * Load additional model specific info when getWhere is called
+     * 
+     * @param type $ID
+     */
+    public static function LoadExtendedItem($ID)
+    {
+        // Look in specific Model
+    }
+
     /**
      * saveBodyContents
      * 

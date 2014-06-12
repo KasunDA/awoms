@@ -7,28 +7,22 @@
     </header>
     <section>
       <p><?php
-      if (!empty($articleBody)) {
-        foreach ($articleBody as $body) {
-          if ($body['bodyContentActive'] != 1) {
-            continue;
-          }
-          echo $body['bodyContentText'];
-        }
-      }?></p>
+      echo html_entity_decode($article['articleBody']['bodyContentText'], ENT_QUOTES);
+        ?></p>
       <hr />
     </section>
     
     <section>
       <h2>Comments</h2>
       <?php
-        if (empty($articleComments)) {
-          echo "<p>Be the first to <a href='".BRAND_URL."comments/write/".$article['articleID']."'>add a comment!</a></p>";
+        if (empty($article['comments'])) {
+          echo "<p>Be the first to <a href='".BRAND_URL."comments/create/".$article['articleID']."'>add a comment!</a></p>";
         } else {
-          echo "<p><a href='".BRAND_URL."comments/write/".$article['articleID']."'>Add a comment!</a></p>
+          echo "<p><a href='".BRAND_URL."comments/create/".$article['articleID']."'>Add a comment!</a></p>
             <ul>";
           $ci = 0;
           $clvl = 0;
-          foreach ($articleComments as $comment) {
+          foreach ($article['comments'] as $comment) {
             $ci++;
             // What level of comment are we on
             if ($comment['level'] > $clvl) {
@@ -43,7 +37,7 @@
             }
             echo "
               <li>
-                <cite><a name='".$comment['commentID']."'>#</a>".$comment['commentID']." ".$comment['commentDatePublished']."</cite> <a href='".BRAND_URL."comments/write/".$article['articleID']."/".$comment['commentID']."'>reply</a>
+                <cite><a name='".$comment['commentID']."'>#</a>".$comment['commentID']." ".$comment['commentDatePublished']."</cite> <a href='".BRAND_URL."comments/create/".$article['articleID']."/".$comment['commentID']."'>reply</a>
                 <br />".$comment['commentBodyText']."
               </li>";
           }
