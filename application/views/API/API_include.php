@@ -1,5 +1,6 @@
 <?php
 /* Main API File */
+$deleteButtonClass = "delete";
 if ($this->action == "readall")
 {
     $loadFile = 'create';
@@ -13,6 +14,7 @@ elseif ($this->action == "create")
     $loadAction = 'create';
     $titlePrefix = "Add ";
     $autoOpenForm = "true";
+    $deleteButtonClass = "hidden";
 }
 elseif ($this->action == "update")
 {
@@ -40,7 +42,8 @@ $find = array("@@".$loadFile."FrmID@@",
     "@@".$loadFile."Action@@",
     "@@".$loadFile."SaveText@@",
     "@@".$loadFile."TinyMCEInputID@@",
-    "\"@@".$loadFile."AutoOpenForm@@\"");
+    "\"@@".$loadFile."AutoOpenForm@@\"",
+    "@@deleteButtonClass@@");
 
 // Title
 $controller = rtrim(strtolower($this->controller), "s");
@@ -57,7 +60,8 @@ $replace = array($formID,
     $loadAction, // desired action, not current action
     $saveLabel,
     $tinyMCEInputID,
-    $autoOpenForm);
+    $autoOpenForm,
+    $deleteButtonClass);
 
 $actionJS = file_get_contents(ROOT.DS."application".DS."views".DS."API".DS.$loadFile.".js");
 $finalJS = str_replace($find,$replace,$actionJS);

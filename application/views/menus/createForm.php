@@ -45,6 +45,25 @@
         ?>' size='40' autocomplete="off" />
             </td>
         </tr>
+        
+        <tr>
+            <td>
+                Active
+            </td>
+            <td>
+                <select id='inp_menuActive' name='inp_menuActive'/>
+                    <?php
+                    if (!empty($inp_menuActive)) {
+                        echo "<option value='1' selected>Active</option>";
+                        echo "<option value='0'>Not Active</option>";
+                    } else {
+                        echo "<option value='1'>Active</option>";
+                        echo "<option value='0' selected>Not Active</option>";
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
 
     </table>
 

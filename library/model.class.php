@@ -234,6 +234,8 @@ class Model extends Database
      */
     function delete($data, $table = NULL, $limit = FALSE)
     {
+        if (empty($data)) return false;
+        
         $vals          = '';
         $this->sqlData = array();
         foreach ($data as $col => $val) {

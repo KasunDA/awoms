@@ -9,6 +9,7 @@ var createAction = "@@createAction@@";
 var createSaveText = "@@createSaveText@@";
 var createTinyMCEInputID = "@@createTinyMCEInputID@@";
 var createAutoOpenForm = "@@createAutoOpenForm@@";
+var deleteButtonClass = "@@deleteButtonClass@@";
 
 // @TODO height, width, modal
 
@@ -31,7 +32,7 @@ $('#' + createFrmID).dialog({
                 $(this).dialog('close');
             }
           },
-          class: "delete"
+          class: deleteButtonClass
       },
       {
             text: "@@createSaveText@@",

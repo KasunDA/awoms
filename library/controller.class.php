@@ -424,6 +424,10 @@ class Controller
 
         // Load Item or Redirect to ViewAll if item doesn't exist
         $ID = self::itemExists($args);
+        
+        var_dump($ID);
+        
+        exit;
 
         if ($this->step == 1) {
             // [] Confirm deletion ** should be done by JS by now - should not get here **
@@ -515,6 +519,8 @@ class Controller
         }
 
         // Not found, return to readall page
+        Errors::debugLogger(__METHOD__.': Item not found...');
+        $this->set('success', FALSE);
         header('Location: /' . $this->controller . '/readall');
         exit(0);
     }

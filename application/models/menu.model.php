@@ -16,7 +16,14 @@ class Menu extends Model
     public static function LoadExtendedItem($item)
     {
         $MenuLink      = new MenuLink();
-        $item['links'] = $MenuLink->getWhere(array('menuID'     => $item['menuID'], 'linkActive' => 1));
+        $res = $MenuLink->getWhere(array('menuID'     => $item['menuID'], 'linkActive' => 1));
+        if (empty($res[0]['linkActive']))
+        {
+            $item['links'] = array();
+            $item['links'][] = $res;
+        } else {
+            $item['links'] = $res;
+        }
 
         $Brand         = new Brand();
         $item['brand'] = $Brand->getWhere(array('brandID'     => $item['brandID'], 'brandActive' => 1));
@@ -319,7 +326,14 @@ class Menu extends Model
         }
 
         $MenuLink     = new MenuLink();
-        $res['links'] = $MenuLink->getWhere(array('menuID' => $res['menuID']));
+        $tmp = $MenuLink->getWhere(array('menuID'     => $res['menuID'], 'linkActive' => 1));
+        if (empty($tmp[0]['linkActive']))
+        {
+            $res['links'] = array();
+            $res['links'][] = $tmp;
+        } else {
+            $res['links'] = $tmp;
+        }
 
         return $res;
     }
