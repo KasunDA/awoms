@@ -22,7 +22,7 @@ class Template
      * @var string $controller Controller
      * @var string $action Action
      */
-    protected $data = array(), $controller, $action, $template;
+    public $data = array(), $controller, $action, $template;
 
     /**
      * __construct

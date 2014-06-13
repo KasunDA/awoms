@@ -18,13 +18,13 @@ class Page extends Model
     /**
      * Load additional model specific info when getWhere is called
      * 
-     * @param type $ID
+     * @param type $item
      */
-    public static function LoadExtendedItem($ID)
+    public static function LoadExtendedItem($item)
     {
-        $res['pageBody'] = self::getPageBody($ID);
-        $res['comments'] = self::getPageComments($ID);
-        return $res;
+        $item['pageBody'] = self::getPageBody($item['pageID']);
+        $item['comments'] = self::getPageComments($item['pageID']);
+        return $item;
     }
 
     private static function getPageBody($pageID)
@@ -35,12 +35,11 @@ class Page extends Model
 
         // BodyContent (Page)
         $BodyContent = new BodyContent();
-        $res         = $BodyContent->getWhere(
-                array(
-                    'parentItemTypeID'  => $pageTypeID,
-                    'parentItemID'      => $pageID,
-                    'bodyContentActive' => 1));
-        return $res[0];
+        return $BodyContent->getWhere(
+                        array(
+                            'parentItemTypeID'  => $pageTypeID,
+                            'parentItemID'      => $pageID,
+                            'bodyContentActive' => 1));
     }
 
     private static function getPageComments($pageID, $commentID = NULL)

@@ -127,13 +127,14 @@ class Model extends Database
      * @version v00.00.0000
      * 
      * @param array $columns
-     * @param string $where Optional
+     * @param string|array $where Optional col => val
      * @param string $order Optional
      * @param string $table Optional table to specify otherwise uses $this->model
+     * @param array $in Optional IN array - use with $where string: $where='col', $in=array('this','or','that')
      * 
      * @return array SQL results
      */
-    public function select($columns, $where = NULL, $order = NULL, $table = NULL)
+    public function select($columns, $where = NULL, $order = NULL, $table = NULL, $in = NULL)
     {
         // Columns
         if (is_array($columns)) {
@@ -168,9 +169,25 @@ class Model extends Database
             SELECT " . $cols . "
             FROM " . $table;
 
+        // WHERE
         if (!empty($where)) {
             $this->sql .= "
             WHERE " . $where;
+            
+            // IN ?
+            if (!empty($in) && is_array($in))
+            {
+                $_in = "(";
+                foreach ($in as $n)
+                {
+                    $_in .= $n.",";
+                }
+                $_in = substr($_in, 0, -1); // Trim last ','
+                $_in .= ")";
+                $this->sql .= "
+                IN ".$_in;
+            }
+            
         }
 
         if (!empty($order)) {
@@ -251,12 +268,13 @@ class Model extends Database
         if (in_array($this->table,
                      array('brands', 'domains', 'usergroups', 'users', 'menus', 'menulinks', 'pages', 'articles',
                     'bodycontents', 'comments'))) {
-            if (empty($_SESSION['user'])
-                    || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators") {
-                
+            if (empty($_SESSION['user']) || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators") {
+
                 // menulinks special allow for non-users as lacking brandID col
-                if (empty($_SESSION['user']) && in_array($this->table, array('menulinks', 'users'))) { return $where; }
-                 
+                if (empty($_SESSION['user']) && in_array($this->table, array('menulinks', 'users'))) {
+                    return $where;
+                }
+
                 $where = array('brandID' => $_SESSION['brandID']);
             }
         } else {
@@ -298,23 +316,27 @@ class Model extends Database
         $cols     = "*";
         $aclWhere = self::aclWhere();
         if (is_array($aclWhere)) {
-            $where = array_merge($where, $aclWhere);
+            $where = array_replace_recursive($where, $aclWhere);
         }
         // Can append/merge: $aclWhere['col'] = 'val';
         $order = NULL;
         $table = NULL;
         $all   = self::select($cols, $where, $order, $table);
+        if (count($all) == 1) {
+            return $all[0];
+        }
         return $all;
     }
 
     /**
      * Load additional model specific info when getWhere is called
      * 
-     * @param type $ID
+     * @param type $item
      */
-    public static function LoadExtendedItem($ID)
+    public static function LoadExtendedItem($item)
     {
         // Look in specific Model
+        return $item;
     }
 
     /**

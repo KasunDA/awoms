@@ -11,13 +11,13 @@ class Menu extends Model
     /**
      * Load additional model specific info when getWhere is called
      * 
-     * @param type $ID
+     * @param type $item
      */
-    public static function LoadExtendedItem($ID)
+    public static function LoadExtendedItem($item)
     {
-        $MenuLink          = new MenuLink();
-        $res['links'] = $MenuLink->getWhere(array('menuID' => $ID, 'linkActive' => 1));
-        return $res;
+        $MenuLink      = new MenuLink();
+        $item['links'] = $MenuLink->getWhere(array('menuID'     => $item['menuID'], 'linkActive' => 1));
+        return $item;
     }
 
     /**
@@ -288,7 +288,7 @@ class Menu extends Model
          */
         return $menu . "</ul>\n";
     }
-    
+
     /**
      * Returns dynamically built menu depending on user_logged_in status
      * 
@@ -296,13 +296,12 @@ class Menu extends Model
      */
     public function getMenu()
     {
-        if (!empty($_SESSION['user_logged_in']))
-        {
+        if (!empty($_SESSION['user_logged_in'])) {
             return self::admin();
         }
         return self::user();
     }
-    
+
     /**
      * Gets the current active menuID for the brand
      * 
@@ -310,17 +309,16 @@ class Menu extends Model
      */
     private function getBrandActiveMenu()
     {
-        $res = self::getWhere(array('brandID' => $_SESSION['brandID'], 'menuActive' => 1));
+        $res = self::getWhere(array('brandID'    => $_SESSION['brandID'], 'menuActive' => 1));
         if (empty($res)) {
             return false;
         }
-        
-        $MenuLink = new MenuLink();
-        $res[0]['links'] = $MenuLink->getWhere(array('menuID' => $res[0]['menuID']));
-        
-        return $res[0];
-    }
-    
-    /* @TODO Activate Menu... */
 
+        $MenuLink     = new MenuLink();
+        $res['links'] = $MenuLink->getWhere(array('menuID' => $res['menuID']));
+
+        return $res;
+    }
+
+    /* @TODO Activate Menu... */
 }

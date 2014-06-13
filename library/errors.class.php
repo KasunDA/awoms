@@ -82,7 +82,7 @@ class Errors
         try
         {
             if (self::$devEnv) return;
-            
+            if ($brandID == NULL) $brandID = 1;
             if (empty($this->DB))
             {
                 $this->DB = new Database();

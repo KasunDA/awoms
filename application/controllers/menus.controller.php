@@ -40,7 +40,7 @@ class MenusController extends Controller
         $MenuLink = new MenuLink();
 
         // First remove all links then save new list:
-        $MenuLink->removeAllMenuLinks($id);
+        $MenuLink->delete(array('menuID' => $id));
 
         $data = array();
 
@@ -77,4 +77,15 @@ class MenusController extends Controller
         $MenuLink->delete(array('menuID' => $ID));
     }
 
+    /**
+     * Pre-selects brand ID
+     * 
+     * @param int $ID
+     * @param array $data
+     */
+    public function prepareFormCustom($ID = NULL, $data)
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        parent::prepareForm($ID, $data['inp_brandID']);
+    }
 }

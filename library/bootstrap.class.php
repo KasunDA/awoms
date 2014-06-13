@@ -81,23 +81,21 @@ class Bootstrap
     {
         // Domain lookup
         $Domain  = new Domain();
-        $domains = $Domain->getWhere(array('domainName' => $_SERVER['HTTP_HOST']));
-        if (empty($domains)) {
+        $domain = $Domain->getWhere(array('domainName' => $_SERVER['HTTP_HOST']));
+        if (empty($domain)) {
             trigger_error("Domain not found that matches " . $_SERVER['HTTP_HOST']);
             die();
             exit();
         }
-        $domain = $domains[0];
 
         // Brand lookup
         $Brand  = new Brand();
-        $brands = $Brand->getWhere(array('brandID' => $domain['brandID']));
-        if (empty($brands)) {
+        $brand = $Brand->getWhere(array('brandID' => $domain['brandID']));
+        if (empty($brand)) {
             trigger_error("Brand not found that matches " . $domain['brandID']);
             die();
             exit();
         }
-        $brand = $brands[0];
 
         // Define constants @TODO Move to session?
         if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) {

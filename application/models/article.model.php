@@ -18,13 +18,13 @@ class Article extends Model
     /**
      * Load additional model specific info when getWhere is called
      * 
-     * @param type $ID
+     * @param type $item
      */
-    public static function LoadExtendedItem($ID)
+    public static function LoadExtendedItem($item)
     {
-        $res['articleBody'] = self::getArticleBody($ID);
-        $res['comments']    = self::getArticleComments($ID);
-        return $res;
+        $item['articleBody'] = self::getArticleBody($item['articleID']);
+        $item['comments']    = self::getArticleComments($item['articleID']);
+        return $item;
     }
 
     private static function getArticleBody($articleID)
@@ -35,12 +35,11 @@ class Article extends Model
 
         // BodyContent (Article)
         $BodyContent = new BodyContent();
-        $res         = $BodyContent->getWhere(
-                array(
-                    'parentItemTypeID'  => $articleTypeID,
-                    'parentItemID'      => $articleID,
-                    'bodyContentActive' => 1));
-        return $res[0];
+        return $BodyContent->getWhere(
+                        array(
+                            'parentItemTypeID'  => $articleTypeID,
+                            'parentItemID'      => $articleID,
+                            'bodyContentActive' => 1));
     }
 
     private static function getArticleComments($articleID, $commentID = NULL)

@@ -138,11 +138,14 @@ class Controller
      * Prepares form ID and item ID for create/update
      * 
      * @param int $ID Existing item ID if update form otherwise NULL for DEFAULT
-     * 
-     * @TODO Restrict results by UserID/UsergroupID permissions
+     * @param false|ALL|ID $BrandChoiceList pass in ID to pre-select that ID
+     * @param false|ALL|ID $DomainChoiceList pass in ID to pre-select that ID
+     * @param false|ALL|ID $UsergroupChoiceList pass in ID to pre-select that ID
      */
     public function prepareForm($ID = NULL, $BrandChoiceList = FALSE, $DomainChoiceList = FALSE, $UsergroupChoiceList = FALSE)
     {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+
         $action = "Update";
         if ($ID == NULL) {
             $ID     = "DEFAULT";
@@ -231,11 +234,10 @@ class Controller
 
             /* Controller specific Step pre-save: */
             $_r = $c::createStepPreSave();
-            if (!empty($_r))
-            {
-                $data = array_merge($data, $_r);
+            if (!empty($_r)) {
+                $data = array_replace_recursive($data, $_r);
             }
-            
+
             // If Active not set on create, assuming Active (override in controller/createStepPreSave)
             if (!isset($data[$_modelLower . 'Active'])) {
                 $data[$_modelLower . 'Active'] = 1;
@@ -261,7 +263,7 @@ class Controller
 
         return true;
     }
-    
+
     /**
      * Controller specific input filtering on save, for use with StepFinish method
      * 
@@ -284,7 +286,7 @@ class Controller
 //        }
 //        return false;
     }
-    
+
     /**
      * Controller specific pre-save method
      * 
@@ -308,7 +310,7 @@ class Controller
 //        
 //        return $data;
     }
-    
+
     /**
      * Controller specific finish Create step after first input save
      * 
@@ -338,7 +340,7 @@ class Controller
     {
         // Look in specific Controller
     }
-    
+
     /**
      * Read
      * 
@@ -361,15 +363,17 @@ class Controller
      * @param array $args
      * @return boolean
      */
-    public function readall($args = NULL)
+    public function readall($prepareForm = TRUE)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         $items = self::callModelFunc('getAll');
         $this->set($this->controller, $items);
 
-        // Prepare Create Form
-        self::prepareForm();
+        if ($prepareForm === TRUE) {
+            // Prepare Create Form
+            self::prepareForm();
+        }
 
         return true;
     }
@@ -386,13 +390,20 @@ class Controller
 
         // Load Item or Redirect to ViewAll if item doesn't exist
         $ID = self::itemExists($args);
-        
+
         if ($this->step == 1) {
             // Loads view all list
-            self::readall();
+            self::readall(FALSE);
 
-            // Prepare Create Form
-            self::prepareForm($ID);
+            // Prepare Create Form (custom controller override or default)
+            $_m = $this->model;
+            $_c = $_m . "sController";
+            #$cont = new $_c($this->controller, $this->model, NULL, 'json');
+            if (method_exists($_c, 'prepareFormCustom')) {
+                $_c::prepareFormCustom($ID, $this->template->data);
+            } else {
+                self::prepareForm($ID);
+            }
 
             return true;
         } elseif ($this->step == 2) {
@@ -467,10 +478,14 @@ class Controller
                 $titleAction = "Delete";
                 break;
             default:
-                $titleAction = "";
+                $titleAction = BRAND;
                 break;
         }
-        $this->set('title', $titleController . ' :: ' . $titleAction);
+        $finalTitle = $titleController;
+        if (!empty($titleAction)) {
+            $finalTitle .= ' :: ' . $titleAction;
+        }
+        $this->set('title', $finalTitle);
     }
 
     /**
@@ -497,7 +512,7 @@ class Controller
      * 
      * @param array|string $args
      */
-    private function itemExists($args)
+    protected function itemExists($args)
     {
         $ID        = FALSE;
         $idColName = strtolower($this->model) . 'ID';
@@ -518,24 +533,17 @@ class Controller
         if (!empty($ID)) {
             $item = self::callModelFunc('getWhere', array($idColName => $ID));
             if (!empty($item)) {
-                $item = $item[0];
+
                 $this->set($idColName, $ID);
 
                 /* Controller specific: */
                 $model = $this->model;
-                $res   = $model::LoadExtendedItem($ID); //."sController";
-                
-                if (!empty($res)) {
-                    foreach ($res as $k => $v) {
-                        $item[$k] = $v;
-                    }
-                }
-
+                $item  = $model::LoadExtendedItem($item); //."sController";
                 // Gets/sets input data from post, must begin with "inp_"
                 foreach ($item as $k => $v) {
                     $this->set("inp_" . $k, $v);
                 }
-                
+
                 $this->set(strtolower($this->model), $item);
                 return $ID;
             }

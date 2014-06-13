@@ -30,6 +30,18 @@ class UsersController extends Controller
     }
     
     /**
+     * Pre-selects group ID
+     * 
+     * @param int $ID
+     * @param array $data
+     */
+    public function prepareFormCustom($ID = NULL, $data)
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        parent::prepareForm($ID, FALSE, FALSE, $data['inp_usergroupID']);
+    }
+    
+    /**
      * Login
      */
     public function login()

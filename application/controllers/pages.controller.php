@@ -70,6 +70,18 @@ class PagesController extends Controller
         $Page->setBodyContentActive($id, $bodyType, $bodyContentID);
         return true;
     }
+    
+    /**
+     * Pre-selects brand ID
+     * 
+     * @param int $ID
+     * @param array $data
+     */
+    public function prepareFormCustom($ID = NULL, $data)
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        parent::prepareForm($ID, $data['inp_brandID']);
+    }
 
 //    /**
 //     * View
