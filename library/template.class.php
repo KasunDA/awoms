@@ -64,7 +64,40 @@ class Template
             return false;
         }
     }
-
+    
+    /**
+     * Sets title, ran last in destruct/render
+     */
+    private function setTitle()
+    {
+        $titleController = ucwords($this->controller);
+        switch ($this->action) {
+            case "create":
+                $titleAction = "Create";
+                break;
+            case "read":
+                $titleAction = "Read";
+                break;
+            case "readall":
+                $titleAction = "Read All";
+                break;
+            case "update":
+                $titleAction = "Update";
+                break;
+            case "delete":
+                $titleAction = "Delete";
+                break;
+            default:
+                $titleAction = BRAND;
+                break;
+        }
+        $finalTitle = $titleController;
+        if (!empty($titleAction)) {
+            $finalTitle .= ' :: ' . $titleAction;
+        }
+        $this->title = $finalTitle;
+    }
+    
     /**
      * render
      * 
@@ -77,6 +110,9 @@ class Template
     function render()
     {
 
+        // Prepare UI Template Data
+        self::setTitle();
+        
         // Converts all data to variables for template to use
         extract($this->data);
 

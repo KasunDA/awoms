@@ -23,7 +23,7 @@ class UsergroupsController extends Controller
                 if ($SelectedID != FALSE && $SelectedID != "ALL" && $usergroup['usergroupID'] == $SelectedID) {
                     $selected = " selected";
                 }
-                $usergroupChoiceList .= "<option value='" . $usergroup['usergroupID'] . "'" . $selected . ">" . $usergroup['usergroupName'] . "</option>";
+                $usergroupChoiceList .= "<option value='" . $usergroup['usergroupID'] . "'" . $selected . ">(" . $usergroup['brand']['brandName'] . ") " . $usergroup['usergroupName'] . "</option>";
             }
         }
         return $usergroupChoiceList;

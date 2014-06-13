@@ -128,9 +128,6 @@ class Controller
      */
     public function renderOutput()
     {
-        // Prepare UI Template Data
-        self::setTitle();
-
         $this->template->render();
     }
 
@@ -368,6 +365,7 @@ class Controller
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         $items = self::callModelFunc('getAll');
+        
         $this->set($this->controller, $items);
 
         if ($prepareForm === TRUE) {
@@ -453,39 +451,6 @@ class Controller
         self::readall();
 
         return $res;
-    }
-
-    /**
-     * Sets title, ran last in destruct/render
-     */
-    private function setTitle()
-    {
-        $titleController = ucwords($this->controller);
-        switch ($this->action) {
-            case "create":
-                $titleAction = "Create";
-                break;
-            case "read":
-                $titleAction = "Read";
-                break;
-            case "readall":
-                $titleAction = "Read All";
-                break;
-            case "update":
-                $titleAction = "Update";
-                break;
-            case "delete":
-                $titleAction = "Delete";
-                break;
-            default:
-                $titleAction = BRAND;
-                break;
-        }
-        $finalTitle = $titleController;
-        if (!empty($titleAction)) {
-            $finalTitle .= ' :: ' . $titleAction;
-        }
-        $this->set('title', $finalTitle);
     }
 
     /**

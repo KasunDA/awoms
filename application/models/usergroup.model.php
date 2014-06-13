@@ -8,4 +8,15 @@ class Usergroup extends Model
         return $cols;
     }
 
+    /**
+     * Load additional model specific info when getWhere is called
+     * 
+     * @param type $ID
+     */
+    public static function LoadExtendedItem($item)
+    {
+        $Brand = new Brand();
+        $item['brand'] = $Brand->getWhere(array('brandID' => $item['brandID']));
+        return $item;
+    }
 }

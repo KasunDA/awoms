@@ -258,30 +258,61 @@ class Model extends Database
      */
     private function aclWhere()
     {
+        $res = array();
+        $res['where'] = NULL;
+        $res['in'] = NULL;
+        
         // No session if we are looking up domain so allow
-        if (empty($_SESSION)) {
-            return NULL;
+        if (empty($_SESSION))
+        {
+            return $res;
+        }
+        
+        // Tables that do NOT have brandID column:
+        if (in_array($this->table, array('users', 'menulinks', 'comments', 'bodycontents')))
+        {
+            if ($this->table == 'users')
+            {
+                // Logging in, lookup current brandID (from domain)
+                if (empty($_SESSION['user']))
+                {
+                    $brandID = $_SESSION['brandID'];
+                }
+                else
+                {
+                    $brandID = $_SESSION['user']['usergroup']['brandID'];
+                }
+                
+                // Show users IN X,Y,Z groups belonging to users brandID
+                $res['where'] = 'usergroupID';
+                $Usergroup = new Usergroup();
+                $ins = $Usergroup->getWhere(array('brandID' => $brandID));
+                foreach ($ins as $in)
+                {
+                    $res['in'] .= $in['usergroupID'].",";
+                }
+                $res['in'] = substr($res['in'], 0, -1);
+            }
+            elseif ($this->table == 'menulinks')
+            {
+                // menulinkID => menulink => menuID => menu => brandID
+            }
+            elseif ($this->table == 'comments'
+                    || $this->table == 'bodycontents')
+            {
+                // commentID/bodyContentID => parentItemTypEID => parentItemID => articleID/commentID => brandID
+            }
+            
+            return $res;
         }
 
         // Non-Admins limited by brand
-        $where = NULL;
-        if (in_array($this->table,
-                     array('brands', 'domains', 'usergroups', 'users', 'menus', 'menulinks', 'pages', 'articles',
-                    'bodycontents', 'comments'))) {
-            if (empty($_SESSION['user']) || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators") {
-
-                // menulinks special allow for non-users as lacking brandID col
-                if (empty($_SESSION['user']) && in_array($this->table, array('menulinks', 'users'))) {
-                    return $where;
-                }
-
-                $where = array('brandID' => $_SESSION['brandID']);
-            }
-        } else {
-            trigger_error("NotYetImplemented", E_USER_ERROR);
-            exit(0);
+        if (empty($_SESSION['user']) || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators")
+        {
+            $res['where'] = array('brandID' => $_SESSION['brandID']);
         }
-        return $where;
+        
+        return $res;
     }
 
     /**
@@ -295,11 +326,23 @@ class Model extends Database
     {
         $cols     = "*";
         $aclWhere = self::aclWhere();
-        // Can append/merge: $aclWhere['col'] = 'val';
+        if (!empty($aclWhere['where'])) { $where = $aclWhere['where']; } else { $where = NULL; }
+        if (!empty($aclWhere['in'])) { $in = $aclWhere['in']; } else { $in = NULL; }
         $order    = NULL;
         $table    = NULL;
-        $all      = self::select($cols, $aclWhere, $order, $table);
-        return $all;
+        $all      = self::select($cols, $where, $order, $table, $in);
+        
+        // Load Extended Item Info
+        $newItems = array();
+        foreach ($all as $item)
+        {
+            /* Controller specific: */
+            $model = $this->model;
+            $item  = $model::LoadExtendedItem($item); //."sController";
+            $newItems[] = $item;
+        }
+        
+        return $newItems;
     }
 
     /**
@@ -315,13 +358,17 @@ class Model extends Database
     {
         $cols     = "*";
         $aclWhere = self::aclWhere();
-        if (is_array($aclWhere)) {
-            $where = array_replace_recursive($where, $aclWhere);
+        
+        if (!empty($aclWhere['where'])) { $_where = $aclWhere['where']; } else { $_where = NULL; }
+        if (!empty($aclWhere['in'])) { $in = $aclWhere['in']; } else { $in = NULL; }
+        
+        if (is_array($_where)) {
+            $where = array_replace_recursive($where, $_where);
         }
         // Can append/merge: $aclWhere['col'] = 'val';
         $order = NULL;
         $table = NULL;
-        $all   = self::select($cols, $where, $order, $table);
+        $all   = self::select($cols, $where, $order, $table, $in);
         if (count($all) == 1) {
             return $all[0];
         }

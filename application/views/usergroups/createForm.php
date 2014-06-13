@@ -4,8 +4,6 @@
 
   <table cellpadding='2' cellspacing='0'>
 
-<!--
-@TODO Future Use -- For brand specific Usergroups
     <tr>
       <td>
         Brand
@@ -16,7 +14,6 @@
         </select>
       </td>
     </tr>
--->
 
     <tr>
       <td>

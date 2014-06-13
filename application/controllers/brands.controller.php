@@ -8,6 +8,39 @@ class BrandsController extends Controller
     }
 
     /**
+     * Controller specific finish Create step after first input save
+     * 
+     * e.g. use self::$staticData in other model save methods (page->body)
+     * 
+     * @param string $id ID of parent item
+     * 
+     * @return boolean
+     */
+    public static function createStepFinish($id)
+    {
+        // Create default usergroups for new brand
+        
+        $Usergroup = new Usergroup();
+
+        $data = array('brandID' => $id,
+            'usergroupName' => 'Administrators',
+            'usergroupActive' => 1);
+        $Usergroup->update($data);
+        
+        $data = array('brandID' => $id,
+            'usergroupName' => 'Store Owners',
+            'usergroupActive' => 1);
+        $Usergroup->update($data);
+        
+        $data = array('brandID' => $id,
+            'usergroupName' => 'Users',
+            'usergroupActive' => 1);
+        $Usergroup->update($data);
+
+        return true;
+    }
+    
+    /**
      * Generates <option> list for Brand select list use in template
      * 
      * @example 
