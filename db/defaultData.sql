@@ -1,42 +1,5 @@
 USE `GPFC`;
 
--- Brands
--- First brand is central umbrella brand
-INSERT INTO `brands` 
-(`brandID`, `brandName`, `brandActive`, `brandLabel`)
-VALUES
-(1, 'Goin\' Postal Franchise Corporation', 1, 'GPFC'),
-(2, 'Goin\' Postal', 1, 'GP'),
-(3, 'Hut no. 8', 1, 'Hut8');
-
--- Domains
-INSERT INTO `domains`
-(`domainID`, `brandID`, `domainName`, `domainActive`)
-VALUES
-(1, 1, 'dev.gpfc.com', 1),
-(2, 2, 'dev.goinpostal.com', 1),
-(3, 3, 'dev.hutno8.com', 1);
-
--- Usergroups
-INSERT INTO `usergroups`
-(`usergroupID`, `brandID`, `usergroupName`, `usergroupActive`,`parentUserGroupID`)
-VALUES
-(1, 1, 'Administrators', 1, NULL),
-(2, 1, 'Store Owners', 1, NULL),
-(3, 1, 'Users', 1, NULL);
-
--- Users
-INSERT INTO `users`
-(`userID`, `usergroupID`, `userActive`, `userName`, `passphrase`, `userEmail`)
-VALUES
-(1, 1, 1, 'GPFCAdmin', 'test', 'admin@gpfc.com'),
-(2, 1, 1, 'GPAdmin', 'test', 'admin@goinpostal.com'),
-(3, 1, 1, 'Hut8Admin', 'test', 'admin@hutno8.com'),
-
-(4, 2, 1, 'GPStoreOwner', 'test', 'storeowner@goinpostal.com'),
-(5, 2, 1, 'Hut8StoreOwner', 'test', 'storeowner@hutno8.com'),
-(6, 3, 1, 'Hut8User', 'test', 'user@hutno8.com');
-
 -- Parent Item Types
 INSERT INTO `refParentItemTypes`
 (`refParentItemTypeID`, `parentTypeLabel`)
@@ -46,8 +9,53 @@ VALUES
 (3, 'Article'),
 (4, 'Comment');
 
+-- Brands
+-- First brand is central umbrella brand
+INSERT INTO `brands` 
+(`brandID`, `brandName`, `brandActive`, `brandLabel`)
+VALUES
+(1, 'Goin\' Postal Franchise Corporation', 1, 'GPFC')
+-- ,
+-- (2, 'Goin\' Postal', 1, 'GP'),
+-- (3, 'Hut no. 8', 1, 'Hut8')
+;
+
+-- Domains
+INSERT INTO `domains`
+(`domainID`, `brandID`, `domainName`, `domainActive`)
+VALUES
+(1, 1, 'dev.gpfc.com', 1)
+-- ,
+-- (2, 2, 'dev.goinpostal.com', 1),
+-- (3, 3, 'dev.hutno8.com', 1)
+;
+
+-- Usergroups
+INSERT INTO `usergroups`
+(`usergroupID`, `brandID`, `usergroupName`, `usergroupActive`,`parentUserGroupID`)
+VALUES
+(1, 1, 'Administrators', 1, NULL),(2, 1, 'Store Owners', 1, NULL),(3, 1, 'Users', 1, NULL)
+-- ,
+-- (4, 2, 'Administrators', 1, NULL),(5, 2, 'Store Owners', 1, NULL),(6, 2, 'Users', 1, NULL),
+-- (7, 3, 'Administrators', 1, NULL),(8, 3, 'Store Owners', 1, NULL),(9, 3, 'Users', 1, NULL)
+;
+
+-- Users
+INSERT INTO `users`
+(`userID`, `usergroupID`, `userActive`, `userName`, `passphrase`, `userEmail`)
+VALUES
+(1, 1, 1, 'GPFCAdmin', 'test', 'admin@gpfc.com')
+-- ,
+-- (2, 4, 1, 'GPAdmin', 'test', 'admin@goinpostal.com'),
+-- (3, 7, 1, 'Hut8Admin', 'test', 'admin@hutno8.com'),
+
+-- (4, 5, 1, 'GPStoreOwner', 'test', 'storeowner@goinpostal.com'),
+-- (5, 8, 1, 'Hut8StoreOwner', 'test', 'storeowner@hutno8.com'),
+-- (6, 9, 1, 'Hut8User', 'test', 'user@hutno8.com')
+;
+
 -- Default ACLs
-INSERT INTO `acl`
+INSERT INTO `acls`
 (`brandID`, `usergroupID`, `userID`, `controller`, `create`, `read`, `update`, `delete`)
 VALUES
 -- 1: Admin defaults

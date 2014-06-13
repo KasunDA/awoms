@@ -17,6 +17,10 @@ class Menu extends Model
     {
         $MenuLink      = new MenuLink();
         $item['links'] = $MenuLink->getWhere(array('menuID'     => $item['menuID'], 'linkActive' => 1));
+
+        $Brand         = new Brand();
+        $item['brand'] = $Brand->getWhere(array('brandID'     => $item['brandID'], 'brandActive' => 1));
+
         return $item;
     }
 

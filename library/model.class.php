@@ -85,13 +85,13 @@ class Model extends Database
         foreach ($data as $col => $val) {
             if ($colID == '' && preg_match('/ID/', $col) && preg_match('/DEFAULT/', $val)) {
                 $colID = $col;
-                $dupUp = " " . $colID . "=LAST_INSERT_ID(" . $colID . "), ";
+                $dupUp = " `" . $colID . "`=LAST_INSERT_ID(`" . $colID . "`), ";
                 continue;
             }
-            $cols .= $col . ", ";
-            $vals .= ":" . $col . ", ";
-            $dups .= $col . " = :" . $col . ", ";
-            $this->sqlData[':' . $col] = $val;
+            $cols .= "`" . $col . "`, ";
+            $vals .= ":_" . $col . ", "; // _ underscore allows for reserved words/columns like 'create', 'read'
+            $dups .= "`" . $col . "`=:_" . $col . ", ";
+            $this->sqlData[':_' . $col] = $val;
         }
         $cols = substr($cols, 0, -2); // Trim last ', '
         $vals = substr($vals, 0, -2); // Trim last ', '
@@ -113,7 +113,7 @@ class Model extends Database
         }
 
         $this->sql .= $dups;
-
+        
         return $this->query($this->sql, $this->sqlData);
     }
 
@@ -152,9 +152,18 @@ class Model extends Database
         if ($where !== NULL) {
             // PDO Prepared Statements using array key => value
             if (is_array($where)) {
+                
                 $whrs          = '';
                 $this->sqlData = array();
                 foreach ($where as $col => $val) {
+                    
+                    // If using IN, and last col's val is empty, join that to where for IN appended next
+                    if (empty($val) && !empty($in) && is_array($in))
+                    {
+                        $in_col = $col;
+                        continue;
+                    }
+                    
                     // WHERE x = :x, y = :y
                     $whrs .= $col . " = :" . $col . " AND ";
                     // ':x' = 'x123', ':y' = 'y321'
@@ -184,17 +193,24 @@ class Model extends Database
                 }
                 $_in = substr($_in, 0, -1); // Trim last ','
                 $_in .= ")";
-                $this->sql .= "
-                IN ".$_in;
+                
+                // No empty column; normal where string
+                if (empty($in_col))
+                {
+                    $this->sql .= "
+                    IN ".$_in;
+                } else {
+                    // empty column was passed in where array
+                    $this->sql .= " AND ".$in_col." IN ".$_in;
+                }
             }
-            
         }
 
         if (!empty($order)) {
             $this->sql .= "
             ORDER BY " . $order;
         }
-
+        
         if (!empty($this->sqlData)) {
             return Utility::makeRawDbTextSafeForHtmlDisplay($this->query($this->sql, $this->sqlData));
         }
@@ -267,26 +283,37 @@ class Model extends Database
         {
             return $res;
         }
-        
-        // Tables that do NOT have brandID column:
+
+        if (empty($_SESSION['user']))
+        {
+            // Use brandID from active domain/session
+            $brandID = $_SESSION['brandID'];
+        }
+        else
+        {
+            // Use brandID from usergroup (can be different from live brandID)
+            $brandID = $_SESSION['user']['usergroup']['brandID'];
+        }
+
+        // Tables that do NOT have brandID column but still need to be restricted by the associated brand
+        // users -> usergroup -> brand
+        // menulinks -> menu -> brand
+        // comments|body -> comment|article -> brand
         if (in_array($this->table, array('users', 'menulinks', 'comments', 'bodycontents')))
         {
             if ($this->table == 'users')
             {
-                // Logging in, lookup current brandID (from domain)
-                if (empty($_SESSION['user']))
-                {
-                    $brandID = $_SESSION['brandID'];
-                }
-                else
-                {
-                    $brandID = $_SESSION['user']['usergroup']['brandID'];
-                }
-                
-                // Show users IN X,Y,Z groups belonging to users brandID
+                // users -> usergroup -> brand (brand has many usergroups, uses in:)
+                // get users where usergroupID in (all usergroupIDs belonging to brandID)
                 $res['where'] = 'usergroupID';
                 $Usergroup = new Usergroup();
                 $ins = $Usergroup->getWhere(array('brandID' => $brandID));
+                if (empty($ins[0]))
+                {
+                    $tmp = $ins;
+                    $ins = array();
+                    $ins[] = $tmp;
+                }
                 foreach ($ins as $in)
                 {
                     $res['in'] .= $in['usergroupID'].",";
@@ -295,21 +322,46 @@ class Model extends Database
             }
             elseif ($this->table == 'menulinks')
             {
-                // menulinkID => menulink => menuID => menu => brandID
+                // menulinks -> menu -> brand (brand has many menus, uses in:)
+                // get menulinks where menuID in (all menuIDs belonging to brandID)
+                $res['where'] = 'menuID';
+                $Menu = new Menu();
+                $ins = $Menu->getWhere(array('brandID' => $brandID));
+                if (empty($ins[0]))
+                {
+                    $tmp = $ins;
+                    $ins = array();
+                    $ins[] = $tmp;
+                }
+                foreach ($ins as $in)
+                {
+                    $res['in'] .= $in['menuID'].",";
+                }
+                $res['in'] = substr($res['in'], 0, -1);
             }
             elseif ($this->table == 'comments'
                     || $this->table == 'bodycontents')
             {
+                // @TODO:
+
                 // commentID/bodyContentID => parentItemTypEID => parentItemID => articleID/commentID => brandID
+                
+                // comments/body -> parentitem (typeid) -> brand (brand has many parent items, uses in:)
+
+                // get comments where parentitem(of parentitemTypeID) in (all parentItemIDs (oftypeID) belonging to brandID)
+                
+                // need to do article, page, comment...
             }
-            
+
             return $res;
         }
 
-        // Non-Admins limited by brand
-        if (empty($_SESSION['user']) || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators")
+        // Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
+        if (empty($_SESSION['user'])
+                || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
+                || $_SESSION['user']['usergroup']['brandID'] != 1)
         {
-            $res['where'] = array('brandID' => $_SESSION['brandID']);
+            $res['where'] = array('brandID' => $brandID);
         }
         
         return $res;
@@ -326,10 +378,17 @@ class Model extends Database
     {
         $cols     = "*";
         $aclWhere = self::aclWhere();
+        
         if (!empty($aclWhere['where'])) { $where = $aclWhere['where']; } else { $where = NULL; }
         if (!empty($aclWhere['in'])) { $in = $aclWhere['in']; } else { $in = NULL; }
         $order    = NULL;
         $table    = NULL;
+        
+        if ($in != NULL && !is_array($in))
+        {
+            $in = explode(',', $in);
+        }
+        
         $all      = self::select($cols, $where, $order, $table, $in);
         
         // Load Extended Item Info
@@ -354,21 +413,27 @@ class Model extends Database
      * 
      * @return array
      */
-    public function getWhere($where)
+    public function getWhere($where, $in = NULL)
     {
         $cols     = "*";
+
+        // Every query is restricted by BrandID here
         $aclWhere = self::aclWhere();
         
         if (!empty($aclWhere['where'])) { $_where = $aclWhere['where']; } else { $_where = NULL; }
-        if (!empty($aclWhere['in'])) { $in = $aclWhere['in']; } else { $in = NULL; }
-        
+        if (!empty($aclWhere['in'])) { $_in = $aclWhere['in']; } else { $_in = NULL; }
         if (is_array($_where)) {
             $where = array_replace_recursive($where, $_where);
         }
-        // Can append/merge: $aclWhere['col'] = 'val';
+        if (is_array($_in)) {
+            $in = array_replace_recursive($in, $_in);
+        }
+        
+        // Can append/merge: $aclWhere['col'] = 'val' (--unless using $in--);
         $order = NULL;
         $table = NULL;
         $all   = self::select($cols, $where, $order, $table, $in);
+
         if (count($all) == 1) {
             return $all[0];
         }

@@ -365,7 +365,7 @@ class Controller
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
         $items = self::callModelFunc('getAll');
-        
+
         $this->set($this->controller, $items);
 
         if ($prepareForm === TRUE) {

@@ -21,21 +21,57 @@ class BrandsController extends Controller
         // Create default usergroups for new brand
         
         $Usergroup = new Usergroup();
+        $ACL = new ACL();
 
+        // Create new Admin group
         $data = array('brandID' => $id,
             'usergroupName' => 'Administrators',
             'usergroupActive' => 1);
-        $Usergroup->update($data);
+        $usergroupID = $Usergroup->update($data);
         
+        // Assign new Admin group default ACL
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'brands', 0, 0, 0, 0);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'domains', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'menus', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'usergroups', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'users', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'pages', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'articles', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'comments', 1, 1, 1, 1);
+        
+        
+        // Create new Store Owners group
         $data = array('brandID' => $id,
             'usergroupName' => 'Store Owners',
             'usergroupActive' => 1);
-        $Usergroup->update($data);
+        $usergroupID = $Usergroup->update($data);
         
+        // Assign new Store Owners group default ACL
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'brands', 0, 0, 0, 0);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'domains', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'menus', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'usergroups', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'users', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'pages', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'articles', 1, 1, 1, 1);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'comments', 1, 1, 1, 1);
+        
+
+        // Create new Users group
         $data = array('brandID' => $id,
             'usergroupName' => 'Users',
             'usergroupActive' => 1);
-        $Usergroup->update($data);
+        $usergroupID = $Usergroup->update($data);
+
+        // Assign new Users group default ACL
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'brands', 0, 0, 0, 0);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'domains', 0, 0, 0, 0);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'menus', 0, 0, 0, 0);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'usergroups', 0, 0, 0, 0);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'users', 0, 0, 0, 0);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'pages', 0, 1, 0, 0);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'articles', 0, 1, 0, 0);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'comments', 1, 1, 1, 1);
 
         return true;
     }
@@ -64,6 +100,24 @@ class BrandsController extends Controller
             }
         }
         return $brandChoiceList;
+    }
+    
+    /**
+     * Controller specific finish Delete step after first input delete
+     */
+    public static function deleteStepFinish($args = NULL)
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        $ID       = $args;
+        
+        $Usergroup = new Usergroup();
+        $Usergroup->delete(array('brandID' => $ID));
+        
+//        $Usergroup = new Usergroup();
+//        $Usergroup->delete(array('brandID' => $ID));
+//        
+//        $Usergroup = new Usergroup();
+//        $Usergroup->delete(array('brandID' => $ID));
     }
 
 }

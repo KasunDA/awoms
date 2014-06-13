@@ -561,6 +561,16 @@ table td
     text-align: center;
 }
 
+.muted
+{
+    color:#999;
+}
+a.muted:hover,
+a.muted:focus
+{
+    color:#808080;
+}
+
 /************************************************************************/
 /* jQuery UI */
 .ui-button.delete

@@ -28,25 +28,77 @@ elseif (file_exists(ROOT.DS.'application'.DS.'views'.DS.$this->controller.DS.'re
 else
 {
     // Default List Template
-?>
-        <!-- Output -->
-        <ul>
-<?php
     $c = $this->controller;
     $items = $$c;
     $lbl = trim(strtolower($this->controller), "s");
-    for ($i=0; $i<count($items); $i++) {
-      $updateLink = BRAND_URL.$this->controller.'/update/'.$items[$i][$lbl.'ID'].'/'.str_replace(' ', '-', $items[$i][$lbl.'Name']);
+    $showBrandColumn = FALSE;
+    if (!empty($items[0]['brand']))
+    {
+        $showBrandColumn = TRUE;
+    }
+    // Heading
 ?>
-            <li>
-              <a href="<?=$updateLink;?>">
-                <?= $items[$i][$lbl.'Name']; ?>
-              </a>
-            </li>
+
+<table>
+    <tr>
+        <th>Active&nbsp;</th>
+<?php
+    // Brand List - Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
+    if (!empty($showBrandColumn))
+    {
+        if (empty($_SESSION['user'])
+                || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
+                || $_SESSION['user']['usergroup']['brandID'] != 1)
+        {
+        } else {
+            echo "<th>&nbsp;Brand Name</th>";
+        }
+}
+?>
+        <th><?php echo $this->model; ?> Name</th>
+    </tr>
+    
+<?php
+    // Rows
+    for ($i=0; $i<count($items); $i++) {
+        
+        $activeClass = "success";
+        $activeLabel = "Y";
+        if ($items[$i][$lbl.'Active'] == 0) {
+            $activeClass = "failure";
+            $activeLabel = "N";
+        }
+        
+        $updateLink = BRAND_URL.$this->controller.'/update/'.$items[$i][$lbl.'ID'].'/'.str_replace(' ', '-', $items[$i][$lbl.'Name']);
+        
+        echo "
+            <tr>
+                <td><div class='alert " . $activeClass . " no-img center'>" . $activeLabel . "</div></td>
+        ";
+        
+        // Add Brand Column if Admin
+        // Brand List - Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
+        if (!empty($items[$i]['brand']))
+        {
+            if (empty($_SESSION['user'])
+                    || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
+                    || $_SESSION['user']['usergroup']['brandID'] != 1)
+            {
+            } else {
+                echo "<td>&nbsp;" . $items[$i]['brand']['brandName'] . "</td>";
+            }
+        }
+?>
+                <td>
+                  <a href="<?=$updateLink;?>">
+                    <?= $items[$i][$lbl.'Name']; ?>
+                  </a>
+                </td>
+            </tr>
 <?php
     }
-?>
-        </ul>
+    ?>
+    </table>
 <?php
 }
 ?>

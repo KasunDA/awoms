@@ -32,6 +32,19 @@
     
     <tr>
       <td>
+        Passphrase<br/><small class='muted'>Please choose a complex password of <strong>at least 8 characters</strong> and include: <cite>numbers, uppercase, lowercase, symbols, spaces etc.</cite></small>
+      </td>
+      <td>
+        <input type='password' id='inp_passphrase' name='inp_passphrase' value='<?php
+          if (isset($inp_passphrase)) {
+            echo $inp_passphrase;
+          }
+        ?>' size='60' />
+      </td>
+    </tr>
+    
+    <tr>
+      <td>
         <!-- Email -->
         Email
       </td>

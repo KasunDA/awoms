@@ -10,12 +10,7 @@ class AdminController extends Controller
             header('Location: /users/login?returnURL=/owners');
             exit(0);
         }
-        if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
-        {
-            $this->set('title', BRAND . ' Administration');
-        } else {
-            $this->set('title', BRAND . ' Owners');
-        }
+        $this->set('title', BRAND . ' ' . $_SESSION['user']['usergroup']['usergroupName']);
     }
 
 }

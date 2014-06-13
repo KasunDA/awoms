@@ -4,23 +4,32 @@
 
     <table cellpadding='2' cellspacing='0'>
 
-        <?php
-        // Add Brand row if Admin
-        if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators") {
-            ?>
-            <tr>
-                <td>
-                    Brand
-                </td>
-                <td>
-                    <select name='inp_brandID'>
-                        <?= $brandChoiceList; ?>
-                    </select>
-                </td>
-            </tr>
-            <?php
+<?php
+    // Brand List - Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
+    if (!empty($brandChoiceList))
+    {
+        $class='';
+        if (empty($_SESSION['user'])
+                || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
+                || $_SESSION['user']['usergroup']['brandID'] != 1)
+        {
+            $class='hidden';
         }
-        ?>
+?>
+    <tr class='<?php echo $class; ?>'>
+      <td>
+        <!-- Brand -->
+        Brand
+      </td>
+      <td>
+        <select name='inp_brandID'>
+          <?=$brandChoiceList;?>
+        </select>
+      </td>
+    </tr>
+<?php
+}
+?>
 
         <tr>
             <td>

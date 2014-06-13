@@ -17,6 +17,10 @@ class User extends Model
     {
         $Usergroup = new Usergroup();
         $item['usergroup'] = $Usergroup->getWhere(array('usergroupID' => $item['usergroupID']));
+
+        $Brand = new Brand();
+        $item['brand'] = $Brand->getWhere(array('brandID' => $item['usergroup']['brandID']));
+        
         return $item;
     }
     
@@ -29,38 +33,36 @@ class User extends Model
      */
     public function ValidateLogin($username, $passphrase)
     {
-        Errors::debugLogger(__METHOD__);
+        Errors::debugLogger(__METHOD__.': username: '.$username.' brandid: '.BRAND_ID);
         
-        // Get shared brand (brand_id 1) and this brands Usergroups
+        #// Get shared brand (brand_id 1) and this brands Usergroups
         $UserGroup = new UserGroup();
-        $groupsA = $UserGroup->getWhere(array('brandID' => 1, 'usergroupActive' => 1));
-        $groupsB = array();
-        if (BRAND_ID != 1)
-        {
-            $groupsB = $UserGroup->getWhere(array('brandID' => BRAND_ID, 'usergroupActive' => 1));
-        }
-        $groups = array_replace_recursive ($groupsA, $groupsB);
+        #$groupsA = $UserGroup->getWhere(array('brandID' => 1, 'usergroupActive' => 1));
+        #$groupsB = array();
+        #if (BRAND_ID != 1)
+        #{
+            # Only allow logins from groups of matching domain -> brand
+            $groups = $UserGroup->getWhere(array('brandID' => BRAND_ID, 'usergroupActive' => 1));
+        #}
+        #$groups = array_replace_recursive ($groupsA, $groupsB);
         
         if (empty($groups)) return false;
 
         // Valid login?
-        $cols  = "userID";
-        $where = "
-            userActive = 1
-            AND userName = '" . $username . "'
-            AND passphrase = '" . $passphrase . "'
-            AND usergroupID ";
         foreach ($groups as $group) {$in[] = $group['usergroupID'];}
+        
+        $_user = self::getWhere(array('userActive' => 1,
+            'userName' => $username,
+            'passphrase' => $passphrase,
+            'usergroupID' => NULL),
+                $in);
 
-        $r     = self::select($cols, $where, NULL, NULL, $in);
-
-        if (empty($r[0]['userID'])) {
+        if (empty($_user)) {
             return false;
         }
+        $_user = self::LoadExtendedItem($_user);
 
-        $_u = self::getWhere(array('userID' => $r[0]['userID']));
-        $_u = self::LoadExtendedItem($_u);
-        return $_u;
+        return $_user;
     }
 
 }
