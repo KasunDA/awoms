@@ -2,6 +2,7 @@
 <?php
 for ($i=0; $i<count($pages); $i++)
 {
+    var_dump($pages[$i]);
     $pageDate = str_replace('-','/',substr($pages[$i]['pageDatePublished'], 0, 10));
     $link = BRAND_URL.'pages/update/'.$pages[$i]['pageID'].'/'.$pageDate.'/'.str_replace(' ', '-', $pages[$i]['pageName']);
 ?>

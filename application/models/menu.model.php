@@ -15,18 +15,13 @@ class Menu extends Model
      */
     public static function LoadExtendedItem($item)
     {
+        // Load the menu's links
         $MenuLink      = new MenuLink();
-        $res = $MenuLink->getWhere(array('menuID'     => $item['menuID'], 'linkActive' => 1));
-        if (empty($res[0]['linkActive']))
-        {
-            $item['links'] = array();
-            $item['links'][] = $res;
-        } else {
-            $item['links'] = $res;
-        }
+        $item['links'] = $MenuLink->getWhere(array('menuID'     => $item['menuID'], 'linkActive' => 1));
 
+        // Load the menu's brand
         $Brand         = new Brand();
-        $item['brand'] = $Brand->getWhere(array('brandID'     => $item['brandID'], 'brandActive' => 1));
+        $item['brand'] = $Brand->getSingle(array('brandID'     => $item['brandID'], 'brandActive' => 1));
 
         return $item;
     }
@@ -320,23 +315,15 @@ class Menu extends Model
      */
     private function getBrandActiveMenu()
     {
-        $res = self::getWhere(array('brandID'    => $_SESSION['brandID'], 'menuActive' => 1));
+        $res = self::getSingle(array('brandID'    => $_SESSION['brandID'], 'menuActive' => 1));
         if (empty($res)) {
             return false;
         }
 
         $MenuLink     = new MenuLink();
-        $tmp = $MenuLink->getWhere(array('menuID'     => $res['menuID'], 'linkActive' => 1));
-        if (empty($tmp[0]['linkActive']))
-        {
-            $res['links'] = array();
-            $res['links'][] = $tmp;
-        } else {
-            $res['links'] = $tmp;
-        }
+        $res['links'] = $MenuLink->getWhere(array('menuID'     => $res['menuID'], 'linkActive' => 1));
 
         return $res;
     }
 
-    /* @TODO Activate Menu... */
 }

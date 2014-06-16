@@ -30,7 +30,7 @@ class BrandsController extends Controller
         $usergroupID = $Usergroup->update($data);
         
         // Assign new Admin group default ACL
-        ACL::UpdateAccess($id, $usergroupID, NULL, 'brands', 0, 0, 0, 0);
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'brands', 1, 1, 1, 1);
         ACL::UpdateAccess($id, $usergroupID, NULL, 'domains', 1, 1, 1, 1);
         ACL::UpdateAccess($id, $usergroupID, NULL, 'menus', 1, 1, 1, 1);
         ACL::UpdateAccess($id, $usergroupID, NULL, 'usergroups', 1, 1, 1, 1);
@@ -88,7 +88,7 @@ class BrandsController extends Controller
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $brandsList = $this->Brand->getAll();
         if (empty($brandsList)) {
-            $brandChoiceList = "<option value=''>--None--</option>";
+            $brandChoiceList = "<option value=''>-- None --</option>";
         } else {
             $brandChoiceList = '';
             foreach ($brandsList as $brand) {
@@ -109,15 +109,48 @@ class BrandsController extends Controller
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $ID       = $args;
+
+        // Session
+        // MessageLog
+
+        // Domain
+        $Domain = new Domain();
+        $Domain->delete(array('brandID' => $ID));
         
+        // MenuLinks (Menus)
+        $Menu = new Menu();
+        $ms = $Menu->getWhere(array('brandID' => $ID));
+        $MenuLink = new MenuLink();
+        foreach ($ms as $m)
+        {
+            $MenuLink->delete(array('menuID' => $m['menuID']));
+        }
+        // Menu
+        $Menu->delete(array('brandID' => $ID));
+        
+        // ACL
+        $ACL = new ACL();
+        $ACL->delete(array('brandID' => $ID));
+        
+        // Page
+        $Page = new Page();
+        $Page->delete(array('brandID' => $ID));
+        
+        // Article
+        $Article = new Article();
+        $Article->delete(array('brandID' => $ID));
+        
+        // Users (Usergroups)
         $Usergroup = new Usergroup();
+        $ugs = $Usergroup->getWhere(array('brandID' => $ID));
+        $User = new User();
+        foreach ($ugs as $ug)
+        {
+            $User->delete(array('usergroupID' => $ug['usergroupID']));
+        }
+        // Usergroup
         $Usergroup->delete(array('brandID' => $ID));
         
-//        $Usergroup = new Usergroup();
-//        $Usergroup->delete(array('brandID' => $ID));
-//        
-//        $Usergroup = new Usergroup();
-//        $Usergroup->delete(array('brandID' => $ID));
     }
 
 }

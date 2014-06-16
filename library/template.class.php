@@ -120,7 +120,8 @@ class Template
         $omitHeaderFooter = FALSE;
         if ($this->template == "json"
                 || $this->template == "ajax"
-                || $this->template == "m")
+                || $this->template == "m"
+                || $this->controller == 'install')
         {
             $omitHeaderFooter = TRUE;
         }

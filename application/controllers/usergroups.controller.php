@@ -15,7 +15,7 @@ class UsergroupsController extends Controller
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $usergroupsList = $this->Usergroup->getAll();
         if (empty($usergroupsList)) {
-            $usergroupChoiceList = "<option value=''>--None--</option>";
+            $usergroupChoiceList = "<option value=''>-- None --</option>";
         } else {
             $usergroupChoiceList = '';
             foreach ($usergroupsList as $usergroup) {

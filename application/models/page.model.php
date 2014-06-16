@@ -24,6 +24,11 @@ class Page extends Model
     {
         $item['pageBody'] = self::getPageBody($item['pageID']);
         $item['comments'] = self::getPageComments($item['pageID']);
+        
+        // Load the item's brand
+        $Brand         = new Brand();
+        $item['brand'] = $Brand->getSingle(array('brandID'     => $item['brandID'], 'brandActive' => 1));
+        
         return $item;
     }
 
@@ -35,7 +40,7 @@ class Page extends Model
 
         // BodyContent (Page)
         $BodyContent = new BodyContent();
-        return $BodyContent->getWhere(
+        return $BodyContent->getSingle(
                         array(
                             'parentItemTypeID'  => $pageTypeID,
                             'parentItemID'      => $pageID,
@@ -50,12 +55,11 @@ class Page extends Model
 
         // BodyContent (Comment)
         $BodyContent = new BodyContent();
-        $res         = $BodyContent->getWhere(
+        return $BodyContent->getWhere(
                 array(
                     'parentItemTypeID'  => $commentTypeID,
                     'parentItemID'      => $pageID,
                     'bodyContentActive' => 1));
-        return $res;
 
 //        $cols = 'commentID, commentDatePublished';
 //        if (empty($commentID)) {

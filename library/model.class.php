@@ -310,12 +310,6 @@ class Model extends Database
                 $res['where'] = 'usergroupID';
                 $Usergroup = new Usergroup();
                 $ins = $Usergroup->getWhere(array('brandID' => $brandID));
-                if (empty($ins[0]))
-                {
-                    $tmp = $ins;
-                    $ins = array();
-                    $ins[] = $tmp;
-                }
                 foreach ($ins as $in)
                 {
                     $res['in'] .= $in['usergroupID'].",";
@@ -329,12 +323,6 @@ class Model extends Database
                 $res['where'] = 'menuID';
                 $Menu = new Menu();
                 $ins = $Menu->getWhere(array('brandID' => $brandID));
-                if (empty($ins[0]))
-                {
-                    $tmp = $ins;
-                    $ins = array();
-                    $ins[] = $tmp;
-                }
                 foreach ($ins as $in)
                 {
                     $res['in'] .= $in['menuID'].",";
@@ -407,6 +395,25 @@ class Model extends Database
     }
 
     /**
+     * Returns single item of results or false if none found
+     * 
+     * @uses getWhere
+     * 
+     * @param array $where
+     * @param array $in
+     * @return boolean|array
+     */
+    public function getSingle($where, $in = NULL)
+    {
+        $res = self::getWhere($where, $in);
+        if (!empty($res))
+        {
+            return $res[0];
+        }
+        return false;
+    }
+    
+    /**
      * Gets items matching where clause
      * 
      * @uses aclWhere
@@ -436,9 +443,6 @@ class Model extends Database
         $table = NULL;
         $all   = self::select($cols, $where, $order, $table, $in);
 
-        if (count($all) == 1) {
-            return $all[0];
-        }
         return $all;
     }
 

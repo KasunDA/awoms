@@ -15,7 +15,7 @@ class UsersController extends Controller
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $usersList = $this->getUsers();
         if (empty($usersList)) {
-            $userChoiceList = "<option value=''>--None--</option>";
+            $userChoiceList = "<option value=''>-- None --</option>";
         } else {
             $userChoiceList = '';
             foreach ($usersList as $user) {

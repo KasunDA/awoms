@@ -16,7 +16,8 @@ class Domain extends Model
     public static function LoadExtendedItem($item)
     {
         $Brand         = new Brand();
-        $item['brand'] = $Brand->getWhere(array('brandID'     => $item['brandID'], 'brandActive' => 1));
+        $b = $Brand->getSingle(array('brandID'     => $item['brandID'], 'brandActive' => 1));
+        $item['brand'] = $b;
 
         return $item;
     }

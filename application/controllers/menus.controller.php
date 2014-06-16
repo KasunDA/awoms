@@ -20,7 +20,7 @@ class MenusController extends Controller
     public static function createStepInput($k, $v)
     {
         // Menu links are in separate tables
-        if (in_array($k, array('inp_menuLinkDisplay', 'inp_menuLinkURL'))) {
+        if (in_array($k, array('inp_menuLinkDisplay', 'inp_menuLinkAliasURL', 'inp_menuLinkActualURL'))) {
             self::$staticData[$k] = $v;
             return true;
         }
@@ -46,10 +46,11 @@ class MenusController extends Controller
 
         for ($i = 0; $i < count(self::$staticData['inp_menuLinkDisplay']); $i++) {
             $display = self::$staticData['inp_menuLinkDisplay'][$i];
-            $url     = self::$staticData['inp_menuLinkURL'][$i];
+            $aliasURL = self::$staticData['inp_menuLinkAliasURL'][$i];
+            $actualURL = self::$staticData['inp_menuLinkActualURL'][$i];
 
             // Skip empty/cloneable tr
-            if (empty($display) && empty($url)) {
+            if (empty($display) && empty($aliasURL) && empty($actualURL)) {
                 continue;
             }
 
@@ -57,7 +58,7 @@ class MenusController extends Controller
             $data['sortOrder']    = $i;
             $data['parentLinkID'] = NULL;
             $data['display']      = $display;
-            $data['url']          = $url;
+            $data['url']          = $aliasURL;
             $data['linkActive']   = 1;
 
             $linkID = $MenuLink->update($data);
@@ -86,6 +87,42 @@ class MenusController extends Controller
     public function prepareFormCustom($ID = NULL, $data)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-        parent::prepareForm($ID, $data['inp_brandID']);
+        
+        // Get Menu of MenuLinkID
+        $menuID = FALSE;
+        if (!empty($data['inp_menuLinkID']))
+        {
+            $MenuLink = new MenuLink();
+            $mr = $MenuLink->getSingle(array('menuLinkID' => $data['inp_menuLinkID']));
+            if (!empty($mr))
+            {
+                $menuID = $mr['menuID'];
+            }
+        }
+        
+        parent::prepareForm($ID, $data['inp_brandID'], FALSE, FALSE, $menuID);
     }
+    
+    /**
+     * Generates <option> list for Menu select list use in template
+     */
+    public function GetMenuChoiceList($SelectedID = FALSE)
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        $menusList = $this->Menu->getAll();
+        if (empty($menusList)) {
+            $menuChoiceList = "<option value=''>-- None --</option>";
+        } else {
+            $menuChoiceList = "<option value=''>-- None --</option>";
+            foreach ($menusList as $menu) {
+                $selected = '';
+                if ($SelectedID != FALSE && $SelectedID != "ALL" && $menu['menuID'] == $SelectedID) {
+                    $selected = " selected";
+                }
+                $menuChoiceList .= "<option value='" . $menu['menuID'] . "'" . $selected . ">" . $menu['menuName'] . "</option>";
+            }
+        }
+        return $menuChoiceList;
+    }
+
 }

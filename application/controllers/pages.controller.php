@@ -22,9 +22,15 @@ class PagesController extends Controller
     public static function createStepInput($k, $v)
     {
         // Page info and body are in separate tables
-        if (in_array($k, array('inp_pageBody'))) {
+        // MenuID on creation to create menu link
+        if (in_array($k, array('inp_pageBody', 'inp_menuID', 'inp_pageAlias'))) {
             self::$staticData[$k] = $v;
             return true;
+        }
+
+        // We need page title, brandID if creating menu
+        if (in_array($k, array('inp_pageName', 'inp_brandID'))) {
+            self::$staticData[$k] = $v;
         }
         return false;
     }
@@ -68,9 +74,44 @@ class PagesController extends Controller
         $bodyContentID = $Page->saveBodyContents($id, $bodyType, self::$staticData['inp_pageBody'], $_SESSION['user']['userID']);
         // Set previous bodies to inactive
         $Page->setBodyContentActive($id, $bodyType, $bodyContentID);
+
+        // Create menu link?
+        if (!empty(self::$staticData['inp_menuID'])) {
+
+            $display = self::$staticData['inp_pageName'];
+            $alias   = self::$staticData['inp_pageAlias'];
+            $actualURL = '/pages/read/' . $id;
+            if (empty($alias)) {
+                $alias = '/' . str_replace(' ', '-', $display);
+            }
+            // Menu Link == "Display" => "/AliasURL"
+            $MenuLink   = new MenuLink();
+            $menuLinkID = $MenuLink->update(array('menuID'     => self::$staticData['inp_menuID'],
+                'sortOrder'  => 99,
+                'display'    => $display,
+                'url'        => $alias,
+                'linkActive' => 1));
+            // Every domain for this brand, alias mapping "/AliasURL" => "/real/url/123"
+            $Domain  = new Domain();
+            $domains = $Domain->getWhere(array('brandID' => self::$staticData['inp_brandID']));
+            $reID    = NULL;
+            if (!empty($domains)) {
+                $RewriteMapping = new RewriteMapping();
+                
+                // @TODO check if mapping already exists?
+                
+                foreach ($domains as $domain) {
+                    $reID = $RewriteMapping->update(array('aliasURL'  => $alias,
+                        'actualURL' => $actualURL,
+                        'sortOrder' => 99,
+                        'domainID'  => $domain['domainID']));
+                }
+            }
+
+        }
         return true;
     }
-    
+
     /**
      * Pre-selects brand ID
      * 

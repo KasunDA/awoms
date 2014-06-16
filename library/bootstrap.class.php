@@ -40,11 +40,33 @@ class Bootstrap
     {
         Errors::debugLogger("*************** BS URL: " . $url . " template(m): " . $template);
 
-        # Look up the requested domain and its matching brand
-        self::lookupDomainBrand();
+        if ($url != 'install/wizard')
+        {
+        
+            # Look up the requested domain and its matching brand
+            self::lookupDomainBrand();
 
-        # Session start/resume
-        new Session();
+            # Session start/resume
+            new Session();
+        
+        } else {
+            
+            // Define constants @TODO Move to session?
+            if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) {
+                define('HTTPS', TRUE);
+                define('PROTOCOL', 'https://');
+            } else {
+                define('HTTPS', FALSE);
+                define('PROTOCOL', 'http://');
+            }
+            define('BRAND_ID', 0);
+            define('BRAND', 'Install Wizard');
+            define('BRAND_URL', PROTOCOL . $_SERVER['HTTP_HOST'] . '/');
+            define('BRAND_DOMAIN', BRAND);
+            define('BRAND_LABEL', BRAND);
+            define('BRAND_THEME', BRAND);
+        
+        }
 
         # Process MVC request
         self::callHook($url, $template);
@@ -81,8 +103,17 @@ class Bootstrap
     {
         // Domain lookup
         $Domain  = new Domain();
-        $domain = $Domain->getWhere(array('domainName' => $_SERVER['HTTP_HOST']));
+        $domain = $Domain->getSingle(array('domainName' => $_SERVER['HTTP_HOST']));
         if (empty($domain)) {
+            
+            $Brand  = new Brand();
+            if (empty($Brand->getAll()))
+            {
+                // Setup wizard
+                header('Location: /install/wizard');
+                exit(0);
+            }
+            
             trigger_error("Domain not found that matches " . $_SERVER['HTTP_HOST']);
             die();
             exit();
@@ -90,7 +121,7 @@ class Bootstrap
 
         // Brand lookup
         $Brand  = new Brand();
-        $brand = $Brand->getWhere(array('brandID' => $domain['brandID']));
+        $brand = $Brand->getSingle(array('brandID' => $domain['brandID']));
         if (empty($brand)) {
             trigger_error("Brand not found that matches " . $domain['brandID']);
             die();

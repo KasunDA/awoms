@@ -35,7 +35,7 @@ class Article extends Model
 
         // BodyContent (Article)
         $BodyContent = new BodyContent();
-        return $BodyContent->getWhere(
+        return $BodyContent->getSingle(
                         array(
                             'parentItemTypeID'  => $articleTypeID,
                             'parentItemID'      => $articleID,

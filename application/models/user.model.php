@@ -16,10 +16,10 @@ class User extends Model
     public static function LoadExtendedItem($item)
     {
         $Usergroup = new Usergroup();
-        $item['usergroup'] = $Usergroup->getWhere(array('usergroupID' => $item['usergroupID']));
+        $item['usergroup'] = $Usergroup->getSingle(array('usergroupID' => $item['usergroupID']));
 
         $Brand = new Brand();
-        $item['brand'] = $Brand->getWhere(array('brandID' => $item['usergroup']['brandID']));
+        $item['brand'] = $Brand->getSingle(array('brandID' => $item['usergroup']['brandID']));
         
         return $item;
     }
@@ -51,7 +51,7 @@ class User extends Model
         // Valid login?
         foreach ($groups as $group) {$in[] = $group['usergroupID'];}
         
-        $_user = self::getWhere(array('userActive' => 1,
+        $_user = self::getSingle(array('userActive' => 1,
             'userName' => $username,
             'passphrase' => $passphrase,
             'usergroupID' => NULL),

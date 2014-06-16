@@ -30,18 +30,60 @@
 <?php
 }
 ?>
-    
+
+<?php
+    // Menu List - Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
+    if (!empty($menuChoiceList))
+    {
+        $class='';
+        if (empty($_SESSION['user'])
+                || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
+                || $_SESSION['user']['usergroup']['brandID'] != 1)
+        {
+            $class='hidden';
+        }
+    }
+?>
+
     <tr>
       <td>
-        <!-- Title -->
         Title
       </td>
       <td>
-        <input type='text' id='inp_pageName' name='inp_pageName' value='<?php
-          if (isset($inp_pageName)) {
-            echo $inp_pageName;
-          }
-        ?>' size='60' />
+          <table>
+              <tr>
+                  <td colspan='2'>
+                    <input type='text' id='inp_pageName' name='inp_pageName' value='<?php
+                        if (isset($inp_pageName)) {
+                          echo $inp_pageName;
+                        }
+                      ?>' size='60' />
+                  </td>
+              </tr>
+              <tr>
+                <td>
+                  SEO Alias
+                </td>
+                <td class='<?php echo $class; ?>'>
+                  Add to Menu
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <small class='muted'>/</small>&nbsp;<input type='text' id='inp_pageAlias' name='inp_pageAlias' value='<?php
+                    if (isset($inp_pageAlias)) {
+                      echo $inp_pageAlias;
+                    }
+                  ?>' size='20' />
+                </td>
+                <td class='<?php echo $class; ?>'>
+                    <select name='inp_menuID'>
+                    <?=$menuChoiceList;?>
+                    </select>
+                </td>
+              </tr>
+          </table>
+        
       </td>
     </tr>
 

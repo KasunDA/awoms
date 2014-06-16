@@ -7,4 +7,13 @@ class MenuLink extends Model
         $cols = array('linkID', 'menuID', 'sortOrder', 'parentLinkID', 'display', 'url', 'linkActive');
         return $cols;
     }
+    
+    public function update($data, $table = NULL)
+    {
+        
+        Errors::debugLogger(__METHOD__.': ');
+        Errors::debugLogger($data);
+        
+        parent::update($data, $table);
+    }
 }

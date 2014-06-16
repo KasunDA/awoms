@@ -26,8 +26,8 @@ class ACL extends Model
         Errors::debugLogger(__METHOD__ . ': ' . $controller . '/' . $action, 90);
         // Allowed anonymous access:
         if (
-                // Menus
-                #($controller == "menus" && $action == "admin") ||
+                // Install Wizard
+                ($controller == "install" && $action == "wizard") ||
                 // Home
                 ($controller == "home" && $action == "home") ||
                 // Users login
@@ -96,10 +96,11 @@ class ACL extends Model
      */
     public function PermissionCheckUserLevel($userID, $controller, $crud)
     {
-        $results = self::getWhere(array('userID' => $userID,
+        $results = self::getSingle(array('userID' => $userID,
             'controller' => $controller));
 
         if (!empty($results)) {
+
             Errors::debugLogger(__METHOD__ . ': Found user specific ACL (' . $results[$crud] . ')...', 90);
             if ($results[$crud] == 1) {
                 // Access explicitly ALLOWED:
@@ -124,7 +125,7 @@ class ACL extends Model
      */
     public function PermissionCheckDefaultGroupLevel($usergroupID, $controller, $crud)
     {
-        $results = self::getWhere(array('usergroupID' => $usergroupID,
+        $results = self::getSingle(array('usergroupID' => $usergroupID,
             'controller' => $controller));
 
         if (!empty($results)) {

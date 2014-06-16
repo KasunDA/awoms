@@ -138,8 +138,9 @@ class Controller
      * @param false|ALL|ID $BrandChoiceList pass in ID to pre-select that ID
      * @param false|ALL|ID $DomainChoiceList pass in ID to pre-select that ID
      * @param false|ALL|ID $UsergroupChoiceList pass in ID to pre-select that ID
+     * @param false|ALL|ID $MenuChoiceList pass in ID to pre-select that ID
      */
-    public function prepareForm($ID = NULL, $BrandChoiceList = FALSE, $DomainChoiceList = FALSE, $UsergroupChoiceList = FALSE)
+    public function prepareForm($ID = NULL, $BrandChoiceList = FALSE, $DomainChoiceList = FALSE, $UsergroupChoiceList = FALSE, $MenuChoiceList = FALSE)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
@@ -172,6 +173,12 @@ class Controller
         if ($UsergroupChoiceList != FALSE || in_array($this->controller, array('users'))) {
             $usergroups = new UsergroupsController('usergroups', 'Usergroup', NULL, 'json');
             $this->set('usergroupChoiceList', $usergroups->GetUsergroupChoiceList($UsergroupChoiceList));
+        }
+        
+        // Menu selection list
+        if ($MenuChoiceList != FALSE || (in_array($this->controller, array('pages')) && in_array($this->action, array('create', 'readall')))) {
+            $menus = new MenusController('menus', 'Menu', NULL, 'json');
+            $this->set('menuChoiceList', $menus->GetMenuChoiceList($MenuChoiceList));
         }
     }
 
@@ -424,10 +431,6 @@ class Controller
 
         // Load Item or Redirect to ViewAll if item doesn't exist
         $ID = self::itemExists($args);
-        
-        var_dump($ID);
-        
-        exit;
 
         if ($this->step == 1) {
             // [] Confirm deletion ** should be done by JS by now - should not get here **
@@ -500,7 +503,7 @@ class Controller
 
         // Confirm this ID exists (load item if found)
         if (!empty($ID)) {
-            $item = self::callModelFunc('getWhere', array($idColName => $ID));
+            $item = self::callModelFunc('getSingle', array($idColName => $ID));
             if (!empty($item)) {
 
                 $this->set($idColName, $ID);

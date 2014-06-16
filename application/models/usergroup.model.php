@@ -16,7 +16,7 @@ class Usergroup extends Model
     public static function LoadExtendedItem($item)
     {
         $Brand = new Brand();
-        $item['brand'] = $Brand->getWhere(array('brandID' => $item['brandID']));
+        $item['brand'] = $Brand->getSingle(array('brandID' => $item['brandID']));
         return $item;
     }
 }

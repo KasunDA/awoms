@@ -85,11 +85,14 @@ if ($menuID == 'DEFAULT')
             <th align="center" width="100">
                 <button type="button" id="addLink" class="alert only-img add" title="Add Link"></button>
             </th>
-            <th>
+            <th width="210">
                 Display
             </th>
-            <th>
-                URL
+            <th width="210">
+                Alias URL
+            </th>
+            <th width="210">
+                Actual URL
             </th>
         </tr>
     </table>
@@ -103,11 +106,14 @@ if ($menuID == 'DEFAULT')
                 <button type="button" class="alert only-img down" title="Move Down"></button>
                 <button type="button" class="alert only-img remove" title="Remove"></button>
             </td>
-            <td>
+            <td width="200">
                 <input type='text' name='inp_menuLinkDisplay[]' size='20' />
             </td>
-            <td>
-                <input type='text' name='inp_menuLinkURL[]' size='30' />
+            <td width="200">
+                <input type='text' name='inp_menuLinkAliasURL[]' size='20' />
+            </td>
+            <td width="200">
+                <input type='text' name='inp_menuLinkActualURL[]' size='20' />
             </td>
         </tr>
 
@@ -123,8 +129,9 @@ if (!empty($menu['links']))
                 <button type="button" class="alert only-img down" title="Move Down"></button>
                 <button type="button" class="alert only-img remove" title="Remove"></button>
             </td>
-            <td><input type='text' name='inp_menuLinkDisplay[]' size='20' value="<?php echo $menuLink['display']; ?>"/></td>
-            <td><input type='text' name='inp_menuLinkURL[]' size='20' value="<?php echo $menuLink['url']; ?>"/></td>
+            <td width="200"><input type='text' name='inp_menuLinkDisplay[]' size='20' value="<?php echo $menuLink['display']; ?>"/></td>
+            <td width="200"><input type='text' name='inp_menuLinkAliasURL[]' size='20' value="<?php echo $menuLink['url']; ?>"/></td>
+            <td width="200"><input type='text' name='inp_menuLinkActualURL[]' size='20' value="<?php echo $menuLink['url']; ?>"/></td>
         </tr>
 <?php
     }
