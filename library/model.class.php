@@ -281,7 +281,8 @@ class Model extends Database
         $res['in'] = NULL;
         
         // No session if we are looking up domain so allow
-        if (empty($_SESSION))
+        // Also allow rewrite lookups
+        if (empty($_SESSION) || $this->table == "rewritemappings")
         {
             return $res;
         }

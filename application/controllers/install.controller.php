@@ -13,6 +13,13 @@ class InstallController extends Controller
 
         if (!empty($_POST['step'])) {
 
+            // Rewrite Map
+            $map = ROOT . DS . 'url-alias-map.txt';
+            if (is_file($map)) {
+                rename($map, $map . '.' . time() . '.bak');
+            }
+            file_put_contents($map, "/owners /admin/home" . PHP_EOL);
+
             // Parent Item Types
             $DB    = new Database();
             $query = "
@@ -60,20 +67,20 @@ class InstallController extends Controller
             $menu['menuName']   = 'Default Menu';
             $menu['menuActive'] = 1;
             $Menu->update($menu);
-            
+
             // MenuLinks
-            $MenuLink = new MenuLink();
-            $menulink['menuID'] = 1;
-            $menulink['sortOrder'] = 1;
-            $menulink['display'] = 'Home';
-            $menulink['url'] = '/';
+            $MenuLink               = new MenuLink();
+            $menulink['menuID']     = 1;
+            $menulink['sortOrder']  = 1;
+            $menulink['display']    = 'Home';
+            $menulink['url']        = '/';
             $menulink['linkActive'] = 1;
             $MenuLink->update($menulink);
-            
-            $menulink['menuID'] = 1;
-            $menulink['sortOrder'] = 2;
-            $menulink['display'] = 'Log In';
-            $menulink['url'] = '/users/login';
+
+            $menulink['menuID']     = 1;
+            $menulink['sortOrder']  = 2;
+            $menulink['display']    = 'Log In';
+            $menulink['url']        = '/users/login';
             $menulink['linkActive'] = 1;
             $MenuLink->update($menulink);
         }

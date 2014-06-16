@@ -29,10 +29,10 @@
     </tr>
 <?php
 }
-?>
 
-<?php
+
     // Menu List - Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
+    $class='hidden';
     if (!empty($menuChoiceList))
     {
         $class='';
@@ -60,26 +60,35 @@
                       ?>' size='60' />
                   </td>
               </tr>
-              <tr>
+              <tr class='<?php echo $class; ?>'>
                 <td>
                   SEO Alias
                 </td>
-                <td class='<?php echo $class; ?>'>
+                <td>
                   Add to Menu
                 </td>
               </tr>
-              <tr>
+              <tr class='<?php echo $class; ?>'>
                 <td>
+<?php
+// Alias/Menu only on Create
+if (!empty($menuChoiceList))
+{
+?>
                   <small class='muted'>/</small>&nbsp;<input type='text' id='inp_pageAlias' name='inp_pageAlias' value='<?php
                     if (isset($inp_pageAlias)) {
                       echo $inp_pageAlias;
                     }
                   ?>' size='20' />
                 </td>
-                <td class='<?php echo $class; ?>'>
+                <td>
+
                     <select name='inp_menuID'>
                     <?=$menuChoiceList;?>
                     </select>
+<?php
+}
+?>
                 </td>
               </tr>
           </table>

@@ -83,6 +83,8 @@ class PagesController extends Controller
             $actualURL = '/pages/read/' . $id;
             if (empty($alias)) {
                 $alias = '/' . str_replace(' ', '-', $display);
+            } else {
+                $alias = '/'.$alias;
             }
             // Menu Link == "Display" => "/AliasURL"
             $MenuLink   = new MenuLink();

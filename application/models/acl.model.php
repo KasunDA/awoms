@@ -26,6 +26,7 @@ class ACL extends Model
         Errors::debugLogger(__METHOD__ . ': ' . $controller . '/' . $action, 90);
         // Allowed anonymous access:
         if (
+                (DEVELOPMENT_ENVIRONMENT === TRUE && $controller == "tests") ||
                 // Install Wizard
                 ($controller == "install" && $action == "wizard") ||
                 // Home
@@ -34,7 +35,7 @@ class ACL extends Model
                 ($controller == "users" && in_array($action, array('login', 'logout'))) ||
                 // Anonymous Page/Article/Comment/
                 (empty($_SESSION['user']) && in_array($controller, array('pages', 'articles', 'comments')) && in_array($action,
-                                                                                                                       array('view', 'readall')))
+                                                                                                                       array('read', 'readall')))
         ) {
             return true;
         }

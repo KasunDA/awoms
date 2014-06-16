@@ -140,6 +140,7 @@ class Bootstrap
         define('BRAND', $brand['brandName']);
         define('BRAND_URL', PROTOCOL . $domain['domainName'] . '/');
         define('BRAND_DOMAIN', $domain['domainName']);
+        define('BRAND_DOMAIN_ID', $domain['domainID']);
         define('BRAND_LABEL', $brand['brandLabel']);
         define('BRAND_THEME', $brand['activeTheme']);
     }

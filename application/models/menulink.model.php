@@ -10,9 +10,8 @@ class MenuLink extends Model
     
     public function update($data, $table = NULL)
     {
-        
         Errors::debugLogger(__METHOD__.': ');
-        Errors::debugLogger($data);
+        Errors::debugLogger($data, 90);
         
         parent::update($data, $table);
     }

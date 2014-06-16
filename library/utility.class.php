@@ -465,6 +465,7 @@ class Utility
         
     /**
      * Ensures things like "Goin' Postal" are displayed as "Goin&#39 Postal"
+     * Also protects against injection attacks
      * 
      * @uses htmlentities
      * 

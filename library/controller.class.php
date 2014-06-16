@@ -370,16 +370,12 @@ class Controller
     public function readall($prepareForm = TRUE)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-
         $items = self::callModelFunc('getAll');
-
         $this->set($this->controller, $items);
-
         if ($prepareForm === TRUE) {
             // Prepare Create Form
             self::prepareForm();
         }
-
         return true;
     }
 

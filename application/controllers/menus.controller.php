@@ -36,34 +36,72 @@ class MenusController extends Controller
      */
     public static function createStepFinish($id)
     {
-        /* Save menu Links */
+        $Domain = new Domain();
         $MenuLink = new MenuLink();
+        $RewriteMapping = new RewriteMapping();
 
-        // First remove all links then save new list:
+        // Remove existing rewrite rules (across all selected brands domains)
+        $Menu = new Menu();
+        $m = $Menu->getSingle(array('menuID' => $id));
+        $domains = $Domain->getWhere(array('brandID' => $m['brandID']));
+        $existingMenuLinks = $MenuLink->getWhere(array('menuID' => $id));
+        foreach ($domains as $domain)
+        {
+            $domainID = $domain['domainID'];
+            $domainName = $domain['domainName'];
+            foreach ($existingMenuLinks as $existingMenuLink)
+            {
+                $RewriteMapping->removeRewriteRule($existingMenuLink['url'], $domainName, $domainID);
+            }
+        }
+        
+        // Remove menulinks
         $MenuLink->delete(array('menuID' => $id));
-
+        
+        // Create menulinks with rewrite rules (across all selected brands domains)
         $data = array();
-
         for ($i = 0; $i < count(self::$staticData['inp_menuLinkDisplay']); $i++) {
             $display = self::$staticData['inp_menuLinkDisplay'][$i];
             $aliasURL = self::$staticData['inp_menuLinkAliasURL'][$i];
             $actualURL = self::$staticData['inp_menuLinkActualURL'][$i];
-
             // Skip empty/cloneable tr
             if (empty($display) && empty($aliasURL) && empty($actualURL)) {
                 continue;
             }
-
             $data['menuID']       = $id;
             $data['sortOrder']    = $i;
             $data['parentLinkID'] = NULL;
             $data['display']      = $display;
             $data['url']          = $aliasURL;
             $data['linkActive']   = 1;
-
             $linkID = $MenuLink->update($data);
+            
+            // Rewrite rules for alias -> actual
+            if (!empty($aliasURL)
+                    && !empty($actualURL)
+                    && $aliasURL != $actualURL)
+            {
+                foreach ($domains as $domain)
+                {
+                    $domainID = $domain['domainID'];
+                    #$domainName = $domain['domainName'];
+                
+                    $rewriteRule = array('aliasURL' => $aliasURL,
+                        'actualURL' => $actualURL,
+                        'domainID' => $domainID);
+                    $found = $RewriteMapping->getSingle($rewriteRule);
+                    if (empty($found))
+                    {
+                        Errors::debugLogger(__METHOD__.': *** Create rewrite rule... '.$aliasURL);
+                        $rewriteRule['sortOrder'] = 99;
+                        $RewriteMapping->update($rewriteRule);
+                    } else {
+                        Errors::debugLogger(__METHOD__.': *** Already found:');
+                        Errors::debugLogger($found);
+                    }
+                }
+            }
         }
-
         return true;
     }
 

@@ -320,6 +320,10 @@ class Session
         $this->data['session']['domain']     = "." . BRAND_DOMAIN; // Leading "." allows all sub-domains
         $this->data['session']['storeTheme'] = BRAND_THEME;
         $this->data['session']['https']      = 0;
+        
+        // Brand/Domain info
+        $this->data['session']['domainID'] = BRAND_DOMAIN_ID;
+        
         if (HTTPS) {
             $this->data['session']['https'] = 1;
         }

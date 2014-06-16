@@ -18,6 +18,20 @@ class Menu extends Model
         // Load the menu's links
         $MenuLink      = new MenuLink();
         $item['links'] = $MenuLink->getWhere(array('menuID'     => $item['menuID'], 'linkActive' => 1));
+        
+        // Load rewrite map alias for menu links
+        $RewriteMapping = new RewriteMapping();
+        $i = 0;
+        foreach ($item['links'] as $link)
+        {
+            $rewriteRule = $RewriteMapping->getSingle(array('domainID' => $_SESSION['domainID'],
+                'aliasURL' => $link['url']));
+            if (!empty($rewriteRule))
+            {
+                $item['links'][$i]['actualURL'] = $rewriteRule['actualURL'];
+            }
+            $i++;
+        }
 
         // Load the menu's brand
         $Brand         = new Brand();

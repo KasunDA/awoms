@@ -122,6 +122,7 @@ if (!empty($menu['links']))
 {
     foreach ($menu['links'] as $menuLink)
     {
+        var_dump($menuLink);
 ?>
         <tr>
             <th align="center" width="100">
@@ -131,7 +132,13 @@ if (!empty($menu['links']))
             </td>
             <td width="200"><input type='text' name='inp_menuLinkDisplay[]' size='20' value="<?php echo $menuLink['display']; ?>"/></td>
             <td width="200"><input type='text' name='inp_menuLinkAliasURL[]' size='20' value="<?php echo $menuLink['url']; ?>"/></td>
-            <td width="200"><input type='text' name='inp_menuLinkActualURL[]' size='20' value="<?php echo $menuLink['url']; ?>"/></td>
+            <td width="200"><input type='text' name='inp_menuLinkActualURL[]' size='20' value="<?php
+                if (!empty($menuLink['actualURL'])) {
+                    echo $menuLink['actualURL'];
+                } else {
+                    //echo $menuLink['url'];
+                }
+                ?>"/></td>
         </tr>
 <?php
     }

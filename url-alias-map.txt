@@ -1,6 +1,4 @@
 /owners /admin/home
-dev.hutno8.com/about /pages/view/12
-dev.hutno8.com/buy-sell-clothing /pages/view/13
-dev.hutno8.com/franchises /pages/view/14
-dev.hutno8.com/franchise /pages/view/14
-dev.hutno8.com/franchising /pages/view/14
+dev.hutno8.com/ /home/home
+dev.hutno8.com/franchises /pages/read/2
+dev.hutno8.com/test/alias /test/actual
