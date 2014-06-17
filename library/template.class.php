@@ -138,9 +138,6 @@ class Template
             $headerGoogleSiteVerification = self::buildHeader('googleSiteVerification');
             // Load top template (if exists)
             $headerTop = self::buildHeader('header_top');
-            // Get dynamic menu
-            $Menu = new Menu();
-            $Menus['header_nav'] = $Menu->getMenu();
             // Header template
             $templates = array();
             $templates[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $this->controller . DS . 'header.php';

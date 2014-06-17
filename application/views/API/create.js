@@ -18,10 +18,16 @@ var deleteButtonClass = "@@deleteButtonClass@@";
  **/
 $('#' + createFrmID).dialog({
   autoOpen: createAutoOpenForm,
-  height: 600,
-  width: 850,
+  height: "auto",
+  width: "auto",
   modal: true,
   title: createTitle,
+  open: function() {
+    if ($(this).parent().height() > $(window).height()) {
+        $(this).height($(window).height()*0.8);
+    }
+    $(this).dialog({position: "center"});
+  },
   buttons: [
       {
           text: "Delete",

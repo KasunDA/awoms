@@ -20,7 +20,7 @@ class MenusController extends Controller
     public static function createStepInput($k, $v)
     {
         // Menu links are in separate tables
-        if (in_array($k, array('inp_menuLinkDisplay', 'inp_menuLinkAliasURL', 'inp_menuLinkActualURL'))) {
+        if (in_array($k, array('inp_menuLinkDisplay', 'inp_menuLinkAliasURL', 'inp_menuLinkActualPageID', 'inp_menuLinkActualURL'))) {
             self::$staticData[$k] = $v;
             return true;
         }
@@ -63,7 +63,23 @@ class MenusController extends Controller
         for ($i = 0; $i < count(self::$staticData['inp_menuLinkDisplay']); $i++) {
             $display = self::$staticData['inp_menuLinkDisplay'][$i];
             $aliasURL = self::$staticData['inp_menuLinkAliasURL'][$i];
+            $actualPageID = self::$staticData['inp_menuLinkActualPageID'][$i];
             $actualURL = self::$staticData['inp_menuLinkActualURL'][$i];
+            
+            // If selection is made and custom url is entered (must start with http), custom url will override selection.
+            // otherwise the selected page id will be used
+            if (!empty($actualURL) && preg_match('/^http/', $actualURL))
+            {
+                $actualPageID = NULL;
+            }
+            else
+            {
+                if (!empty($actualPageID))
+                {
+                    $actualURL = "/pages/read/".$actualPageID;
+                }
+            }
+            
             // Skip empty/cloneable tr
             if (empty($display) && empty($aliasURL) && empty($actualURL)) {
                 continue;
@@ -112,7 +128,26 @@ class MenusController extends Controller
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         $ID       = $args;
+        
+        // Remove existing rewrite rules (across all selected brands domains)
+        $Menu = new Menu();
         $MenuLink = new MenuLink();
+        $Domain = new Domain();
+        $RewriteMapping = new RewriteMapping();
+        $m = $Menu->getSingle(array('menuID' => $ID));
+        $domains = $Domain->getWhere(array('brandID' => $m['brandID']));
+        $existingMenuLinks = $MenuLink->getWhere(array('menuID' => $ID));
+        foreach ($domains as $domain)
+        {
+            $domainID = $domain['domainID'];
+            $domainName = $domain['domainName'];
+            foreach ($existingMenuLinks as $existingMenuLink)
+            {
+                $RewriteMapping->removeRewriteRule($existingMenuLink['url'], $domainName, $domainID);
+            }
+        }
+        
+        // Remove all menu links
         $MenuLink->delete(array('menuID' => $ID));
     }
 

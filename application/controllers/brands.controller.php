@@ -18,8 +18,21 @@ class BrandsController extends Controller
      */
     public static function createStepFinish($id)
     {
-        // Create default usergroups for new brand
+        // Create default menu for new brand
+        $Menu = new Menu();
+        $menuID = $Menu->update(array('brandID' => $id,
+            'menuName' => 'Default Menu',
+            'menuActive' => 1));
+        $MenuLink = new MenuLink();
+        $data['menuID']       = $menuID;
+        $data['sortOrder']    = 0;
+        $data['parentLinkID'] = NULL;
+        $data['display']      = 'Home';
+        $data['url']          = '/';
+        $data['linkActive']   = 1;
+        $MenuLink->update($data);
         
+        // Create default usergroups for new brand
         $Usergroup = new Usergroup();
         $ACL = new ACL();
 
@@ -30,7 +43,12 @@ class BrandsController extends Controller
         $usergroupID = $Usergroup->update($data);
         
         // Assign new Admin group default ACL
-        ACL::UpdateAccess($id, $usergroupID, NULL, 'brands', 1, 1, 1, 1);
+        if ($id == 1) {
+            // Main brand only is allowed to create brands
+            ACL::UpdateAccess($id, $usergroupID, NULL, 'brands', 1, 1, 1, 1);
+        } else {
+            ACL::UpdateAccess($id, $usergroupID, NULL, 'brands', 0, 0, 0, 0);
+        }
         ACL::UpdateAccess($id, $usergroupID, NULL, 'domains', 1, 1, 1, 1);
         ACL::UpdateAccess($id, $usergroupID, NULL, 'menus', 1, 1, 1, 1);
         ACL::UpdateAccess($id, $usergroupID, NULL, 'usergroups', 1, 1, 1, 1);
@@ -111,7 +129,19 @@ class BrandsController extends Controller
         $ID       = $args;
 
         // Session
+        $DB = new Database();
+        $query = "
+            DELETE FROM sessions
+            WHERE brandID = :brandID
+            ";
+        $DB->query($query, array(':brandID' => $ID));
+        
         // MessageLog
+        $query = "
+            DELETE FROM messageLog
+            WHERE messageBrandID = :brandID
+            ";
+        $DB->query($query, array(':brandID' => $ID));
 
         // Domain
         $Domain = new Domain();

@@ -4,6 +4,7 @@ customConfig.php
 googleAnalytics.php
 googleSiteVerification.php
 files/
+url-alias-map.txt
 
 # Logs
 logs/

@@ -2,7 +2,19 @@
 <div class="footer-container">
     <footer>
 
-        <ul class="menu_footer" id="footer_menu_left">
+<?php
+        // Get dynamic menu
+        $Menu = new Menu();
+        $Menus['footer_store_info'] = $Menu->getMenu("Hut Store Info Menu", "menu_footer footer_menu_left");
+        $Menus['footer_site_info'] = $Menu->getMenu("Hut Site Info Menu", "menu_footer footer_menu_middle");
+        $Menus['footer_departments'] = $Menu->getMenu("Hut Departments Menu", "menu_footer menu_footer_wood footer_menu_right");
+        
+        echo $Menus['footer_store_info'];
+        echo $Menus['footer_site_info'];
+        echo $Menus['footer_departments'];
+?>
+<!--        
+        <ul class="menu_footer footer_menu_left">
             <li class="heading">Store Info</li>
             <li>
                 <a href="/about">About Us</a>
@@ -24,7 +36,7 @@
             </li>
         </ul>
 
-        <ul class="menu_footer" id="footer_menu_middle">
+        <ul class="menu_footer footer_menu_middle">
             <li class="heading">Site Info</li>
             <li>
                 <a href="">Employment</a>
@@ -40,7 +52,7 @@
             </li>
         </ul>
 
-        <ul class="menu_footer menu_footer_wood" id="footer_menu_right">
+        <ul class="menu_footer menu_footer_wood footer_menu_right">
             <li>
                 <a href="">Now buying &amp; selling</a>
             </li>
@@ -79,7 +91,7 @@
             <li>
                 <a href="">&amp; More...</a>
             </li>
-        </ul>
+        </ul>-->
 
         <div id="copyright">
             &copy Copyright <?=date("Y").' '.BRAND;?> <a href='mailto:info@<?=BRAND_DOMAIN;?>'>info@<?=BRAND_DOMAIN;?></a><br />

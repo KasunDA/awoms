@@ -30,18 +30,11 @@
 <?php
 }
 
-
     // Menu List - Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
     $class='hidden';
     if (!empty($menuChoiceList))
     {
         $class='';
-        if (empty($_SESSION['user'])
-                || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
-                || $_SESSION['user']['usergroup']['brandID'] != 1)
-        {
-            $class='hidden';
-        }
     }
 ?>
 

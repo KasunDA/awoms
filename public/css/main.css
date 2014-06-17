@@ -200,25 +200,27 @@ body {
     background-attachment: scroll;
     */
 }
-.footer-container #footer_menu_left
+.footer-container .footer_menu_left
 {
     padding: 0px 0px 10px 10px;
     float: left;
     width: 180px;
+    min-height: 100px;
 }
-.footer-container #footer_menu_middle
+.footer-container .footer_menu_middle
 {
     padding: 0px 0px 10px 10px;
     float: left;
     width: 180px;
-    
+    min-height: 100px;
     margin-bottom: 10px;
 }
-.footer-container #footer_menu_right
+.footer-container .footer_menu_right
 {
     padding: 10px 10px 0px 0px;
     float: right;
     width: 570px;
+    min-height: 100px;
 }
 /************************************************************************/
 
@@ -420,6 +422,8 @@ ul.menu_footer li
 /* Copyright */
 .footer-container #copyright
 {
+    clear: both;
+    
     color: #b3aa85;
     
     margin-top: -5px;

@@ -18,25 +18,66 @@ class Menu extends Model
         // Load the menu's links
         $MenuLink      = new MenuLink();
         $item['links'] = $MenuLink->getWhere(array('menuID'     => $item['menuID'], 'linkActive' => 1));
-        
-        // Load rewrite map alias for menu links
-        $RewriteMapping = new RewriteMapping();
-        $i = 0;
-        foreach ($item['links'] as $link)
-        {
-            $rewriteRule = $RewriteMapping->getSingle(array('domainID' => $_SESSION['domainID'],
-                'aliasURL' => $link['url']));
-            if (!empty($rewriteRule))
-            {
-                $item['links'][$i]['actualURL'] = $rewriteRule['actualURL'];
-            }
-            $i++;
-        }
 
         // Load the menu's brand
         $Brand         = new Brand();
         $item['brand'] = $Brand->getSingle(array('brandID'     => $item['brandID'], 'brandActive' => 1));
+        
+        // Foreach brands domain, check for rewrite rules:
+        $Domain = new Domain();
+        $domains = $Domain->getWhere(array('brandID' => $item['brandID']));
+        $RewriteMapping = new RewriteMapping();
+        foreach ($domains as $domain)
+        {
+            // Load rewrite map alias for menu links
+            $i = 0;
+            foreach ($item['links'] as $link)
+            {
+                $rewriteRule = $RewriteMapping->getSingle(array('domainID' => $domain['domainID'],
+                    'aliasURL' => $link['url']));
+                if (!empty($rewriteRule))
+                {
+                    $item['links'][$i]['actualURL'] = $rewriteRule['actualURL'];
+                }
+                $i++;
+            }
+        }
 
+        /* */
+        // Foreach menu link, build actual url selection list, if actualurl is set and matches, pre-select that item in list
+        $Page = new Page();
+        $_pages = $Page->getWhere(array('brandID' => $item['brandID'],
+            'pageActive' => 1));
+        
+        // For clone row:
+        $menuPageChoiceList = '';
+        foreach ($_pages as $_page)
+        {
+            $menuPageChoiceList .= "<option value='".$_page['pageID']."'>".$_page['pageName']."</option>";
+        }
+        $item['pageChoiceList'] = $menuPageChoiceList;
+        
+        // For each menu link:
+        $i = 0;
+        foreach ($item['links'] as $link)
+        {
+            $pageChoiceList = '';
+            foreach ($_pages as $_page)
+            {
+                $selected = "";
+                if (!empty($link['actualURL']))
+                {
+                    if ($link['actualURL'] == "/pages/read/".$_page['pageID'])
+                    {
+                        $selected = " selected";
+                    }
+                }
+                $pageChoiceList .= "<option value='".$_page['pageID']."'".$selected.">".$_page['pageName']."</option>";
+            }
+            $item['links'][$i]['pageChoiceList'] = $pageChoiceList;
+            $i++;
+        }
+        
         return $item;
     }
 
@@ -204,21 +245,27 @@ class Menu extends Model
      * 
      * @return string
      */
-    private function user()
+    private function user($menuName, $ulClass)
     {
-        /** Build Menu based on ACL; so that only menu items showing are those the user has access to * */
-        $menuLinks = self::getBrandActiveMenu();
-        if (empty($menuLinks)) return false;
-
+        $res = self::getSingle(array('brandID' => $_SESSION['brandID'],
+            'menuActive' => 1,
+            'menuName' => $menuName));
+        if (empty($res)) {
+            return false;
+        }
+        $MenuLink     = new MenuLink();
+        $res['links'] = $MenuLink->getWhere(array('menuID'     => $res['menuID'], 'linkActive' => 1));
+        
+        /** Build Menu **/
         $menu = array();
-        foreach ($menuLinks['links'] as $menuLink) {
+        foreach ($res['links'] as $menuLink) {
             if (empty($menuLink['parentLinkID'])) {   // Is Parent
                 $menu[$menuLink['display']] = array(
                     "display" => $menuLink['display'],
                     "url"     => $menuLink['url']);
             } else {
                 // Is Child; Find parent
-                foreach ($menuLinks['links'] as $parentMenuLink) {
+                foreach ($res['links'] as $parentMenuLink) {
                     if ($parentMenuLink['linkID'] == $menuLink['parentLinkID']) {
                         $menu[$parentMenuLink['display']]['sub'][$menuLink['display']] = array(
                             "display" => $menuLink['display'],
@@ -227,10 +274,7 @@ class Menu extends Model
                 }
             }
         }
-        /** End construct menu based off ACL * */
-        $ulClass   = "menu_horizontal menu_header menu_hover";
         $finalMenu = self::buildMenu($menu, FALSE, $ulClass);
-        //$this->set('finalMenu', $finalMenu);
         return $finalMenu;
     }
 
@@ -312,32 +356,17 @@ class Menu extends Model
     /**
      * Returns dynamically built menu depending on user_logged_in status
      * 
+     * @param string $menuName
+     * @param string $ulClass
+     * 
      * @return string
      */
-    public function getMenu()
+    public function getMenu($menuName = NULL, $ulClass = NULL)
     {
         if (!empty($_SESSION['user_logged_in'])) {
             return self::admin();
         }
-        return self::user();
-    }
-
-    /**
-     * Gets the current active menuID for the brand
-     * 
-     * @return boolean|int
-     */
-    private function getBrandActiveMenu()
-    {
-        $res = self::getSingle(array('brandID'    => $_SESSION['brandID'], 'menuActive' => 1));
-        if (empty($res)) {
-            return false;
-        }
-
-        $MenuLink     = new MenuLink();
-        $res['links'] = $MenuLink->getWhere(array('menuID'     => $res['menuID'], 'linkActive' => 1));
-
-        return $res;
+        return self::user($menuName, $ulClass);
     }
 
 }
