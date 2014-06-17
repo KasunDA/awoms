@@ -42,7 +42,7 @@ class RewriteMapping extends Model
         $current = file_get_contents($map);
         $new = $alias." ".$actual."\n";
         $current .= $new;
-        Errors::debugLogger(__METHOD__.' *** adding: '.$new);
+        Errors::debugLogger(__METHOD__.' *** adding: '.$alias." ".$actual);
         file_put_contents($map, $current);
     }
     
