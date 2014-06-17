@@ -14,31 +14,16 @@
  - [x] Optional $template variable added to Controller class to allow specifying whether to load header/footer, useful for AJAX requests returning JSON datatype
  
  - [x] WYSIWYG (TinyMCE + Responsive File Manager)
- - [/] Restrict content (Pages, Articles) to that brand ID
- - [/] ACL
+ - [x] Restrict content (Pages, Articles) to that brand ID
+ - [x] ACL
  - [ ] (dynamic) Brand (domain etc) selection list (ACL to view/change)
  - [ ] Sanitization
- - [ ] URL Rewrites => /about <==> /pages/view/2/2014/05/23/about-page
- 
- 
- 
- - [ ] Sessions
- 
+ - [x] URL Rewrites => /about <==> /pages/view/2/2014/05/23/about-page
+ - [x] Sessions 
  - [x] Brand Theme folder support
+
  - [ ] ... CSS style
  - [ ] favicon (per brand) 
  
-ACL Class?
--CRUD
--Brand/Page/Article/User etc.
  
- ACL:
- 
- x DOMAIN
- x BRAND
- USER
- USERGROUP
- ACL
- 
- (logs for acl)
  

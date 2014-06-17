@@ -41,8 +41,9 @@ if (!empty($global['input']['m']))
 $BS = new Bootstrap($global['input']['url'], $m);
 
 // Debug
-if (ERROR_LEVEL >= 9
-  && empty($global['input']['m'])) {
+if (DEVELOPMENT_ENVIRONMENT
+        && ERROR_LEVEL >= 9
+        && empty($global['input']['m'])) {
 ?>
 <div style='clear:both; width:90%; margin-left: 50px; margin-top:200px; background-color:yellow; color:red; text-align:left; font-size:10px;'>
     <hr />

@@ -159,7 +159,7 @@ if (!empty($inp_pageShowTitle)) {
         Body
       </td>
       <td>
-        <textarea id='inp_pageBody' name='inp_pageBody' cols='60' rows='8' class="tinymce"><?php
+        <textarea id='inp_pageBody' name='inp_pageBody' cols='60' rows='8' class="tinymce" style="min-height: 445px; min-width: 680px;"><?php
         
           $tinyMCEInputID = "inp_pageBody";
         
@@ -181,12 +181,11 @@ if ($pageID == 'DEFAULT' || empty($page['pageJavaScript']))
     <tr>
         <td colspan="2">
             JavaScript Scripts to Include
-            <br /><small class="muted">e.g. &lt;script src="/css/Bnd/myscript.js"&gt;&lt;/script&gt; <!-- <button type="button" id="cloneButton" class="alert only-img add" title="Add JavaScript"></button> -->
+            <br /><small class="muted">e.g. &lt;script src="/js/MyBnd/myscript.js"&gt;&lt;/script&gt; <!-- <button type="button" id="cloneButton" class="alert only-img add" title="Add JavaScript"></button> -->
         </td>
     </tr>
     <tr>
-        <td>&nbsp;</td>
-        <td>
+        <td colspan="2">
             <table cellpadding='2' cellspacing='0' id="appendToMe">
                 <!-- Cloneable row -->
                 <tr id='cloneMe' class="<?php echo $class; ?>">
@@ -196,7 +195,7 @@ if ($pageID == 'DEFAULT' || empty($page['pageJavaScript']))
                     </td>
                     -->
                     <td colspan="2">
-                        <input type='text' name='inp_pageJavaScript' size='60' />
+                        <input type='text' name='inp_pageJavaScript' size='85' />
                     </td>
                 </tr>
                 

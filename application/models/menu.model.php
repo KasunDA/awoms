@@ -368,8 +368,11 @@ class Menu extends Model
      */
     public function getMenu($menuName = NULL, $ulClass = NULL, $menuTitle = NULL)
     {
-        if (!empty($_SESSION['user_logged_in'])) {
-            return self::admin();
+        if ($menuName == "admin")
+        {
+            if (!empty($_SESSION['user_logged_in']) && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators") {
+                return self::admin();
+            }
         }
         return self::user($menuName, $ulClass, $menuTitle);
     }

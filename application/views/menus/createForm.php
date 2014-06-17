@@ -71,15 +71,12 @@
 <?php
 $pageJavaScript[] = file_get_contents(ROOT.DS.'application'.DS.'views'.DS.'menus'.DS.'menuJavaScript.js');
 
-$class = "hidden";
-if ($menuID == 'DEFAULT')
+// Hide menu links on initial creation until:
+// @TODO: Brand selection dynamically updates the cloneable row's Actual Page choice list
+if ($menuID != 'DEFAULT')
 {
-    $class = "";
-}
 ?>
-    
     <!-- Menu Links -->
-
     <table cellpadding='2' cellspacing='0'>
         <tr>
             <th align="center" width="100">
@@ -103,7 +100,7 @@ if ($menuID == 'DEFAULT')
     <table cellpadding='2' cellspacing='0' id="menuLinksTable">
         
         <!-- Cloneable row -->
-        <tr class="<?php echo $class; ?>">
+        <tr>
             <td align="center" width="100">
                 <button type="button" class="alert only-img up" title="Move Up"></button>
                 <button type="button" class="alert only-img down" title="Move Down"></button>
@@ -160,4 +157,8 @@ if (!empty($menu['links']))
 
     </table>
 
+<?php
+}
+?>
+    
 </form>

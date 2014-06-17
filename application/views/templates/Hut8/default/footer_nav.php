@@ -3,15 +3,29 @@
     <footer>
 
 <?php
-        // Get dynamic menu
-        $Menu = new Menu();
-        $Menus['footer_store_info'] = $Menu->getMenu("Hut Store Info Menu", "menu_footer footer_menu_left", "Store Info");
-        $Menus['footer_site_info'] = $Menu->getMenu("Hut Site Info Menu", "menu_footer footer_menu_middle", "Site Info");
-        $Menus['footer_departments'] = $Menu->getMenu("Hut Departments Menu", "menu_footer menu_footer_wood footer_menu_right");
-        
-        echo $Menus['footer_store_info'];
-        echo $Menus['footer_site_info'];
-        echo $Menus['footer_departments'];
+    // Get dynamic menu
+    $Menu = new Menu();
+    $Menus['footer_left'] = '';
+    $Menus['footer_middle'] = '';
+    $Menus['footer_right'] = '';
+    // Non-logged in user menus
+    if (empty($_SESSION['user_logged_in']) || empty($_SESSION['user']))
+    {
+        $Menus['footer_left'] = $Menu->getMenu("Hut Store Info Menu", "menu_footer footer_menu_left", "Store Info");
+        $Menus['footer_middle'] = $Menu->getMenu("Hut Site Info Menu", "menu_footer footer_menu_middle", "Site Info");
+        $Menus['footer_right'] = $Menu->getMenu("Hut Departments Menu", "menu_footer menu_footer_wood footer_menu_right");
+    }
+    // Store Owners menus
+    elseif (!empty($_SESSION['user_logged_in']) && $_SESSION['user']['usergroup']['usergroupName'] == "Store Owners")
+    {
+        $Menus['footer_left'] = $Menu->getMenu("Owners Bottom Left Menu", "menu_footer footer_menu_left", "Store Owners");
+        #$Menus['footer_middle'] = $Menu->getMenu("Hut Site Info Menu", "menu_footer footer_menu_middle", "Site Info");
+        #$Menus['footer_right'] = $Menu->getMenu("Hut Departments Menu", "menu_footer menu_footer_wood footer_menu_right");
+    }
+
+        echo $Menus['footer_left'];
+        echo $Menus['footer_middle'];
+        echo $Menus['footer_right'];
 ?>
         <div id="copyright">
             &copy Copyright <?=date("Y").' '.BRAND;?> <a href='mailto:info@<?=BRAND_DOMAIN;?>'>info@<?=BRAND_DOMAIN;?></a><br />

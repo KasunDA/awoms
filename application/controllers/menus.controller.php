@@ -58,6 +58,11 @@ class MenusController extends Controller
         // Remove menulinks
         $MenuLink->delete(array('menuID' => $id));
         
+        if (empty(self::$staticData['inp_menuLinkDisplay']))
+        {
+            return true;
+        }
+        
         // Create menulinks with rewrite rules (across all selected brands domains)
         $data = array();
         for ($i = 0; $i < count(self::$staticData['inp_menuLinkDisplay']); $i++) {
