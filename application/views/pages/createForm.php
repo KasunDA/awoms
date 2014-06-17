@@ -90,6 +90,27 @@ if (!empty($menuChoiceList))
     </tr>
 
     <tr>
+        <td>
+            Display Title
+        </td>
+        <td>
+<?php
+if (!empty($inp_pageShowTitle)) {
+?>
+            <input type="radio" name="inp_pageShowTitle" value="1" checked/>&nbsp;Yes
+            <input type="radio" name="inp_pageShowTitle" value="0"/>&nbsp;No
+<?php
+} else {
+?>
+            <input type="radio" name="inp_pageShowTitle" value="1"/>&nbsp;Yes
+            <input type="radio" name="inp_pageShowTitle" value="0" checked/>&nbsp;No
+<?php
+}
+?>
+        </td>
+    </tr>
+    
+    <tr>
       <td>
           <!-- Short Desc -->
           Short Description
@@ -149,6 +170,61 @@ if (!empty($menuChoiceList))
       </td>
     </tr>
 
+<?php
+$pageJavaScript[] = file_get_contents(ROOT.DS.'application'.DS.'views'.DS.'pages'.DS.'pageJavaScript.js');
+$class = "hidden";
+if ($pageID == 'DEFAULT' || empty($page['pageJavaScript']))
+{
+    $class = "";
+}
+?>
+    <tr>
+        <td colspan="2">
+            JavaScript Scripts to Include
+            <br /><small class="muted">e.g. &lt;script src="/css/Bnd/myscript.js"&gt;&lt;/script&gt; <!-- <button type="button" id="cloneButton" class="alert only-img add" title="Add JavaScript"></button> -->
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>
+            <table cellpadding='2' cellspacing='0' id="appendToMe">
+                <!-- Cloneable row -->
+                <tr id='cloneMe' class="<?php echo $class; ?>">
+                    <!--
+                    <td align="center" width="100">
+                        <button type="button" class="alert only-img remove" title="Remove"></button>
+                    </td>
+                    -->
+                    <td colspan="2">
+                        <input type='text' name='inp_pageJavaScript' size='60' />
+                    </td>
+                </tr>
+                
+<?php
+if (!empty($page['pageJavaScript']))
+{
+    #foreach ($page['javascripts'] as $pageJS)
+    #{
+?>
+                <tr>
+                    <!--
+                    <td align="center" width="100">
+                        <button type="button" class="alert only-img remove" title="Remove"></button>
+                    </td>
+                    -->
+                    <td colspan="2">
+                        <input type='text' name='inp_pageJavaScript' value="<?php echo $page['pageJavaScript']; ?>" size='60' />
+                    </td>
+                </tr>
+<?php
+    #}
+}
+?>
+                
+            </table>
+        </td>
+    </tr>
+    
     <tr>
       <td>
           Active

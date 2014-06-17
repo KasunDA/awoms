@@ -100,15 +100,13 @@ class MenusController extends Controller
                 foreach ($domains as $domain)
                 {
                     $domainID = $domain['domainID'];
-                    #$domainName = $domain['domainName'];
-                
                     $rewriteRule = array('aliasURL' => $aliasURL,
                         'actualURL' => $actualURL,
                         'domainID' => $domainID);
                     $found = $RewriteMapping->getSingle($rewriteRule);
                     if (empty($found))
                     {
-                        Errors::debugLogger(__METHOD__.': *** Create rewrite rule... '.$aliasURL);
+                        Errors::debugLogger(__METHOD__.': *** Create rewrite rule... '.$aliasURL.' => '.$actualURL);
                         $rewriteRule['sortOrder'] = 99;
                         $RewriteMapping->update($rewriteRule);
                     } else {

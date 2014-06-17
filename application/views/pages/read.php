@@ -2,12 +2,19 @@
 <div id='view'>
 
   <article>
+<?php
+if (!empty($page['pageShowTitle']))
+{
+?>
     <header>
       <h1><?=$page['pageName'];?></h1>
     </header>
+<?php
+}
+?>
     <section>
     <?php
-        echo html_entity_decode($page['pageBody']['bodyContentText'], ENT_NOQUOTES);
+        echo html_entity_decode($page['pageBody']['bodyContentText']);
     ?>
     </section>
     

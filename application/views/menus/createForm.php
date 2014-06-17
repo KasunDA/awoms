@@ -92,7 +92,10 @@ if ($menuID == 'DEFAULT')
                 Alias URL
             </th>
             <th width="210">
-                Actual Page or URL
+                Actual Page
+            </th>
+            <th width="210">
+                or URL
             </th>
         </tr>
     </table>
@@ -101,7 +104,7 @@ if ($menuID == 'DEFAULT')
         
         <!-- Cloneable row -->
         <tr class="<?php echo $class; ?>">
-            <th align="center" width="100">
+            <td align="center" width="100">
                 <button type="button" class="alert only-img up" title="Move Up"></button>
                 <button type="button" class="alert only-img down" title="Move Down"></button>
                 <button type="button" class="alert only-img remove" title="Remove"></button>
@@ -113,7 +116,7 @@ if ($menuID == 'DEFAULT')
                 <input type='text' name='inp_menuLinkAliasURL[]' size='20' />
             </td>
             <td width="200">
-                <select name="inp_menuLinkActualPageID[]">
+                <select name="inp_menuLinkActualPageID[]" style="max-width:200px">
                     <option value="0">-- Select --</option>
                     <?php if (!empty($menu['pageChoiceList'])) { echo $menu['pageChoiceList']; } ?>
                 </select>
@@ -139,7 +142,7 @@ if (!empty($menu['links']))
             <td width="200"><input type='text' name='inp_menuLinkDisplay[]' size='20' value="<?php echo $menuLink['display']; ?>"/></td>
             <td width="200"><input type='text' name='inp_menuLinkAliasURL[]' size='20' value="<?php echo $menuLink['url']; ?>"/></td>
             <td width="200">
-                <select name="inp_menuLinkActualPageID[]">
+                <select name="inp_menuLinkActualPageID[]" style="max-width:200px">
                     <option value="0">-- Select --</option>
                     <?php if (!empty($menuLink['pageChoiceList'])) { echo $menuLink['pageChoiceList']; } ?>
                 </select></td>

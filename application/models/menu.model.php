@@ -245,7 +245,7 @@ class Menu extends Model
      * 
      * @return string
      */
-    private function user($menuName, $ulClass)
+    private function user($menuName, $ulClass, $menuTitle)
     {
         $res = self::getSingle(array('brandID' => $_SESSION['brandID'],
             'menuActive' => 1,
@@ -274,18 +274,23 @@ class Menu extends Model
                 }
             }
         }
-        $finalMenu = self::buildMenu($menu, FALSE, $ulClass);
+        $finalMenu = self::buildMenu($menu, FALSE, $ulClass, $menuTitle);
         return $finalMenu;
     }
 
     /*
      * Recursive menu builder
      */
-    private static function buildMenu($menu_array, $is_sub = FALSE, $ulClass = FALSE)
+    private static function buildMenu($menu_array, $is_sub = FALSE, $ulClass = FALSE, $menuTitle = FALSE)
     {
         $menu = "\n<ul>\n"; // Open the menu container
         if ($ulClass !== FALSE) {
             $menu = "\n<ul class='" . $ulClass . "'>\n";
+        }
+        
+        if (!empty($menuTitle))
+        {
+            $menu .= "<li class='heading'>".$menuTitle."</li>";
         }
 
         /*
@@ -361,12 +366,12 @@ class Menu extends Model
      * 
      * @return string
      */
-    public function getMenu($menuName = NULL, $ulClass = NULL)
+    public function getMenu($menuName = NULL, $ulClass = NULL, $menuTitle = NULL)
     {
         if (!empty($_SESSION['user_logged_in'])) {
             return self::admin();
         }
-        return self::user($menuName, $ulClass);
+        return self::user($menuName, $ulClass, $menuTitle);
     }
 
 }

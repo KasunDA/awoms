@@ -38,6 +38,25 @@ class DomainsController extends Controller
     }
 
     /**
+     * Controller specific finish Delete step after first input delete
+     */
+    public static function deleteStepFinish($args = NULL)
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        $ID       = $args;
+        
+        // Remove existing rewrite rules (for selected domain)
+        $Domain = new Domain();
+        $domain = $Domain->getSingle(array('domainID' => $ID));
+        $RewriteMapping = new RewriteMapping();
+        $domainRules = $RewriteMapping->getWhere(array('domainID' => $ID));
+        foreach ($domainRules as $domainRule)
+        {
+            $RewriteMapping->removeRewriteRule($domainRule['aliasURL'], $domain['domainName'], $ID);
+        }
+    }
+
+    /**
      * Generates <option> list for Domain select list use in template
      */
     public function GetDomainChoiceList($SelectedID = FALSE)

@@ -5,8 +5,8 @@
 <?php
         // Get dynamic menu
         $Menu = new Menu();
-        $Menus['footer_store_info'] = $Menu->getMenu("Hut Store Info Menu", "menu_footer footer_menu_left");
-        $Menus['footer_site_info'] = $Menu->getMenu("Hut Site Info Menu", "menu_footer footer_menu_middle");
+        $Menus['footer_store_info'] = $Menu->getMenu("Hut Store Info Menu", "menu_footer footer_menu_left", "Store Info");
+        $Menus['footer_site_info'] = $Menu->getMenu("Hut Site Info Menu", "menu_footer footer_menu_middle", "Site Info");
         $Menus['footer_departments'] = $Menu->getMenu("Hut Departments Menu", "menu_footer menu_footer_wood footer_menu_right");
         
         echo $Menus['footer_store_info'];
@@ -21,11 +21,23 @@
 </div>
 
 <?php
-// Only include Wowslider on front page
-if ($this->controller == "home")
+// Page's JS references
+if ($this->controller == "pages")
 {
-    $pageJavaScript[] = "<script src='/css/Hut8/old/wowslider/wowslider.js'></script>";
-    $pageJavaScript[] = "<script src='/css/Hut8/old/wowslider/script.js'></script>";
+    if (!empty($page['pageJavaScript']))
+    {
+        if (!is_array($page['pageJavaScript']))
+        {
+            $pageJavaScript[] = html_entity_decode($page['pageJavaScript'], ENT_QUOTES);
+        }
+        else
+        {
+            foreach ($page['pageJavaScript'] as $pageJS)
+            {
+                $pageJavaScript[] = html_entity_decode($pageJS, ENT_QUOTES);
+            }
+        }
+    }
 }
 ?>
 

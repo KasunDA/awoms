@@ -2,7 +2,10 @@
 
     <?php
     // Home page has different header (doesnt have bottom to hang over wowslider images)
-    if ($_SESSION['controller'] == 'home' && $_SESSION['action'] == 'home') {
+    #if ($_SESSION['controller'] == 'home' && $_SESSION['action'] == 'home') {
+    if ($_SESSION['controller'] == 'pages'
+            && empty($page['pageShowTitle']))
+    {
         $class = "header";
     } else {
         $class = "header-full";

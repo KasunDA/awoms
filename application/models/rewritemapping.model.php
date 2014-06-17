@@ -10,10 +10,9 @@ class RewriteMapping extends Model
     
     public function update($data, $table = NULL)
     {
-        // DB Changes
-        parent::update($data);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         
-        // Alias Map Rewrite Rule Exists?
+        // Remove Alias Map Rewrite Rule if already Exists
         $Domain = new Domain();
         $matchDomain = $Domain->getSingle(array('domainID' => $data['domainID']));
         $r = self::rewriteRuleExists($matchDomain['domainName'].$data['aliasURL']);
@@ -23,8 +22,15 @@ class RewriteMapping extends Model
             self::removeRewriteRule($data['aliasURL'], $matchDomain['domainName'], $matchDomain['domainID']);
         }
         
+        Errors::debugLogger(__METHOD__.' *** Updating rewrite rule in DB: ');
+        Errors::debugLogger($data);
+        
+        // DB Changes
+        parent::update($data);
+        
         // Create new rewrite rule
-        if (empty($r))
+        $r = self::rewriteRuleExists($matchDomain['domainName'].$data['aliasURL']);
+        if (!empty($r))
         {
             if (!empty($matchDomain))
             {
@@ -42,19 +48,18 @@ class RewriteMapping extends Model
         $current = file_get_contents($map);
         $new = $alias." ".$actual."\n";
         $current .= $new;
-        Errors::debugLogger(__METHOD__.' *** adding: '.$alias." ".$actual);
+        Errors::debugLogger(__METHOD__.' *** Adding rewrite rule to map: '.$alias." => ".$actual);
         file_put_contents($map, $current);
     }
     
     public static function removeRewriteRule($alias, $domainName, $domainID)
     {
-        Errors::debugLogger(__METHOD__.' *** Delete aliasURL:'.$alias.' domainID:'.$domainID);
+        Errors::debugLogger(__METHOD__.' *** Removing rewrite rule from DB and rewrite map: aliasURL:'.$alias.' domainID:'.$domainID.' ('.$domainName.') ...');
         
         // Remove from DB
         $RewriteMapping = new RewriteMapping();
         $RewriteMapping->delete(array('domainID' => $domainID,
             'aliasURL' => $alias));
-        
         $alias = $domainName.$alias;
         
         // Remove from txt map file
@@ -67,7 +72,7 @@ class RewriteMapping extends Model
                 $fileAlias = trim($rule[0]);
                 if ($fileAlias == $alias)
                 {
-                    Errors::debugLogger(__METHOD__.' *** removing: '.$fileAlias);
+                    #Errors::debugLogger(__METHOD__.' *** Removing: '.$fileAlias);
                     continue;
                 }
                 $new .= $line;

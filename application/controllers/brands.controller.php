@@ -143,8 +143,19 @@ class BrandsController extends Controller
             ";
         $DB->query($query, array(':brandID' => $ID));
 
-        // Domain
+        // Domain (rewrite mappings)
         $Domain = new Domain();
+        $domains = $Domain->getWhere(array('brandID' => $ID));
+        $RewriteMapping = new RewriteMapping();
+        foreach ($domains as $domain)
+        {
+            $domain = $Domain->getSingle(array('domainID' => $domain['domainID']));
+            $rewriteRules = $RewriteMapping->getWhere(array('domainID' => $domain['domainID']));
+            foreach ($rewriteRules as $rewriteRule)
+            {
+                $RewriteMapping->removeRewriteRule($rewriteRule['aliasURL'], $domain['domainName'], $domain['domainID']);
+            }
+        }
         $Domain->delete(array('brandID' => $ID));
         
         // MenuLinks (Menus)

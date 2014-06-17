@@ -2,9 +2,16 @@
 
 <?php
     // Home page has different middle (doesnt have top to hang over wowslider images)
-    if ($_SESSION['controller'] == 'home'
-            && $_SESSION['action'] == 'home')
-        { $class = "middle"; } else { $class = "middle-small"; }
+    #if ($_SESSION['controller'] == 'home'
+            #&& $_SESSION['action'] == 'home')
+        #{ $class = "middle"; } else { $class = "middle-small"; }
+    if ($_SESSION['controller'] == 'pages'
+                && empty($page['pageShowTitle']))
+    {
+        $class = "middle";
+    } else {
+        $class = "middle-small";
+    }
 ?>
             <!-- Middle/Bottom border -->
             <div class="<?php echo $class; ?>"></div>

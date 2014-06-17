@@ -5,7 +5,7 @@ class Page extends Model
     protected static function getPageColumns()
     {
         $cols = array('pageID', 'pageActive', 'pageName', 'pageShortDescription', 'pageLongDescription', 'pageDatePublished', 'pageDateLastReviewed',
-            'pageDateLastUpdated', 'pageDateExpires', 'userID', 'brandID');
+            'pageDateLastUpdated', 'pageDateExpires', 'userID', 'brandID', 'pageJavaScript');
         return $cols;
     }
 
