@@ -1,4 +1,0 @@
-/owners /admin/home
-dev.hutno8.com/ /home/home
-dev.hutno8.com/franchises /pages/read/2
-dev.hutno8.com/test/alias /test/actual
