@@ -33,7 +33,7 @@ More info: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritemap
  >         RewriteRule   ^(.*)              ${url-aliases:$1|/404.html} [NC,L,QSA]
   
 # Example Apache VirtualHost Configuration
- > 	<VirtualHost *:80>
+ >		<VirtualHost *:80>
  > 		# Main domain
  >         	ServerName gpfc.com
  > 
@@ -63,7 +63,7 @@ More info: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritemap
  >         # Match generic aliases /example /admin/home
  >         RewriteCond   ${url-aliases:$1}  >"" [NC]
  >         RewriteRule   ^(.*)              ${url-aliases:$1|/404.html} [NC,L,QSA]
- > </VirtualHost>
+ >	</VirtualHost>
   
 # Contact
 @author Brock Hensley <brock.hensley@gmail.com>
