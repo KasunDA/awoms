@@ -1,0 +1,179 @@
+<!--BEGIN:#cart_checkout_billing_form-->
+<form id='cart_checkout_billing_form' class='form-horizontal' method="POST">
+
+    <?php
+    // If subtotal > 0
+    // $ct from checkout_x.inc.phtml
+    if ($ct > 0) {
+        ?>
+        <!-- Main Container Two Col -->
+        <div class="row">
+
+            <!-- Main Container Left Col -->
+            <div class="span6 offset2">
+
+                <table class='table table-bordered table-condensed'>
+                    <tr>
+                        <td>
+                            <label class="control-label" for="paymentNumber1">Card Number</label>
+                        </td>
+                        <td >
+                            <input type="text" id="paymentNumber1" name="paymentNumber1" placeholder="Card Number" class='span3' maxlength="16" autocomplete="off" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label class="control-label" for="paymentCardType">Card Type</label>
+                        </td>
+                        <td>
+                            <img class="cc_logo mastercardLogo" src="img/mastercard_logo_mini.gif" alt="MasterCard" />
+                            <img class="cc_logo visaLogo" src="img/visa_logo_mini.gif" alt="Visa" />
+                            <img class="cc_logo amexLogo" src="img/amex_logo_mini.gif" alt="American Express" />
+                            <img class="cc_logo discoverLogo" src="img/discover_logo_mini.gif" alt="Discover" />
+                            <br /><br />
+                            <select id="paymentCardType" name="paymentCardType" class='span2'>
+                                <option id='unknown' selected></option>
+                                <?php
+                                foreach ($cart->getCartPaymentMethods() as $pm) {
+                                    echo "<option id='" . strtolower($pm['paymentMethodCode']) . "' value='" . $pm['paymentMethodCode'] . "'>" . $pm['paymentMethodDescription'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label class="control-label" for="paymentExp">Expiration Date</label>
+                        </td>
+                        <td>
+                            <select id="paymentExpMonth" name="paymentExpMonth" class='input-mini' /> 
+                    <option value='' selected disabled>--</option>
+                    <option>01</option>
+                    <option>02</option>
+                    <option>03</option>
+                    <option>04</option>
+                    <option>05</option>
+                    <option>06</option>
+                    <option>07</option>
+                    <option>08</option>
+                    <option>09</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                    </select>
+                    20
+                    <select id="paymentExpYear" name="paymentExpYear" class='input-mini' />
+                    <option value='' selected disabled>--</option>
+                    <option>13</option>
+                    <option>14</option>
+                    <option>15</option>
+                    <option>16</option>
+                    <option>17</option>
+                    <option>18</option>
+                    <option>19</option>
+                    <option>20</option>
+                    <option>21</option>
+                    <option>22</option>
+                    </select>
+                    </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label class="control-label" for="paymentNumber2">Security Code</label>
+                        </td>
+                        <td>
+                            <input type="text" id="paymentNumber2" name="paymentNumber2" class='input-mini' placeholder="CVV" maxlength="4">
+                            <span class="help-inline">
+                                <a href="#CVVModal" role="button" class="btn" data-toggle="modal"><small>Need Help?</small></a>
+                            </span>
+                            <div id="CVVModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="CVVModal" aria-hidden="true">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times</button>
+                                    <h3 id="CVVModal">Where is my Security Code?</h3>
+                                </div>
+                                <div class="modal-body">
+                                    <img src='img/cvv.jpg'>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+            <!-- End Main Container Left Col -->
+
+            <!-- Right Column -->
+            <div class='span2'>
+                <div id='validationMsgs'></div>
+            </div>
+
+        </div>
+        <!-- End Main Container Two Col -->
+        <?php
+    }
+    ?>
+    <!--BEGIN:#cart_checkout_review_container-->
+    <div id="cart_checkout_review_container" class="container">
+
+        <!-- Main Container Two Col -->
+        <div class="row">
+            <!-- Main Container Left Col -->
+            <div class="span3 offset2">
+                <p class='lead'>Terms of Service</p>
+                <div class="control-group">
+                    <label class="checkbox">
+                        <input id='cart_checkout_review_tos_agree_checkbox' type="checkbox"> <small>I agree to <a href="#tosModal" role="button" data-toggle="modal"><i class='icon-book'></i>&nbsp;Terms of Service</a></small>
+                    </label>
+                </div>
+            </div>
+            <!-- End Main Container Left Col -->
+
+            <!-- Main Container Right Col -->
+            <div class="span3">
+                <p class='lead'>What does this mean?</p>
+                <p>A bunch of legal mumbo jumbo our lawyers make us put up here.</p>
+            </div>
+            <!-- End Main Container Right Col -->
+
+        </div>
+        <!-- End Main Container Two Col -->
+
+        <div class='row'>
+            <div class="alert alert-block alert-success span6 offset2">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h4><i class="icon-info-sign"></i>&nbsp;Note</h4>
+                <?php
+                if ($ct > 0) {
+                    echo "You will <strong>NOT</strong> be charged when you click 'Place Order'. A hold will be placed on your card for the purchase amount and your order will be manually reviewed before processing payment.";
+                } else {
+                    echo "Your order will be manually reviewed before processing and you will receive email notifications on status updates.";
+                }
+                ?>
+            </div>
+        </div>
+
+        <!-- Submit button row -->
+        <div class="form-actions span7 tooltip-on" data-toggle='tooltip' title='By clicking Place Order you agree to the Terms of Service and your Order will be placed'>
+            <div class="span6 offset1">
+                <button id='cart_place_order_btn' name='submitted' type='submit' class="btn btn-success" value='3' disabled="disabled">
+                    <i class='icon-thumbs-up icon-white'></i>&nbsp;Place Order
+                </button>
+                <button id='cart_place_order_btn_loading' name='cart_place_order_btn_loading' type='button' class="btn btn-success hidden" value='3' disabled="disabled">
+                    <i class='icon-refresh icon-white'></i>&nbsp;Processing Order...
+                </button>
+
+                <!-- <button type="button" class="btn">Save Cart for Later</button> -->
+            </div>
+        </div>
+
+    </div>
+    <!--END:#cart_checkout_review_container-->
+
+</form>    
+<!--END:#cart_checkout_billing_form-->

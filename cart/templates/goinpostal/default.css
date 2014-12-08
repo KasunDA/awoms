@@ -1,0 +1,333 @@
+/*****=====
+Vertical Scrollbar Force
+=====*****/
+html {
+    overflow-y: scroll;
+}
+
+/*****=====
+Validation
+=====*****/
+input.validationSuccess,
+select.validationSuccess {
+    border: 1px solid #468847;
+    color: #468847;
+}
+input.validationFail,
+select.validationFail {
+    border: 1px solid #b94a48;
+}
+.validationFail {
+    color: #b94a48;
+}
+
+/*****=====
+Credit Card Logos
+=====*****/
+.cc_logo {
+    opacity: 0.25;
+}
+
+/*****=====
+Custom Table No Border
+=====*****/
+.table-noborder table, .table-noborder tr, .table-noborder th, .table-noborder td { 
+    border: none;
+}
+
+/*****=====
+Body
+=====*****/
+.gpBody {
+    background-color: #000;
+    font-family: Arial, Helvetica, sans-serif, "Lucida Sans Unicode", "Bitstream Vera Sans", "Trebuchet Unicode MS", "Lucida Grande", Verdana;
+    font-size: 12px;
+}
+
+/*****=====
+ Header / NavBar
+ =====*****/
+/* Sticks to top even when scrolling */
+.gpTop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    margin-bottom: 0;
+}
+/* Black overlay bar to extend header over scrolling body */
+.gpTopLogoBar {
+    width: 100%;
+    height: 111px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin-bottom: 0;
+    background-color: #000;
+}
+/* Logo background */
+.gpLogo {
+    background: #000 url('http://www.goinpostal.com/images/header/01-home-css.jpg') no-repeat top left;
+    background-position: -47px 0px;
+    height: 111px;
+}
+/* Header Navigation */
+.gpNavBar {
+    margin-top: 70px;
+    height: 35px;
+}
+/* Nav Link Colors */
+.gpTop .brand, .gpTop .nav li a {
+    color: #0098F4;
+}
+/* Nav Link Dropdown Colors */
+.gpTop .dropdown-menu li a {
+    color: #333;
+}
+/* Nav Link Active Color */
+.gpTop .brand, .gpTop .nav-pills>.active>a {
+    color: #fff;
+}
+
+/*****=====
+ Page Body
+ =====*****/
+.gpPageBody {
+    background-color: #fff;
+    padding: 20px 0px 50px 0px;
+}
+
+
+/*****=====
+Fix Top Left Shift on Resize
+=====*****/
+@media (max-width: 767px) {
+    .gpNavBar {
+        padding-left: 65px;
+    }
+    .gpTop {
+        margin-left: 20px;
+    }
+}
+
+/*****=====
+Page Lead
+=====*****/
+.lead {
+    font-weight: bold;
+}
+
+/*****=====
+Highlight
+=====*****/
+.highlight {
+    background-color: yellow;
+    color: red;
+    font-weight: bold;
+}
+
+/*****=====
+Nav Pills
+=====*****/
+.nav-pills>li>a {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+/*****=====
+Footer
+=====*****/
+.footer {
+    padding-top: 20px;
+}
+
+/*****=====
+Copyright
+=====*****/
+.copyright {
+    color: #3366FF;
+}
+
+/*****=====
+Gradient Borders
+=====*****/
+.gradWrap {
+    background-color:#fff;
+    -webkit-box-shadow: inset 0px -8px 15px #000;
+    -moz-box-shadow: inset 0px -8px 15px #000;
+    -ms-box-shadow: inset 0px -8px 15px #000;
+    box-shadow: inset 0px -8px 15px #000;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.gradLeft {
+    background-image: -webkit-linear-gradient(left, #000, #FFF); 
+    background-image:    -moz-linear-gradient(left, #000, #FFF); 
+    background-image:     -ms-linear-gradient(left, #000, #FFF); 
+    background-image:      -o-linear-gradient(left, #000, #FFF); 
+    background-image:         linear-gradient(left, #000, #FFF);
+}
+
+.gradRight {
+    background-image: -webkit-linear-gradient(right, #000, #FFF); 
+    background-image:    -moz-linear-gradient(right, #000, #FFF); 
+    background-image:     -ms-linear-gradient(right, #000, #FFF); 
+    background-image:      -o-linear-gradient(right, #000, #FFF); 
+    background-image:         linear-gradient(right, #000, #FFF);
+}
+
+/*****=====
+Colors
+=====*****/
+.red {
+    color: red;
+}
+
+/*****=====
+Font Styles
+=====*****/
+.bold {
+    font-weight: bold;
+}
+
+/*****=====
+Old GP, IE Fix
+=====*****/
+#cart_view_container ul {
+    display:block !important;
+}
+#cart_view_container li {
+    display:block !important;
+    margin-top: 10px;
+}
+.gpBodyPaddingFix {
+    padding-left: 40px;
+}
+.gpBodyPaddingFix20 {
+    padding-left: 20px;
+}
+.gpExtraMarginBottom {
+    margin-bottom: 20px;
+}
+
+/*****=====
+Vertical Align row divs to Bottom
+=====*****/
+.gpRow {
+    position: relative;
+}
+.gpCellBottom {
+    position: absolute;
+    bottom: 0;
+}
+.gpCellTop {
+    position: absolute;
+    top: 0;
+}
+
+/*****=====
+Image Sizes
+=====*****/
+.gpThumbImg {
+    height: 128px;
+}
+.gpMediumImg {
+    height: 384px;
+}
+.gpLargeImg {
+    height: 768px;
+}
+
+/*****=====
+Hidden
+=====*****/
+.hidden {
+    display: none;
+    visibility: hidden;
+}
+
+/*****=====
+Carousel
+=====*****/
+.carousel-indicators {
+    background-color: #fff;
+}
+
+.carousel-indicators li {
+    background-color: #ccc;
+}
+
+.carousel-indicators .active {
+    background-color: #666;
+}
+
+/*****=====
+Product Options
+=====*****/
+.parentOption {
+    padding-left: 5px;
+    padding-bottom: 5px;
+    margin-right: -10px;
+    margin-bottom: 20px;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    background-color: #dcdcdc;
+    border: 1px solid #ccc;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+.parentOption:hover {
+    border: 1px solid #333;
+}
+.parentOption .badge {
+    padding-left: 5px;
+    margin-right: -10px;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    color: #000;
+    background-color: #ccc;
+    border: 1px solid #333;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.childOption {
+    position: relative;
+    width: 90%;
+    padding-left: 5px;
+    padding-bottom: 5px;
+    margin-right: -10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    background-color: #f5f5f5;
+    border: 1px dashed #ccc;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+.childOption:hover {
+    background-color: #f5f5f5;
+    border: 1px solid #333;
+}
+
+/*****=====
+Custom Modal
+=====*****/
+body .adminModal .adminModalWider {
+    width: 750px;
+    margin-left: -375px;
+}
+body .adminModal .modal-body {
+    max-height: 625px;
+    overflow-y: auto;
+}
+
+@media (max-width: 1028px){
+body .adminModal .modal-body {
+    max-height: 350px;
+    overflow-y: auto;
+}
+}

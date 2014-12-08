@@ -1,0 +1,207 @@
+<?php
+//
+// AJAX
+//
+if (!empty($_POST['m']) && $_POST['m'] == 'ajax'
+) {
+    //
+    // Place Order
+    //
+    if (!empty($_POST['a']) && $_POST['a'] == 'placeOrder'
+    ) {
+        //
+        // Create Order
+        // 
+        // Defaults
+        $taxRate    = 0;
+        $taxable    = 0;
+        $tax        = 0;
+        $customerID = $_SESSION['customerID'];
+
+        // Email receipt to Email on file (if exists)
+        $customer = new killerCart\Customer();
+        $c        = $customer->getCustomerInfo($customerID);
+        $cart->setEmailTo($c['email']);
+
+        // Order Totals
+        $cartSubtotal = 0;
+        $amount       = 0;
+
+        // Create Order ID
+        $cart->createOrder($customerID, NULL, $amount, $taxable, $tax);
+        $orderID = $cart->session['orderID'];
+
+        //
+        // Free checkout (no billing)
+        //
+        // Assumed 'Authorized' status, default values
+        $orderStatusCode    = 'ATH';
+        $deliveryStatusCode = 'PND';
+        $cartID            = $cart->session['cartID'];
+        $operatorID         = $cart->session['visitorIP'];
+        $returnStatus       = 'Approved';
+        // Record Order
+        $cart->recordOrder($customerID, $orderID, 0, '', $operatorID, $orderStatusCode, $deliveryStatusCode);
+
+        // Check for and send product alerts
+        $order = new killerCart\Order();
+        $order->orderProductsEmailAlerts($orderID);
+
+        // Empty cart products if order was success (and not in debug mode)
+        if (!cartDebug) {
+            $cart->emptyCart();
+        }
+
+        // Save cart to DB
+        $cart->saveSession();
+
+        // Show order summary
+        include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/checkout/checkout_order.inc.phtml');
+    }
+
+    //
+    // End Ajax
+    //
+    exit();
+}
+// Customer Information
+$customer = new killerCart\Customer();
+$c        = $customer->getCustomerInfo($_SESSION['customerID']);
+?>
+
+
+<form id='customerCheckoutForm' method='POST'>
+
+    <!--BEGIN#cart_checkout_container-->
+    <div id="cart_checkout_container" class="container">
+
+        <div class="page-header span12">
+            <?php
+// Page Title
+            if (!empty($_POST['submitted']) && $_POST['submitted'] == 3) {
+                ?>
+                <h1>Order Placed! <small>Thank you so much!</small></h1>
+                <?php
+            } else {
+                ?>
+                <h1>Checkout <small>You're almost done!</small></h1>
+                <?php
+            }
+            ?>
+        </div>
+
+        <div id='customerCheckoutResults'>
+
+            <div class='row'>
+
+                <div class='span6'>
+                    <p class='lead'>Welcome back <strong><?php echo $_SESSION['cInfo']['firstName']; ?></strong>!</p>
+                </div>
+
+            </div>
+
+            <div class='row'>
+
+                <!-- Step 3) Review -->
+                <div id='customerCheckoutStep3' class='span6 offset2'>
+
+                    <div class='row'>
+
+                        <div id='customerCheckoutStep3Msg' class='alert alert-block alert-info span5'>
+                            <h4><i class='icon-info-sign'></i>&nbsp;Review Order</h4>
+                            <p>Please review your order in its entirety, agree to the Terms of Service, and place the order.</p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Terms of Service -->
+                    <div class="row">
+                        <div class="span3">
+                            <p class='lead'>Terms of Service</p>
+                            <div class="control-group">
+                                <label class="checkbox">
+                                    <input id='cart_checkout_review_tos_agree_checkbox' type="checkbox"> <small>I agree to <a href="#tosModal" role="button" data-toggle="modal"><i class='icon-book'></i>&nbsp;Terms of Service</a></small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="span3">
+                            <p class='lead'>What does this mean?</p>
+                            <p>A bunch of legal mumbo jumbo our lawyers make us put up here.</p>
+                        </div>
+                    </div>
+
+                    <!-- Notice -->
+                    <div class='row'>
+                        <div class="alert alert-block alert-success span5">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <h4><i class="icon-info-sign"></i>&nbsp;Note</h4>
+                            Your order will be manually reviewed before processing and you will be notified of status updates via email.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Submit button row -->
+            <div class="span9 form-actions tooltip-on" data-toggle='tooltip' title='By clicking Place Order you agree to the Terms of Service and your Order will be placed'>
+                <div class="span9 text-center">
+                    <a href='#top' id='cart_place_order_btn' type='button' class="btn btn-success" disabled="disabled">
+                        <i class='icon-thumbs-up icon-white'></i>&nbsp;Place Order
+                    </a>
+                    <button id='cart_place_order_btn_loading' name='cart_place_order_btn_loading' type='button' class="btn btn-success hidden" value='3' disabled="disabled">
+                        <i class='icon-refresh icon-white'></i>&nbsp;Processing Order...
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</form>
+
+
+<?php
+// View Cart (unless final step/order placed)
+include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/cart/cart_view.inc.phtml');
+?>
+
+<?php
+$pageJavaScript[] = "
+    
+<script type='text/javascript'>
+    $(document).ready(function() {
+        $('#cart_checkout_review_tos_agree_checkbox').click(function() {
+            $('#customerCheckoutStep3Msg').addClass('hidden');
+        });
+
+        // Place Order
+        $('#cart_place_order_btn').click(function() {
+            $('#cart_place_order_btn').hide();
+            $('#cart_place_order_btn_loading').removeClass('hidden');
+            $('#cart_view_container').addClass('hidden');
+            $('#customerCheckoutResults').html('<div class=\'alert alert-info span5 offset2\'><h4><i class=\'icon-info-sign\'></i>&nbsp;Please wait...</h4> Do <strong>NOT</strong> refresh or close your browser at this time.</div><div class=\'span5 offset2 text-center\'><img src=\'img/loading6.gif\'></div>');
+            var go = $.ajax({
+                type: 'POST',
+                url: '" . cartPublicUrl . "?p=checkout',
+                data: {m: 'ajax',
+                    p: 'checkout',
+                    a: 'placeOrder'
+                }
+            })
+            .done(function(results) {
+                $('#customerCheckoutResults').html(results);
+            })
+            .fail(function(msg) {
+                alert('Error: ' + msg);
+            })
+            .always(function() {
+            });
+        });
+
+    });
+</script>
+";
+?>

@@ -1,0 +1,162 @@
+<div id='cart_admin_home_container' class='container'>
+    <div class="page-header">
+        <h1>Admin Home <small>All available admin operations</small></h1>
+    </div>
+    <div class='span12'>
+        <ul class='thumbnails text-center'>
+            <li span='4'>
+                <div class='thumbnail'>
+                    <a href='?p=order'>
+                        <div class='caption'>
+                            <i class='icon-inbox'></i>
+                            <h3>Orders</h3>
+                        </div>
+                    </a>
+                    <table class='table table-hover table-condensed table-bordered'>
+                        <tr>
+                            <td class='span2'>All</td>
+                            <td>
+                                <?php
+                                // ACL Check
+                                if ($_SESSION['groupID'] == 1) {
+                                    $cartToGet = NULL;
+                                } else {
+                                    $cartToGet = $_SESSION['cartID'];
+                                }
+                                $o = new killerCart\Order();
+                                echo $o->getOrderCount('ALL', $cartToGet);
+                                ?>
+                            </td>
+                        </tr>
+                        <tr class='info'>
+                            <td>Active</td>
+                            <td><?php
+                                echo $o->getOrderCount(array(
+                                    'ATH', 'PND'), $cartToGet);
+                                ?></td>
+                        </tr>
+                        <tr class='error'>
+                            <td>Unsettled</td>
+                            <td><?php
+                                echo $o->getOrderCount(array(
+                                    'DCL', 'CNC'), $cartToGet);
+                                ?></td>
+                        </tr>
+                        <tr class='success'>
+                            <td>Settled</td>
+                            <td><?php
+                                echo $o->getOrderCount(array(
+                                    'PD', 'RFN', 'VD', 'CMP', 'ARC'), $cartToGet);
+                                ?></td>
+                        </tr>
+                        <tr class='warning'>
+                            <td>Incomplete</td>
+                            <td><?php
+                                echo $o->getOrderCount(array(
+                                    'INC'), $cartToGet);
+                                ?></td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+            <li span='4'>
+                <div class='thumbnail'>
+                    <a href='?p=cart'>
+                        <div class='caption'>
+                            <i class='icon-map-marker'></i>
+                            <h3>Carts</h3>
+                        </div>
+                    </a>
+                </div>
+            </li>
+            <li span='4'>
+                <div class='thumbnail'>
+                    <a href='?p=user'>
+                        <div class='caption'>
+                            <i class='icon-user'></i>
+                            <h3>Users</h3>
+                        </div>
+                    </a>
+                </div>
+            </li>
+            <?php
+            if (!empty($cartACL['read']) || !empty($globalACL['read'])
+            ) {
+                ?>
+                <li span='4'>
+                    <div class='thumbnail'>
+                        <a href='?p=product_category'>
+                            <div class='caption'>
+                                <i class='icon-folder-open'></i>
+                                <h3>Product Categories</h3>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+                <?php
+            }
+            if (!empty($cartACL['read']) || !empty($globalACL['read'])
+            ) {
+                ?>
+                <li span='4'>
+                    <div class='thumbnail'>
+                        <a href='?p=product'>
+                            <div class='caption'>
+                                <i class='icon-barcode'></i>
+                                <h3>Products</h3>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+                <?php
+            }
+            if (!empty($cartACL['read']) || !empty($globalACL['read'])
+            ) {
+                ?>
+                <li span='4'>
+                    <div class='thumbnail'>
+                        <a href='?p=customer'>
+                            <div class='caption'>
+                                <i class='icon-heart'></i>
+                                <h3>Customers</h3>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+                <?php
+            }
+            if (!empty($cartACL['read']) || !empty($globalACL['read'])
+            ) {
+                ?>
+                <li span='4'>
+                    <div class='thumbnail'>
+                        <a href='?p=report'>
+                            <div class='caption'>
+                                <i class='icon-book'></i>
+                                <h3>Reports</h3>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+                <?php
+            }
+
+            if (!empty($cartACL['read']) || !empty($globalACL['read'])
+            ) {
+                ?>
+                <li span='4'>
+                    <div class='thumbnail'>
+                        <a href='?p=log'>
+                            <div class='caption'>
+                                <i class='icon-flag'></i>
+                                <h3>Log</h3>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+                <?php
+            }
+            ?>
+        </ul>
+    </div>
+</div>

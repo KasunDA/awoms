@@ -1,0 +1,22 @@
+<form id='admin_cart_tos' class='form-horizontal' method='POST'>
+    <div id="cartTermsOfServiceModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cartTermsOfServiceModal" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times</button>
+            <h3 id="cartTermsOfServiceModal">Cart Terms of Service</h3>
+        </div>
+        <div class="modal-body">
+          <textarea id='cartToS' name='cartToS' class='span5' rows='19'><?php echo $s['termsOfService']; ?></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <input type="hidden" name="p" value="<?php echo $_REQUEST['p']; ?>" />
+            <input type='hidden' name='a' value='edit_cart' />
+            <input type='hidden' name='s' value='2' />
+            <input type='hidden' name='ia' value='termsOfService' />
+            <input type='hidden' name='cartID' value='<?php echo $cartID; ?>' />
+            <button type="submit" class="btn btn-success">
+                <i class='icon-ok-sign icon-white'></i>&nbsp;Save
+            </button>
+        </div>
+    </div>
+</form>

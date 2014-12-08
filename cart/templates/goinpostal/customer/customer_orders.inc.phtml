@@ -1,0 +1,26 @@
+<?php
+$os = $customer->getCustomerOrders($_SESSION['customerID']);
+?>
+<table class='table table-bordered table-hover'>
+    <tr>
+        <th>Order ID</th>
+        <th>Date Order Placed</th>
+        <th>Total Order Price</th>
+        <th>Order Status</th>
+        <th>Date Order Paid</th>
+        <th>Order Notes</th>
+    </tr>
+    <?php
+    foreach ($os as $o) {
+        echo "
+        <tr>
+            <td>" . $o['orderID'] . "</td>
+            <td>" . $o['dateOrderPlaced'] . "</td>
+            <td>$" . killerCart\Util::getFormattedNumber($o['totalOrderPrice']) . "</td>
+            <td>" . $o['orderStatusCode'] . "</td>
+            <td>" . $o['dateOrderPaid'] . "</td>
+            <td>" . $o['orderNotes'] . "</td>
+        </tr>";
+    }
+    ?>
+</table>

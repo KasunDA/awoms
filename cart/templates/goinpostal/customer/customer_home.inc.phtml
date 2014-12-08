@@ -1,0 +1,101 @@
+<?php
+//
+// AJAX
+//
+if (!empty($_POST['m']) && $_POST['m'] == 'ajax'
+) {
+
+    //
+    // Load Customer Page
+    //
+    if (!empty($_POST['a']) && $_POST['a'] == 'loadPage'
+    ) {
+
+        // Sanitize & Validate
+        $s      = new killerCart\Sanitize();
+        $pageID = $s->filterSingle($_POST['pageID'], FILTER_SANITIZE_STRING);
+
+        // Load Content
+        switch ($pageID) {
+            case "profile": {
+                    include(cartPrivateDir . 'templates/' . $_SESSION['cartTheme'] . '/customer/customer_profile.inc.phtml');
+                    break;
+                }
+            case "addresses": {
+                    include(cartPrivateDir . 'templates/' . $_SESSION['cartTheme'] . '/customer/customer_addresses.inc.phtml');
+                    break;
+                }
+            case "paymentMethods": {
+                    include(cartPrivateDir . 'templates/' . $_SESSION['cartTheme'] . '/customer/customer_payment_methods.inc.phtml');
+                    break;
+                }
+            case "orders": {
+                    include(cartPrivateDir . 'templates/' . $_SESSION['cartTheme'] . '/customer/customer_orders.inc.phtml');
+                    break;
+                }
+            default: {
+                    break;
+                }
+        }
+    }
+
+    // End AJAX
+    exit();
+}
+?>
+<!-- Navigation -->
+<div id='customer_nav' class='container'>
+    <div class='row'>
+        <div class='span10'>
+            <ul class="nav nav-tabs">
+                <li class='active'><a href="#addresses" id='defaultTab' class='customerHomeTab' data-toggle="tab"><i class='icon-envelope'></i>&nbsp;Addresses</a></li>
+                <li><a href="#paymentMethods" class='customerHomeTab' data-toggle="tab"><i class='icon-briefcase'></i>&nbsp;Payment Methods</a></li>
+                <li><a href="#orders" class='customerHomeTab' data-toggle="tab"><i class='icon-th-list'></i>&nbsp;Orders</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Content Holders -->
+<div class="tab-content">
+    <div class="tab-pane active" id="addresses"></div>
+    <div class="tab-pane" id="paymentMethods"></div>
+    <div class="tab-pane" id="orders"></div>
+</div>
+
+<?php
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            $('.customerHomeTab').click(function() {
+                var ID = $(this).attr('href').split('#')[1];
+                var divID = '#'+ID;
+                var div = $(divID);
+                // Return if already loaded
+                if (div.html() != '') {
+                    return true;
+                }
+                // AJAX to fill content on first load
+                var go = $.ajax({
+                    type: 'POST',
+                    url: '" . cartPublicUrl . "?p=account',
+                    data: {m: 'ajax',
+                        p: 'account',
+                        a: 'loadPage',
+                        pageID: ID
+                    }
+                })
+                .done(function(results) {
+                    div.html(results);
+                })
+                .fail(function(msg) {
+                    alert('Error: ' + msg);
+                })
+                .always(function() {
+                });
+            });
+            $('#defaultTab').click();
+        });
+    </script>
+";
+?>

@@ -1,0 +1,68 @@
+<form id='admin_cart_taxes' class='form-horizontal' method='POST'>
+    <div id="cartTaxesModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cartTaxesModal" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times</button>
+            <h3 id="cartTaxesModal">Cart Taxes</h3>
+        </div>
+        <div class="modal-body">
+
+            <table class='table table-condensed table-noborder table-hover table-striped'>
+                <tr>
+                    <th></th>
+                    <th>State (Code)</th>
+                    <th>Tax Rate %</th>
+                </tr>
+                <?php
+                // Existing cart tax settings
+                $cartList = array();
+                foreach ($cart->getCartTaxRates($cartID) as $s) {
+                    $cartList[$s['stateCode']] = $s['stateTaxRate'];
+                }
+
+                // Display form with existing settings if exist
+                foreach (killerCart\Util::getStateList() as $stateCode => $stateLabel) {
+                    if (!empty($cartList[$stateCode])) {
+                        $v = $cartList[$stateCode];
+                    } else {
+                        $v = '0';
+                    }
+                    // Label rows
+                    if (preg_match('/^(--)/', $stateCode)) {
+                        echo "
+                            <tr>
+                                <td width='150'></td>
+                                <td colspan='2'><strong>".$stateLabel."</strong></td>
+                            </tr>
+                            ";
+                    } else {
+                        // Normal rows
+                    ?>
+                        <tr>
+                            <td width='150'></td>
+                            <td width='200'>
+                                <label class="control-label" for="<?php echo $stateCode; ?>" class='pull-right'><?php echo $stateLabel . ' (' . $stateCode . ')'; ?></label>
+                            </td>
+                            <td>
+                                <input type="text" id="<?php echo $stateCode; ?>" name="<?php echo $stateCode; ?>" class='span1' placeholder='N/A' value='<?php echo $v; ?>' />
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                }
+                ?>
+            </table>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <input type="hidden" name="p" value="<?php echo $_REQUEST['p']; ?>" />
+            <input type='hidden' name='a' value='edit_cart' />
+            <input type='hidden' name='ia' value='cartTaxes' />
+            <input type='hidden' name='s' value='2' />
+            <input type='hidden' name='cartID' value='<?php echo $cartID; ?>' />
+            <button type="submit" class="btn btn-success">
+                <i class='icon-ok-sign icon-white'></i>&nbsp;Save
+            </button>
+        </div>
+    </div>
+</form>

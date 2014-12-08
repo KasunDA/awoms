@@ -1,0 +1,132 @@
+<div class='clearfix'></div>
+</div>
+</div>
+</div>
+<!-- END: Page Body -->
+
+<!-- Copyright / Rights Reserved / Terms of Service -->
+<div class='container'>
+    <div class='row'>
+        <div class='span10 offset1 text-center copyright'>
+            &copy; Copyright <?php echo date("Y"); ?>. &reg; All Rights Reserved. Goin' Postal Franchise Corporation. <a href="#tosModal" role="button" data-toggle="modal">Terms of Service</a>
+        </div>
+    </div>
+</div>
+
+<!-- Terms of Service -->
+<div id="tosModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="tosModal" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id='tosModal'>Web Site Terms and Conditions of Use</h3>
+    </div>
+    <div class="modal-body">
+        <?php include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/tos.phtml'); ?>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+</div>
+
+<?php
+// DEBUG:
+if (
+        isset($cartDebug) && $cartDebug === true
+) {
+    echo "<div class='container'>";
+
+    // Session
+    if (isset($_SESSION)) {
+        ?>
+        <pre>SESSION
+            <?php var_dump($_SESSION); ?>
+        </pre>
+        <?php
+    }
+    // Cart
+    if (isset($cart)) {
+        ?>
+        <pre><h5>cart->products</h5>
+            <?php
+            if (isset($cart->products)) {
+                foreach ($cart->products as $p) {
+                    echo '<h5>Product:</h5>';
+                    var_dump($p);
+                    if (!empty($p['options'])) {
+                        echo '<h5>Options:</h5>';
+                        foreach ($p['options'] as $o) {
+                            var_dump($o);
+                        }
+                    }
+                }
+            }
+            ?>
+        </pre>
+
+        <pre><h5>cart->shipping</h5>
+            <?php
+            if (isset($cart->shipping)) {
+                var_dump($cart->shipping);
+            }
+            ?>
+        </pre>
+
+        <pre><h5>cart->billing</h5>
+            <?php
+            if (isset($cart->billing)) {
+                var_dump($cart->billing);
+            }
+            ?>
+        </pre>
+
+        <pre><h5>cart</h5>
+            <?php
+            print_r($cart);
+            ?>
+        </pre>
+        <?php
+        // Customer
+    } elseif (isset($customer)) {
+        ?>
+        <pre<h5>>customer</h5>
+            <?php var_dump($customer); ?>
+        </pre>
+        <?php
+    }
+    echo "</div>";
+}
+?>
+
+<!-- jQuery -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+
+<!-- Bootstrap -->
+<script src="js/vendor/bootstrap.min.js"></script>
+
+<!-- Form Validation -->
+<script src="js/vendor/jquery.validate.min.js"></script>
+<script src="js/vendor/additional-methods.min.js"></script>
+
+<!-- Custom -->
+<script src="js/plugins.js"></script>
+<script src="js/main.js"></script>
+
+<!-- Images -->
+<script src='js/vendor/holder.js'></script>
+
+
+<?php
+// Dynamically generated javascript, if exists
+if (!empty($pageJavaScript)) {
+    if (is_array($pageJavaScript)) {
+        foreach ($pageJavaScript as $pjs) {
+            echo $pjs;
+        }
+    } else {
+        echo $pageJavaScript;
+    }
+}
+?>
+
+</body>
+</html>

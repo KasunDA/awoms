@@ -1,0 +1,57 @@
+<?php
+// Customer Addresses on file
+$customer = new killerCart\Customer();
+//$c = $customer->getCustomerInfo($_SESSION['customerID']);
+$pms      = $customer->getCustomerPaymentMethods($_SESSION['customerID']);
+?>
+
+<p class='lead'>Welcome back <strong><?php echo $_SESSION['cInfo']['firstName']; ?></strong>!</p>
+<div class='alert alert-block alert-info span6 offset3'>
+    <h4><i class='icon-info-sign'></i>&nbsp;Choose Payment Method</h4>
+    <p>Please choose a Payment Method to use for this checkout</p>
+</div>
+
+<form class='form-horizontal' method='POST'>
+
+    <table class='table table-bordered'>
+        <?php
+        $i        = 0;
+        foreach ($pms as $pm) {
+            if (strlen($pm['number3']) != 4) {
+                \Errors::debugLogger(__FILE__ . __LINE__ . ' Skipping Payment Method due to last four', 5);
+                continue;
+            }
+            $i++;
+            if ($i == 1) {
+                echo '<tr>';
+            } elseif ($i % 3 == 0) {
+                echo '</tr><tr>';
+            }
+
+            $paymentMethodID   = $pm['paymentMethodID'];
+            $paymentMethodCode = $pm['paymentMethodCode'];
+            $billingAddressID  = $pm['billingAddressID'];
+            $pmLastFour        = $pm['number3'];
+            $expMonth          = $pm['expMonth'];
+            $expYear           = $pm['expYear'];
+            ?>
+            <td>
+                <input type='radio' name='billingMethod' value='<?php echo $paymentMethodID; ?>' />
+                <?php
+                echo $paymentMethodCode . ' ************' . $pmLastFour . ' (' . $expMonth . '/' . $expYear . ')';
+                ?>
+            </td>
+            <?php
+        }
+        ?>
+        </tr>
+    </table>
+
+    <div class='form-actions'>
+        <div class='span3 offset3'>
+            <button name='a' value='c' type='submit' class="btn btn-primary btn-small" value='2'>
+                <i class="icon-ok-sign icon-white"></i>&nbsp;Next Step
+            </button>
+        </div>
+    </div>
+</form>

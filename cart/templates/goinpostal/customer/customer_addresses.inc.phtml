@@ -1,0 +1,145 @@
+<?php
+//
+// Save Address
+//
+if (!empty($_POST['ia']) && $_POST['ia'] == 'save'
+) {
+    // Sanitize & Validate
+    $s    = new killerCart\Sanitize();
+    $args = array('firstName' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'email'     => FILTER_VALIDATE_EMAIL);
+    $san  = $s->filterArray(INPUT_POST, $args);
+    // Save New Customer Profile
+    //$customer = new killerCart\Customer();
+    //$r        = $customer->updateCustomerInfo($_SESSION['customerID'], $san['firstName'], $san['middleName'], $san['lastName'],
+//                                            $san['phone'], $san['email'], $san['notes'], NULL, NULL, NULL);
+    if (isset($r)) {
+        ?>
+        <div class="alert alert-block alert-success span6 offset3">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4><i class="icon-ok"></i>&nbsp;Success!</h4>
+            Your profile has been updated successfully!
+        </div>
+        <?php
+    } else {
+        ?>
+        <div class="alert alert-block alert-error span6 offset3">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4><i class="icon-ok"></i>&nbsp;Error!</h4>
+            Sorry, we were unable to update your profile. Please try again later.
+        </div>
+        <?php
+    }
+    exit();
+}
+?>
+<?php
+//
+// Load Page
+//
+$as = $customer->getCustomerAddresses($_SESSION['customerID']);
+?>
+
+<div id='customerAddressesResultsDynamic'></div>
+
+<div class='clearfix'></div>
+
+<form id='customerAddressesForm' class='form-horizontal'>
+
+    <table class='table table-bordered table-hover'>
+        <tr>
+            <th>Type</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Notes</th>
+        </tr>
+        <?php
+        foreach ($as as $a) {
+            $addressFormatted = $a['line1'];
+            if (!empty($a['line2'])) {
+                $addressFormatted .= '<br />' . $a['line2'];
+            }
+            if (!empty($address['line3'])) {
+                $addressFormatted .= '<br />' . $a['line3'];
+            }
+            $addressFormatted .= '<br />' . $a['city'] . ', ' . $a['stateProvinceCounty'] . ', ' . $a['zipPostcode'];
+            $addressFormatted .= '<br />' . $a['country'];
+            echo "
+        <tr>
+            <td>" . $a['addressTypeCode'] . "</td>
+            <td>" . $addressFormatted . "</td>
+            <td>" . $a['phone'] . "</td>
+            <td>" . $a['email'] . "</td>
+            <td>" . $a['addressNotes'] . "</td>
+        </tr>";
+        }
+        ?>
+    </table>
+
+    <div class='form-actions'>
+        <button class='btn' type='reset'>
+            <i class='icon-remove-circle'></i>&nbsp;Reset
+        </button>
+        <button class='btn btn-success' id='customerAddressesSaveBtn' type='button' disabled>
+            <i class='icon-ok-circle icon-white'></i>&nbsp;Save Addresses
+        </button>
+    </div>
+
+</form>
+
+<?php
+$thisJavaScript = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+        
+            // Form Validator
+            $('#customerAddressesForm').validate({
+                rules: {
+                    firstName: 'required',
+                    email: {
+                        required: true,
+                        email: true
+                    }
+                }
+            });
+            
+            // Save Profile
+            $('#customerAddressesSaveBtn').click(function() {
+                var v = $('#customerAddressesForm').valid();
+                if (v === false) {
+                    return false;
+                }
+                var BTN = $(this);
+                var oldHtml = BTN.html();
+                BTN.prop('disabled', true).html('<i class=\'icon-refresh\'></i>&nbsp;Saving...');
+                var go = $.ajax({
+                    type: 'POST',
+                    url: '" . cartPublicUrl . "?p=account',
+                    data: {m: 'ajax',
+                        p: 'account',
+                        a: 'loadPage',
+                        pageID: '" . $pageID . "',
+                        ia: 'save',
+                        firstName: $('#firstName').val(),
+                        middleName: $('#middleName').val(),
+                        lastName: $('#lastName').val(),
+                        phone: $('#phone').val(),
+                        email: $('#email').val(),
+                        notes: $('#notes').val()
+                    }
+                })
+                .done(function(results) {
+                    $('#customerAddressesResultsDynamic').html(results);
+                    BTN.prop('disabled', false).html(oldHtml);
+                })
+                .fail(function(msg) {
+                    alert('Error: ' + msg);
+                })
+                .always(function() {
+                });
+            });
+        });
+    </script>
+";
+echo $thisJavaScript;

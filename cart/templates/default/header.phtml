@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class='no-js lt-ie9 lt-ie8 lt-ie7'> <![endif]-->
+<!--[if IE 7]>         <html class='no-js lt-ie9 lt-ie8'> <![endif]-->
+<!--[if IE 8]>         <html class='no-js lt-ie9'> <![endif]-->
+<!--[if gt IE 8]><!--> <html class='no-js'> <!--<![endif]--><html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+        <meta http-equiv="Content-Language" content="en-us">
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <meta name='viewport' content='width=device-width'>
+        <meta name="keywords" content="<?php echo $metaKeywords; ?>">
+        <meta name="Description" content="<?php echo $metaDescription; ?>">
+
+        <title><?php echo $pageTitle; ?></title>
+
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <!-- Must be between reg and responsive bootstrap -->
+        <style>
+            body {
+                padding-top: 60px;
+            }
+        </style>
+        <link rel="stylesheet" type="text/css" href="css/cart_style.php?privateDir=<?php echo cartPrivateDir; ?>&theme=<?php echo $cart->session['cartTheme']; ?>" />
+        <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    </head>
+
+    <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="/"><?php echo $_SERVER['HTTP_HOST']; ?></a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li><a href="/">Home</a></li>
+              <li>
+                <a href="<?php echo cartPublicUrl; ?>?p=category">
+                  <i class="icon-tags icon-white"></i>
+                  &nbsp;Products
+                </a>
+              </li>
+              <li>
+                <a href='<?php echo cartPublicUrl . '?p=cart'; ?>'>
+                  <i class="icon-shopping-cart icon-white"></i>
+                  &nbsp;View Cart<?php echo " (" . $cartItemQty . ")"; ?>
+                </a>
+              </li>
+              <li>
+                <a href="<?php echo cartPublicUrl; ?>?p=checkout">
+                  <i class="icon-gift icon-white"></i>
+                  &nbsp;Checkout
+                </a>
+              </li>
+<?php
+if (empty($_SESSION['cInfo']))
+{
+?>
+	      <li><a href="<?php echo cartPublicUrl; ?>?p=account">Log In</a></li>
+<?php
+} else {
+?>
+              <li><a href="<?php echo cartPublicUrl; ?>?p=account&a=logout">Log Out</a></li>
+<?php
+}
+
+if (!empty($_SESSION['cInfo']))
+{
+?>
+              <li>
+                <a href="<?php echo cartPublicUrl; ?>?p=account">
+                  <i class="icon-user icon-white"></i>
+                  &nbsp;<?php echo $_SESSION['cInfo']['username']; ?>
+                </a>
+              </li>
+<?php
+}
+?>
+              <li><a href="<?php echo cartPublicUrl; ?>?p=contact">Contact</a></li>
+           </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+        <!-- Page Body -->
+        <div class='container'>
+            <div class='row'>
+                <div class='span12'>
+
+                    <!-- Breadcrumbs -->
+                    <ul class="breadcrumb">
+                        <li><a href="<?php echo cartPublicUrl . '?p=home'; ?>">Cart Home</a> <span class="divider">/</span></li>
+                            <?php
+                            // View Cart
+                            if (empty($_REQUEST['p']) || $_REQUEST['p'] == 'cart') {
+                                echo '<li class="active">View Cart</li>';
+                                // Checkout
+                            } elseif ($_REQUEST['p'] == 'checkout') {
+                                echo '<li class="active">Checkout</li>';
+                                // Account
+                            } elseif ($_REQUEST['p'] == 'account') {
+                                echo '<li class="active">My Account</li>';
+                                // (Home) All Categories
+                            } elseif ($_REQUEST['p'] == 'home') {
+                                echo '<li class="active">All Categories</li>';
+                                // Contact
+                            } elseif ($_REQUEST['p'] == 'contact') {
+                                echo '<li class="active">Contact Us</li>';
+                                // Category / Product
+                            } else {
+                                if (!empty($_REQUEST['productID'])) {
+                                    $category = new killerCart\Product_Category();
+                                    $c        = $category->getCategoryInfo($p['categoryID']);
+                                }
+                                if (!empty($c['parentCategoryID'])) {
+                                    // Is child category, need parent(s) breadcrumb
+                                    $gotParent  = FALSE;
+                                    $id         = NULL;
+                                    $childBread = '';
+                                    while ($gotParent === FALSE) {
+                                        // First lookup: parent of this CID
+                                        if (empty($id)) {
+                                            $id = $c['parentCategoryID'];
+                                            $tc = $c;
+                                            continue;
+                                        } else {
+                                            // Next: Parent of this CID
+                                            $id = $tc['parentCategoryID'];
+                                            $tc = $category->getCategoryInfo($id);
+                                        }
+                                        // Found parent
+                                        if (empty($tc['parentCategoryID'])) {
+                                            $gotParent   = TRUE;
+                                            $parentBread = "<li><a href='" . cartPublicUrl . "?p=category&categoryID=" . $tc['categoryID'] . "'>" . $tc['categoryName'] . "</a></li>";
+                                        } else {
+                                            // Still child
+                                            $childBread = "&nbsp;<span class='divider'>/</span>&nbsp;<a href='" . cartPublicUrl . "?p=category&categoryID=" . $tc['categoryID'] . "'>" . $tc['categoryName'] . "</a>" . $childBread;
+                                        }
+                                    }
+                                    echo $parentBread . "<li>" . $childBread . "</li>";
+                                    if (empty($_REQUEST['productID'])) {
+                                        echo "<li class='active'>&nbsp;<span class='divider'>/</span>&nbsp;" . $c['categoryName'] . "</li>";
+                                    } else {
+                                        echo "<li>&nbsp;<span class='divider'>/</span>&nbsp;<a href='" . cartPublicUrl . "?p=category&categoryID=" . $c['categoryID'] . "'>" . $c['categoryName'] . "</a></li>";
+                                    }
+                                } else {
+                                    // Is parent category, no sub-categories breadcrumbs
+                                    // Product page = category clickable
+                                    if (!empty($_REQUEST['productID'])) {
+                                        //$c        = $category->getCategoryInfo($p['categoryID']);
+                                        echo "<li class='active'><a href='" . cartPublicUrl . "?p=category&categoryID=" . $c['categoryID'] . "'>" . $c['categoryName'] . "</a></li>";
+                                    } else {
+                                        // Category page = category not-clickable
+                                        echo '<li class="active">' . $c['categoryName'] . '</li>';
+                                    }
+                                }
+                                // Chosen Product
+                                if (!empty($_REQUEST['productID'])) {
+                                    echo "<li class='active'>&nbsp;<span class='divider'>/</span>&nbsp;" . $p['productName'] . "</li>";
+                                }
+                            }
+                            ?>
+                    </ul>
+                    <!-- End header -->

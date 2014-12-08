@@ -1,0 +1,17 @@
+<!--BEGIN:#cart_checkout_addresses_container-->
+<div id="cart_checkout_addresses_container" class="container">
+
+    <?php
+    // Not logged in or first customer checkout
+    if (empty($_SESSION['customerID']) || $_SESSION['customerID'] == 'NEW') {
+
+        include('checkout_addresses_notloggedin.inc.phtml');
+
+        // Is logged in
+    } else {
+
+        include('checkout_addresses_loggedin.inc.phtml');
+    }
+    ?>
+
+</div>

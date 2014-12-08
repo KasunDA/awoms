@@ -1,0 +1,113 @@
+<div class='container'>
+
+    <div class='row'>
+        <div class='span12'>
+
+            <?php
+            // Init Image
+            $image = new killerCart\Image();
+            $maxImgW = 128;
+            $maxImgH = 128;
+            // Init Product Category
+            $category      = new killerCart\Product_Category();
+            // Get all categories
+            $categoryIDs   = $category->getCategoryIDs('ACTIVE', $cartID, 'pc.categoryName');
+            if (!empty($categoryIDs)) {
+                // Configure output display settings
+                $cols          = 4; // <-- Columns
+                // Counters
+                $pi            = 0; // Counter
+                $ci            = 0; // Column tracker
+                $spanMax       = 12;
+                $magicColWidth = floor($spanMax / $cols); // Autocalculate span size according to # desired columns (max 12!)
+                //
+                // Foreach
+                //
+                $out           = '';
+                foreach ($categoryIDs as $categoryID) {
+
+                    // Load info
+                    $c = $category->getCategoryInfo($categoryID['categoryID']);
+
+                    // Skip inactive
+                    if (empty($c['categoryActive'])) {
+                        continue;
+                    }
+
+                    // Skip sub-categories
+                    if (!empty($c['parentCategoryID'])) {
+                        continue;
+                    }
+
+                    // Skip "Ad Cart" (Goin Postal Specific)
+                    if ($c['categoryName'] == 'Print Ads') {
+                        continue;
+                    }
+
+                    // Increase counter
+                    $pi++;
+                    $ci++;
+
+                    //
+                    // Load images
+                    //
+                    $c['images'] = $image->getImageParentInfo($c['cartID'], 1, NULL, $c['categoryID']);
+                    if (empty($c['images'])) {
+                        $showImg = FALSE;
+                    } else {
+                        $i = 0;
+                        foreach ($c['images'] as $k => $img) {
+                            $i++;
+                            // Get best fit for this img
+                            $bestFit = $image->getBestFitImage($c['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $maxImgW, $maxImgH);
+                            $showImg = cartPublicUrl . "getfile.php?cartID=" . $c['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'];
+                            // 1st img only...
+                            break;
+                        }
+                    }
+
+                    // New row when reached cols limit above
+                    if (($pi - 1) % $cols == 0) {
+                        $out .= "<div class='row gpExtraMarginBottom'><div class='span10'>";
+                    }
+
+                    //
+                    // New Column / Data
+                    //
+                    $out .= "
+                        <div class='span" . $magicColWidth . " text-center'>
+                            <div class='row gpRow gpThumbImg'>
+                                <div class='span" . $magicColWidth . " gpCellBottom'>
+                                    <a href='" . cartPublicUrl . "?p=category&categoryID=" . $c['categoryID'] . "' style='text-decoration:none;'>
+                                        <img class='img-polaroid' data-src='holder.js/".$maxImgW."x".$maxImgH."' alt='' src='";
+                    if (!empty($showImg)) {
+                        $out .= $showImg . "' width='".$bestFit['showWidth'];
+                    }
+                    $out .= "' />
+                                    </a>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='span" . $magicColWidth . "'>
+                                    <a href='" . cartPublicUrl . "?p=category&categoryID=" . $c['categoryID'] . "' style='text-decoration:none;'>
+                                        <h5>" . $c['categoryName'] . "</h5>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>";
+
+                    // End row when reached cols limit above, or last
+                    if (
+                            ($pi % $cols == 0) || ($pi == count($categoryIDs))
+                    ) {
+                        $out .= "</div></div>";
+                        $ci = 0;
+                    }
+
+                }
+                echo $out;
+            }
+            ?>
+        </div>
+    </div>
+</div>

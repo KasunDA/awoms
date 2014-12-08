@@ -1,0 +1,101 @@
+<!-- /***** ADD NEW STORE PAYMENT GATEWAY FORM *****/ -->
+<form id='frm_admin_new_cart_payment_gateway' class='form-horizontal' method='POST'>
+    <div id="newCartPaymentGatewayModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="newCartPaymentGatewayModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times</button>
+            <h3 id="newCartPaymentGatewayModalLabel">Add New Payment Gateway</h3>
+        </div>
+        <div class="modal-body">    
+
+            <!-- Name -->
+            <div class="control-group">
+                <label class="control-label" for="gatewayName">Gateway Name</label>
+                <div class="controls">
+                    <input type="text" id="gatewayName" name="gatewayName" placeholder="Enter Gateway Name" />
+                </div>
+            </div>
+
+            <!-- URL -->
+            <div class="control-group">
+                <label class="control-label" for="gatewayURL">Gateway URL</label>
+                <div class="controls">
+                    <input type="text" id="gatewayURL" name="gatewayURL" placeholder="Enter Gateway URL" />
+                    <br />
+                    <input type="checkbox" id="gatewayIsOffline" name="gatewayURL" value="0" />
+                    &nbsp;<span class='muted'>Offline Mode</span>
+                    <br /><br />
+                    MercuryPay Default:<br /><span class="muted">https://w1.mercurypay.com/ws/ws.asmx?WSDL</span>
+                </div>
+            </div>
+
+            <!-- Username -->
+            <div class="control-group">
+                <label class="control-label" for="gatewayURL">Gateway Username</label>
+                <div class="controls">
+                    <input type="text" id="gatewayUsername" name="gatewayUsername" placeholder="Enter Gateway Username" />
+                </div>
+            </div>
+
+            <!-- Passphrase -->
+            <div class="control-group">
+                <label class="control-label" for="gatewayPassphrase">Gateway Passphrase</label>
+                <div class="controls">
+                    <input type="password" id="gatewayPassphrase" name="gatewayPassphrase" placeholder="Enter Gateway Passphrase" />
+                </div>
+            </div>
+
+            <!-- Template -->
+            <div class="control-group">
+                <label class="control-label" for="gatewayTemplate">Template File</label>
+                <div class="controls">
+                    <input type="text" id="gatewayTemplate" name="gatewayTemplate" placeholder="Enter Template Filename" />
+                    <br />MercuryPay Default:<br /><span class="muted">mercuryPayCheckout</span>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="control-group">
+                <label class="control-label" for="gatewayNotes">Gateway Notes</label>
+                <div class="controls">
+                    <textarea id="gatewayNotes" name="gatewayNotes" placeholder="Enter Gateway Notes"></textarea>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <input type="hidden" name="p" value="<?php echo $_REQUEST['p']; ?>" />
+            <input type='hidden' name='a' value='edit_cart' />
+            <input type='hidden' name='ia' value='paymentGatewayNew' />
+            <input type='hidden' name='s' value='2' />
+            <input type='hidden' name='cartID' value='<?php echo $cartID; ?>' />
+            <button type="submit" class="btn btn-success">
+                <i class='icon-ok-sign icon-white'></i>&nbsp;Add New Payment Gateway
+            </button>
+        </div>
+    </div>
+</form>
+<!-- /***** END: ADD NEW STORE PAYMENT GATEWAY FORM *****/ -->
+
+<?php
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            // Admin :: Carts :: New cart payment gateway form validation
+            $('#frm_admin_new_cart_payment_gateway').validate({
+                rules: {
+                    gatewayName: 'required',
+                    gatewayTemplate: 'required'
+                }
+            });
+
+            // Admin :: Carts :: Payment Gateway Offline checkbox
+            $('#gatewayIsOffline').click(function() {
+                if (this.checked) {
+                    $('#gatewayURL').attr('disabled', 'disabled');
+                } else {
+                    $('#gatewayURL').removeAttr('disabled');
+                }
+            });
+        });
+    </script>";

@@ -1,0 +1,54 @@
+<!-- Button to trigger modal -->
+<a href="#newCartModal" role="button" class="btn" data-toggle="modal"><i class='icon-plus'></i>&nbsp;Add New Cart</a>
+
+<!-- /***** ADD NEW STORE FORM *****/ -->
+<form id='frm_admin_new_cart' class='form-horizontal' method='POST'>
+    <div id="newCartModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="newCartModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times</button>
+            <h3 id="newCartModalLabel">Add New Cart</h3>
+        </div>
+        <div class="modal-body">
+
+            <!-- Cart Name -->
+            <div class="control-group">
+                <label class="control-label" for="cartName"><strong>*Cart Name</strong></label>
+                <div class="controls">
+                    <input type="text" id="cartName" name="cartName" placeholder="Enter Cart Name">
+                </div>
+            </div>
+
+            <!-- Cart Notes -->
+            <div class="control-group">
+                <label class="control-label" for="cartNotes">Cart Notes</label>
+                <div class="controls">
+                    <textarea id="cartNotes" name="cartNotes" placeholder="Enter Cart Notes"></textarea>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <input type='hidden' name='p' value='<?php echo $_REQUEST['p']; ?>' />
+            <input type='hidden' name='a' value='edit_cart' />
+            <input type='hidden' name='s' value='2' />
+            <button type="submit" class="btn btn-success">
+                <i class='icon-ok-sign icon-white'></i>&nbsp;Add New Cart
+            </button>
+        </div>
+
+    </div>
+</form><!--#frm_admin_new_cart-->
+
+<?php
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            // Admin :: Carts :: New cart form validation
+            $('#frm_admin_new_cart').validate({
+                rules: {
+                    cartName: 'required'
+                }
+            });
+        });
+    </script>";

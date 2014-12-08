@@ -1,0 +1,152 @@
+<?php
+// Init Category
+$category = new killerCart\Product_Category();
+
+// Init Image
+$image = new killerCart\Image();
+$maxImgW = 128;
+$maxImgH = 128;
+
+// Output display settings
+$cols          = 6; // <-- Columns
+$spanMax       = 12; // <-- Max span width
+// Counters
+$pi            = 0; // Counter
+$ci            = 0; // Column tracker
+$magicColWidth = floor($spanMax / $cols); // Autocalculate span size according to # desired columns (max 12!)
+// Begin constructing output
+$out           = "<div class='container'>";
+
+// Categories
+$lastCatID     = 0;
+
+//
+// Foreach product (ordered by category)
+//
+foreach ($productIDs as $productID) {
+
+    // Load info
+    $p = $product->getProductInfo($productID['productID']);
+
+    //
+    // ACL Check
+    //
+    if (empty($globalACL['read'])) {
+        if ($_SESSION['cartID'] != $p['cartID']) {
+            continue;
+        }
+    }
+    
+    // Increase counter
+    $ci++;
+    $pi++;
+
+    // New row for category separation
+    // Already on subcats, check if same group or new row
+    if ($p['categoryID'] != $lastCatID) {
+        // New group
+        $c  = $category->getCategoryInfo($p['categoryID']);
+        $pc = NULL;
+        if (!empty($c['parentCategoryID'])) {
+            $pc = $category->getCategoryInfo($c['parentCategoryID']);
+        }
+        $lastCatID   = $p['categoryID'];
+        $lastCatName = $c['categoryName'];
+        // Only end group if not already on first column: fixes bug where hit col limit end row and double end with group
+        if ($ci != 1) {
+            $out .= "</div><!-- End of Group -->";
+        }
+        $out .= "
+            <!-- New Group -->
+            <div class='row'>
+                <div class='span" . $spanMax . "'>
+                    <div class='page-header'>
+                        <h2>" . $lastCatName . "&nbsp;<small>";
+        if (!empty($pc)) {
+            $out .= $pc['categoryName'] . '&nbsp;';
+        }
+        $out .= "[<a href='#top'>top</a>]</small></h2>
+                    </div>
+                </div>
+            </div>
+            <div class='row'>";
+        $ci = 1;
+    } else {
+        // New row when reached cols limit above
+        if (
+                ($ci - 1) % $cols == 0 || ($pi == 1)
+        ) {
+            $out .= "
+                <div class='row'>";
+        }
+    }
+
+    //
+    // Load images
+    //
+    $p['images'] = $image->getImageParentInfo($p['cartID'], 1, $p['productID']);
+    if (empty($p['images'])) {
+        $showImg = FALSE;
+    } else {
+        $i = 0;
+        foreach ($p['images'] as $k => $img) {
+            $i++;
+            // Get best fit for this img
+            $bestFit = $image->getBestFitImage($p['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $maxImgW, $maxImgH);
+            $showImg = cartPublicUrl . "getfile.php?cartID=" . $p['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'];
+            // 1st img only... @todo get 'main logo' type etc.
+            break;
+        }
+    }
+    
+    
+    //
+    // New Column / Data
+    //
+
+    $out .= "
+        <div class='span" . $magicColWidth . "'>
+            <div class='row'>
+                <div class='span" . $magicColWidth . " text-center'>
+                    <a href='?p=product&a=edit_product&productID=" . $p['productID'] . "'>
+                        <img class='img-polaroid' data-src='holder.js/".$maxImgW."x".$maxImgH."' alt='' src='";
+    if (!empty($showImg)) {
+        $out .= $showImg . "' width='".$bestFit['showWidth'];
+    }
+    $out .= "' />
+                        <h5>" . $p['productName'] . "</h5>
+                    </a>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='span" . $magicColWidth . " text-left'>
+                    <table class='table table-condensed table-bordered'>
+                        <tr>
+                            <td><strong>Price</strong></td>
+                            <td>$" . $p['price'] . "</td>
+                        </tr>";
+
+    if (!empty($p['productSKU'])) {
+        $out .= "
+            <tr>
+                <td><strong>SKU</strong></td>
+                <td>" . $p['productSKU'] . "</td>
+            </tr>";
+    }
+
+    $out .= "
+                    </table>
+                </div>
+            </div>
+        </div>";
+    // End row when reached cols limit above, or last
+    if (($ci % $cols == 0)
+            || ($pi == count($productIDs))) {
+        $out .= "</div>";
+        $ci = 0;
+    }
+}
+$out .= "</div>";
+
+// Display Output
+echo $out;

@@ -1,0 +1,497 @@
+<?php
+//
+// Get Options
+//
+$options = $product->getProductOptionsCustom($pInfo['cartID'], $pInfo['productID']);
+if (empty($options)) {
+    echo 'No options currently.';
+    return;
+}
+
+//
+// Init Image
+//
+$image = new killerCart\Image();
+
+//
+// Options List
+//
+$optionLevelCounts = array();
+$optionsList = array();
+// Check each child for children, construct ordered list with levels
+for ($i = 0; $i < count($options); $i++) {
+    // Have we completed this ID already?
+    $skip = FALSE;
+    foreach ($optionsList as $o) {
+        if ($o['optionIDCustom'] == $options[$i]['optionIDCustom']) {
+            $skip = TRUE;
+            break;
+        }
+    }
+    // Get Top Level Option Info
+    if ($skip === FALSE) {
+        #echo '<hr />Get Top Level Option Info: '.$options[$i]['optionID'];
+        $level         = 1;
+        #$option = $product->getProductOptions($pInfo['productID'], $options[$i]['optionID']);
+        $optionsList[] = array('optionLevel'          => $level,
+            'optionID'       => $options[$i]['optionID'],
+            'optionCartID'  => $options[$i]['cartID'],
+            'optionName'     => $options[$i]['optionName'],
+            'optionType'     => $options[$i]['optionType'],
+            'optionAction'   => $options[$i]['optionActive'],
+            'optionBehavior' => $options[$i]['optionBehavior'],
+            'optionRequired' => $options[$i]['optionRequired'],
+            'optionIDCustom'       => $options[$i]['optionIDCustom'],
+            'optionNameCustom'     => $options[$i]['optionNameCustom'],
+            'optionActiveCustom'   => $options[$i]['optionActiveCustom'],
+            'optionBehaviorCustom' => $options[$i]['optionBehaviorCustom'],
+            'optionRequiredCustom' => $options[$i]['optionRequiredCustom'],
+            'optionSortOrder'      => $options[$i]['optionSortOrder'],
+            'inheritsGlobalOption' => $options[$i]['inheritsGlobalOption']);
+        // Option Level Counts
+        if (empty($optionLevelCounts[$level])) {
+            $optionLevelCounts[$level] = 1;
+        } else {
+            $optionLevelCounts[$level]++;
+        }
+    }
+
+    // Nested loop checking for all children
+    $optionIDCustom    = $options[$i]['optionIDCustom'];
+    while (count($optChildren = $product->getOptionChildrenCustom($optionIDCustom)) > 0) {
+        $level++;
+        #$origID = $optionID;
+        foreach ($optChildren as $optChild) {
+            $childID = $optChild['childOptionIDCustom'];
+            // Have we completed this ID already?
+            $skip    = FALSE;
+            foreach ($optionsList as $o) {
+                if ($o['optionIDCustom'] == $childID) {
+                    $skip = TRUE;
+                    break;
+                }
+            }
+            if ($skip === TRUE) {
+                #echo ' - SKIP2: '.$childID;
+                continue;
+            }
+            // Option Info
+            \Errors::debugLogger(__FILE__.'@'.__LINE__);
+            $thisOption    = $product->getProductOptionsCustom($pInfo['cartID'], $pInfo['productID'], $childID);
+            // Skip inactive options
+            if (empty($thisOption)) {
+                continue;
+            }
+            $thisOptionParent = $product->getOptionParentCustom($childID);
+            $optionsList[] = array('optionLevel'          => $level,
+                'optionID'       => $thisOption['optionID'],
+                'optionCartID'  => $thisOption['cartID'],
+                'optionName'     => $thisOption['optionName'],
+                'optionType'     => $thisOption['optionType'],
+                'optionAction'   => $thisOption['optionActive'],
+                'optionBehavior' => $thisOption['optionBehavior'],
+                'optionRequired' => $thisOption['optionRequired'],
+                'optionIDCustom'       => $thisOption['optionIDCustom'],
+                'optionNameCustom'     => $thisOption['optionNameCustom'],
+                'optionActiveCustom'   => $thisOption['optionActiveCustom'],
+                'optionBehaviorCustom' => $thisOption['optionBehaviorCustom'],
+                'optionRequiredCustom' => $thisOption['optionRequiredCustom'],
+                'optionSortOrder'      => $thisOption['optionSortOrder'],
+                'inheritsGlobalOption' => $thisOption['inheritsGlobalOption'],
+                'optionParentIDCustom'       => $thisOptionParent[0]['parentOptionIDCustom']);
+            $optionIDCustom      = $childID; // For nested loop, rechecks for children
+            // Option Level Counts
+            if (empty($optionLevelCounts[$level])) {
+                $optionLevelCounts[$level] = 1;
+            } else {
+                $optionLevelCounts[$level]++;
+            }
+        }
+        #echo '<br />--Done with children of '.$origID.'...';
+        $optionIDCustom = $childID;
+        #exit;
+        #break;
+    }
+    $level = 1;
+}
+
+//
+// Options Output
+//
+$parentOptionColor = "#666";
+$childOptionColor = "#ccc";
+$thisLevel = 0;
+$list      = '';
+$optionCounter = 0;
+$optionInnerCounter = 0;
+foreach ($optionsList as $olist) {
+    $optionCounter++;$optionInnerCounter++;
+    // Global option template and custom option values
+    extract($olist, EXTR_OVERWRITE);
+    #$optionLevel, $optionID, $optionCartID, $optionName, $optionType, $optionAction, $optionBehavior, $optionRequired,
+    #$optionIDCustom, $optionNameCustom, $optionActiveCustom, $optionBehaviorCustom, $optionRequiredCustom, $optionSortOrder
+    #$optionParentID
+
+    //
+    // Option Parent/Child Levels
+    //
+    // This option is deeper level than what we were on
+    if ($optionLevel > $thisLevel) {
+        $thisLevel = $optionLevel;
+        // First option of set
+        $optionInnerCounter = 1;
+    } elseif ($optionLevel < $thisLevel) {
+        // This option goes back up level(s), close all nested tables first:
+        for ($u = 0; $u < ($thisLevel - $optionLevel); $u++) {
+            $list .= "</table>";
+        }
+        $thisLevel = $optionLevel;
+        // Reset
+        $optionInnerCounter = 0;
+    }
+    // Parent/Child Heading Color
+    if ($thisLevel == 1) {
+        $color = $parentOptionColor;
+    } else {
+        $color = $childOptionColor;
+    }
+    
+    // If this option has active children options, disable Deletion, they must delete children first
+    $optionChildren = $product->getOptionChildrenCustom($optionIDCustom);
+    $hasActiveChildren = FALSE;
+    if (!empty($optionChildren)) {
+        foreach ($optionChildren as $optionChild) {
+            \Errors::debugLogger(__FILE__.'@'.__LINE__);
+            $childIsActive = $product->getProductOptionsCustom($pInfo['cartID'], $pInfo['productID'], $optionChild['childOptionIDCustom']);
+            if (!empty($childIsActive)) {
+                $hasActiveChildren = TRUE;
+                break;
+            }
+        }
+    }
+    if ($hasActiveChildren === TRUE) {
+        $optionRemove = ' disabled';
+    } else {
+        $optionRemove = '';
+    }
+
+    // Type Label
+    $typeLabel = ucfirst($optionType);
+    if ($optionType == 'image') {
+        $list .= "<input type='hidden' id='option".$optionIDCustom."Behavior' name='option".$optionIDCustom."Behavior' value='".$optionBehaviorCustom."' />";
+        $typeLabel .= ' ('.$optionBehaviorCustom.')';
+    }
+    if (!empty($optionRequiredCustom)) {
+        $typeLabel .= ' (req)';
+    }
+
+    // Option Move up/down limits
+    if ($optionCounter == 1) {
+        $disableMoveUp = ' disabled';
+    } else {
+        $disableMoveUp = '';
+    }
+    if ($optionCounter == $optionLevelCounts[$thisLevel]) {
+        $disableMoveDown = ' disabled';
+    } else {
+        $disableMoveDown = '';
+    }
+    // Inner options
+    if ($thisLevel > 1) {
+        if ($optionInnerCounter == 1) {
+            $disableMoveUp = ' disabled';
+        } else {
+            $disableMoveUp = '';
+        }
+        if ($optionInnerCounter == $optionLevelCounts[$thisLevel]) {
+            $disableMoveDown = ' disabled';
+        } else {
+            $disableMoveDown = '';
+        }
+    }
+    
+    //
+    // Begin Option
+    //
+    $list .= "
+        <table id='tblOptionID".$optionIDCustom."' class='table table-condensed table-bordered table-hover'>
+            <tr>
+                <th colspan='3' style='background-color:".$color.";'>";
+    $list .= "<span class='badge'>
+                <small>#".$optionIDCustom."</small>
+             </span>";
+    $list .= "
+                    <input type='hidden' name='option" . $optionIDCustom . "Type' value='".$optionType."' />
+                    <input type='hidden' id='option" . $optionIDCustom . "Required' name='option" . $optionIDCustom . "Required' value='".$optionRequiredCustom."' />
+                    <input type='hidden' id='option" . $optionIDCustom ."SortOrder' name='option" . $optionIDCustom ."SortOrder' value='".$optionSortOrder."' />
+                    <input type='text' name='option" . $optionIDCustom . "Name' value='".$optionNameCustom."' class='span5' />
+                    <span class='muted'>
+                        ".$typeLabel."
+                    </span>
+                    <span class='pull-right'>
+
+                        <!-- Option Management Buttons -->
+                        <button type='button' class='btn btn-mini configureOption' value='".$optionIDCustom."'>
+                            <i class='icon-wrench tooltip-on' data-title='Configure Option' data-toggle='tooltip'></i>
+                        </button>
+                        <!-- Move Up -->
+                        <button type='button' class='btn btn-mini moveOptionUp' value='".$optionIDCustom."'".$disableMoveUp.">
+                            <i class='icon-circle-arrow-up tooltip-on' data-title='Move Up (Currently #".$optionCounter.")' data-toggle='tooltip'></i>
+                        </button>
+                        <!-- Move Down -->
+                        <button type='button' class='btn btn-mini moveOptionDown' value='".$optionIDCustom."'".$disableMoveDown.">
+                            <i class='icon-circle-arrow-down tooltip-on' data-title='Move Down (Currently #".$optionCounter.")' data-toggle='tooltip'></i>
+                        </button>
+                        
+                        <!-- Option Remove -->
+                        <button class='btn btn-mini btn-danger tooltip-on removeOptionBtn' name='optionID'
+                                value='".$optionIDCustom."' type='button' data-toggle='tooltip' title='Remove Option'".$optionRemove.">
+                            <i class='icon-remove-sign icon-white' alt='Remove Option'></i>
+                        </button>
+                    </span>
+                </th>
+            </tr>";
+
+    //
+    // Child Option: Parent Select and Choices/Triggers
+    // 
+    if ($thisLevel > 1) {
+        foreach ($optionsList as $to) {
+            // Dont list itself, save world from imploding
+            if ($to['optionIDCustom'] == $optionIDCustom) {
+                continue;
+            }
+            // Pre-select the parent
+            if ($to['optionIDCustom'] == $optionParentIDCustom) {
+                $parentOptionNameCustom = $to['optionNameCustom'];
+            } else {
+                continue;
+            }
+        }
+        //
+        // Parent Choices
+        // @todo MODAL TO CHOOSE/SET NEW TRIGGERS
+        $parentChoices = '';
+        foreach ($product->getProductOptionsChoicesCustom($optionParentIDCustom) as $parentChoice) {
+            $optionHasTrigger = FALSE;
+            // Should we pre-select this choice as a trigger?
+            $isThisTrigger = $product->isChoiceTriggerCustom($parentChoice['choiceIDCustom']);
+            $isTrigger     = FALSE;
+            if (!empty($isThisTrigger)) {
+                foreach ($isThisTrigger as $trigger) {
+                    if ($trigger['childOptionIDCustom'] != $optionIDCustom) {
+                        continue;
+                    }
+                    $isTrigger = TRUE;
+                    $optionHasTrigger = TRUE;
+                }
+            }
+            if ($isTrigger === TRUE) {
+                // Is trigger
+                $isTrigger = 'x'; #selected
+            } else {
+                // Not trigger
+                $isTrigger = '';
+            }
+        #"C#" . $parentChoice['productOptionsChoicesID'] . 
+        $parentChoices .= "[" . $isTrigger . "] " . $parentChoice['choiceValueCustom'] . "\n\r";
+        }
+
+        //
+        // Child Option Heading w/ Parent
+        //
+        $list .= "
+            <tr>
+                <th colspan='3' style='background-color:".$color.";'>
+                    <input type='hidden' name='option".$optionIDCustom."Parent' value='".$optionParentIDCustom."' />";
+        if ($thisLevel > 1) {
+            $list .= "
+                 <span class='badge tooltip-on' data-toggle='tooltip' data-title='Level ".$thisLevel."'>
+                    <small>lvl ".$thisLevel."</small>
+                 </span>";
+        }
+        $list .= "
+                    Parent Option: <span class='muted'>#".$optionParentIDCustom." ".$parentOptionNameCustom."</span>
+                    &nbsp;Triggers: <span class='muted'>".$parentChoices."</span>
+                </th>
+            </tr>";
+
+    }
+
+    //
+    // Option Choices
+    //
+    $choiceCounter = 0;
+    $optionIDChoices = $product->getProductOptionsChoicesCustom($optionIDCustom);
+    foreach ($optionIDChoices as $thisChoice) {
+        $choiceCounter++;
+        $choiceID = $thisChoice['choiceIDCustom'];
+        $choiceValue = $thisChoice['choiceValueCustom'];
+        $choicePrice = $thisChoice['choicePriceCustom'];
+        $choiceImageID = $thisChoice['choiceImageIDCustom'];
+        $choiceSortOrder = $thisChoice['choiceSortOrderCustom'];
+        // @todo sort order
+        
+        // Choice Move up/down limits
+        if ($choiceCounter == 1) {
+            $disableMoveUp = ' disabled';
+        } else {
+            $disableMoveUp = '';
+        }
+        if ($choiceCounter == count($optionIDChoices)) {
+            $disableMoveDown = ' disabled';
+        } else {
+            $disableMoveDown = '';
+        }
+        
+
+        // Textarea
+        if ($optionType == 'textarea') {
+            $choiceValue = killerCart\Util::convertBRToNL($choiceValue);
+            $input = "<textarea rows='4' class='span4' name='option".$optionIDCustom."detail".$choiceID."Value'>".$choiceValue."</textarea>";
+        // Image
+        } elseif ($optionType == 'image') {
+            $imageID = $choiceImageID;
+            // Max image display dimensions
+            $maxImgW = '64';
+            $maxImgH = '64';
+            // Get this img info
+            $img     = $image->getImageInfoByID($imageID);
+            // Get best fit for this img
+            $bestFit = $image->getBestFitImage($pInfo['cartID'], $imageID, $img['imageWidth'], $img['imageHeight'], $maxImgW,
+                                               $maxImgH);
+            $showImg = array(
+                'imageID'    => $img['imageID'],
+                'origWidth'  => $img['imageWidth'],
+                'origHeight' => $img['imageHeight'],
+                'origSrc'    => cartPublicUrl . "getfile.php?cartID=" . $pInfo['cartID'] . "&imageID=" . $img['imageID'] . "&w=" . $img['imageWidth'] . "&h=" . $img['imageHeight'],
+                'bestFitSrc' => cartPublicUrl . "getfile.php?cartID=" . $pInfo['cartID'] . "&imageID=" . $img['imageID'] . "&w=" . $bestFit['bestWidth'] . "&h=" . $bestFit['bestHeight'],
+                'showWidth'  => $bestFit['showWidth']);
+            $input = "
+                    <table class='table table-condensed table-noborder'>
+                        <tr>
+                            <td>
+                                <a href='#productImageModal' name='".$showImg['imageID']."' role='button' data-toggle='modal'>
+                                    <img class='img-polaroid productImg' data-src='holder.js/" . $maxImgW . "x" . $maxImgH . "' src='" . $showImg['bestFitSrc'] . "' width='" . $showImg['showWidth'] . "' />
+                                </a>
+                                <input type='hidden' name='option" . $optionIDCustom . "detail" . $choiceID . "ImageID' value='" . $showImg['imageID'] . "' />
+                            </td>
+                            <td>
+                                <input type='text' class='span3' name='option" . $optionIDCustom . "detail" . $choiceID . "Value' value='" . $choiceValue . "' />
+                            </td>
+                        </tr>
+                    </table>";
+        } else {
+            $input = "<input type='text' class='span3' name='option" . $optionIDCustom . "detail" . $choiceID . "Value' value='" . $choiceValue . "' />";
+        }
+
+        $list .= "
+                <tr>
+                    <td colspan='2'>
+                        <!-- Input -->
+                        ".$input."
+                    </td>
+                    <td>
+                        <div class='input-prepend'>
+                            <span class='add-on'>$</span>
+                            <input type='text' name='option" . $optionIDCustom . "detail". $choiceID ."Price' value='".$choicePrice."' class='span1' />
+                        </div>
+                        <span class='pull-right'>
+                            <input type='hidden' id='option" . $optionIDCustom ."detail".$choiceID."SortOrder' name='option" . $optionIDCustom ."detail".$choiceID."SortOrder' value='".$choiceSortOrder."' />
+                            <!-- Move Up -->
+                            <button type='button' class='btn btn-mini moveChoiceUp' name='".$optionIDCustom."|||".$choiceID."' value='".$choiceSortOrder."'".$disableMoveUp.">
+                                <i class='icon-circle-arrow-up tooltip-on' data-title='Move Up (Currently #".$choiceCounter.")' data-toggle='tooltip'></i>
+                            </button>
+                            <!-- Move Down -->
+                            <button type='button' class='btn btn-mini moveChoiceDown' name='".$optionIDCustom."|||".$choiceID."' value='".$choiceSortOrder."'".$disableMoveDown.">
+                                <i class='icon-circle-arrow-down tooltip-on' data-title='Move Down (Currently #".$choiceCounter.")' data-toggle='tooltip'></i>
+                            </button>
+                            <!-- Remove -->
+                            <button type='button' class='btn btn-mini btn-danger removeChoiceBtn' value='option".$optionIDCustom."choice".$choiceID."'>
+                                <i class='icon-remove-sign icon-white'></i>
+                            </button>
+                        </span>
+                    </td>
+                </tr>";
+    }
+
+    $list .= "
+        <!-- Add Choice Button -->
+        <tr>
+            <td colspan='2'></td>
+            <td>
+                <button class='btn btn-mini tooltip-on addOptionDetailBtn pull-right' value='".$optionIDCustom."' type='button' data-toggle='tooltip' title='Add Choice'>
+                    <i class='icon-plus-sign' alt='Add Choice'></i>
+                </button>
+            </td>
+        </tr>";
+}
+$list .= "
+            </table>";
+// Option List Output
+echo $list;
+
+//
+// New Option Choice Image Modal
+//
+$newChoiceImgModal = "
+<!-- Modal -->
+<div id='newChoiceImgModal' class='modal hide fade' tabindex='-1' role='dialog' aria-labelledby='newChoiceImgModalLabel' aria-hidden='true'>
+    <div class='modal-header'>
+        <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times</button>
+        <h3 id='newChoiceImgModalLabel'>Add Image Choice</h3>
+    </div>
+    <div class='modal-body'>
+
+        <!-- Dynamic Results -->
+        <div id='addImageChoiceResults'></div>
+
+    </div>
+
+    <!-- Buttons -->
+    <div class='modal-footer'>
+        <button id='addImageChoiceCloseBtn' class='btn' data-dismiss='modal' aria-hidden='true'>Close</button>
+        <button id='addImageChoiceSaveBtn' type='button' class='btn btn-success'>
+            <i class='icon-ok-sign icon-white'></i>&nbsp;Save
+        </button>
+    </div>
+
+</div>";
+echo $newChoiceImgModal;
+
+//
+// Option List Modal
+//
+$olistModal = "
+<!-- Modal -->
+<div id='editOptionModal' class='modal hide fade' tabindex='-1' role='dialog' aria-labelledby='editOptionModalLabel' aria-hidden='true'>
+    <div class='modal-header'>
+        <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times</button>
+        <h3 id='editOptionModalLabel'>Configure Option</h3>
+    </div>
+    <div class='modal-body'>
+
+        <!-- Dynamic Results -->
+        <div id='productOptionConfigureResultsDynamic'></div>
+        
+        <input type='hidden' id='configureOptionID' value='' />
+
+    </div>
+
+    <!-- Buttons -->
+    <div class='modal-footer'>
+        <button id='configureProductOptionCloseBtn' class='btn' data-dismiss='modal' aria-hidden='true'>Close</button>
+        <button id='configureProductOptionBtn' type='button' class='btn btn-success'>
+            <i class='icon-ok-sign icon-white'></i>&nbsp;Save
+        </button>
+    </div>
+
+</div>";
+echo $olistModal;
+
+$thisDir = dirname(__FILE__);
+$pageJavaScript[] = "<script type='text/javascript'>".
+        str_replace('@cartPublicUrl@',
+                cartPublicUrl,
+                file_get_contents($thisDir.'/product_option_list.js')
+                )."</script>";

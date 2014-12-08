@@ -1,0 +1,100 @@
+<div id='divProgress' class='container'>
+    <div class='row'>
+        <div class='span12'>
+            <div class='progress progress-striped active'>
+                <div id='divProgressBar' class='bar' style='width: 10%;'><strong>Loading...</strong></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id='divProductListResults'></div>
+
+<?php
+// JavaScript
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+
+            // Progress
+            $('#divProgressBar').animate({width: '33%'}, 100);
+
+            // Filter Results
+            function filterResults() {
+
+                // Progress
+                $('#divProgressBar').animate({width: '100%'}, 200);
+                $('#divProgress').removeClass('hidden');
+
+                // Toggles button class before evaluating below
+                if ($(this).hasClass('selView')) {
+                    console.debug('Toggle');
+                    $(this).button('toggle');
+                }
+
+                // View Filter Selection
+                var btnThumbView = $('#btnThumbView');
+                var view = 'grid';
+                if (btnThumbView.hasClass('active')) {
+                    view = 'thumb';
+                }
+
+                // Active Filter Selection
+                var btnActiveView = $('#btnActiveView');
+                var activeFilter = '3';
+                if (btnActiveView.hasClass('active')) {
+                    activeFilter = '1';
+                }
+                var btnInactiveView = $('#btnInactiveView');
+                if (btnInactiveView.hasClass('active')) {
+                    if (activeFilter !== '3') {
+                        activeFilter = '2';
+                    } else {
+                        activeFilter = '0';
+                    }
+                }
+
+                // Filter
+                var filter = $('#productFilter').val();
+
+                // Category Filter
+                var catID = $('#categoryListResults').val();
+                if (catID === 'Loading...') {
+                    catID = null;
+                }
+
+                console.debug('[product_list filterResults] catID: ' + catID + ' filter: ' + filter + ' active: ' + activeFilter + ' view: ' + view);
+                // AJAX
+                var go = $.ajax({
+                    type: 'POST',
+                    data: {m: 'ajax',
+                        p: 'product',
+                        a: 'productList',
+                        view: view,
+                        filter: filter,
+                        active: activeFilter,
+                        categoryID: catID}
+                })
+                .done(function(results) {
+                    $('#divProductListResults').html(results);
+                    $('#divProgress').addClass('hidden');
+                    $('#divProgressBar').css('width','0%');
+                })
+                .fail(function(msg) {
+                    alert('Error:' + msg);
+                })
+                .always(function() {
+                });
+            }
+
+            // Search Button
+            $('.btnFilterResults').on('click', filterResults);
+
+            // View Selection
+            $('.selView').on('click', filterResults);
+
+            // Default Views
+            $('#btnActiveView').button('toggle');
+            $('#btnGridView').click();
+
+        });
+    </script>";

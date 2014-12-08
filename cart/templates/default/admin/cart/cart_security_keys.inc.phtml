@@ -1,0 +1,83 @@
+Cart Security :: Encryption Keys</small></h2>
+<div id='div_admin_edit_cart_security_keys' class='row'>
+
+    <!-- /***** BEGIN: EDIT STORE SECURITY KEYS FORM *****/ -->
+    <form id="frm_admin_edit_cart_security_keys" class="form-horizontal" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="p" value="<?php echo $_REQUEST['p']; ?>" />
+        <input type='hidden' name='a' value='edit_cart' />
+        <input type='hidden' name='ia' value='security_keys' />
+        <input type='hidden' name='cartID' value='<?php echo $cart->id; ?>' />
+
+        <div class='alert alert-block alert-danger span6 offset3'>
+            <button type='button' class='close' data-dismiss='alert'>&times;</button>
+            <h4>Warning!</h4>
+            Changing encryption key password will also <strong>change your user account password to match</strong>. To enable different passwords for user accounts than encryption keys you will need to enable the option in your cart settings.
+        </div>
+
+        <!-- New Passphrase -->
+        <div class='row span12'>
+
+            <div class="control-group">
+                <label class="control-label" for="key_passphrase">New Secure Passphrase</label>
+                <div class="controls">
+                    <input type='password' id='key_passphrase' name='key_passphrase' placeholder='Enter Secure Passphrase' /><br />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="key_passphrase_confirm">Confirm Secure Passphrase</label>
+                <div class="controls">
+                    <input type='password' id='key_passphrase_confirm' name='key_passphrase_confirm' placeholder='Confirm Secure Passphrase' />
+                    <span class='help-block'>
+                        <strong>Recommendations:</strong>
+                        <ul>
+                            <li>Minimum of 12 characters</li>
+                            <li>Upper and lowercase</li>
+                            <li>Numbers</li>
+                            <li>Symbols: ~!@#$%^&*()_+=-`,.&lt;&gt;/?;:'"[]{}</li>
+                            <li>No dictionary words or public knowledge (e.g. pets name)</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+
+            <div class='form-actions'>
+                <button name='s' id='adminChangeKeyPassphrase' value='3' type='submit' class='btn btn-success'>
+                    <i class='icon-ok-sign icon-white'></i>&nbsp;Change Encryption Key Passphrase
+                </button>
+            </div>
+
+        </div>
+
+    </form>
+    <!-- /***** END: EDIT STORE SECURITY KEYS FORM *****/ -->
+
+</div>
+<!--#div_admin_edit_cart_security_keys-->
+
+<?php
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+            // Admin :: Carts :: Security :: Change Encryption Key Passphrase
+            $('#frm_admin_edit_cart_security_keys').validate({
+                submitHandler: function(form) {
+                    if (confirm('Continuing will change your account passphrase as well as the encryption key passphrase. Are you sure you remember the new passphrase and wish to continue?')) {
+                        form.submit();
+                    }
+                },
+                rules: {
+                    key_passphrase: {
+                        required: true,
+                        minlength: 8
+                    },
+                    key_passphrase_confirm: {
+                        equalTo: '#key_passphrase'
+                    }
+                },
+                messages: {
+                    key_passphrase: '*Please enter 8 characters minimum',
+                    key_passphrase_confirm: '*Does not match'
+                }
+            });
+        });
+    </script>";

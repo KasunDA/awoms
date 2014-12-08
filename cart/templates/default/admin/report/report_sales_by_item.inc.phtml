@@ -1,0 +1,70 @@
+<?php
+/*
+ * From report.php:
+ * 
+ * $cartID = Selected Cart ID
+ * $reportName = Selected report name
+ * $reportLabel = Page title
+ * $dateRange = Days to go back
+ * $dateFrom = End date
+ * $report = Class Report()
+ * $r = Report results
+ * $chartColumns = Chart Columns
+ * $chartData = Chart Data
+ */
+?>
+
+<div class='container'>
+
+    <?php
+    echo $reportLabel;
+    ?>
+
+    <!-- Report Totals -->
+    <div class='row span5'>
+        <table class='table table-condensed'>
+            <tr>
+                <th class='span4'>Product ID</th>
+                <th class='span1'>Quantity</th>
+                <th class='span1'>Total Sales</th>
+            </tr>
+            <?php
+            echo $tableData;
+            ?>
+        </table>
+    </div>
+
+    <?php
+    if ($salesTotal > 0) {
+        ?>    
+        <div class='clearfix'></div>
+
+        <!-- Charts -->
+        <script type="text/javascript" src="//www.google.com/jsapi"></script>
+        <script type="text/javascript">
+            // Admin :: Reports
+            google.load("visualization", "1", {packages: ["corechart"]});
+            google.setOnLoadCallback(drawChart);
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable([
+    <?php
+    echo $chartColumns . $chartData;
+    ?>
+                ]);
+
+                var options = {
+                    hAxis: {
+                        slantedText: true
+                    }
+                };
+
+                var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+            }
+        </script>
+
+        <div id='chart_div'></div>
+        <?php
+    }
+    ?>
+</div>

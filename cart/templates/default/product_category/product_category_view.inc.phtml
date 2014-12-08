@@ -1,0 +1,325 @@
+<?php
+/**
+ * From header.php:
+ * 
+ * $category = killerCart\Product_Category() Class
+ * $c = getCategoryInfo() Results
+ */
+// Init Product
+$product = new killerCart\Product();
+// Init Image
+$image = new killerCart\Image();
+//
+// Display Settings
+//
+$subCatColumns      = 4;
+$subCatImgSize      = 'thumb';
+$subCatMaxImgHeight = 128; // Default height (match thumb-128, medium-384, large-768)
+$subCatMaxImgWidth  = 128; // Default width (match magicColSpan width: span3 - 230px <<<<<<<<<<<< ?
+$subCatMaxSpan      = 12;
+$subCatImgMax       = 1; // Number of category images to show
+
+$catProdColumns      = 3;
+$catProdImgSize      = 'medium';
+$catProdMaxImgHeight = 256; // Default height (match thumb-128, medium-384, large-768)
+$catProdMaxImgWidth  = 256; // Default width (match magicColSpan width: span3 - 230px <<<<<<<<<< ?
+$catProdMaxSpan      = 12;
+$catProdImgMax       = 1; // Number of product images to show
+//
+// Subcategories Data
+//
+$isObject = is_object($category);
+if ($isObject) { $isObject = 'Yes'; }
+else { $isObject = 'No';
+\Errors::debugLogger(__FILE__.'@'.__LINE__.' [DEBUG] CAT CHILDREN: ' . $isObject, 1, true);
+}
+$subCats             = $category->getCategoryChildren($c['categoryID'], 1, 'pc.categoryName');
+
+if (!empty($subCats)) {
+    $subCatCount = count($subCats);
+} else {
+    $subCatCount = 0;
+}
+if ($subCatCount > 0) {
+    $subCatData  = array();
+    foreach ($subCats as $subCat) {
+        //
+        // Load Info
+        //
+        $subCInfo                            = $category->getCategoryInfo($subCat['categoryID']);
+        $subCatData[$subCInfo['categoryID']] = $subCInfo;
+        
+        //
+        // How many products in category?
+        //
+        $prodInCat = $product->getProductIDs('ACTIVE', $subCInfo['cartID'], $subCInfo['categoryID']);
+        // Single product in category - instead of clicking twice, send directly to product when click on category
+        if (!empty($prodInCat)
+                && count($prodInCat) == 1) {
+            $ahref = "<a href='" . cartPublicUrl . "?p=product&productID=" . $prodInCat[0]['productID'] . "' style='text-decoration:none;'>";
+        } else {
+            // Multiple products in category - link to category
+            $ahref = "<a href='" . cartPublicUrl . "?p=category&categoryID=" . $subCInfo['categoryID'] . "' style='text-decoration:none;'>";
+        }
+        $subCatData[$subCInfo['categoryID']]['ahref'] = $ahref;
+        
+        //
+        // Load images
+        //
+        $subImgs = $image->getImageParentInfo($subCInfo['cartID'], 1, NULL, $subCInfo['categoryID']);
+        if (empty($subImgs)) {
+            $showImg = FALSE;
+        } else {
+            $i = 0;
+            foreach ($subImgs as $k => $img) {
+                $i++;
+                // Get best fit for this img
+                $bestFit = $image->getBestFitImage($c['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $subCatMaxImgWidth, $subCatMaxImgHeight);
+                $showImg['imgSrc'] = cartPublicUrl . "getfile.php?cartID=" . $c['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'];
+                $showImg['bestWidth'] = $bestFit['bestWidth'];
+                $showImg['bestHeight'] = $bestFit['bestHeight'];
+                // 1st img only
+                break;
+            }
+        }
+        $subCatData[$subCInfo['categoryID']]['image'] = $showImg;
+    }
+
+    // Construct output
+    $subCatOutput = "";
+    if ($subCatCount < $subCatColumns) {
+        $subCatColumns = $subCatCount;
+    }
+    // Offset fix depending on # of cols
+    $subCatMagicColSpan = floor($subCatMaxSpan / $subCatColumns);
+    $ci                 = 0; // Column counter
+    $ct                 = 0; // Total product counter
+    foreach ($subCatData as $sc) {
+        if ($ci % $subCatColumns == 0 || $ci == 0) {
+            // New row
+            $subCatOutput .= "
+                <!-- NEW SUBCAT ROW -->
+                <div class='row'>";
+        }
+        $ci++;
+        $ct++;
+        // New col
+        $subCatOutput .= "
+            <!-- NEW SUBCAT COL -->
+            <div class='span" . $subCatMagicColSpan . " text-center'>
+                <!-- Images Row -->
+                <div class='row'>
+                    <div class='span" . $subCatMagicColSpan . "'>";
+        // Image?
+        if (!empty($sc['image'])) {
+            // Subcat/Thumbnail size aligns to bottom instead of middle offset
+            $topOffset = $subCatMaxImgHeight - $sc['image']['bestHeight']; // (divide by 2 = middle valign)
+            $subCatOutput .= "
+                <div style='padding-top:" . $topOffset . "px'>
+                    ".$sc['ahref']."
+                        <img class='img-polaroid' data-src='holder.js/" . $subCatMaxImgWidth . "x" . $subCatMaxImgHeight . "' alt='' src='" . $sc['image']['imgSrc'] . "' />
+                    </a>
+                </div>
+                ";
+        } else {
+            $subCatOutput .= "
+                ".$sc['ahref']."
+                    <img class='img-polaroid' data-src='holder.js/" . $subCatMaxImgWidth . "x" . $subCatMaxImgHeight . "' alt='' src='' />
+                </a>";
+        }
+        $subCatOutput .= "
+                </div>
+            </div>";
+
+        // Title
+        $subCatOutput .= "
+                <div class='row'>
+                    <div class='span" . $subCatMagicColSpan . "'>                
+                        <!-- Title row -->
+                        ".$sc['ahref']."
+                            <h6>" . $sc['categoryName'] . "</h6>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- END SUBCAT COL -->";
+
+        if ($ci == $subCatColumns || $ct == $subCatCount) {
+            // End Row
+            $subCatOutput .= "
+                </div>
+                <!-- END SUBCAT ROW -->
+                <div class='clearfix'></div>";
+            $ci = 0;
+        }
+    }
+}
+
+//
+// Products Data
+//
+$catProds = $product->getProductIDs('ACTIVE', $c['cartID'], $c['categoryID'], 'p.productName');
+if (!empty($catProds)) {
+    $catProdCount = count($catProds);
+} else {
+    $catProdCount = 0;
+}
+if ($catProdCount > 0) {
+    $catProdData = array();
+    $rowHeights  = array();
+    $rci         = 0; // Column counter (for rowHeights)
+    $ri          = 0; // Row counter (for rowHeights)
+    foreach ($catProds as $catProd) {
+        $prodInfo                            = $product->getProductInfo($catProd['productID']);
+        $catProdData[$prodInfo['productID']] = $prodInfo;
+
+        //
+        // Load images
+        //
+        $pImages = $image->getImageParentInfo($prodInfo['cartID'], 1, $prodInfo['productID']);
+        if (empty($pImages)) {
+            $showImg = FALSE;
+        } else {
+            $i = 0;
+            foreach ($pImages as $k => $img) {
+                $i++;
+                // Get best fit for this img
+                $bestFit = $image->getBestFitImage($prodInfo['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $catProdMaxImgWidth, $catProdMaxImgHeight);
+                $showImg['imgSrc'] = cartPublicUrl . "getfile.php?cartID=" . $prodInfo['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'];
+                $showImg['bestWidth'] = $bestFit['bestWidth'];
+                $showImg['bestHeight'] = $bestFit['bestHeight'];
+                // 1st img only
+                break;
+            }
+        }
+        $catProdData[$prodInfo['productID']]['image'] = $showImg;
+        $thisProductImgMaxHeight = $showImg['bestHeight'];
+
+        // Row counter
+        if ($rci % $catProdColumns == 0 && $rci != 0) {
+            $ri++;
+        }
+
+        // Row max height
+        if (empty($rowHeights[$ri]) || $rowHeights[$ri] < $thisProductImgMaxHeight) {
+            // New row max height
+            $rowHeights[$ri] = $thisProductImgMaxHeight;
+        }
+
+        // Column counter
+        $rci++;
+    }
+
+    // Construct output
+    $catProdOutput = "";
+    if ($catProdCount < $catProdColumns) {
+        $catProdColumns = $catProdCount;
+    }
+    // Offset fix depending on # of cols
+    $catProdMagicColSpan = floor($catProdMaxSpan / $catProdColumns);
+    $ci                  = 0; // Column counter
+    $pori                = 0; // Row counter
+    $ct                  = 0; // Total product counter
+    foreach ($catProdData as $cp) {
+        if ($ci % $catProdColumns == 0 || $ci == 0) {
+            // New row
+            $thisRowsHeight = $rowHeights[$pori];
+            $catProdOutput .= "
+                <!-- NEW PROD ROW -->
+                <div class='row' style='height:" . $thisRowsHeight . "px;'>";
+            $pori++;
+        }
+        $ci++;
+        $ct++;
+        // New col
+        $catProdOutput .= "
+            <!-- NEW PROD COL -->
+            <div class='span" . $catProdMagicColSpan . " text-center'>
+                <!-- Images Row -->
+                <div class='row'>
+                    <div class='span" . $catProdMagicColSpan . "'>";
+            // Images?
+            if (!empty($cp['image'])) {
+                // Middle align with top padding
+                $topOffset = ceil($thisRowsHeight - $cp['image']['bestHeight']);
+                if ($topOffset > 0) {
+                    $topOffset = ceil($topOffset / 2);
+                }
+                $style = " style='padding-top:" . $topOffset . "px'";
+                $imgSrc = $cp['image']['imgSrc'];
+            } else {
+                $imgSrc = '';
+                $style = '';
+            }
+                $catProdOutput .= "
+                        <div".$style.">
+                            <a href='" . cartPublicUrl . "?p=product&productID=" . $cp['productID'] . "' style='text-decoration:none;'>
+                                <img class='img-polaroid' data-src='holder.js/" . $catProdMaxImgWidth . "x" . $catProdMaxImgHeight . "' alt='' src='" . $imgSrc . "' />
+                            </a>
+                        </div>
+                    </div>
+                </div>";
+        // Title
+        $catProdOutput .= "
+                <div class='row'>
+                    <div class='span" . $catProdMagicColSpan . "'>                
+                        <!-- Title row -->
+                        <a href='" . cartPublicUrl . "?p=product&productID=" . $cp['productID'] . "' style='text-decoration:none;'>
+                            <h6>" . $cp['productName'] . "</h6>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- END PROD COL -->";
+        if ($ci == $catProdColumns || $ct == $catProdCount) {
+            // End Row
+            $catProdOutput .= "
+                </div>
+                <!-- END PROD ROW -->
+                <div class='clearfix'></div>";
+            $ci = 0;
+        }
+    }
+    $catProdOutput .= "
+        </div>";
+}
+
+//
+// Output
+//
+// Subcategories output
+if ($subCatCount > 0) {
+    $subCatOutputFinal = "
+        <!-- BEGIN SUBCATS -->
+        <div class='container'>
+            <!-- SUBCAT HEADING -->
+            <div class='row'>
+                <div class='span" . $subCatMaxSpan . "'>
+                    <h5 class='breadcrumb'>Subcategories</h5>
+                </div>
+            </div>";
+    $subCatOutputFinal .= $subCatOutput . "
+        </div>
+        <!-- END SUBCATS -->";
+    echo $subCatOutputFinal;
+}
+
+// Products output
+if ($catProdCount > 0) {
+    $catProdOutputFinal = "
+        <!-- BEGIN PRODS -->
+        <div class='container'>";
+    // Add heading if has subcategories
+    if ($subCatCount > 0) {
+        $catProdOutputFinal .= "
+            <div class='row'>
+                <div class='span" . $subCatMaxSpan . "'>
+                    <h5 class='breadcrumb'>" . $c['categoryName'] . "</h5>
+                </div>
+            </div>";
+    }
+    $catProdOutputFinal .= $catProdOutput . "
+        </div>
+        <!-- END PRODS -->";
+    echo $catProdOutputFinal;
+}

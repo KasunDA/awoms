@@ -1,0 +1,88 @@
+<!-- // ***** BEGIN USER LIST FORM ***** // -->
+<form id="frmUserEdit" method="POST">
+    <input type="hidden" name="p" value="<?php echo $_REQUEST['p']; ?>" />
+    <input type="hidden" name="a" id="a" value="edit_user" />
+
+    <?php
+    $types = array('Active', 'Inactive');
+    foreach ($types as $type) {
+        // Skip if none of this type
+        if ($userCount[$type] == 0) {
+            continue;
+        }
+        // Only show heading for Inactive
+        if ($type == 'Inactive') {
+            echo "<hr /><h2>" . $type . " Users</h2>";
+        }
+        $user       = new killerCart\User();
+        $allUserIDs = $user->getUserIDs($type);
+        ?>
+        <div id='div_<?php echo $type; ?>_users' class='row'>
+            <table class='table'>
+                <tr>
+                    <?php
+                    $i          = 0;
+                    $cols       = 3;
+                    foreach ($allUserIDs as $thisUser) {
+                        $user = new killerCart\User();
+                        $u    = $user->getUserInfo($thisUser['userID']);
+
+                        //
+                        // ACL Check
+                        //
+                        // If not Global Admin then you must be a Cart Admin, only show users of this cart
+                        // also do not show Global Admins as Cart Admins do not have permission to edit Global
+                        if (empty($globalACL['read'])) {
+                            if ($u['cartID'] != $_SESSION['cartID']) {
+                                continue;
+                            }
+                            if ($u['groupID'] == 1) {
+                                continue;
+                            }
+                        }
+
+                        $i++;
+                        if (($i - 1) % $cols == 0 && ($i - 1) != 0) {
+                            echo '</tr><tr>';
+                        }
+                        /* (If) User Images */
+                        /*
+                         * @todo
+                          if ($user->getUser_images()) {
+                          foreach ($user->images as $key => $img) {
+                          $imgSrc = $user->cartID . '/' . $user->categoryID . '/' . $user->id . '/' . $img['name'];
+                          break;
+                          }
+                          }
+                         */
+                        ?>
+                        <td style='border:none'>
+                            <ul class='thumbnails'>
+                                <li class='span4'>
+                                    <div class='thumbnail'>
+                                        <?php if (!empty($user->images)) { ?>
+                                            <img class='img-polaroid' src='../getfile.php?t=<?php echo $img['type']; ?>&f=<?php echo $imgSrc; ?>' width='175'>
+                                        <?php } ?>
+                                        <div class='caption'>
+                                            <h3><?php echo $u['cartName']; ?></h3>
+                                            <p><?php echo $u['username']." (".$u['groupName'].")"; ?></p>
+                                            <p><?php echo $u['email']; ?></p>
+                                            <p><button name='userID' type='submit' class='btn' value='<?php echo $thisUser['userID']; ?>'><i class='icon-edit'></i>&nbsp;Edit</button></p>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </td>
+                        <?php
+                    }
+                    ?>
+                </tr>
+            </table>
+        </div>
+
+        <p>&nbsp;</p>
+        <?php
+    } #end:foreachtype
+    ?>
+</form>
+<!-- // ***** END USER LIST FORM ***** // -->

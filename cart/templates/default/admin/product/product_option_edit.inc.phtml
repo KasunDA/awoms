@@ -1,0 +1,105 @@
+<!-- Modal -->
+<div id="newOption" class="modal hide fade adminModal" tabindex="-1" role="dialog" aria-labelledby="newOption" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times</button>
+        <h3>Add New Option</h3>
+    </div>
+    <div class="modal-body">
+
+        <!-- Dynamic Results -->
+        <div id='productOptionCreateResultsDynamic'></div>
+
+        <div id='theRest'>
+            <div class='clearfix'></div>
+            
+            <!-- Step 1: Choose Existing or New -->
+            <div id='divProductOptionCreateStep1'>
+                <div class='btn-group' data-toggle='buttons-radio' style='padding-top:5px;'>
+                    <div class='row'>
+                        <div class='span1 offset2'>
+                            <button id='btnOptionClone' type='button' class='btnStep1 btn btn-large tooltip-on' value='thumb' data-placement='right' data-toggle='tooltip' data-title='Start from Existing Option Template'>
+                                <i class='icon-camera'></i><br />Clone
+                            </button>
+                        </div>
+                        <div class='span1 offset1'>
+                            <button id='btnOptionNew' type='button' class='btnStep1 btn btn-large tooltip-on' value='grid' data-placement='left' data-toggle='tooltip' data-title='Create New Option Template'>
+                                <i class='icon-pencil'></i><br />New
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class='clearfix'></div>
+            <p>&nbsp;</p>
+
+            <!-- Step 2: -->
+            <div id='divProductOptionCreateStep2' class='hidden'>
+                
+                <!-- Step 2: Clone Option -->
+                <div id='divProductOptionCreateStep2Clone' class='hidden'>
+                    <!-- Existing Option -->
+                    <div class="control-group">
+                        <label class="control-label" for="optionTypeNew">
+                            <strong>*Existing Template</strong>
+                        </label>
+                        <div class="controls">
+                            <select name='selProductOptionCreateStep2Clone' id='selProductOptionCreateStep2Clone' class='span2 validateRequired'></select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2: New Option -->
+                <div id='divProductOptionCreateStep2New' class='hidden'>
+                    <!-- Option Type -->
+                    <div class="control-group">
+                        <label class="control-label" for="optionTypeNew">
+                            <strong>*Type</strong>
+                        </label>
+                        <div class="controls">
+                            <select name='optionTypeNew' id='optionTypeNew' class='span2 validateRequired'>
+                                <option disabled selected>-- SELECT --</option>
+                                <option value='image'>Image</option>
+                                <option value='text'>Text</option>
+                                <option value='textarea'>Textarea</option>
+                                <option value='select'>Select</option>
+                                <option value='radio'>Radio</option>
+                                <option value='checkbox'>Checkbox</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Step 3: Results -->
+            <div id='divProductOptionCreateStep3'>
+
+                <div id='divProductOptionCreateStep3Clone'></div>
+                <div id='divProductOptionCreateStep3New'></div>
+                
+                <!-- Sort Order -->
+                <input type='hidden' name='optionSortOrderNew' value='100' />
+            </div>
+            
+        </div>
+
+    </div>
+
+    <!-- Buttons -->
+    <div class="modal-footer">
+        <button id="createProductOptionCloseBtn" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <button id="createProductOptionBtn" type="button" class="btn btn-success" disabled>
+            <i class='icon-ok-sign icon-white'></i>&nbsp;Save
+        </button>
+    </div>
+
+</div>
+
+<?php
+$thisDir = dirname(__FILE__);
+$pageJavaScript[] = "<script type='text/javascript'>".
+        str_replace('@cartPublicUrl@',
+                cartPublicUrl,
+                file_get_contents($thisDir.'/product_option_edit.js')
+                )."</script>";

@@ -1,0 +1,82 @@
+<?php
+/*
+ * From report.php:
+ * 
+ * $cartID = Selected Cart ID
+ * $reportName = Selected report name
+ * $reportLabel = Page title
+ * $dateRange = Days to go back
+ * $dateFrom = End date
+ * $report = Class Report()
+ * $r = Report results
+ * $chartColumns = Chart Columns
+ * $chartData = Chart Data
+ */
+?>
+
+<div class='container'>
+
+    <?php
+    echo $reportLabel;
+    ?>
+
+    <!-- Report Totals -->
+    <div class='row span5'>
+        <table class='table table-condensed'>
+            <tr>
+                <th class='span4'>Type</th>
+                <th class='span1'>Total</th>
+            </tr>
+            <tr>
+                <td>Order Price</td>
+                <td>$<?php echo killerCart\Util::getFormattedNumber($orderTotal); ?></td>
+            </tr>
+            <tr>
+                <td>Taxable Amount</td>
+                <td>$<?php echo killerCart\Util::getFormattedNumber($taxableTotal); ?></td>
+            </tr>
+            <tr>
+                <td>Delivery</td>
+                <td>$<?php echo killerCart\Util::getFormattedNumber($deliveryTotal); ?></td>
+            </tr>
+            <tr>
+                <td>Tax</td>
+                <td>$<?php echo killerCart\Util::getFormattedNumber($taxTotal); ?></td>
+            </tr>
+        </table>
+    </div>
+
+    <?php
+    if ($orderTotal > 0) {
+        ?>    
+        <div class='clearfix'></div>
+
+        <!-- Charts -->
+        <script type="text/javascript" src="//www.google.com/jsapi"></script>
+        <script type="text/javascript">
+            // Admin :: Reports
+            google.load("visualization", "1", {packages: ["corechart"]});
+            google.setOnLoadCallback(drawChart);
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable([
+    <?php
+    echo $chartColumns . $chartData;
+    ?>
+                ]);
+
+                var options = {
+                    hAxis: {
+                        showTextEvery: 2
+                    }
+                };
+
+                var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+            }
+        </script>
+
+        <div id='chart_div'></div>
+        <?php
+    }
+    ?>
+</div>

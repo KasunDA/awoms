@@ -1,0 +1,118 @@
+
+<div class='row'>
+    <hr />
+</div>
+
+<div class="container">
+    <footer>
+        &copy; Copyright <?php echo date("Y"); ?>. &reg; All Rights Reserved.
+    </footer>
+
+    <?php
+    // DEBUG:
+    if (cartDebug) {
+        if (cartDebugLevel > 0) {
+
+            // Session
+            if (isset($_SESSION)) {
+                ?>
+                <pre>SESSION
+                    <?php var_dump($_SESSION); ?>
+                </pre>
+                <?php
+            }
+
+            // Cart
+            if (isset($cart)) {
+                ?>            
+                <pre>cart->products
+                    <?php
+                    if (isset($cart->products)) {
+                        var_dump($cart->products);
+                    }
+                    ?>
+                </pre>
+
+                <pre>cart->shipping
+                    <?php
+                    if (isset($cart->shipping)) {
+                        var_dump($cart->shipping);
+                    }
+                    ?>
+                </pre>
+
+                <pre>cart->billing
+            <?php
+            if (isset($cart->billing)) {
+                var_dump($cart->billing);
+            }
+            ?>
+                </pre>
+
+                <pre>cart
+                <?php
+                print_r($cart);
+                ?>
+                </pre>
+            <?php
+            // Customer
+        } elseif (isset($customer)) {
+            ?>            
+                <pre>customer
+                    <?php var_dump($customer); ?>
+                </pre>
+
+                <pre>customer
+                <?php
+                print_r($customer);
+                ?>
+                </pre>
+            <?php
+        }
+    }
+}
+?>
+
+</div>
+
+<!-- jQuery -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="../js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+
+<!-- Bootstrap -->
+<script src="../js/vendor/bootstrap.min.js"></script>
+
+<!-- Form Validation -->
+<script src="../js/vendor/jquery.validate.min.js"></script>
+<script src="../js/vendor/additional-methods.min.js"></script>
+
+<!-- File Upload -->
+<script src="../js/vendor/jquery.ui.widget.js"></script>
+<script src="../js/vendor/jquery.iframe-transport.js"></script>
+<script src="../js/vendor/jquery.fileupload.js"></script>
+
+<!-- Custom -->
+<script src="../js/plugins.js"></script>
+<script src="../js/main.js"></script>
+<script src='../js/vendor/holder.js'></script>
+<script src='../js/vendor/jquery.ddslick.min.js'></script>
+
+<!-- Admin specific -->
+<script src="../js/admin.js"></script>
+
+<?php
+// Dynamically generated javascript, if exists
+if (!empty($pageJavaScript)) {
+    if (is_array($pageJavaScript)) {
+        foreach ($pageJavaScript as $pjs) {
+            echo $pjs;
+        }
+    } else {
+        echo $pageJavaScript;
+    }
+}
+?>
+
+</script>
+</body>
+</html>

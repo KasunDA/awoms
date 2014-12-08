@@ -1,0 +1,78 @@
+<?php
+// Customer Addresses on file
+$customer  = new killerCart\Customer();
+//$c = $customer->getCustomerInfo($_SESSION['customerID']);
+$addresses = $customer->getCustomerAddresses($_SESSION['customerID']);
+?>
+
+<p class='lead'>Welcome back <strong><?php echo $_SESSION['cInfo']['firstName']; ?></strong>!</p>
+<div class='alert alert-block alert-info span6 offset3'>
+    <h4><i class='icon-info-sign'></i>&nbsp;Choose Address</h4>
+    <p>Please choose a Shipping Address and Billing Address to use for this checkout</p>
+</div>
+
+<form class='form-horizontal' method='POST'>
+
+    <table class='table table-bordered'>
+        <?php
+        $i         = 0;
+        foreach ($addresses as $a) {
+            $i++;
+            if ($i == 1) {
+                echo '<tr>';
+            } elseif ($i % 3 == 0) {
+                echo '</tr><tr>';
+            }
+
+            $addressID           = $a['addressID'];
+            $addressTypeCode     = $a['addressTypeCode'];
+            $dateFrom            = $a['dateFrom'];
+            $dateTo              = $a['dateTo'];
+            $addressID           = $a['addressID'];
+            $firstName           = $a['firstName'];
+            $middleName          = $a['middleName'];
+            $lastName            = $a['lastName'];
+            $phone               = $a['phone'];
+            $email               = $a['email'];
+            $line1               = $a['line1'];
+            $line2               = $a['line2'];
+            $line3               = $a['line3'];
+            $city                = $a['city'];
+            $zipPostcode         = $a['zipPostcode'];
+            $stateProvinceCounty = $a['stateProvinceCounty'];
+            $country             = $a['country'];
+            $addressNotes        = $a['addressNotes'];
+
+            $addressFormatted = $a['line1'];
+            if (!empty($a['line2'])) {
+                $addressFormatted .= '<br />' . $a['line2'];
+            }
+            if (!empty($address['line3'])) {
+                $addressFormatted .= '<br />' . $a['line3'];
+            }
+            $addressFormatted .= '<br />' . $a['city'] . ', ' . $a['stateProvinceCounty'] . ', ' . $a['zipPostcode'];
+            $addressFormatted .= '<br />' . $a['country'];
+            $addressFormatted .= '<br />' . $a['addressNotes'];
+            ?>
+            <td>
+                <?php echo $addressFormatted; ?>
+                <br />
+                <input type='radio' name='shippingAddress' value='<?php echo $addressID; ?>' /> Use for Shipping Address
+                <br />
+                <input type='radio' name='billingAddress' value='<?php echo $addressID; ?>' /> Use for Billing Address
+            </td>
+            <?php
+        }
+        ?>
+        </tr>
+    </table>
+
+    <div class='form-actions'>
+        <div class='span3 offset3'>
+            <button name='submitted' value='2' type='submit' class="btn btn-primary btn-small" value='2'>
+                <i class="icon-ok-sign icon-white"></i>&nbsp;Next Step
+            </button>
+        </div>
+    </div>
+
+</form>

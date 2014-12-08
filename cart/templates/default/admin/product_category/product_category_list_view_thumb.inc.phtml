@@ -1,0 +1,141 @@
+<?php
+// Init Image
+$image = new killerCart\Image();
+$maxImgW = 128;
+$maxImgH = 128;
+
+// Output display settings
+$cols          = 6; // <-- Columns
+$spanMax       = 12; // <-- Max span width
+// Counters
+$pi            = 0; // Counter
+$ci            = 0; // Column tracker
+$magicColWidth = floor($spanMax / $cols); // Autocalculate span size according to # desired columns (max 12!)
+// Subcategories
+$subCats       = FALSE;
+$lastSubCatID  = 0;
+// Begin constructing output
+$out           = "<div class='container'>";
+//
+// Foreach category
+//
+foreach ($categoryIDs as $categoryID) {
+
+    // Load info
+    $c = $category->getCategoryInfo($categoryID['categoryID']);
+
+    //
+    // ACL Check
+    //
+    if (empty($globalACL['read'])) {
+        if ($_SESSION['cartID'] != $c['cartID']) {
+            continue;
+        }
+    }
+    
+    // Increase counter
+    $pi++;
+    $ci++;
+
+    // New row for sub-cats / cats separation
+    if (!empty($c['parentCategoryID'])) {
+        // Already on subcats, check if same group or new row
+        if ($c['parentCategoryID'] != $lastSubCatID) {
+            // New group
+            $parentCategoryInfo = $category->getCategoryInfo($c['parentCategoryID']);
+            $lastSubCatID       = $c['parentCategoryID'];
+            $lastSubCatName     = $parentCategoryInfo['categoryName'];
+            // Only end group if not already on first column: fixes bug where hit col limit end row and double end with group
+            if ($ci != 1) {
+                $out .= "</div><!-- End of Group -->";
+            }
+            $out .= "
+                <!-- New Group -->
+                <div class='row'>
+                    <div class='span" . $spanMax . "'>
+                        <div class='page-header'>
+                            <h2>" . $lastSubCatName . "&nbsp;<small>Subcategories</small></h2>
+                        </div>
+                    </div>
+                </div>
+                <div class='row'>";
+            $subCats            = TRUE;
+            $ci                 = 1;
+        }
+    } else {
+        // New row when reached cols limit above
+        if (
+                ($ci - 1) % $cols == 0 || ($ci == 1)
+        ) {
+            $out .= "
+                <div class='row'>";
+        }
+    }
+    
+    //
+    // Load images
+    //
+    $c['images'] = $image->getImageParentInfo($c['cartID'], 1, NULL, $c['categoryID']);
+    if (empty($c['images'])) {
+        $showImg = FALSE;
+    } else {
+        $i = 0;
+        foreach ($c['images'] as $k => $img) {
+            $i++;
+            // Get best fit for this img
+            $bestFit = $image->getBestFitImage($c['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $maxImgW, $maxImgH);
+            $showImg = cartPublicUrl . "getfile.php?cartID=" . $c['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'];
+            // 1st img only... @todo get 'main logo' type etc.
+            break;
+        }
+    }
+    
+    //
+    // New Column / Data
+    //
+    $out .= "
+        <div class='span" . $magicColWidth . "'>
+            <div class='row'>
+                <div class='span" . $magicColWidth . " text-center'>
+                    <a name='categoryID' href='?p=product_category&a=edit_category&categoryID=" . $c['categoryID'] . "'>
+                        <img class='img-polaroid' data-src='holder.js/".$maxImgW."x".$maxImgH."' alt='' src='";
+    if (!empty($showImg)) {
+        $out .= $showImg . "' width='".$bestFit['showWidth'];
+    }
+    $out .= "' />
+                        <h5>".$c['categoryName']."</h5>
+                    </a>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='span" . $magicColWidth . " text-left'>                
+                    <table class='table table-condensed table-bordered'>
+                        <tr>
+                            <td class='span2'><strong>Code</strong></small></td>
+                            <td>".$c['categoryCode']."</small></td>
+                        </tr>";
+    if (!empty($c['categoryDescriptionPrivate'])) {
+        $out .= "
+                <tr>
+                    <td><strong>Private</strong></td>
+                    <td>" . htmlspecialchars(substr(trim($c['categoryDescriptionPrivate']), 0, 100)) . "...</td>
+                </tr>";
+    }
+    $out .= "
+                    </table>
+                </div>
+            </div>
+        </div><!-- End of This -->";
+
+    // End row when reached cols limit above, or last
+    if (
+            ($ci % $cols == 0) || ($pi == count($categoryIDs))
+    ) {
+        $out .= "</div><!-- Column Limit, Ending Row -->";
+        $ci = 0;
+    }
+}
+$out .= "</div><!-- End of Cats -->";
+
+// Display Output
+echo $out;

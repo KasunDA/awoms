@@ -1,0 +1,526 @@
+<div class='container'>
+    <div id="div_admin_edit_category" class="row">
+        <form id="frm_admin_edit_category" class="form-horizontal" method="POST" enctype="multipart/form-data">
+            <input type='hidden' name='m' value='ajax' />
+            <input type="hidden" name="p" value="<?php echo $_REQUEST['p']; ?>" />
+            <input type='hidden' name='a' value='edit_category' />
+            <input type='hidden' name='categoryID' id='categoryID' value='<?php echo $pcInfo['categoryID']; ?>' />
+            <input type='hidden' name='categoryCartID' id='categoryCartID' value='<?php echo $pcInfo['cartID']; ?>' />
+            <input type='hidden' name='s' value='2' />
+
+            <!-- Dynamic AJAX Results -->
+            <div id='divCategoryResults' class='span4 offset3'></div>
+
+            <!-- Left Column -->
+            <div class='span7'>
+
+                <h2><?php echo $pcInfo['categoryName']; ?></h2>
+
+                <!-- Cart Owner -->
+                <div class="control-group">
+                    <label class="control-label" for="category_cartID">Cart Owner</label>
+                    <div class="controls">
+                        <select id="category_cartID" name="category_cartID">
+                            <?php
+                            $cart = new killerCart\Cart($_SESSION['cartID']);
+                            foreach ($cart->getCartIDs('All') as $k => $v) {
+                                // ACL Check
+                                if ($_SESSION['groupID'] != 1 && ($v['cartID'] != $_SESSION['cartID'])
+                                ) {
+                                    continue;
+                                }
+                                $s = $cart->getCartInfo($v['cartID']);
+                                if ($s['cartID'] == $pcInfo['cartID']) {
+                                    $selected = ' selected';
+                                } else {
+                                    $selected = '';
+                                }
+                                ?>
+                                <option value='<?php echo $s['cartID']; ?>'<?php echo $selected; ?>><?php echo $s['cartName']; ?></option>
+                                <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="control-group">
+                    <label class="control-label" for="category_status">Status</label>
+                    <div class="controls">
+                        <select name='category_status' id='category_status'>
+                            <option value='1'<?php
+                            if ($pcInfo['categoryActive'] == 1) {
+                                echo ' selected';
+                            }
+                            ?>>Active</option>
+                            <option value='0'<?php
+                                    if ($pcInfo['categoryActive'] == 0) {
+                                        echo ' selected';
+                                    }
+                                    ?>>Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Parent Category -->
+                <div class="control-group">
+                    <label class="control-label" for="category_parentID">Parent Category</label>
+                    <div class="controls">
+                        <?php
+                        // Selected Cart -> Populate Category List
+                        $productCategory = new killerCart\Product_Category();
+                        $pcs             = $productCategory->getCategoryIDs('ALL', $pcInfo['cartID'], 'pc.categoryName');
+                        if (!empty($pcs)) {
+                            $out = '';
+                            foreach ($pcs as $pc) {
+
+                                // Skip selected category to prevent selecting itself as parent and causing universe to explode <-- important
+                                if (!empty($_REQUEST['categoryID'])) {
+                                    if ($_REQUEST['categoryID'] == $pc['categoryID']) {
+                                        continue;
+                                    }
+                                }
+
+                                // Load info
+                                $tpcInfo = $productCategory->getCategoryInfo($pc['categoryID']);
+
+                                // Only process parent levels
+                                if (!empty($tpcInfo['parentCategoryID'])) {
+                                    continue;
+                                }
+
+                                // Pre-selected?
+                                if ($tpcInfo['categoryID'] == $pcInfo['parentCategoryID']) {
+                                    $selected = ' selected';
+                                } else {
+                                    $selected = '';
+                                }
+
+                                // Label inactive
+                                if (empty($tpcInfo['categoryActive'])) {
+                                    $active = ' (Inactive)';
+                                } else {
+                                    $active = '';
+                                }
+
+                                $out .= "<option value='" . $tpcInfo['categoryID'] . "' " . $selected . ">";
+
+                                // Children?
+                                $children = $productCategory->getCategoryChildren($tpcInfo['categoryID'], NULL, 'pc.categoryName');
+                                if (count($children) != 0) {
+                                    $out .= '[' . $tpcInfo['categoryName'] . ']' . $active . '</option>';
+                                    foreach ($children as $child) {
+                                        $child = $productCategory->getCategoryInfo($child['categoryID']);
+                                        // Label inactive
+                                        if (empty($child['categoryActive'])) {
+                                            $active = ' (Inactive)';
+                                        } else {
+                                            $active = '';
+                                        }
+                                        // Pre-selected?
+                                        if ($child['categoryID'] == $pcInfo['parentCategoryID']) {
+                                            $selected = ' selected';
+                                        } else {
+                                            $selected = '';
+                                        }
+                                        $out .= "<option value='" . $child['categoryID'] . "'" . $selected . ">&nbsp;-&nbsp;";
+
+                                        // Grand-Children?
+                                        $grandChildren = $productCategory->getCategoryChildren($child['categoryID'], NULL, 'pc.categoryName');
+                                        if (count($grandChildren) != 0) {
+                                            $out .= '[' . $child['categoryName'] . ']'.$active.'</option>';
+                                            foreach ($grandChildren as $grandChild) {
+                                                $grandChild = $productCategory->getCategoryInfo($grandChild['categoryID']);
+                                                // Label inactive
+                                                if (empty($grandChild['categoryActive'])) {
+                                                    $active = ' (Inactive)';
+                                                } else {
+                                                    $active = '';
+                                                }
+                                                // Pre-selected?
+                                                if ($grandChild['categoryID'] == $pcInfo['parentCategoryID']) {
+                                                    $selected = ' selected';
+                                                } else {
+                                                    $selected = '';
+                                                }
+                                                $out .= "<option value='" . $grandChild['categoryID'] . "'" . $selected . ">&nbsp;--&nbsp;";
+
+                                                // Great-Grand-Children?
+                                                $greatGrandChildren = $productCategory->getCategoryChildren($grandChild['categoryID'], NULL, 'pc.categoryName');
+                                                if (count($greatGrandChildren) != 0) {
+                                                    $out .= '[' . $grandChild['categoryName'] . ']'.$active.'</option>';
+                                                    foreach ($greatGrandChildren as $greatGrandChild) {
+                                                        $greatGrandChild = $productCategory->getCategoryInfo($greatGrandChild['categoryID']);
+                                                        // Label inactive
+                                                        if (empty($greatGrandChild['categoryActive'])) {
+                                                            $active = ' (Inactive)';
+                                                        } else {
+                                                            $active = '';
+                                                        }
+                                                        // Pre-selected?
+                                                        if ($greatGrandChild['categoryID'] == $pcInfo['parentCategoryID']) {
+                                                            $selected = ' selected';
+                                                        } else {
+                                                            $selected = '';
+                                                        }
+                                                        $out .= "<option value='" . $greatGrandChild['categoryID'] . "'" . $selected . ">&nbsp;---&nbsp";
+
+                                                        // Great-Great-Grand-Children?
+                                                        $greatGreatGrandChildren = $productCategory->getCategoryChildren($greatGrandChild['categoryID'], NULL, 'pc.categoryName');
+                                                        if (count($greatGreatGrandChildren) != 0) {
+                                                            $out .= '[' . $greatGrandChild['categoryName'] . ']'.$active.'</option>';
+                                                            foreach ($greatGreatGrandChildren as $greatGreatGrandChild) {
+                                                                $greatGreatGrandChild = $productCategory->getCategoryInfo($greatGreatGrandChild['categoryID']);
+                                                                // Label inactive
+                                                                if (empty($greatGreatGrandChild['categoryActive'])) {
+                                                                    $active = ' (Inactive)';
+                                                                } else {
+                                                                    $active = '';
+                                                                }
+                                                                // Pre-selected?
+                                                                if ($greatGreatGrandChild['categoryID'] == $pcInfo['parentCategoryID']) {
+                                                                    $selected = ' selected';
+                                                                } else {
+                                                                    $selected = '';
+                                                                }
+                                                                $out .= "<option value='" . $greatGreatGrandChild['categoryID'] . "'" . $selected . ">&nbsp;----&nbsp;" . $greatGreatGrandChild['categoryName'] . $active . "</option>";
+                                                            }
+                                                        } else {
+                                                            $out .= $greatGrandChild['categoryName'] . $active . '</option>';
+                                                        }
+                                                    }
+                                                } else {
+                                                    $out .= $grandChild['categoryName'] . $active . '</option>';
+                                                }
+                                            }
+                                        } else {
+                                            $out .= $child['categoryName'] . $active . '</option>';
+                                        }
+                                    }
+                                } else {
+                                    $out .= $tpcInfo['categoryName'] . $active . '</option>';
+                                }
+                            }
+                            echo "<select id='category_parentID' name='category_parentID'>
+                    <option disabled selected>--Select--</option>
+                    " . $out . "
+                  </select>";
+                        } else {
+                            ?>
+                            <div class="alert alert-info span4">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <strong>Sorry,</strong> no categories yet for cart <strong>#<?php echo $_REQUEST['productCartID']; ?></strong>.
+                            </div>
+        <?php
+    }
+    ?>
+                    </div>
+                </div>
+
+                <!-- Name -->
+                <div class="control-group">
+                    <label class="control-label" for="categoryName">Name</label>
+                    <div class="controls">
+                        <input type="text" id="categoryName" name="categoryName" placeholder="Enter Category Name" value="<?php echo $pcInfo['categoryName']; ?>" />
+                    </div>
+                </div>
+
+                <!-- Code -->
+                <div class="control-group">
+                    <label class="control-label" for="category_code">Category Code</label>
+                    <div class="controls">
+                        <input type="text" id="category_code" name="category_code" class='span1' placeholder="Enter Category Code" maxlength="7" value="<?php echo $pcInfo['categoryCode']; ?>" />
+                        <span class="help-inline"><small class='muted'>*Code will be automatically generated if blank</small></span>
+                    </div>
+                </div>
+
+                <!-- Description (Public) -->
+                <div class="control-group">
+                    <label class="control-label" for="category_descriptionPublic">
+                        <a href='#' class='tooltip-on' data-toggle='tooltip' title='Optional public category description that is viewable by anyone'>
+                            <i class='icon-question-sign'></i>
+                        </a>
+                        &nbsp;<a href="#descPublic" role="button" class="btn btn-small" data-toggle="modal">Description (Public)</a>
+                    </label>
+                    <div class="controls">
+                        <!-- Description Public Modal -->
+                        <div id="descPublic" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="descPublicLbl" aria-hidden="true">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h3 id="descPublicLbl">Description (Public)</h3>
+                            </div>
+                            <div class="modal-body text-center">
+                                <textarea id="category_descriptionPublic" name="category_descriptionPublic" placeholder="Enter Public Description"
+                                          class="span5" rows="15"><?php echo killerCart\Util::convertBRToNL($pcInfo['categoryDescriptionPublic']); ?></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            </div>
+                        </div>
+                        <?php
+                        // Preview
+                        echo htmlspecialchars(substr(trim(killerCart\Util::convertBRToNL($pcInfo['categoryDescriptionPublic'])), 0, 100)) . '...';
+                        ?>
+                    </div>
+                </div>
+
+                <!-- Description (Private) -->
+                <div class="control-group">
+                    <label class="control-label" for="category_descriptionPrivate">
+                        <a href='#' class='tooltip-on' data-toggle='tooltip' title='Optional private category description that is viewable in admin portal only'>
+                            <i class='icon-question-sign'></i>
+                        </a>
+                        &nbsp;<a href="#descPrivate" role="button" class="btn btn-small" data-toggle="modal">Description (Private)</a>
+                    </label>
+                    <div class="controls">
+                        <!-- Description Private Modal -->
+                        <div id="descPrivate" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="descPrivateLbl" aria-hidden="true">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h3 id="descPrivateLbl">Description (Private)</h3>
+                            </div>
+                            <div class="modal-body text-center">
+                                <textarea id="category_descriptionPrivate" name="category_descriptionPrivate" placeholder="Enter Private Description"
+                                          class="span5" rows="15"><?php echo killerCart\Util::convertBRToNL($pcInfo['categoryDescriptionPrivate']); ?></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                            </div>
+                        </div>
+                        <?php
+                        // Preview
+                        echo htmlspecialchars(substr(trim(killerCart\Util::convertBRToNL($pcInfo['categoryDescriptionPrivate'])), 0, 100)) . '...';
+                        ?>
+                    </div>
+                </div>
+
+                <!-- Taxable -->
+                <div class="control-group">
+                    <label class="control-label" for="category_taxable">
+                        Taxable
+                    </label>
+                    <div class="controls">
+                        <select name='category_taxable' class='span2'>
+                            <option value='1'<?php
+    if ($pcInfo['categoryTaxable'] == 1) {
+        echo ' selected';
+    }
+    ?>>Taxable</option>
+                            <option value='0'<?php
+                                    if ($pcInfo['categoryTaxable'] == 0) {
+                                        echo ' selected';
+                                    }
+    ?>>Nontaxable</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Privacy -->
+                <div class="control-group">
+                    <label class="control-label" for="category_privacy">
+                        Privacy
+                    </label>
+                    <div class="controls">
+                        <select id='category_privacy' name='category_privacy' class='span2'>
+                            <option value='0'<?php
+                                    if ($pcInfo['categoryPrivate'] == 0) {
+                                        echo ' selected';
+                                    }
+    ?>>Public</option>
+                            <option value='1'<?php
+                                    if ($pcInfo['categoryPrivate'] == 1) {
+                                        echo ' selected';
+                                    }
+    ?>>Private</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Show Price -->
+                <div class="control-group">
+                    <label class="control-label" for="category_showPrice">
+                        <a href='#' class='tooltip-on' data-toggle='tooltip' title='Option to show or hide price on view cart and checkout'><i class='icon-question-sign'></i></a>&nbsp;
+                        Show Price
+                    </label>
+                    <div class="controls">
+                        <select id='category_showPrice' name='category_showPrice' class='span2'>
+                            <option value='1'<?php
+                                    if ($pcInfo['categoryShowPrice'] == 1) {
+                                        echo ' selected';
+                                    }
+    ?>>Yes</option>
+                            <option value='0'<?php
+                                    if ($pcInfo['categoryShowPrice'] == 0) {
+                                        echo ' selected';
+                                    }
+    ?>>No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="form-actions">
+                    <div class='span6'>
+                        <a href='#top' id='btnSaveCategory' type="button" class="btn btn-success"><i class='icon-ok-sign icon-white'></i>&nbsp;Save Category</a>
+                    </div>
+                </div>
+
+            </div>
+            <!-- End Left Column -->
+
+            <!-- Right Column -->
+            <div class='span5'>
+
+                <!-- Category Logo -->
+                <div class="control-group">
+                    <h2>Images</h2>
+
+                    <!-- Button to trigger modal -->
+                    <a href="#uploadModal" role="button" class="btn" data-toggle="modal"><i class='icon-plus'></i>&nbsp;Add Images</a>
+                    <?php
+                    // Upload Modal
+                    $uploadTitle = 'Image Upload';
+                    $fileType = 'image';
+                    include('upload.php');
+                    ?>
+
+                    <!-- Product Images (Existing list) -->
+                    <div class='clearfix'></div>
+                    <?php
+                    $image = new killerCart\Image();
+                    // Max image display dimensions
+                    $maxImgW = '384';
+                    $maxImgH = '384';
+                    // Load images
+                    $pcInfo['images'] = $image->getImageParentInfo($pcInfo['cartID'], 1, NULL, $pcInfo['categoryID']);
+                    if (empty($pcInfo['images'])) {
+                        $showImgs = FALSE;
+                    } else {
+                        $i = 0;
+                        $showImgs = array();
+                        foreach ($pcInfo['images'] as $k => $img) {
+                            $i++;
+                            // Get best fit for this img
+                            $bestFit = $image->getBestFitImage($pcInfo['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $maxImgW, $maxImgH);
+                            $showImgs[] = array(
+                                'imageID' => $img['imageID'],
+                                'origWidth' => $img['imageWidth'],
+                                'origHeight' => $img['imageHeight'],
+                                'origSrc' => cartPublicUrl . "getfile.php?cartID=" . $pcInfo['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$img['imageWidth']."&h=".$img['imageHeight'],
+                                'bestFitSrc' => cartPublicUrl . "getfile.php?cartID=" . $pcInfo['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'],
+                                'showWidth' => $bestFit['showWidth']);
+                        }
+                        ?>
+                        <table class='table table-noborder table-condensed'>
+                                <?php
+                                $i = 0;
+                                foreach ($showImgs as $img) {
+                                    $i++;
+                                    echo "
+                                        <tr>
+                                            <td>
+                                                <button type='button' value='" . $img['imageID'] . "' class='btn btn-danger btn-mini btnRemoveImg pull-right'>
+                                                    <i class='icon-remove-sign icon-white'></i>
+                                                </button>
+                                                <center>
+                                                    <a href='" . $img['origSrc'] . "' target='_blank'>
+                                                        <img class='img-polaroid' data-src='holder.js/".$maxImgW."x".$maxImgH."' src='" . $img['bestFitSrc'] . "' width='".$img['showWidth']."' />
+                                                    </a>
+                                                </center>
+                                            </td>
+                                        </tr>";
+                                    }
+                                ?>
+                        </table>
+                        <?php
+                    }
+                    ?>
+                </div>
+
+            </div>
+            <!-- End Right Column -->
+
+        </div>
+        <!--#div_admin_edit_category-->
+
+    </form>
+</div>
+
+<?php
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+
+            // Admin :: Category :: Remove Image
+            $('.btnRemoveImg').click(function() {
+                var r = confirm('Are you sure you want to permanently delete this image?');
+                if (r == false) {
+                    return false;
+                }
+                var go = $.ajax({
+                    type: 'POST',
+                    data: {m: 'ajax',
+                        cartID: $('#categoryCartID').val(),
+                        imageID: $(this).val(),
+                        a: 'removeImage'}
+                })
+                .done(function(results) {
+                    window.location.reload();
+                })
+                .fail(function(msg) {
+                    alert('Error:' + msg);
+                })
+                .always(function() {
+                });
+            });
+
+            // Admin :: Category :: Edit category form validation
+            $('#frm_admin_edit_category').validate({
+                rules: {
+                    cartName: 'required',
+                    cartTheme: 'required',
+                    cartEmailOrders: {
+                        required: true,
+                        email: true
+                    },
+                    cartEmailContact: {
+                        required: true,
+                        email: true
+                    },
+                    cartEmailErrors: {
+                        required: true,
+                        email: true
+                    }
+                }
+            });
+
+            // Admin :: Category :: Edit Category :: Save
+            $('#btnSaveCategory').click(function() {
+                var v = $('#frm_admin_edit_category').valid();
+                if (v === false) {
+                    alert('One or more fields on the parent form did not pass validation. Please check your fields and try again.');
+                    return false;
+                }
+                var BTN = $(this);
+                var oldHtml = BTN.html();
+                BTN.prop('disabled', true).html('<i class=\'icon-refresh\'></i>&nbsp;Saving...');
+                var go = $.ajax({
+                    type: 'POST',
+                    url: '" . cartPublicUrl . "admin/?p=category',
+                    data: $('#frm_admin_edit_category').serialize()
+                })
+                .done(function(results) {
+                    $('#divCategoryResults').html(results);
+                    BTN.prop('disabled', false).html(oldHtml);                    
+                })
+                .fail(function(msg) {
+                    alert('Error: ' + msg);
+                })
+                .always(function() {
+                });
+            });
+
+        });
+    </script>
+";

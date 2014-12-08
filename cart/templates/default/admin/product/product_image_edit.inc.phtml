@@ -1,0 +1,29 @@
+<?php
+// Images (hidden)
+if (!empty($showImgs)) {
+    foreach ($showImgs as $editImg) {
+        echo "<img id='".$editImg['imageID']."' src='".$editImg['bestFitSrc']."' class='hidden' />";
+    }
+}
+
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+
+            // Admin :: Product :: Edit Image (click)
+            $('.productImg').click(function() {
+
+                // Orig Image
+                var origImgID = $(this).parent().attr('name');
+                console.debug('Edit image, origID: ' + origImgID);
+                $('img#' + origImgID).removeClass('hidden');
+
+                // Replacement Image Upload Modal
+                $('#uploadModalBody').prepend('<h4>Replacement Image</h4>');
+                $('#uploadModalBody').prepend($('img#' + origImgID));
+                $('#uploadModalBody').prepend(\"<h4>Original Image</h4><input type='hidden' name='origImgID' value='\" + origImgID + \"' />\");
+                $('#uploadModal').modal('show');
+
+            });
+        });
+    </script>";

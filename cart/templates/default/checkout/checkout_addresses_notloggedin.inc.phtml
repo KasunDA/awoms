@@ -1,0 +1,361 @@
+<?php
+// Dont show login for gp customers coming through for first checkout
+if (empty($_SESSION['customerID']) || $_SESSION['customerID'] != 'NEW') {
+    ?>
+    <div class='row'>
+
+        <!-- Existing Account Login -->
+        <div class='span5 text-right alert alert-block alert-success'>
+            <form class='form-horizontal' method='POST'>
+                <h4>Already have an account?</h4>
+                <p>Enter your login information below and click Login</p>
+                <input type='hidden' name='p' value='account' />
+                <input type='hidden' name='r' value='checkout' />
+                <p>
+                    <span class="help-inline alert-success">Email</span>
+                    <input type="text" name="username" placeholder="E-mail address" />
+                </p>
+                <p>
+                    <span class="help-inline alert-success">Passphrase</span>
+                    <input type="password" name="passphrase" placeholder="Passphrase" />
+                </p>
+
+                <div class='span2 offset2'>
+                    <button name='a' value='login' type='submit' class="btn btn-primary btn-small" value='2'>
+                        <i class="icon-ok-sign icon-white"></i>&nbsp;Login
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- New Account -->
+        <div class='span5 alert alert-block alert-info'>
+            <form id='frmCustomerLogin' class='form-horizontal' autocomplete="off">
+                <h4>Create Account</h4>
+                <p>Enter your e-mail address and a password along with the rest of the form below to expedite future checkouts</p>
+                <table>
+                    <tr>
+                        <td class='text-right'>
+                            <span class="alert-info">Email</span>        
+                        </td>
+                        <td>
+                            <input type="text" name="newEmail" id='newEmail' placeholder="E-mail address" autocomplete="off" class='span2' />
+                            <span id='newEmailResultsDynamic'></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class='text-right'>
+                            <span class="alert-info">Passphrase</span>
+                        </td>
+                        <td>
+                            <input type="password" name="newPassphrase" id='newPassphrase' placeholder="Passphrase" class='span2' />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+    </div>
+    <?php
+}
+?>
+
+<form id='cart_checkout_addresses_form' class='form-horizontal' method="POST">
+
+    <!-- Main Container Two Col -->    
+    <div class='row'>
+
+        <!-- Main Container Left Col -->
+        <div id='divShippingAddress'class="span5 offset2">
+            <p class='lead' id='lblShippingAddress'>Shipping and Billing Address</p>
+            <p>
+                <input id='cart_checkout_addresses_form_billing_is_same_checkbox' name="cart_checkout_addresses_form_billing_is_same_checkbox" type="checkbox" checked>
+                <small>Uncheck if Billing Address is different from Shipping Address</small>
+            </p>
+            <table class='table table-condensed table-noborder'>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipFirstName">First Name</label></td>
+                    <td>
+                        <input type="text" id="shipFirstName" name="shipFirstName" placeholder="Enter First Name" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipMiddleName">Middle Name</label></td>
+                    <td><input type="text" id="shipMiddleName" name="shipMiddleName" placeholder="Middle Name (optional)" /></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipLastName">Last Name</label></td>
+                    <td><input type="text" id="shipLastName" name="shipLastName" placeholder="Enter Last Name"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipEmail">Email</label></td>
+                    <td><input type="text" id="shipEmail" name="shipEmail" placeholder="Enter Email"><br /><span id='shipEmailResultsDynamic'></span></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipPhone">Phone</label></td>
+                    <td><input type="text" id="shipPhone" name="shipPhone" placeholder="Enter Phone"></td>
+                </tr>
+            </table>
+
+            <hr />
+
+            <table class='table table-condensed table-noborder'>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipCountry">Country</label></td>
+                    <td>
+                        <select id='shipCountry' name='shipCountry'>
+                            <option value='' selected>-- SELECT --</option>
+                            <?php
+                            foreach (killerCart\Util::getCountryList() as $cc => $cl) {
+                                echo "<option value='" . $cc . "'>" . $cl . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipAddressType">Address Type</label></td>
+                    <td>
+                        <select id="shipAddressType" name="shipAddressType">
+                            <?php
+                            $addressTypes = $cart->getCartAddressTypes();
+                            foreach ($addressTypes as $a) {
+                                echo "<option value='" . $a['addressTypeCode'] . "'>" . $a['addressTypeDescription'] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipAddressLine1">Address</label></td>
+                    <td><input type="text" id="shipAddressLine1" name="shipAddressLine1" placeholder="Address Line 1"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipAddressLine2"></label></td>
+                    <td><input type="text" id="shipAddressLine2" name="shipAddressLine2" placeholder="Line 2"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipAddressLine3"></label></td>
+                    <td><input type="text" id="shipAddressLine3" name="shipAddressLine3" placeholder="Line 3"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipCity">City</label></td>
+                    <td><input type="text" id="shipCity" name="shipCity" placeholder="City"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipState">State / Province / County</label></td>
+                    <td>
+                        <select id='shipState' name='shipState'>
+                            <option value='' selected>--SELECT--</option>
+                            <?php
+                            foreach (killerCart\Util::getStateList() as $sc => $sl) {
+                                if (preg_match('/^(--)/', $sc)) {
+                                    $sc = '';
+                                }
+                                echo "<option value='" . $sc . "'>" . $sl . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipPostalCode">Zip / Postcode</label></td>
+                    <td><input type="text" id="shipPostalCode" name="shipPostalCode" placeholder="Zip / Postcode"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="shipAddressNotes">Notes</label></td>
+                    <td>
+                        <textarea id="shipAddressNotes" name="shipAddressNotes" placeholder="Notes"></textarea>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <!-- End Main Container Left Col -->
+
+        <!-- Main Container Right Col -->
+        <div id='divBillingAddress' class="span4 hidden">
+            <p class='lead' id='lblBillingAddress'>Billing Address</p>
+            <p>&nbsp;</p>
+            <table class='table table-condensed table-noborder'>
+                <tr>
+                    <td><label class="control-label pull-right" for="billFirstName">First Name</label></td>
+                    <td>
+                        <input type="text" id="billFirstName" name="billFirstName" placeholder="Enter First Name" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billMiddleName">Middle Name</label></td>
+                    <td><input type="text" id="billMiddleName" name="billMiddleName" placeholder="Middle Name (optional)" /></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billLastName">Last Name</label></td>
+                    <td><input type="text" id="billLastName" name="billLastName" placeholder="Enter Last Name"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billEmail">Email</label></td>
+                    <td><input type="text" id="billEmail" name="billEmail" placeholder="Enter Email"><br /><span id='billEmailResultsDynamic'></span></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billPhone">Phone</label></td>
+                    <td><input type="text" id="billPhone" name="billPhone" placeholder="Enter Phone"></td>
+                </tr>
+            </table>
+
+            <hr />
+
+            <table class='table table-condensed table-noborder'>
+                <tr>
+                    <td><label class="control-label pull-right" for="billCountry">Country</label></td>
+                    <td>
+                        <select id='billCountry' name='billCountry'>
+                            <option value='' selected>-- SELECT --</option>
+                            <?php
+                            foreach (killerCart\Util::getCountryList() as $cc => $cl) {
+                                echo "<option value='" . $cc . "'>" . $cl . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billAddressType">Address Type</label></td>
+                    <td>
+                        <select id="billAddressType" name="billAddressType">
+                            <?php
+                            $addressTypes = $cart->getCartAddressTypes();
+                            foreach ($addressTypes as $a) {
+                                echo "<option value='" . $a['addressTypeCode'] . "'>" . $a['addressTypeDescription'] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billAddressLine1">Address</label></td>
+                    <td><input type="text" id="billAddressLine1" name="billAddressLine1" placeholder="Address Line 1"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billAddressLine2"></label></td>
+                    <td><input type="text" id="billAddressLine2" name="billAddressLine2" placeholder="Line 2"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billAddressLine3"></label></td>
+                    <td><input type="text" id="billAddressLine3" name="billAddressLine3" placeholder="Line 3"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billCity">City</label></td>
+                    <td><input type="text" id="billCity" name="billCity" placeholder="City"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billState">State / Province / County</label></td>
+                    <td>
+                        <select id='billState' name='billState'>
+                            <option value='' selected>--SELECT--</option>
+                            <?php
+                            foreach (killerCart\Util::getStateList() as $sc => $sl) {
+                                if (preg_match('/^(--)/', $sc)) {
+                                    $sc = '';
+                                }
+                                echo "<option value='" . $sc . "'>" . $sl . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billPostalCode">Zip / Postcode</label></td>
+                    <td><input type="text" id="billPostalCode" name="billPostalCode" placeholder="Zip / Postcode"></td>
+                </tr>
+                <tr>
+                    <td><label class="control-label pull-right" for="billAddressNotes">Notes</label></td>
+                    <td>
+                        <textarea id="billAddressNotes" name="billAddressNotes" placeholder="Notes"></textarea>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <!-- End Main Container Right Col -->
+
+    </div>
+    <!-- End Main Container Two Col -->
+
+    <!-- Shipping Method
+    <div class="row">
+        <div class="span6 offset3 text-center">
+            <p class='lead'>Shipping Method</p>
+            <div class="control-group">
+                <select id="shipMethod" name="shipMethod">
+                    <option disabled selected>--Select--</option>
+                    <option value="FedEx">FedEx</option>
+                    <option value="UPS">UPS</option>
+                    <option value="USPSReg">USPS Regular Mail</option>
+                    <option value="USPSPri">USPS Priority Mail</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    -->
+
+    <!-- SSL Message -->
+    <div class='row'>
+        <div class="alert alert-block alert-success span5 offset2">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4><i class="icon-lock"></i>&nbsp;Secure</h4>
+            All data is transmitted and cartd securely using <strong>256-bit SSL encryption</strong> at minimum and abides by all PCI DSS guidelines.
+        </div>
+    </div>
+
+    <!-- Submit button row -->
+    <div class="form-actions span7">
+        <div class="span5 offset1">
+            <button name='submitted' type='submit' class="btn btn-primary" value='2'><i class="icon-ok-sign icon-white"></i>&nbsp;Next Step</button>
+            <!-- <button type="button" class="btn">Save Cart for Later</button> -->
+        </div>
+    </div>
+
+
+</form>
+
+<?php
+$pageJavaScript[] = "
+<script type='text/javascript'>
+
+    $(document).ready(function() {
+
+        $(document).on('input','#newEmail, #shipEmail, #billEmail',function () { 
+            var entryID = $(this).attr('id');
+            var entryVal = $(this).val();
+            var valid = $('#'+entryID).valid();
+            var resultsDiv = $('#' + entryID + 'ResultsDynamic');
+            if (valid === false || valid === 0) {
+                resultsDiv.html('');
+                return false;
+            }
+            if (entryVal == '') {
+                return false;
+            }
+            var go = $.ajax({
+                type: 'POST',
+                url: '" . cartPublicUrl . "?p=checkout',
+                data: {m: 'ajax',
+                    p: 'checkout',
+                    a: 'doesCustomerExist',
+                    email: entryVal
+                }
+            })
+            .done(function(results) {
+                resultsDiv.html(results);
+            })
+            .fail(function(msg) {
+                alert('Error: ' + msg);
+            })
+            .always(function() {
+            });
+
+        });
+
+    });
+
+</script>";

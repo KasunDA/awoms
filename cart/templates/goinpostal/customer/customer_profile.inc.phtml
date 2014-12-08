@@ -1,0 +1,183 @@
+<?php
+//
+// Save Profile
+//
+if (!empty($_POST['ia']) && $_POST['ia'] == 'save'
+) {
+    // Sanitize & Validate
+    $s        = new killerCart\Sanitize();
+    $args     = array('companyName' => FILTER_SANITIZE_SPECIAL_CHARS,
+        'firstName'   => FILTER_SANITIZE_SPECIAL_CHARS,
+        'middleName'  => FILTER_SANITIZE_SPECIAL_CHARS,
+        'lastName'    => FILTER_SANITIZE_SPECIAL_CHARS,
+        'phone'       => FILTER_SANITIZE_STRING,
+        'email'       => FILTER_VALIDATE_EMAIL,
+        'passphrase'  => FILTER_SANITIZE_SPECIAL_CHARS,
+        'notes'       => FILTER_SANITIZE_SPECIAL_CHARS);
+    $san      = $s->filterArray(INPUT_POST, $args);
+    // Save New Customer Profile
+    $customer = new killerCart\Customer();
+    $r        = $customer->updateCustomerInfo($_SESSION['customerID'], $san['companyName'], $san['firstName'], $san['middleName'],
+                                              $san['lastName'], $san['phone'], $san['email'], $san['notes'], NULL, $san['passphrase'],
+                                              NULL);
+    if (isset($r)) {
+        ?>
+        <div class="alert alert-block alert-success span6 offset3">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4><i class="icon-ok"></i>&nbsp;Success!</h4>
+            Your profile has been updated successfully!
+        </div>
+        <?php
+    } else {
+        ?>
+        <div class="alert alert-block alert-error span6 offset3">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4><i class="icon-ok"></i>&nbsp;Error!</h4>
+            Sorry, we were unable to update your profile. Please try again later.
+        </div>
+        <?php
+    }
+    exit();
+}
+?>
+
+<div id='customerProfileResultsDynamic'></div>
+
+<div class='clearfix'></div>
+
+<form id='customerProfileForm' class='form-horizontal'>
+
+    <div class='control-group'>
+        <label class='control-label'>Customer ID</label>
+        <div class='controls'>
+            <?php echo $_SESSION['cInfo']['customCustomerID']; ?>
+        </div>
+    </div>
+
+    <div class='control-group'>
+        <label class='control-label' for='companyName'>Company Name</label>
+        <div class='controls'>
+            <input type='text' name='companyName' id='companyName' value='<?php echo $c['companyName']; ?>' placeholder='Company Name' />
+        </div>
+    </div>
+
+    <div class='control-group'>
+        <label class='control-label' for='firstName'>First Name</label>
+        <div class='controls'>
+            <input type='text' name='firstName' id='firstName' value='<?php echo $c['firstName']; ?>' placeholder='First Name' />
+        </div>
+    </div>
+
+    <div class='control-group'>
+        <label class='control-label' for='middleName'>Middle Name</label>
+        <div class='controls'>
+            <input type='text' name='middleName' id='middleName' value='<?php echo $c['middleName']; ?>' placeholder='Middle Name' />
+        </div>
+    </div>
+
+    <div class='control-group'>
+        <label class='control-label' for='lastName'>Last Name</label>
+        <div class='controls'>
+            <input type='text' name='lastName' id='lastName' value='<?php echo $c['lastName']; ?>' placeholder='Last Name' />
+        </div>
+    </div>
+
+    <div class='control-group'>
+        <label class='control-label' for='phone'>Phone</label>
+        <div class='controls'>
+            <input type='text' name='phone' id='phone' value='<?php echo $c['phone']; ?>' placeholder='Phone' />
+        </div>
+    </div>
+
+    <div class='control-group'>
+        <label class='control-label' for='email'>Email</label>
+        <div class='controls'>
+            <input type='text' name='email' id='email' value='<?php echo $c['email']; ?>' placeholder='Email' disabled/>
+        </div>
+    </div>
+
+    <div class='control-group'>
+        <label class='control-label' for='passphrase'>New Passphrase</label>
+        <div class='controls'>
+            <input type='password' name='passphrase' id='passphrase' value='' placeholder='New Passphrase' />
+        </div>
+    </div>
+
+    <div class='control-group'>
+        <label class='control-label' for='notes'>Notes</label>
+        <div class='controls'>
+            <textarea name='notes' id='notes' placeholder='Notes' rows='5'><?php echo $c['notes']; ?></textarea>
+        </div>
+    </div>
+
+    <div class='form-actions'>
+        <button class='btn' type='reset'>
+            <i class='icon-remove-circle'></i>&nbsp;Reset
+        </button>
+        <button class='btn btn-success' id='customerProfileSaveBtn' type='button'>
+            <i class='icon-ok-circle icon-white'></i>&nbsp;Save Profile
+        </button>
+    </div>
+
+</form>
+
+<?php
+$thisJavaScript = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+        
+            // Form Validator
+            $('#customerProfileForm').validate({
+                rules: {
+                    firstName: 'required',
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    passphrase: {
+                        minlength: 8
+                    }
+                }
+            });
+            
+            // Save Profile
+            $('#customerProfileSaveBtn').click(function() {
+                var v = $('#customerProfileForm').valid();
+                if (v === false) {
+                    return false;
+                }
+                var BTN = $(this);
+                var oldHtml = BTN.html();
+                BTN.prop('disabled', true).html('<i class=\'icon-refresh\'></i>&nbsp;Saving...');
+                var go = $.ajax({
+                    type: 'POST',
+                    url: '" . cartPublicUrl . "?p=account',
+                    data: {m: 'ajax',
+                        p: 'account',
+                        a: 'loadPage',
+                        pageID: '" . $pageID . "',
+                        ia: 'save',
+                        companyName: $('#companyName').val(),
+                        firstName: $('#firstName').val(),
+                        middleName: $('#middleName').val(),
+                        lastName: $('#lastName').val(),
+                        phone: $('#phone').val(),
+                        email: $('#email').val(),
+                        passphrase: $('#passphrase').val(),
+                        notes: $('#notes').val()
+                    }
+                })
+                .done(function(results) {
+                    $('#customerProfileResultsDynamic').html(results);
+                    BTN.prop('disabled', false).html(oldHtml);
+                })
+                .fail(function(msg) {
+                    alert('Error: ' + msg);
+                })
+                .always(function() {
+                });
+            });
+        });
+    </script>
+";
+echo $thisJavaScript;

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class='no-js lt-ie9 lt-ie8 lt-ie7'> <![endif]-->
+<!--[if IE 7]>         <html class='no-js lt-ie9 lt-ie8'> <![endif]-->
+<!--[if IE 8]>         <html class='no-js lt-ie9'> <![endif]-->
+<!--[if gt IE 8]><!--> <html class='no-js'> <!--<![endif]-->
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+        <title>Shopping Cart :: Admin</title>
+        <meta name='description' content=''>
+        <meta name='viewport' content='width=device-width'>
+        <link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css'>
+        <!-- Must be between reg and responsive bootstrap -->
+        <style>
+            body {
+                padding-top: 60px;
+                padding-bottom: 40px; /* 40/60 */
+            }
+        </style>
+        <link rel='stylesheet' type='text/css' href='../css/bootstrap-responsive.min.css'>
+        <link rel="stylesheet" type="text/css" href="../css/cart_style.php?privateDir=<?php echo cartPrivateDir; ?>&theme=<?php echo $_SESSION['cartTheme']; ?>" />
+        <script src='../js/vendor/modernizr-2.6.2-respond-1.1.0.min.js'></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class='chromeframe'>You are using an <strong>outdated</strong> browser. Please <a href='http://browsehappy.com/'>upgrade your browser</a> or <a href='http://www.google.com/chromeframe/?redirect=true'>activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+        <?php
+        if (empty($_SESSION['userID']) || !empty($fail_msg)) {
+            ?>
+            <div class='hero-unit'>
+                <h1 id='admin_login_title'>Welcome!&nbsp;<small>Please login to continue</small></h1>
+                <hr />
+
+                <form id='frm_admin_login' class='form-horizontal' method='POST'>
+                    <div class='control-group'>
+                        <label class='control-label' for='username'>Username</label>
+                        <div class='controls'>
+                            <input type='text' id='username' name='username' placeholder='Username'>
+                        </div>
+                    </div>
+                    <div class='control-group'>
+                        <label class='control-label' for='password'>Passphrase</label>
+                        <div class='controls'>
+                            <input type='password' id='passphrase' name='passphrase' placeholder='Passphrase'>
+                        </div>
+                    </div>
+                    <div class='control-group'>
+                        <div class='controls'>
+                            <input type='hidden' name='a' value='login' />
+                            <button id='btnLogin' type='submit' class='btn btn-primary btn-large'>Sign in &raquo;</button>
+                        </div>
+                        <span class='muted'><small><?php echo cartName.' '.cartVersion; ?></small></span>
+                    </div>
+                    <?php
+                    if (!empty($fail_msg)) {
+                        echo "<div class='alert alert-block alert-danger'>" . $fail_msg . "</div>";
+                    }
+                    ?>
+                </form>
+
+            </div>
+            <?php
+            $pageJavaScript[] = "
+                <script type='text/javascript'>
+                    $(document).ready(function() {
+
+                        // Admin :: Login form validation
+                        $('#frm_admin_login').validate({
+                            rules: {
+                                username: 'required',
+                                passphrase: 'required'
+                            }
+                        });
+                        
+                        // Button Click
+                        $('#btnLogin').click(function() {
+                            if ($('#frm_admin_login').valid()) {
+                                $(this).prop('disabled', true).html('Please wait...');
+                                $(this).submit();
+                            }
+                        });
+
+                        // jQuery Animation is fun
+                        var welcomeTitle = $('#admin_login_title');
+                        welcomeTitle.animate({fontSize:'2em'},'slow');
+
+                    });
+                </script>";
+            require('admin_footer.php');
+            die();
+        }
+        ?>
+
+        <!-- ADMIN NAVIGATION -->
+        <div class='navbar navbar-inverse navbar-fixed-top'>
+            <div class='navbar-inner'>
+                <div class='container'>
+                    <a class='btn btn-navbar' data-toggle='collapse' data-target='.nav-collapse'>
+                        <span class='icon-bar'></span>
+                        <span class='icon-bar'></span>
+                        <span class='icon-bar'></span>
+                    </a>
+                    <a class='brand tooltip-on' href='<?php echo cartPublicUrl; ?>' target='_blank' data-toggle='tooltip' data-placement='bottom' title='Go to Storefront (New Window)'>
+                        <small><?php echo $_SESSION['cartName']; ?></small>
+                    </a>
+                    <div class='nav-collapse collapse'>
+                        <ul class='nav'>
+                            <li class='dropdown active'>
+                                <a href='<?php echo cartPublicUrl . '?p=home'; ?>' class='dropdown-toggle' data-toggle='dropdown'>
+                                    <i class='icon-home icon-white'></i>
+                                    &nbsp;Admin <b class='caret'></b>
+                                </a>
+                                <ul class='dropdown-menu'>
+                                    <li><a href='<?php echo cartPublicUrl . 'admin/'; ?>'><i class='icon-home'></i>&nbsp;Admin Home</a></li>
+                                    <li class='divider'></li>
+                                    <li class='nav-header'>Orders</li>
+                                    <li><a href='<?php echo cartPublicUrl . 'admin/?p=order'; ?>'><i class='icon-inbox'></i>&nbsp;Orders</a></li>
+                                    <li><a href='<?php echo cartPublicUrl . 'admin/?p=customer'; ?>'><i class='icon-heart'></i>&nbsp;Customers</a></li>
+                                    <li class='divider'></li>
+                                    <li class='nav-header'>Products</li>
+                                    <li><a href='<?php echo cartPublicUrl . 'admin/?p=product_category'; ?>'><i class='icon-folder-open'></i>&nbsp;Product Categories</a></li>
+                                    <li><a href='<?php echo cartPublicUrl . 'admin/?p=product'; ?>'><i class='icon-barcode'></i>&nbsp;Products</a></li>
+                                    <li class='divider'></li>
+                                    <li class='nav-header'>Carts</li>
+                                    <li><a href='<?php echo cartPublicUrl . 'admin/?p=cart'; ?>'><i class='icon-map-marker'></i>&nbsp;Carts</a></li>
+                                    <li><a href='<?php echo cartPublicUrl . 'admin/?p=user'; ?>'><i class='icon-user'></i>&nbsp;Users</a></li>
+                                    <li><a href='<?php echo cartPublicUrl . 'admin/?p=report'; ?>'><i class='icon-book'></i>&nbsp;Reports</a></li>
+                                    <li><a href='<?php echo cartPublicUrl . 'admin/?p=log'; ?>'><i class='icon-flag'></i>&nbsp;Log</a></li>
+                                    <li><a href='<?php echo cartPublicUrl . 'admin/?p=test'; ?>'><i class='icon-thumbs-up'></i>&nbsp;Server Tests</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href='<?php echo cartPublicUrl; ?>admin/?p=user&a=edit_user&userID=<?php echo $_SESSION['userID']; ?>'>
+                                    <i class='icon-user icon-white'></i>
+                                    &nbsp;<?php echo $_SESSION['username']; ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a id='admin_logout_link' href='<?php echo cartPublicUrl; ?>admin/?a=logout'>
+                                    <i class='icon-off icon-white'></i>
+                                    &nbsp;Logout
+                                </a>
+                            </li>
+                        </ul>
+                        <form class='navbar-form pull-right form-search'>
+                            <span class='muted'><small><?php echo cartVersion; ?></small>&nbsp;</span>
+                            <div class='input-prepend input-append'>
+                                <span class='add-on'><i class='icon-search'></i></span>
+                                <input id='navbar_search_field' type='text' class='span2' data-provide='typeahead' autocomplete='off'>
+                                <button type='submit' class='btn'>Search</button>
+                            </div>
+                        </form>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <?php
+        if (empty($_SESSION['unprotPrivKey'])):
+            echo "
+            <div class='alert alert-block alert-danger span6 offset3'>
+                <button type='button' class='close' data-dismiss='alert'>&times;</button>
+                <h4>Warning!</h4>
+                You must <a href='" . cartPublicUrl . "admin?p=cart&a=edit_cart&cartID=" . $_SESSION['cartID'] . "&ia=security&s=2'>configure your encryption keys</a> before you can take orders.
+            </div>
+            <div class='clearfix'></div>
+            ";
+        endif;

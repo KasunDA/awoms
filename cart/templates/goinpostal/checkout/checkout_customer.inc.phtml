@@ -1,0 +1,538 @@
+<?php
+//
+// AJAX
+//
+if (!empty($_POST['m']) && $_POST['m'] == 'ajax'
+) {
+    //
+    // Calculate Total
+    //
+    if (!empty($_POST['a']) && $_POST['a'] == 'calculateTotal'
+    ) {
+
+        // Sanitize & Validate
+        $s                 = new killerCart\Sanitize();
+        $shippingAddressID = $s->filterSingle($_POST['shippingAddressID'], FILTER_SANITIZE_NUMBER_INT);
+
+        // Defaults
+        $taxRate = 0;
+        $taxable = 0;
+        $tax     = 0;
+
+        // Address Information
+        $customer          = new killerCart\Customer();
+        $address           = $customer->getCustomerAddresses($_SESSION['customerID'], $shippingAddressID);
+        $shippingStateCode = $address['stateProvinceCounty'];
+
+        // Order Totals
+        $cartSubtotal = $cart->calcCartTotal();
+        $taxRate      = $cart->calcCartTaxRate($_SESSION['cartID'], $shippingStateCode);
+        if ($taxRate != '0.00') {
+            $taxable = $cart->calcCartTaxable();
+            $tax     = killerCart\Util::getFormattedNumber($taxable * ($taxRate / 100));
+        }
+        $orderAmount = killerCart\Util::getFormattedNumber($cartSubtotal + $tax);
+        ?>
+        <table class='table table-bordered'>
+            <tr>
+                <td>Cart subtotal:</td>
+                <td>$<?php echo $cartSubtotal; ?></td>
+            </tr>
+            <tr>
+                <td>Tax rate:</td>
+                <td><?php echo $taxRate; ?>%</td>
+            </tr>
+            <tr>
+                <td>Taxable:</td>
+                <td>$<?php echo $taxable; ?></td>
+            </tr>
+            <tr>
+                <td>Tax:</td>
+                <td>$<?php echo $tax; ?></td>
+            </tr>
+            <tr>
+                <td><strong>Total:</strong></td>
+                <td><strong>$<?php echo $orderAmount; ?></strong></td>
+            </tr>
+        </table>
+        <?php
+    }
+
+    //
+    // Place Order
+    //
+    if (!empty($_POST['a']) && $_POST['a'] == 'placeOrder'
+    ) {
+
+        // Sanitize & Validate
+        $s    = new killerCart\Sanitize();
+        $args = array('paymentMethodID'   => FILTER_SANITIZE_NUMBER_INT,
+            'shippingAddressID' => FILTER_SANITIZE_NUMBER_INT);
+        $san  = $s->filterArray(INPUT_POST, $args);
+
+        //
+        // Create Order
+        // 
+        // Defaults
+        $taxRate           = 0;
+        $taxable           = 0;
+        $tax               = 0;
+        $customerID        = $_SESSION['customerID'];
+        $shippingAddressID = $san['shippingAddressID'];
+        $paymentMethodID   = $san['paymentMethodID'];
+
+        // Address Information
+        $customer          = new killerCart\Customer();
+        $address           = $customer->getCustomerAddresses($customerID, $shippingAddressID);
+        $shippingStateCode = $address['stateProvinceCounty'];
+
+        // Email receipt to Billing Address Email
+        $c = $customer->getCustomerInfo($customerID);
+        $cart->setEmailTo($c['email']);
+
+        // Order Totals
+        $cartSubtotal = $cart->calcCartTotal();
+        $taxRate      = $cart->calcCartTaxRate($_SESSION['cartID'], $shippingStateCode);
+        if ($taxRate != '0.00') {
+            $taxable = $cart->calcCartTaxable();
+            $tax     = killerCart\Util::getFormattedNumber($taxable * ($taxRate / 100));
+        }
+        $amount = killerCart\Util::getFormattedNumber($cartSubtotal + $tax);
+
+        // Create Order ID
+        $cart->createOrder($customerID, $shippingAddressID, $amount, $taxable, $tax);
+        $orderID = $cart->session['orderID'];
+
+        // Save Payment Method Order ID Assocation
+        $cart->saveOrderPaymentMethodID($customerID, $orderID, $paymentMethodID);
+
+        // Get carts active Payment Gateway
+        $pg         = new killerCart\PaymentGateway();
+        $pgID       = $pg->getCartsActivePaymentGatewayID($_SESSION['cartID']);
+        $spg        = $pg->getPaymentGatewayByID($pgID);
+        $merchantID = $spg['gatewayUsername'];
+        $passphrase = $spg['gatewayPassphrase'];
+
+        //  Load gateway template to *** complete processing ***
+        include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/checkout/' . $spg['gatewayTemplate'] . '.phtml');
+
+        // Check for and send product alerts
+        $order = new killerCart\Order();
+        $order->orderProductsEmailAlerts($orderID);
+
+        // Empty cart products if order was success (and not in debug mode)
+        if ($orderStatusCode == 'ATH') {
+            if (!cartDebug) {
+                $cart->emptyCart();
+            }
+        }
+
+        // Save cart to DB
+        $cart->saveSession();
+
+        // Show order summary
+        include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/checkout/checkout_order.inc.phtml');
+    }
+
+    //
+    // End Ajax
+    //
+    exit();
+}
+// Customer Information
+$customer  = new killerCart\Customer();
+$c         = $customer->getCustomerInfo($_SESSION['customerID']);
+$addresses = $customer->getCustomerAddresses($_SESSION['customerID']);
+$pms       = $customer->getCustomerPaymentMethods($_SESSION['customerID']);
+?>
+
+
+<form id='customerCheckoutForm' method='POST'>
+
+    <!--BEGIN#cart_checkout_container-->
+    <div id="cart_checkout_container" class="container">
+
+        <div class="page-header span10">
+            <?php
+// Page Title
+            if (!empty($_POST['submitted']) && $_POST['submitted'] == 3) {
+                ?>
+                <h1>Order Placed! <small>Thank you so much!</small></h1>
+                <?php
+            } else {
+                ?>
+                <h1>Checkout <small>You're almost done!</small></h1>
+                <?php
+            }
+            ?>
+        </div>
+
+        <div id='customerCheckoutResults'>
+
+            <div class='row'>
+
+                <div class='span6'>
+                    <p class='lead'>Welcome back <strong><?php echo $_SESSION['cInfo']['firstName']; ?></strong>!</p>
+
+                    <!-- Step 1) Payment Method -->
+                    <div id='customerCheckoutStep1'>
+                        <div id='customerCheckoutStep1Msg' class='alert alert-block alert-info span5'>
+                            <h4><i class='icon-info-sign'></i>&nbsp;Step 1) Choose Payment Method</h4>
+                            <p>Please choose a Payment Method to use for this checkout. If you wish to use a new payment method, please <strong><a href='?p=account'>update your Account</a></strong>, then return to the Checkout page.</p>
+                        </div>
+                        <p class='lead'>Payment Method</p>
+                        <table class='table table-bordered'>
+                            <?php
+                            $i       = 0;
+                            $columns = 2;
+                            foreach ($pms as $pm) {
+                                if (strlen($pm['number3']) != 4) {
+                                    \Errors::debugLogger(__FILE__ . __LINE__ . ' Skipping Payment Method due to last four', 5);
+                                    continue;
+                                }
+                                $i++;
+                                if ($i == 1) {
+                                    echo '<tr>';
+                                } elseif ($i % ($columns + 1) == 0) {
+                                    echo '</tr><tr>';
+                                }
+
+                                $paymentMethodID   = $pm['paymentMethodID'];
+                                $paymentMethodCode = $pm['paymentMethodCode'];
+                                $billingAddressID  = $pm['billingAddressID'];
+                                $pmLastFour        = $pm['number3'];
+                                $expMonth          = $pm['expMonth'];
+                                $expYear           = $pm['expYear'];
+                                $img               = killerCart\Util::getPaymentMethodCodeLogo($paymentMethodCode);
+                                ?>
+                                <td>
+                                    <!-- Radio -->
+                                    <input type='radio' name='billingMethod' id='billingMethodID<?php echo $paymentMethodID; ?>' class='billingMethod' value='<?php echo $billingAddressID; ?>' />
+                                    <!-- Select Span -->
+                                    <a href='#' id='<?php echo $paymentMethodID; ?>' class='billingMethodSelect'><span class='label label-info'>SELECT</span></a>
+                                    <!-- PM Logo / Info -->
+                                    <?php
+                                    echo "<img src='../img/" . $img . "' data-toggle='tooltip' class='tooltip-on' title='" . $paymentMethodCode . "'>" .
+                                    ' ************' . $pmLastFour . ' (' . $expMonth . '/' . $expYear . ')';
+                                    ?>
+                                </td>
+                                <?php
+                            }
+                            ?>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Step 2) Addresses -->
+                    <div id='customerCheckoutStep2' class='hidden'>
+                        <div id='customerCheckoutStep2Msg' class='alert alert-block alert-info span5'>
+                            <h4><i class='icon-info-sign'></i>&nbsp;Step 2) Choose Shipping Addresses</h4>
+                            <p>Please choose the Shipping Address to use for this checkout.</p>
+                            <p><strong>Note:</strong> The billing address must match the payment method billing address. If this needs to be updated, please <strong><a href='?p=account'>update your Account</a></strong>, then return to the Checkout page.</p>
+                        </div>
+                        <p class='lead'>Addresses</p>
+                        <table class='table table-bordered'>
+                            <?php
+                            $i       = 0;
+                            $columns = 2;
+                            foreach ($addresses as $a) {
+                                $i++;
+                                if ($i == 1) {
+                                    echo '<tr>';
+                                } elseif ($i % ($columns + 1) == 0) {
+                                    echo '</tr><tr>';
+                                }
+
+                                $addressID           = $a['addressID'];
+                                $addressTypeCode     = $a['addressTypeCode'];
+                                $dateFrom            = $a['dateFrom'];
+                                $dateTo              = $a['dateTo'];
+                                $addressID           = $a['addressID'];
+                                $firstName           = $a['firstName'];
+                                $middleName          = $a['middleName'];
+                                $lastName            = $a['lastName'];
+                                $phone               = $a['phone'];
+                                $email               = $a['email'];
+                                $line1               = $a['line1'];
+                                $line2               = $a['line2'];
+                                $line3               = $a['line3'];
+                                $city                = $a['city'];
+                                $zipPostcode         = $a['zipPostcode'];
+                                $stateProvinceCounty = $a['stateProvinceCounty'];
+                                $country             = $a['country'];
+                                $addressNotes        = $a['addressNotes'];
+
+                                $addressFormatted = $a['line1'];
+                                if (!empty($a['line2'])) {
+                                    $addressFormatted .= '<br />' . $a['line2'];
+                                }
+                                if (!empty($address['line3'])) {
+                                    $addressFormatted .= '<br />' . $a['line3'];
+                                }
+                                $addressFormatted .= '<br />' . $a['city'] . ', ' . $a['stateProvinceCounty'] . ', ' . $a['zipPostcode'];
+                                $addressFormatted .= '<br />' . $a['country'];
+                                $addressFormatted .= '<br />' . $a['addressNotes'];
+                                ?>
+                                <td>
+
+                                    <div class='shippingAddressDiv well' id='shippingAddressID<?php echo $addressID; ?>Div'>
+                                        <?php echo $addressFormatted; ?>
+                                    </div>
+                                    <p>
+                                        <!-- Shipping Address Radio -->
+                                        <input type='radio' name='shippingAddress' id='shippingAddressID<?php echo $addressID; ?>' class='shippingAddress' value='<?php echo $addressID; ?>' />
+                                        <!-- Select Span -->
+                                        <a href='#' id='<?php echo $addressID; ?>' class='shippingAddressSelect'><span class='label label-info'>SELECT</span></a>
+                                        for Shipping Address
+                                    </p>
+                                    <p>
+                                        <!-- Billing Address Div/Radio -->
+                                        <span id='billingAddressDivID<?php echo $addressID; ?>' class='billingAddress tooltip-on' data-toggle='tooltip' title='The billing address must match the payment method billing address. If this needs to be updated, please update your Account, then return to the Checkout page.'>
+                                            <input type='radio' name='billingAddress' class='billingAddress' id='billingAddressID<?php echo $addressID; ?>' value='<?php echo $addressID; ?>' disabled /> Billing Address
+                                        </span>
+                                    </p>
+
+
+                                </td>
+                                <?php
+                            }
+                            ?>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class='span5'>
+                    <p class='lead'>Cart Summary</p>
+                    <!-- Summary -->
+                    <div class="row">
+                        <div id='customerCheckoutSummaryDynamic' class='span3'>
+                            <?php
+// Defaults
+                            $taxRate          = 0;
+                            $taxable          = 0;
+                            $tax              = 0;
+                            $cartSubtotal     = $cart->calcCartTotal();
+                            echo "<table class='table table-bordered'>
+                                    <tr>
+                                        <td>
+                                            Cart subtotal:
+                                        </td>
+                                        <td>
+                                            $" . $cartSubtotal . "
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Tax rate:
+                                        </td>
+                                        <td>
+                                            " . $taxRate . "%
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Taxable:
+                                        </td>
+                                        <td>
+                                            $" . killerCart\Util::getFormattedNumber($taxable) . "
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Tax:
+                                        </td>
+                                        <td>
+                                            $" . $tax . "
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Total:</strong>
+                                        </td>
+                                        <td>
+                                            <strong>$" . killerCart\Util::getFormattedNumber($cartSubtotal
+                                    + $tax) . "</strong>
+                                        </td>
+                                    </tr>
+                                </table>";
+                            ?>
+                        </div>
+                        <!--
+                        <div class='span2 hidden'>
+                            Promo Code, Coupons, etc.
+                        </div>
+                        -->
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class='row'>
+
+                <!-- Step 3) Review -->
+                <div id='customerCheckoutStep3' class='span6 offset2 hidden'>
+
+                    <div class='row'>
+
+                        <div id='customerCheckoutStep3Msg' class='alert alert-block alert-info span5'>
+                            <h4><i class='icon-info-sign'></i>&nbsp;Step 3) Review Order</h4>
+                            <p>Please review your order in its entirety, agree to the Terms of Service, and place the order.</p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Terms of Service -->
+                    <div class="row">
+                        <div class="span3">
+                            <p class='lead'>Terms of Service</p>
+                            <div class="control-group">
+                                <label class="checkbox">
+                                    <input id='cart_checkout_review_tos_agree_checkbox' type="checkbox"> <small>I agree to <a href="#tosModal" role="button" data-toggle="modal"><i class='icon-book'></i>&nbsp;Terms of Service</a></small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="span3">
+                            <p class='lead'>What does this mean?</p>
+                            <p>A bunch of legal mumbo jumbo our lawyers make us put up here.</p>
+                        </div>
+                    </div>
+
+                    <!-- Notice -->
+                    <div class='row'>
+                        <div class="alert alert-block alert-success span5">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <h4><i class="icon-info-sign"></i>&nbsp;Note</h4>
+                            You will <strong>NOT</strong> be charged when you click 'Place Order'. A hold will be placed on your card for the purchase amount and your order will be manually reviewed before processing payment.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Submit button row -->
+            <div class="span9 form-actions tooltip-on" data-toggle='tooltip' title='By clicking Place Order you agree to the Terms of Service and your Order will be placed'>
+                <div class="span9 text-center">
+                    <a href='#top' id='cart_place_order_btn' type='button' class="btn btn-success" disabled="disabled">
+                        <i class='icon-thumbs-up icon-white'></i>&nbsp;Place Order
+                    </a>
+                    <button id='cart_place_order_btn_loading' name='cart_place_order_btn_loading' type='button' class="btn btn-success hidden" value='3' disabled="disabled">
+                        <i class='icon-refresh icon-white'></i>&nbsp;Processing Order...
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</form>
+
+
+<?php
+// View Cart (unless final step/order placed)
+include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/cart/cart_view.inc.phtml');
+?>
+
+<?php
+$pageJavaScript[] = "
+    
+<script type='text/javascript'>
+    $(document).ready(function() {
+
+        // Billing Method Selected
+        $('.billingMethodSelect').click(function() {
+            var ID = $(this).attr('id');
+            $('#billingMethodID' + ID).click();
+        });
+        $('.billingMethod').click(function() {
+            var ID = $(this).val();
+            $('.billingAddress').addClass('hidden');
+            
+            // Auto-select matching billing address ID
+            $('#billingAddressID' + ID).prop('checked', true)
+            $('#billingAddressID' + ID).removeClass('hidden');
+            $('#billingAddressDivID' + ID).removeClass('hidden');
+            
+            $('#customerCheckoutStep1Msg').addClass('hidden');
+            $('#customerCheckoutStep2').removeClass('hidden');
+
+            $('.shippingAddress:checked').change();
+        });
+
+        // Shipping Address Selected
+        $('.shippingAddressSelect').click(function() {
+            var ID = $(this).attr('id');
+            $('#shippingAddressID' + ID).click();
+        });
+        
+        $('.shippingAddress').change(function() {
+            var shipID = $(this).val();
+            $('#customerCheckoutStep2Msg').addClass('hidden');
+            $('#customerCheckoutStep3').removeClass('hidden');
+            $('.shippingAddressDiv').removeClass('alert-success');
+            $('#shippingAddressID' + shipID + 'Div').addClass('alert-success');
+
+            // Re-calculate Tax/Total based off Shipping Address
+            
+            var go = $.ajax({
+                type: 'POST',
+                url: '" . cartPublicUrl . "?p=checkout',
+                data: {m: 'ajax',
+                    p: 'checkout',
+                    a: 'calculateTotal',
+                    shippingAddressID: shipID
+                }
+            })
+            .done(function(results) {
+                $('#customerCheckoutSummaryDynamic').html(results);
+            })
+            .fail(function(msg) {
+                alert('Error: ' + msg);
+            })
+            .always(function() {
+            });
+        });
+
+        $('#cart_checkout_review_tos_agree_checkbox').click(function() {
+            $('#customerCheckoutStep3Msg').addClass('hidden');
+        });
+
+        // Place Order
+        $('#cart_place_order_btn').click(function() {
+            $('#cart_place_order_btn').hide();
+            $('#cart_place_order_btn_loading').removeClass('hidden');
+            var shipID = $('input[name=shippingAddress]:checked', '#customerCheckoutForm').val();
+            var pmID = $('input[name=billingMethod]:checked', '#customerCheckoutForm').attr('id');
+            var regex = /(\d+)/;
+            pmID = pmID.match(regex)[0];
+            $('#cart_view_container').addClass('hidden');
+            $('#customerCheckoutResults').html('<div class=\'alert alert-info span5 offset2\'><h4><i class=\'icon-info-sign\'></i>&nbsp;Please wait...</h4> Do <strong>NOT</strong> refresh or close your browser at this time.</div><div class=\'span5 offset2 text-center\'><img src=\'img/loading6.gif\'></div>');
+            var go = $.ajax({
+                type: 'POST',
+                url: '" . cartPublicUrl . "?p=checkout',
+                data: {m: 'ajax',
+                    p: 'checkout',
+                    a: 'placeOrder',
+                    shippingAddressID: shipID,
+                    paymentMethodID: pmID
+                }
+            })
+            .done(function(results) {
+                $('#customerCheckoutResults').html(results);
+            })
+            .fail(function(msg) {
+                alert('Error: ' + msg);
+            })
+            .always(function() {
+            });
+        });
+
+    });
+</script>
+";
+?>

@@ -1,0 +1,101 @@
+<?php
+
+/**
+ * MercuryPay Checkout Processor
+ * 
+ * Variables from checkout.php
+ * 
+ * @uses MercuryPay\preparePreAuthRequest()
+ * @uses MercuryPay\creditTransaction()
+ * @uses MercuryPay\logHistory()
+ */
+// MercuryPay
+$mp   = new killerCart\MercuryPay();
+$soap = $mp->getSoapClient($spg['gatewayURL']);
+
+// Prepare PreAuth Request
+$operatorID = $cart->session['visitorIP'];
+//$operatorID = 'test'; // MToken Test
+$tranType   = 'Credit'; // <TranType> includes Credit, Debit, EBT, FSA, Gift/Prepaid, Loyalty, Admin, Canadian Debit/EMV and CheckAuth.
+$invoiceNo  = $orderID;
+$refNo      = $invoiceNo;
+$memo       = "Goin' Postal Online Cart ".cartVersion;
+$freq       = 'Recurring'; // Recurring|OneTime
+//
+// Not logged in or first time checkout for gp customer
+//
+if (empty($_SESSION['customerID']) || $_SESSION['customerID'] == 'NEW') {
+    $tranCode  = 'PreAuth'; // <TranCode> refers to the actual transactions (such as Sale, Return, Balance, etc.) run under these specific tenders. See Appendix 2 for a complete list of supported Transaction Types and TranCodes.
+    $ccAddress = $cart->session['billing']['AVSAddress'];
+    $ccZip     = $cart->session['billing']['AVSZip'];
+    $xml       = $mp->preparePreAuthRequest($merchantID, $operatorID, $tranType, $tranCode, $invoiceNo, $memo, $freq, $number1,
+                                            $number2, $expMonth, $expYear, $ccAddress, $ccZip, $amount);
+//
+// Is logged in
+//
+} else {
+    $tranCode           = 'PreAuthByRecordNo'; // <TranCode> refers to the actual transactions (such as Sale, Return, Balance, etc.) run under these specific tenders. See Appendix 2 for a complete list of supported Transaction Types and TranCodes.
+    // Get payment method token by pm ID
+    $token              = $mp->getToken($customerID, $paymentMethodID);
+    $paymentMethodToken = $token['recordNo'];
+    $history            = $mp->getPaymentMethodLastCodes($paymentMethodID);
+    $authCode           = $history['authCode'];
+    $acqRefData         = $history['acqRefData'];
+    $xml                = $mp->preparePreAuthRequest($merchantID, $operatorID, $tranType, $tranCode, $invoiceNo, $memo, $freq, NULL,
+                                                     NULL, NULL, NULL, NULL, NULL, $amount, $paymentMethodToken, $authCode, $acqRefData);
+}
+
+// Execute PreAuth Request
+$res = $mp->creditTransaction($soap, $xml, $passphrase);
+
+// Handle PreAuth Response
+$xmlRes             = $mp->convertReponseToXML($res);
+$action             = 'preAuth';
+$returnCode         = $xmlRes->CmdResponse->DSIXReturnCode;
+$returnStatus       = $xmlRes->CmdResponse->CmdStatus;
+$returnTextResponse = $xmlRes->CmdResponse->TextResponse;
+$returnMessage      = $mp->getCmdResponseMsg($xmlRes->CmdResponse->CmdStatus, $xmlRes->CmdResponse->TextResponse);
+$avsResult          = $xmlRes->TranResponse->AVSResult;
+$cvvResult          = $xmlRes->TranResponse->CVVResult;
+$authCode           = $xmlRes->TranResponse->AuthCode; // required for VoidSale, Adjust, VoiceAuth and PreAuthCapture transactions
+$acqRefData         = $xmlRes->TranResponse->AcqRefData; // required for subsequent PreAuthCapture transactions
+$recordNo           = $xmlRes->TranResponse->RecordNo; // Indicates record identifier in current batch. The RecordNo value can be saved and used as a token to process subsequent VoidSaleByRecordNo, VoidReturnByRecordNo and AdjustByRecordNo transactions without using account number data
+$processData        = $xmlRes->TranResponse->ProcessData; // Required for Reversals/Voids
+// Log PreAuth Response
+$mp->logHistory($orderID, $customerID, $paymentMethodID, $action, $amount, $returnCode, $returnStatus, $returnTextResponse,
+                $returnMessage, $avsResult, $cvvResult, $authCode, $acqRefData, $refNo, $processData);
+
+// Complete order if payment approved
+if ($returnStatus == 'Approved') {
+
+    // Log token for successful payment method
+    $mp->logToken($customerID, $paymentMethodID, $freq, $recordNo);
+
+    // If new payment method, now that we have token we can remove all sensitive payment method data from DB
+    if (!empty($number1)) {
+        // Mask all but first 6 of cc number, last 4 is cartd in number3
+        $number1         = substr_replace($number1, '**********', 6);
+        // Get rid of numbers we no longer need:
+        $number2         = '';
+        // Encrypt with cart Public Key for PCI compliance
+        $auth            = new killerCart\Auth();
+        $pubKey          = $auth->getCartUsersPublicKey($cart->session['cartID']);
+        // Encrypt: Number 1
+        $encNumber1      = $auth->encryptData($pubKey, $number1);
+        // Save
+        $paymentMethodID = $cart->savePaymentMethod($cart->session['cartID'], $encNumber1, $number2, $number3, $expMonth, $expYear,
+                                                    $notes, $paymentMethodID);
+    }
+
+    // Authorized Status
+    $orderStatusCode    = 'ATH';
+    $deliveryStatusCode = 'PND';
+} else {
+    // Declined Status
+    $orderStatusCode    = 'DCL';
+    $deliveryStatusCode = 'CNC';
+}
+
+// Record Order
+$cart->recordOrder($customerID, $orderID, $amount, '', $operatorID, $orderStatusCode, $deliveryStatusCode);
+?>

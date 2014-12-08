@@ -1,0 +1,49 @@
+<form id='admin_cart_export' class='form-horizontal' method='POST'>
+    <div id="cartExportModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="cartExportModal" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times</button>
+            <h3 id="cartExportModal">Cart Backup/Export</h3>
+        </div>
+        <div class="modal-body">
+
+            Select what to export:
+            <select name='exportType' id='exportType'>
+                <!--
+                <option value='products' disabled>Products</option>
+                <option value='customers' disabled>Customers</option>
+                <option value='orders' disabled>Orders</option>
+                -->
+                <option value=''>Entire Database</option>
+            </select>
+
+            <iframe id="cartExportDynamic" src="" style="display:none; visibility:hidden;"></iframe>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <input type='hidden' name='m' value='ajax' />
+            <input type="hidden" name="p" value="<?php echo $_REQUEST['p']; ?>" />
+            <input type='hidden' name='a' value='edit_cart' />
+            <input type='hidden' name='ia' value='cartExport' />
+            <input type='hidden' name='s' value='2' />
+            <input type='hidden' name='cartID' value='<?php echo $cartID; ?>' />
+            <button type="button" id='cartExportBtn' class="btn btn-success">
+                <i class='icon-download-alt icon-white'></i>&nbsp;Download
+            </button>
+        </div>
+    </div>
+</form>
+
+<?php
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+
+        $(document).ready(function() {
+            $('#cartExportBtn').click(function() {
+                var type = $('#exportType').val();
+                $('#cartExportDynamic').attr('src','" . cartPublicUrl . "admin/?p=getfile&m=ajax&a=export&type=' + type);
+            });
+        });
+
+    </script>
+";

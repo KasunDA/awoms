@@ -1,0 +1,19 @@
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+/*****=====
+Force vertical scroll bar always to reduce flicker/page shift between page loads
+=====*****/
+html, body {
+    height: 100%;
+    margin: 0 0 1px;
+    padding: 0;
+}
+
+body .modal-admin {
+    width: 80%; /* respsonsive width */
+    margin-left:-40%; /* width/2) */ 
+}

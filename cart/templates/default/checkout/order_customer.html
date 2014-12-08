@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <title>Order Receipt</title>
+    </head>
+    <body>
+        
+        <table border='0' cellpadding='5' cellspacing='0' width='80%'>
+            <tr>
+                <td width='25%'>
+                    <center>
+                        <table border='1' cellpadding='5' cellspacing='0'>
+                            <caption><strong>Order Details</strong></caption>
+                            <tr>
+                                <td><strong>Order Date:</strong></td>
+                                <td>@@orderDateTime@@</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Customer ID:</strong></td>
+                                <td>@@orderCustomerID@@</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Order ID:</strong></td>
+                                <td>
+                                    @@orderID@@
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Order Total:</strong></td>
+                                <td><strong>@@orderTotal@@</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Payment Status:</strong></td>
+                                <td>@@orderPaymentStatus@@</td>
+                            </tr>
+                        </table>
+                    </center>
+                </td>
+                <td width='55%'>
+                    <center>
+                        <table border='1' cellpadding='5' cellspacing='0' width='80%'>
+                            <caption><strong>Order Product Details</strong></caption>
+
+                            <tr>
+                                <th>Product ID</th>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                            </tr>
+
+                            @@orderProductDetailRows@@
+
+                        </table>
+                    </center>
+                </td>
+            </tr>
+        </table>
+
+    </body>
+</html>

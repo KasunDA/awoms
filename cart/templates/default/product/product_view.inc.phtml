@@ -1,0 +1,795 @@
+<?php
+/**
+ * From header.php:
+ * 
+ * $category = killerCart\Product_Category() Class
+ * $c = getCategoryInfo() Results
+ * $product = killerCart\Product() Class
+ * $p = getProductInfo() Results
+ */
+?>
+<div id="product_view_container" class="container">
+<?php
+    // Init Image
+    $image = new killerCart\Image();
+    // Main image dimension limits
+    $maxImgW = 512;
+    $maxImgH = 512;
+    // Thumbnail image dimension limits
+    $maxImgThumbW = 128;
+    $maxImgThumbH = 128;
+    $thumbCols = 4;
+    // Option choices image dimension limits
+    $maxChoiceImgW = 256;
+    $maxChoiceImgH = 256;
+    // Max Option Span
+    $maxSpan = 12;
+    // Max Option Columns
+    $maxOptCols = 1;
+    // Max Choice Columns @todo
+    $maxChcCols = 1;$orig_maxChcCols = $maxChcCols;
+    $maxChcColsImg = 2;
+
+    //
+    // Load images
+    //
+    $p['images'] = $image->getImageParentInfo($p['cartID'], 1, $p['productID']);
+    $showImgs = FALSE;
+    if (!empty($p['images'])) {
+        $i = 0;
+        $thisProductsMaxImgW = 0;
+        $thisProductsMaxImgH = 0;
+        $thisProductsMaxThumbImgW = 0;
+        $thisProductsMaxThumbImgH = 0;
+        $thisProductHasThumbs = 0;
+        $showImgs = array();
+        foreach ($p['images'] as $k => $prodImg) {
+            // Get this img info
+            $img = $image->getImageInfoByID($prodImg['imageID']);
+            // Get best fit for this img
+            $bestFit = $image->getBestFitImage($p['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $maxImgW, $maxImgH);
+            $bestFitThumb = $image->getBestFitImage($p['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $maxImgThumbW, $maxImgThumbH);
+            $productImages[] = array(
+                'imageID' => $img['imageID'],
+                'origWidth' => $img['imageWidth'],
+                'origHeight' => $img['imageHeight'],
+                'origSrc' => cartPublicUrl . "getfile.php?cartID=" . $p['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$img['imageWidth']."&h=".$img['imageHeight'],
+                'bestFitSrc' => cartPublicUrl . "getfile.php?cartID=" . $p['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'],
+                'bestFitWidth' => $bestFit['bestWidth'],
+                'bestFitHeight' => $bestFit['bestHeight'],
+                'bestFitThumbSrc' => cartPublicUrl . "getfile.php?cartID=" . $p['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFitThumb['bestWidth']."&h=".$bestFitThumb['bestHeight'],
+                'bestFitThumbWidth' => $bestFitThumb['bestWidth'],
+                'bestFitThumbHeight' => $bestFitThumb['bestHeight'],
+                'showInCarousel' => $img['showInCarousel'],
+                'showInCarouselThumbs' => $img['showInCarouselThumbs']);
+
+            // New max height?
+            if ((int)$bestFit['bestWidth'] > $thisProductsMaxImgW) {
+                $thisProductsMaxImgW = (int)$bestFit['bestWidth'];
+            }
+            if ((int)$bestFit['bestHeight'] > $thisProductsMaxImgH) {
+                $thisProductsMaxImgH = (int)$bestFit['bestHeight'];
+            }
+            // New max height? (thumb)
+            if ((int)$bestFitThumb['bestWidth'] > $thisProductsMaxThumbImgW) {
+                $thisProductsMaxThumbImgW = (int)$bestFitThumb['bestWidth'];
+            }
+            if ((int)$bestFitThumb['bestHeight'] > $thisProductsMaxThumbImgH) {
+                $thisProductsMaxThumbImgH = (int)$bestFitThumb['bestHeight'];
+            }
+            // Enable thumbs
+            if ($img['showInCarouselThumbs'] == 1)
+            {
+                $thisProductHasThumbs = 1;
+            }
+            $i++;
+        }
+    }
+
+    //
+    // Images (multiple)
+    //
+    $images = '';
+    $imgCount = 0;
+    if (!empty($productImages)
+            && count($productImages) > 1) {
+
+        //
+        // Carousel indicators (per image)
+        //
+        $limit = 40; // just in case...
+        foreach ($productImages as $indimg)
+        {
+            if ($indimg['showInCarousel'] == 1)
+            {
+                $imgCount++;
+            }
+        }
+        if ($imgCount == 0)
+        {
+            $showImgs = FALSE;
+        }
+        
+        //$imgCount = count($productImages);
+        if ($imgCount > $limit) {
+            $stopAt = $limit;
+        } else {
+            $stopAt = $imgCount;
+        }
+        $indicators = '';
+        for ($z=0; $z<$stopAt; $z++) {
+            if ($z == 0) {
+                $active = " class='active'";
+            } elseif ($z == $limit) {
+                break;
+            } else {
+                $active = '';
+            }
+            $indicators .= "<li data-target='#productCarousel' data-slide-to='".$z."'".$active."></li>";
+        }
+
+        //
+        // Carousel items & thumbnails
+        //
+        $active = FALSE;
+        $items = '';
+        $thumbnails = '';
+        $index = 0;
+        $ci = 0;
+        foreach ($productImages as $img) {
+            
+            if ($img['showInCarousel'] != 1)
+            {
+                continue;
+            }
+            
+            // First item is active
+            if ($active === FALSE) {
+                $active = ' active';
+            } else {
+                $active = '';
+            }
+            
+            // Main img
+            $topOffset = ($thisProductsMaxImgH - $img['bestFitHeight'])/2;
+            $items .= "
+                <div class='item".$active."'>
+                    <div class='row'>
+                        <div class='span11 text-center'>
+                            <img style='padding-top:".$topOffset."px' data-src='holder.js/".$img['bestFitWidth']."x".$img['bestFitHeight']."' src='".$img['bestFitSrc']."' />
+                        </div>
+                    </div>
+                </div>";
+            
+            // Thumbnail
+            if ($img['showInCarouselThumbs'] == 1)
+            {
+                if ($ci % $thumbCols == 0
+                        && $ci != 0) {
+                    $ci = 0;
+                    $thumbnails .= "
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='item'>
+                                <div class='row'>
+                                    <div class='span12 text-center'>";
+                }
+                $topOffset = ($thisProductsMaxThumbImgH - $img['bestFitThumbHeight'])/2;
+                $thumbnails .= "
+                                    <div class='span2 text-center' style='padding-top:".$topOffset."px'>
+                                            <input type='image' value='".$index."' class='img-polaroid carouselFrame".$active."' data-src='holder.js/".$img['bestFitThumbWidth'].'x'.$img['bestFitThumbHeight']."' src='".$img['bestFitThumbSrc']."' />
+                                    </div>";
+                $ci++;
+            }
+            
+            $index++;
+        }
+        $images = "
+        <!-- Carousel - Main images -->
+        <div class='container'>
+            <div class='row'>
+                <div id='productCarousel' class='carousel slide span12' style='height:".$thisProductsMaxImgH."px;'>
+
+                    <!-- Indicators -->
+                    <ol class='carousel-indicators'>
+                        ".$indicators."
+                    </ol>
+
+                    <!-- Carousel items -->
+                    <div class='carousel-inner'>
+                        ".$items."
+                    </div>";
+        
+        if ($imgCount > 1)
+        {
+            $images .= "
+                    <!-- Carousel nav -->
+                    <a class='carousel-control left' href='#productCarousel' data-slide='prev'>&lsaquo;</a>
+                    <a class='carousel-control right' href='#productCarousel' data-slide='next'>&rsaquo;</a>";
+        }
+        $images .= "
+                </div>
+            </div>
+        </div>";
+
+        if ($thisProductHasThumbs == 1)
+        {
+            $images .= "
+            <!-- Carousel - Thumbnails -->
+            <div class='container' style='height:".($maxImgThumbH+20)."px'>
+                <div class='row'>
+
+                    <div id='productThumbCarousel' class='carousel slide span12' style='height:".$thisProductsMaxThumbImgH."px;'>
+
+                        <!-- Carousel thumb items -->
+                        <div class='carousel-inner'>
+                            <div class='item active'>
+                                <div class='row'>
+                                    <div class='span9 offset1 text-center'>
+                                        ".$thumbnails."
+                                    </div>
+                                </div>
+                            </div>
+                        </div>";
+            // Do not display arrows if nothing to scroll to
+            if ($imgCount > $thumbCols) {
+                $images .= "
+                        <!-- Carousel thumb nav -->
+                        <a class='carousel-control left' href='#productThumbCarousel' data-slide='prev'>&lsaquo;</a>
+                        <a class='carousel-control right' href='#productThumbCarousel' data-slide='next'>&rsaquo;</a>";
+            }
+            $images .= "
+                    </div>
+                </div>
+            </div>";
+        }
+        $images .= "<div class='clearfix'></div>";
+
+    } elseif (!empty($productImages)
+            && $imgCount == 1) {
+        
+        //
+        // Image (single)
+        //
+        foreach ($productImages as $img) {
+            $topOffset = ($thisProductsMaxImgW - $img['bestFitHeight'])/2;
+            // [ ] Container?
+            $images .= "
+                <div class='row'>
+                    <div class='span12 text-center'>
+                        <div style='padding-top:".$topOffset."px'>
+                            <img data-src='holder.js/".$img['bestFitWidth']."x".$img['bestFitHeight']."' src='".$img['bestFitSrc']."' />
+                        </div>
+                    </div>
+                </div>
+                <div class='clearfix'></div>";
+        }
+    }
+
+    //
+    // Build Options List
+    //
+    $p['options']   = $product->getProductOptionsCustom($p['cartID'], $p['productID']);
+    $optionsList = array();
+    // Check each child for children, construct ordered list with levels
+    for ($i = 0; $i < count($p['options']); $i++) {
+        // Have we completed this ID already?
+        $skip = FALSE;
+        foreach ($optionsList as $o) {
+            if ($o['optionIDCustom'] == $p['options'][$i]['optionIDCustom']) {
+                $skip = TRUE;
+                break;
+            }
+        }
+        // Get Top Level Option Info
+        if ($skip === FALSE) {
+            #echo '<hr />Get Top Level Option Info: '.$options[$i]['optionID'];
+            $level         = 1;
+            #$option = $product->getProductOptions($pInfo['productID'], $options[$i]['optionID']);
+            $optionsList[] = array('level'      => $level,
+                'optionIDCustom'   => $p['options'][$i]['optionIDCustom'],
+                'optionNameCustom' => $p['options'][$i]['optionNameCustom'],
+                'optionType' => $p['options'][$i]['optionType'],
+                'optionBehaviorCustom' => $p['options'][$i]['optionBehaviorCustom'],
+                'optionRequiredCustom' => $p['options'][$i]['optionRequiredCustom']);
+        }
+        // Nested loop checking for all children
+        $optionID    = $p['options'][$i]['optionIDCustom'];
+        while (count($optChildren = $product->getOptionChildrenCustom($optionID)) > 0) {
+            $level++;
+            #$origID = $optionID;
+            foreach ($optChildren as $optChild) {
+                $childID = $optChild['childOptionIDCustom'];
+                // Have we completed this ID already?
+                $skip    = FALSE;
+                foreach ($optionsList as $o) {
+                    if ($o['optionIDCustom'] == $childID) {
+                        $skip = TRUE;
+                        break;
+                    }
+                }
+                if ($skip === TRUE) {
+                    #echo ' - SKIP2: '.$childID;
+                    continue;
+                }
+                // Option Info
+                $thisOption    = $product->getProductOptionsCustom($p['cartID'], $p['productID'], $childID);
+                // Skip inactive options
+                if (empty($thisOption)) {
+                    continue;
+                }
+                $thisOptionParent = $product->getOptionParentCustom($childID);
+                $optionsList[] = array('level'          => $level,
+                    'optionIDCustom'       => $childID,
+                    'optionNameCustom'     => $thisOption['optionNameCustom'],
+                    'optionType'     => $thisOption['optionType'],
+                    'optionBehaviorCustom' => $thisOption['optionBehaviorCustom'],
+                    'optionRequiredCustom' => $thisOption['optionRequiredCustom'],
+                    'optionParentIDCustom' => $thisOptionParent[0]['parentOptionIDCustom']);
+                #echo '<br />--Finished Child ID: '.$childID.' of OptionID: '.$optionID.' parentID: '.$thisOptionParent['parentOptionID'];
+                $optionID      = $childID; // For nested loop, rechecks for children
+            }
+            #echo '<br />--Done with children of '.$origID.'...';
+            $optionID = $childID;
+            #exit;
+            #break;
+        }
+        $level = 1;
+    }
+    
+    //
+    // Construct Options Output
+    //
+    $optionOutput = '';
+    // Option counters
+    $optionCounter = 0;
+    // Column tracker
+    if (!empty($p['productDescriptionPublic'])) {
+        // Remains 0 if only showing 1 opt col max, otherwise moves first options to 2nd col next to desc
+        if ($maxOptCols > 1) {
+            $optionColCounter = 1;
+        } else {
+            $optionColCounter = 0;
+        }
+    } else {
+        $optionColCounter = 0;
+    }
+    $magicSpan = floor($maxSpan / $maxOptCols);
+    foreach ($optionsList as $option) {
+
+        // Option Info
+        #$optionLevel = $option['level'];
+        $optionID = $option['optionIDCustom'];
+        $optionName = $option['optionNameCustom'];
+        $optionType = $option['optionType'];
+        if ($optionType == 'image') {
+            $maxChcCols = $maxChcColsImg; // Image type can override chc col
+        } else {
+            $maxChcCols = $orig_maxChcCols; // Reset to orig
+        }
+        $optionBehavior = $option['optionBehaviorCustom'];
+        $optionRequired = $option['optionRequiredCustom'];
+        if (!empty($optionRequired)) {
+            $optReqVal = ' validateRequired ';
+        } else {
+            $optReqVal = '';
+        }
+        if (!empty($option['optionParentIDCustom'])) {
+            $optionParentID = $option['optionParentIDCustom'];
+        } else {
+            $optionParentID = '';
+        }
+        // Custom Quantity?
+        if (preg_match('/^QUANTITY/', strtoupper($optionName))) {
+            $hasCustomQty = TRUE;
+        }
+        // Parent:
+        $hasParent = FALSE;
+        $hasTrigger = FALSE;
+        // Child: triggers?
+        if (!empty($optionParentID)) {
+            $hasParent = TRUE;
+            // Should this child option be hidden by default? (Does it have triggers?)
+            $optionParentInfo = $product->getOptionParentCustom($optionID);
+            $hasTrigger = FALSE;
+            if (!empty($optionParentInfo)) {
+                $triggers = array();
+                foreach ($optionParentInfo as $parentChoiceInfo) {
+                    // Has Trigger(s) = is hidden
+                    if (!empty($parentChoiceInfo['triggerChoiceIDCustom'])) {
+                        $hasTrigger = TRUE;
+                        $triggers[] = $parentChoiceInfo['triggerChoiceIDCustom'];
+                    }
+                }
+            }
+        }
+
+        //
+        // Options Rows and Columns
+        //
+        if ($optionColCounter % $maxOptCols == 0 // New Option Row
+                || $optionColCounter == 0 // First Option Row
+                && $hasTrigger === FALSE // Is Not Hidden Child
+                ) {
+            $optionOutput .= "
+                <!-- New Option Row: Container -->
+                <div class='container'>
+
+                    <!-- New Option Row: Row -->
+                    <div class='row'>";
+        }
+
+        //
+        // Option Name / Start
+        //        
+        // Hidden?
+        if ($hasTrigger === TRUE) {
+            // Hidden
+            $class = " hidden ";
+            // Each choice ID which toggles this option
+            foreach ($triggers as $t) {
+                $class .= ' triggeredByChoiceID'.$t;
+            }
+            #$class .= implode(' triggeredByChoiceID', $triggers);
+            // Child of optionID X
+            $class .= ' childOption childOfOptionID'.$optionParentID;
+            $optMagicSpan = ($magicSpan-1) / $maxOptCols;
+        } else {
+            // Is parent
+            $class = " parentOption";
+            $optMagicSpan = $magicSpan;
+        }
+        // Start
+        $optionOutput .= "
+            <!-- New Option Col: #".$optionColCounter." -->
+            <div class='span".$optMagicSpan." isOption ".$class."' id='optionID".$optionID."'>";
+
+        // Name
+        $optionOutput .= "<h5><span class='badge'>".$optionName."</span></h5>";
+
+        // Choices
+        $choiceCounter = 0;
+        $choiceColCounter = 0;
+        $choices = $product->getProductOptionsChoicesCustom($optionID);
+        $choiceMagicSpan = floor($optMagicSpan/$maxChcCols);
+        foreach ($choices as $choice) {
+            $out = '';
+            
+            //
+            // Choices Rows and Columns
+            //
+            if ($choiceColCounter % $maxChcCols == 0 // New Choice Row
+                    || $choiceColCounter == 0 // First Choice Row
+                    ) {
+                $out .= "
+                    <!-- New Choice Row: Container -->
+                    <div class='container'>
+
+                        <!-- New Choice Row: Row -->
+                        <div class='row'>";
+            }
+
+            // Begin Choice Column
+            $out .= "
+                <!-- New Choice Col -->
+                <div class='span".$choiceMagicSpan." isChoice' id='choiceID".$choice['choiceIDCustom']."'>";
+
+            // Choice Info
+            $choiceID = $choice['choiceIDCustom'];
+            $choiceValue = $choice['choiceValueCustom'];
+            $choicePrice = $choice['choicePriceCustom'];
+            // Hides choice price if 0
+            if ((float) $choicePrice > 0) {
+                $priceLbl = ' ($' . killerCart\Util::getFormattedNumber($choicePrice) . ')';
+            } else {
+                $priceLbl = '';
+            }
+            $choiceImageID = $choice['choiceImageIDCustom'];
+            // Input based on option Type
+            switch ($optionType) {
+                case "image": {
+                    // Get this img info
+                    $img = $image->getImageInfoByID($choiceImageID);
+                    // Get best fit for this img
+                    $bestFit = $image->getBestFitImage($p['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $maxChoiceImgW, $maxChoiceImgH);
+                    $showImg = array(
+                        'imageID' => $img['imageID'],
+                        'origWidth' => $img['imageWidth'],
+                        'origHeight' => $img['imageHeight'],
+                        'origSrc' => cartPublicUrl . "getfile.php?cartID=" . $p['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$img['imageWidth']."&h=".$img['imageHeight'],
+                        'bestFitSrc' => cartPublicUrl . "getfile.php?cartID=" . $p['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'],
+                        'showWidth' => $bestFit['showWidth'],
+                        'bestFitHeight' => $bestFit['bestHeight']);
+                    $topOffset = (($maxChoiceImgH-50) - $showImg['bestFitHeight'])/2;
+                    //$topOffset = 20;
+                    $out .= "
+                            <div style='padding-top:".$topOffset."px' class='text-center'>
+                                <a href='".$showImg['origSrc']."' target='_blank'>
+                                    <img class='img-polaroid' data-src='holder.js/".$maxChoiceImgW."x".$maxChoiceImgH."' alt='' src='" . $showImg['bestFitSrc'] . "' />
+                                </a>
+                                <br />
+                                <label for='".$choiceID."' class='btn btn-small btnToSelectChoice'>
+                                    <input type='".$optionBehavior."' class='choice".$optReqVal."' id='".$choiceID."' name='option" . $optionID . "Choice[]' value='" . $choiceID . "' />
+                                    ".$choiceValue.$priceLbl."
+                                </label>
+                            </div>";
+                    break;
+                }
+
+                case "text": {
+                    $out .= "<input type='text' class='choice".$optReqVal."' id='".$choiceID."' name='option" . $optionID . "Choice" . $choiceID . "' placeholder='" . $choiceValue . $priceLbl . "' />".$priceLbl . '<br />';
+                    break;
+                }
+
+                case "textarea": {
+                    $out .= "<textarea rows='4' class='choice".$optReqVal."' id='".$choiceID."' name='option" . $optionID . "Choice" . $choiceID . "' title=\"" . htmlspecialchars(killerCart\Util::convertBRToNL($choiceValue), ENT_QUOTES) . "\">".htmlspecialchars(killerCart\Util::convertBRToNL($choiceValue), ENT_QUOTES)."</textarea><br />".$priceLbl . '<br />';
+                    break;
+                }
+
+                case "select": {
+                    // Begin Select
+                    if ($choiceCounter == 0) {
+                        $out .= "<select name='option".$optionID."Choice' class='choice".$optReqVal."'>";
+                    }
+                    // Option
+                    $out .= "<option class='choice' id='".$choiceID."' value='" . $choiceID . "'>" . $choiceValue . $priceLbl . "</option>";
+                    // End Select
+                    if ($choiceCounter == (count($choices)-1)) {
+                        $out .= "</select>" . "<br />";
+                    }
+                    break;
+                }
+
+                case "radio": {
+                    // First required radio = checked by default
+                    if (!empty($optionRequired)
+                            && $choiceCounter === 0) {
+                        $selected = ' clickMeOnLoad';
+                    } else {
+                        $selected = '';
+                    }
+                    $out .= "&nbsp;
+                        <label for='".$choiceID."' class='btn btn-small btnToSelectChoice'>
+                            <input type='radio' class='choice".$optReqVal.$selected."' id='".$choiceID."' name='option" . $optionID . "Choice' value='" . $choiceID . "'>
+                                " . $choiceValue . $priceLbl . '<br />
+                        </label>';
+                    break;
+                }
+
+                case "checkbox": {
+                    $out .= "<input type='checkbox' class='choice".$optReqVal."' id='".$choiceID."' name='option" . $optionID . "Choice[]' value='" . $choiceID . "'> " . $choiceValue . $priceLbl . '<br />';
+                    break;
+                }
+
+                default: {
+                    break;
+                }
+            }
+            
+            // End Choice Column
+            $out .= "
+                <!-- End Choice Col -->
+                </div>";
+
+            //
+            // Rows and Columns
+            //
+            $choiceColCounter++; // Increase choice col counter
+            if ($choiceColCounter % $maxChcCols == 0 // End Choice Row
+                    || $choiceColCounter == count($choices) // Last Choice
+                    ) {
+                $out .= "
+                        </div>
+                        <!-- End Choice Row: Row -->
+
+                    </div>
+                    <!-- End Choice Row: Container -->";
+            }
+            // Increase total choice counter
+            $choiceCounter++;
+            $optionOutput .= $out;
+        }
+
+        // End Option Col
+        $optionOutput .= "
+            </div>
+            <!-- End Option Col -->";
+
+        //
+        // Options Rows and Columns
+        //
+        if ($hasTrigger === FALSE) {
+            $optionColCounter++; // Increase option col counter
+        }
+        if ($optionColCounter % $maxOptCols == 0 // End Option Row
+                && $hasTrigger === FALSE // Is Not Hidden Child
+                || $optionColCounter = count($optionsList) // Last Option
+                ) {
+            $optionOutput .= "
+                    </div>
+                    <!-- End Option Row: Row -->
+                    
+                </div>
+                <!-- End Option Row: Container -->";
+        }
+
+        // Increase total option counter
+        $optionCounter++;
+    }
+
+    //
+    // Form / Output
+    //
+
+    // Images
+    if ($imgCount > 0)
+    {
+        echo $images;
+    }
+?>
+        <div class='clearfix'></div>
+        
+        <!-- Start Product Container -->
+        <div class='container'>
+            <!-- Start Product Row -->
+            <div class='row'>
+                <!-- Product Add to Cart Form -->
+                <form id='addToCart' action='<?php echo cartPublicUrl; ?>' method='POST'>
+                    <input type='hidden' name='p' value='cart' />
+                    <input type='hidden' name='a' value='update_product_in_cart' />
+                    <input type='hidden' name='productID' value='<?php echo $p['productID']; ?>' />
+                    
+<?php
+    // Product Tab Construction
+    $tabs = "<ul class='nav nav-tabs'>";
+    $activeSet = " class='active'";
+    if (!empty($p['productDescriptionPublic']))
+    {
+        $tabs .= "<li".$activeSet."><a href='#productDescription' data-toggle='tab'>Description</a></li>";
+        $activeSet = "";
+    }
+    if (!empty($p['productSpecifications']))
+    {
+        $tabs .= "<li".$activeSet."><a href='#productSpecifications' data-toggle='tab'>Specifications</a></li>";
+        $activeSet = "";
+    }
+    if (!empty($p['productShipping']))
+    {
+        $tabs .= "<li".$activeSet."><a href='#productShipping' data-toggle='tab'>Shipping</a></li>";
+        $activeSet = "";
+    }
+    if (!empty($p['productWarranty']))
+    {
+        $tabs .= "<li".$activeSet."><a href='#productWarranty' data-toggle='tab'>Warranty</a></li>";
+    }
+    $tabs .= "</ul>
+        <!-- Begin Tab Content -->
+        <div class='tab-content'>";
+    
+    // Description (if exists) is either Full magicSpan or span/number of cols
+    $descSpan = $magicSpan;
+    $activeSet = " active";
+    if (!empty($p['productDescriptionPublic'])) {
+        if ($maxOptCols > 1) {
+            $descSpan = $magicSpan / $maxOptCols;
+        }
+        $tabs .= "
+            <!-- Tab: Description -->
+            <div class='tab-pane$activeSet' id='productDescription'>
+                    
+                <!-- Start Desc Col -->
+                <div class='span".$descSpan."'>
+                    ".$p['productDescriptionPublic']."
+                </div>
+                <!-- End Desc Col -->
+                
+                <div class='clearfix'></div>
+                <p>&nbsp;</p>";
+        $activeSet = "";
+        //if ($maxOptCols == 1) {
+            // End Description Row and Container, if only using 1 opt col (and has desc)
+            //echo "<!-- Ending Desc Row/Container as only using 1 opt col --></div></div>";
+        //}
+    }
+
+    //
+    // Product Option Output
+    //
+    if (!empty($optionOutput)) {
+        $tabs .= $optionOutput;
+    }
+
+    if (!empty($p['productDescriptionPublic'])) {
+        $tabs .= "</div>";
+    }
+    if (!empty($p['productSpecifications']))
+    {
+        $tabs .= "<div class='tab-pane$activeSet span12' id='productSpecifications'>" . $p['productSpecifications'] . "</div>";
+        $activeSet = "";
+    }
+    if (!empty($p['productShipping']))
+    {
+        $tabs .= "<div class='tab-pane$activeSet span12' id='productShipping'>" . $p['productShipping'] . "</div>";
+        $activeSet = "";
+    }
+    if (!empty($p['productWarranty']))
+    {
+        $tabs .= "<div class='tab-pane$activeSet span12' id='productWarranty'>" . $p['productWarranty'] . "</div>";
+        $activeSet = "";
+    }
+    
+    $tabs .= "</div><!-- End Tabs -->";
+    
+    echo $tabs;
+    // End Product
+    //if (empty($p['productDescriptionPublic'])) {
+?>
+            </div>
+            <!-- End Product Row -->
+        </div>
+        <!-- End Product Container -->
+
+
+<?php
+    //}
+
+    // Quantity Select List
+    if (empty($hasCustomQty)) {
+        $min_qty = 1;
+        $max_qty = 5;
+        $qtyList = '';
+        for ($i = $min_qty; $i <= $max_qty; $i++) {
+            if ($i == 1) {
+                $selected = ' selected';
+            } else {
+                $selected = '';
+            }
+            // Hides price if 0, or if category/product "Show Price" is disabled
+            if ((float) $p['price'] > 0
+                    && $c['categoryShowPrice'] == 1) {
+                $priceLbl = ' ($' . killerCart\Util::getFormattedNumber($i * $p['price']) . ')';
+            } else {
+                $priceLbl = '';
+            }
+            $qtyList .= "<option value='" . $i . "'" . $selected . ">" . $i . $priceLbl . "</option>";
+        }
+        $quantity = "<select name='productQty' class='span2'>" . $qtyList . "</select>";
+    } else {
+        $quantity = "<input type='hidden' name='productQty' value='1' />";
+    }
+
+?>
+
+        <div class='clearfix'></div>
+
+        <div class='container'>
+            <div class='form-actions row text-center'>
+
+                <!-- Quantity -->
+                <?php echo $quantity; ?>
+
+                <!-- Buy Button -->
+                <br />
+                <button type='submit' class='btn btn-success btn-small'>
+                    <i class='icon-shopping-cart icon-white'></i> Add to Cart
+                </button>
+
+            </div>
+            <!-- End Form Actions -->
+        </div>
+
+                
+    </form>
+    <!-- End this product form -->
+    
+</div>
+<!-- End main container -->
+
+<?php
+$thisDir = dirname(__FILE__);
+$pageJavaScript[] = "<script type='text/javascript'>".
+        str_replace('@cartPublicUrl@',
+                cartPublicUrl,
+                file_get_contents($thisDir.'/product_view.js')
+                )."</script>";

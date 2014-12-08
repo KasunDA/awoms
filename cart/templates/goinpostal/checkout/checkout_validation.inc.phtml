@@ -1,0 +1,330 @@
+<?php
+$pageJavaScript = "
+
+    <script type='text/javascript'>
+        $(document).ready(function() {
+
+            //*********************************//
+            //***** CART CHECKOUT SECTION *****//
+            //*********************************//
+
+            // Checkout :: Detect Card Type
+            $('#paymentNumber1').keyup(function(){
+                if ($('#paymentNumber1').val() == '') {
+
+                    function cardIssuer(name, pattern, logo) {
+                        this.Name = name;
+                        this.Logo = logo;
+                        this.Pattern = pattern;
+                    }
+
+                    // Define card issuers, expressions, logo ID
+                    var issuers = new Array(
+                            new cardIssuer('amex', /^3[47]/, $('.amexLogo')),
+                            new cardIssuer('visa', /^4/, $('.visaLogo')),
+                            new cardIssuer('mastercard', /^5[1-5]/, $('.mastercardLogo')),
+                            new cardIssuer('discover', /^6(?:011|44|5[0-9]{2})/, $('.discoverLogo')) // /^6(?:011|44|5)/
+                            );
+
+                    // Reset Detected Type
+                    for (issuer in issuers) {
+                        issuers[issuer].Logo.css({opacity: 0.25});
+                        issuers[issuer].Logo.css({border: 'none'});
+                    }
+
+                    $('#paymentCardType #unknown').prop('selected', 'selected');
+                    $('#paymentCardType').prop('disabled', false);
+
+                }
+            });
+            
+            // Checkout :: Form Validation Custom Method :: detectAndValidateCreditCard
+            $.validator.addMethod('detectAndValidateCreditCard', function(value, element, param) {
+                var number1 = $(param).val();
+                function cardIssuer(name, pattern, logo) {
+                    this.Name = name;
+                    this.Logo = logo;
+                    this.Pattern = pattern;
+                }
+                // Define card issuers, expressions, logo ID
+                var issuers = new Array(
+                        new cardIssuer('amex', /^3[47]/, $('.amexLogo')),
+                        new cardIssuer('visa', /^4/, $('.visaLogo')),
+                        new cardIssuer('mastercard', /^5[1-5]/, $('.mastercardLogo')),
+                        new cardIssuer('discover', /^6(?:011|44|5[0-9]{2})/, $('.discoverLogo')));
+                // Luhn checksum validator
+                function validateLuhnChecksum(number1) {
+                    if (number1 == 0) {
+                        return false;
+                    }
+                    var sum = 0;
+                    var mul = 1;
+                    for (var x = number1.length; x > 0; x--) {
+                        var tproduct = parseInt(number1.charAt(x - 1), 10) * mul;
+                        if (tproduct >= 10) {
+                            sum += (tproduct % 10) + 1;
+                        } else {
+                            sum += tproduct;
+                        }
+                        if (mul == 1) {
+                            mul++;
+                        } else {
+                            mul--;
+                        }
+                    }
+                    return ((sum % 10) == 0);
+                }
+                // Extra validation from OWASP https://www.owasp.org/index.php/OWASP_Validation_Regex_Repository
+                function owasp(number1) {
+                    var x = /^((4\d{3})|(5[1-5]\d{2})|(6011)|(7\d{3}))-?\d{4}-?\d{4}-?\d{4}|3[4,7]\d{13}$/;
+                    if (x.test(number1)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                // Reset Detected Type
+                for (issuer in issuers) {
+                    issuers[issuer].Logo.css({opacity: 0.25});
+                    issuers[issuer].Logo.css({border: 'none'});
+                }
+                // Highlight Detected Type
+                var unknown = true;
+                for (issuer in issuers) {
+                    if (issuers[issuer].Pattern.test(number1)) {
+                        var unknown = false;
+                        issuers[issuer].Logo.css({opacity: 1.0});
+                        issuers[issuer].Logo.css({border: '1px solid black'});
+                        $('#paymentCardType #' + issuers[issuer].Name).prop('selected', 'selected');
+                        $('#paymentCardType').prop('disabled', true);
+                        $('#paymentCardType').hide();
+                    }
+                }
+                if (unknown === true) {
+                    $('#paymentCardType').prop('disabled', false);
+                    $('#paymentCardType').show();
+                }
+                // Validate Number (Luhn)
+                if (!validateLuhnChecksum(number1)) {
+                    return false;
+                } else {
+                    // Extra validation (OWASP)
+                    if (!owasp(number1)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                    return true;
+                }
+            });
+
+            // Cart Checkout :: Addresses form :: Show billing address form
+            // Cart Checkout :: Addresses form :: Copy Shipping form data to Billing form
+            $('#cart_checkout_addresses_form_billing_is_same_checkbox').change(function() {
+                if (this.checked) {
+                    // Hide Billing Address div
+                    $('#divBillingAddress').removeClass().addClass('hidden');
+                    // Resize Shipping Address div
+                    $('#divShippingAddress').removeClass().addClass('span5 offset2');
+                    // Label Shipping Address
+                    $('#lblShippingAddress').text('Shipping and Billing Address');
+
+                    /* Copy Shipping Values to Billing */
+                    $('#billFirstName').val($('#shipFirstName').val());
+                    $('#billMiddleName').val($('#shipMiddleName').val());
+                    $('#billLastName').val($('#shipLastName').val());
+                    $('#billEmail').val($('#shipEmail').val());
+                    $('#billPhone').val($('#shipPhone').val());
+                    $('#billCountry').val($('#shipCountry').val());
+                    $('#billAddressLine1').val($('#shipAddressLine1').val());
+                    $('#billAddressLine2').val($('#shipAddressLine2').val());
+                    $('#billAddressLine3').val($('#shipAddressLine3').val());
+                    $('#billAddressNotes').val($('#shipAddressNotes').val());
+                    $('#billCity').val($('#shipCity').val());
+                    $('#billState').val($('#shipState').val());
+                    $('#billPostalCode').val($('#shipPostalCode').val());
+
+                    /* Disable Billing fields if Checked */
+                    $('#billFirstName').attr('disabled', 'disabled');
+                    $('#billMiddleName').attr('disabled', 'disabled');
+                    $('#billLastName').attr('disabled', 'disabled');
+                    $('#billEmail').attr('disabled', 'disabled');
+                    $('#billPhone').attr('disabled', 'disabled');
+                    $('#billCountry').attr('disabled', 'disabled');
+                    $('#billAddressLine1').attr('disabled', 'disabled');
+                    $('#billAddressLine2').attr('disabled', 'disabled');
+                    $('#billAddressLine3').attr('disabled', 'disabled');
+                    $('#billAddressNotes').attr('disabled', 'disabled');
+                    $('#billCity').attr('disabled', 'disabled');
+                    $('#billState').attr('disabled', 'disabled');
+                    $('#billPostalCode').attr('disabled', 'disabled');
+                    
+                } else {
+
+                    // Show Billing Address div
+                    $('#divBillingAddress').removeClass().addClass('span5');
+                    // Resize Shipping Address div
+                    $('#divShippingAddress').removeClass().addClass('span5');
+                    // Label Shipping Address
+                    $('#lblShippingAddress').text('Shipping Address');
+
+                    /* Enable fields if Unchecked */
+                    $('#billFirstName').removeAttr('disabled');
+                    $('#billMiddleName').removeAttr('disabled');
+                    $('#billLastName').removeAttr('disabled');
+                    $('#billEmail').removeAttr('disabled');
+                    $('#billPhone').removeAttr('disabled');
+                    $('#billCountry').removeAttr('disabled');
+                    $('#billAddressLine1').removeAttr('disabled');
+                    $('#billAddressLine2').removeAttr('disabled');
+                    $('#billAddressLine3').removeAttr('disabled');
+                    $('#billAddressNotes').removeAttr('disabled');
+                    $('#billCity').removeAttr('disabled');
+                    $('#billState').removeAttr('disabled');
+                    $('#billPostalCode').removeAttr('disabled');
+                }
+            });
+
+            // Cart Checkout :: Step 1 Addresses :: Customer Login Form Validation 
+            $('#frmCustomerLogin').validate({
+                rules: {
+                    errorLabelContainer: '#doesCustomerExistResultsDynamic',
+                    // Create Account (if entered)
+                    newEmail: {
+                        email: true
+                    },
+                    newPassphrase: {
+                        minlength: 8
+                    },
+                    messages: {
+                        newEmail: 'Hey'
+                    }
+                }
+            });
+
+            // Cart Checkout :: Form Validation :: Step 1 Addresses
+            $('#cart_checkout_addresses_form').validate({
+                submitHandler: function(form) {
+                    // Append newEmail/newPassphrase to form if non-empty (as the page contains 2 separate forms for layout we have to merge here)
+                    if ($('#frmCustomerLogin').length) {
+                        var newEmail = $('#newEmail').val();
+                        var newPassphrase = $('#newPassphrase').val();
+                        if (newEmail !== '') {
+                            if (newPassphrase !== '') {
+                                var a = $('#frmCustomerLogin').validate().element('#newEmail');
+                                var b = $('#frmCustomerLogin').validate().element('#newPassphrase');
+                                if (a === false || b === false) {
+                                    return false;
+                                }
+
+                                $('<input>').attr({
+                                    type: 'hidden',
+                                    name: 'newEmail',
+                                    value: newEmail
+                                }).appendTo(form);
+
+                                $('<input>').attr({
+                                    type: 'hidden',
+                                    name: 'newPassphrase',
+                                    value: newPassphrase
+                                }).appendTo(form);
+                            }
+                        }
+                    }
+                    form.submit();
+                },
+                rules: {
+                    // Shipping Fields
+                    shipFirstName: 'required',
+                    shipLastName: 'required',
+                    shipPhone: 'required',
+                    shipCountry: 'required',
+                    shipAddressLine1: 'required',
+                    shipCity: 'required',
+                    shipState: 'required',
+                    shipPostalCode: 'required',
+                    //shipMethod: 'required',
+                    shipEmail: {
+                        required: true,
+                        email: true
+                    },
+                    // Billing Fields
+                    billFirstName: 'required',
+                    billLastName: 'required',
+                    billPhone: 'required',
+                    billCountry: 'required',
+                    billAddressLine1: 'required',
+                    billCity: 'required',
+                    billState: 'required',
+                    billPostalCode: 'required',
+                    billEmail: {
+                        required: true,
+                        email: true
+                    }
+                },
+                messages: {
+                    shipEmail: 'Please enter a valid email address',
+                    billEmail: 'Please enter a valid email address'
+                }
+            });
+
+            // Cart Checkout :: Step 2 Payment Method :: Card Type Selector
+            $('#paymentCardType').hide(); // Is show() when autodetect fails to recognize
+
+            // Cart Checkout :: Form Validation :: Step 2 Payment Method
+            $('#cart_checkout_billing_form').validate({
+                submitHandler: function(form) {
+                    $('#cart_place_order_btn').hide();
+                    $('#cart_place_order_btn_loading').removeClass('hidden');
+                    form.submit();
+                },
+                errorLabelContainer: '#validationMsgs',
+                rules: {
+                    // Payment Method Fields
+                    paymentNumber1: {
+                        required: true,
+                        detectAndValidateCreditCard: '#paymentNumber1',
+                        minlength: 12,
+                        maxlength: 16
+                    },
+                    paymentExpMonth: {
+                        required: true,
+                    },
+                    paymentExpYear: {
+                        required: true,
+                    },
+                    paymentNumber2: {
+                        required: true,
+                        minlength: 3,
+                        maxlength: 4,
+                        digits: true
+                    }
+                },
+                messages: {
+                    paymentNumber1: '*Please enter a valid card number',
+                    paymentExpMonth: '*Please enter a valid 2-digit expiration month',
+                    paymentExpYear: '*Please enter a valid 2-digit expiration year',
+                    paymentNumber2: '*Please enter a valid security code'
+                }
+            });
+
+            // Cart Checkout :: Place Order :: Must agree to Terms of Service
+            $('#cart_checkout_review_tos_agree_checkbox').click(function() {
+                if (this.checked) {
+                    $('#cart_place_order_btn').removeAttr('disabled');
+                } else {
+                    $('#cart_place_order_btn').attr('disabled', 'disabled');
+                }
+            });
+
+            // Cart Checkout :: Customer :: Place Order
+            $('#customerCheckoutForm').validate({
+                rules: {
+                    billingMethod: {
+                        required: true
+                    }
+                }
+            });
+
+        });
+    </script>";

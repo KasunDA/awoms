@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * Offline Checkout Processor
+ * 
+ * Variables from checkout.php
+ * 
+ */
+// Pending Offline Processing
+$orderStatusCode    = 'PND';
+$deliveryStatusCode = 'PND';
+$returnStatus       = 'Offline';
+
+// Record Order
+$cart->recordOrder($customerID, $orderID, $amount, '', $cart->session['visitorIP'], $orderStatusCode, $deliveryStatusCode);
+?>

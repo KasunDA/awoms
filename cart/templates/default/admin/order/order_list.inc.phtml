@@ -1,0 +1,520 @@
+&nbsp;<small>Viewing all orders</small></h1></div>
+
+<h2>Active Orders&nbsp;<small>Pending or authorized transactions</small></h2>
+<?php
+// ACL Check
+if ($_SESSION['groupID'] == 1) {
+    $cartToGet = NULL;
+} else {
+    $cartToGet = $_SESSION['cartID'];
+}
+
+//
+// Active Orders
+//
+$order = new killerCart\Order();
+$os    = $order->getActiveOrders($cartToGet);
+if (empty($os)) {
+    ?>
+    <div class="alert alert-block alert-info span6 offset3">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h4><i class="icon-info-sign"></i>&nbsp;Sorry!</h4>
+        There are no active orders. Click <a href='?p=admin'>here</a> for admin home.
+    </div>
+    <?php
+} else {
+    ?>
+    <!-- Active Orders grid/table view -->
+    <table class='table table-striped table-hover table-condensed'>
+        <tr>
+            <th>Date</th>
+            <th>Order ID</th>
+            <th>Customer ID</th>
+            <th>Order Total</th>
+            <th>Order Status</th>
+            <th>Delivery Status</th>
+            <th>AVS</th>
+            <th>CVV</th>
+        </tr>
+
+        <?php
+        // Each customer order
+        foreach ($os as $o) {
+            $order->id = $o['orderID'];
+
+            // Order Status
+            $osc = $order->getOrderCurrentStatusCode();
+            if (empty($osc)) {
+                $oscClass = 'error';
+                $oscDesc  = 'Incomplete';
+                $oscCode  = 'INC';
+            } else {
+                $oscDesc = $osc['orderStatusDescription'];
+                $oscCode = $osc['orderStatusCode'];
+                if (in_array($oscCode, array('PD', 'CMP'))) {
+                    $oscClass = 'success';
+                    $oscIcon  = 'icon-ok-sign';
+                } elseif (in_array($oscCode, array('ATH', 'ARC'))) {
+                    $oscClass = 'info';
+                    $oscIcon  = 'icon-info-sign';
+                } elseif (in_array($oscCode, array('PND'))) {
+                    $oscClass = 'warning';
+                    $oscIcon  = 'icon-warning-sign';
+                } else {
+                    $oscClass = 'important';
+                    $oscIcon  = 'icon-exclamation-sign';
+                }
+            }
+
+            // Delivery Status
+            $odsc = $order->getOrderCurrentDeliveryStatusCode();
+            if (empty($odsc)) {
+                $odscClass = 'error';
+                $odscDesc  = 'Incomplete';
+                $odscCode  = 'INC';
+            } else {
+                $odscDesc = $odsc['deliveryStatusDescription'];
+                $odscCode = $odsc['deliveryStatusCode'];
+                if (in_array($odscCode, array('SHP', 'CMP'))) {
+                    $odscClass = 'success';
+                    $odscIcon  = 'icon-ok-sign';
+                } elseif (in_array($odscCode, array('RDY', 'SPP', 'ARC'))) {
+                    $odscClass = 'info';
+                    $odscIcon  = 'icon-info-sign';
+                } elseif (in_array($odscCode, array('PND'))) {
+                    $odscClass = 'warning';
+                    $odscIcon  = 'icon-warning-sign';
+                } else {
+                    $odscClass = 'important';
+                    $odscIcon  = 'icon-exclamation-sign';
+                }
+            }
+
+            // @todo Payment Gateway Selector
+            // MercuryPay Results
+            $mp        = new killerCart\MercuryPay();
+            $oh        = $mp->getHistory($o['orderID'], $o['customerID']);
+            $avsResult = $oh['avsResult'];
+            $cvvResult = $oh['cvvResult'];
+            // AVS
+            if (in_array($avsResult, array('Y'))) {
+                $avsClass = 'success';
+                $avsIcon  = 'icon-ok-sign';
+            } else {
+                $avsClass = 'important';
+                $avsIcon  = 'icon-exclamation-sign';
+            }
+            // CVV
+            if (in_array($cvvResult, array('M'))) {
+                $cvvClass = 'success';
+                $cvvIcon  = 'icon-ok-sign';
+            } else {
+                $cvvClass = 'important';
+                $cvvIcon  = 'icon-exclamation-sign';
+            }
+
+            // Output
+            echo "
+                <tr>
+                    <td>" . killerCart\Util::getServerDateTimeFromUTCDateTime($o['dateOrderPlaced']) . "</td>
+                    <td>
+                       <form method='POST'>
+                            <input type='hidden' name='s' value='2' />
+                            <input type='hidden' name='p' value='order' />
+                            <input type='hidden' name='oid' value='" . $o['orderID'] . "' />
+                            <button type='submit' name='a' value='view_customer_order_single' class='btn'>
+                                <i class='" . $oscIcon . "'></i>&nbsp;" . $o['orderID'] . "
+                            </button>
+                        </form>
+                    </td>
+                    <td>
+                        <!-- Button to trigger Impersonate Customer -->
+                        <a class='btn' href='" . cartPublicUrl . "?p=account&customerID=" . $o['customerID'] . "' target='_blank'>
+                            <i class='icon-play'></i>&nbsp;" . $o['customerID'] . "
+                        </a>
+                    </td>
+                    <td>$" . $o['totalOrderPrice'] . "</td>
+                    <td><span class='label label-" . $oscClass . "'><i class='icon-white " . $oscIcon . "'></i>&nbsp;" . $oscDesc . "</span></td>
+                    <td><span class='label label-" . $odscClass . "'><i class='icon-white " . $odscIcon . "'></i>&nbsp;" . $odscDesc . "</span></td>
+                    <td><span class='label label-" . $avsClass . "'><i class='icon-white " . $avsIcon . "'></i>&nbsp;" . $avsResult . "</td>
+                    <td><span class='label label-" . $cvvClass . "'><i class='icon-white " . $cvvIcon . "'></i>&nbsp;" . $cvvResult . "</td>
+                </tr>";
+        } #endforeach:order
+        ?>
+    </table>
+    <?php
+}
+?>
+
+<div class='clearfix'></div>
+<hr />
+<h2>Unsettled Orders&nbsp;<small>Denied or failed transactions</small></h2>
+<?php
+//
+// Unsettled Orders
+//
+$uos = $order->getUnsettledOrders($cartToGet);
+if (empty($uos) || count($uos) < 1) {
+    ?>
+    <div class="alert alert-block alert-info span6 offset3">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h4><i class="icon-info-sign"></i>&nbsp;Sorry!</h4>
+        There are no unsettled orders. Click <a href='?p=admin'>here</a> for admin home.
+    </div>
+    <?php
+} else {
+    ?>
+    <!-- Unsettled Orders grid/table view -->
+    <table class='table table-striped table-hover table-condensed'>
+        <tr>
+            <th>Date</th>
+            <th>Order ID</th>
+            <th>Customer ID</th>
+            <th>Order Total</th>
+            <th>Order Status</th>
+            <th>Delivery Status</th>
+            <th>Status</th>
+            <!-- <th>Code</th> -->
+            <th>Response</th>
+            <th>AVS</th>
+            <th>CVV</th>
+        </tr>
+
+        <?php
+// Each customer order
+        foreach ($uos as $o) {
+            $order->id = $o['orderID'];
+
+            // Order Status
+            $osc = $order->getOrderCurrentStatusCode();
+            if (empty($osc)) {
+                $oscClass = 'error';
+                $oscDesc  = 'Incomplete';
+                $oscCode  = 'INC';
+            } else {
+                $oscDesc = $osc['orderStatusDescription'];
+                $oscCode = $osc['orderStatusCode'];
+                if (in_array($oscCode, array('PD', 'CMP'))) {
+                    $oscClass = 'success';
+                    $oscIcon  = 'icon-ok-sign';
+                } elseif (in_array($oscCode, array('ATH', 'ARC'))) {
+                    $oscClass = 'info';
+                    $oscIcon  = 'icon-info-sign';
+                } elseif (in_array($oscCode, array('PND'))) {
+                    $oscClass = 'warning';
+                    $oscIcon  = 'icon-warning-sign';
+                } else {
+                    $oscClass = 'important';
+                    $oscIcon  = 'icon-exclamation-sign';
+                }
+            }
+
+            // Delivery Status
+            $odsc = $order->getOrderCurrentDeliveryStatusCode();
+            if (empty($odsc)) {
+                $odscClass = 'error';
+                $odscDesc  = 'Incomplete';
+                $odscCode  = 'INC';
+            } else {
+                $odscDesc = $odsc['deliveryStatusDescription'];
+                $odscCode = $odsc['deliveryStatusCode'];
+                if (in_array($odscCode, array('SHP', 'CMP'))) {
+                    $odscClass = 'success';
+                    $odscIcon  = 'icon-ok-sign';
+                } elseif (in_array($odscCode, array('RDY', 'SPP', 'ARC'))) {
+                    $odscClass = 'info';
+                    $odscIcon  = 'icon-info-sign';
+                } elseif (in_array($odscCode, array('PND'))) {
+                    $odscClass = 'warning';
+                    $odscIcon  = 'icon-warning-sign';
+                } else {
+                    $odscClass = 'important';
+                    $odscIcon  = 'icon-exclamation-sign';
+                }
+            }
+
+            // @todo Payment Gateway Selector
+            // MercuryPay Results
+            $mp                 = new killerCart\MercuryPay();
+            $oh                 = $mp->getHistory($o['orderID'], $o['customerID']);
+            $returnStatus       = $oh['returnStatus'];
+            //$returnCode = $oh['returnCode'];
+            $returnTextResponse = $oh['returnTextResponse'];
+            $avsResult          = $oh['avsResult'];
+            $cvvResult          = $oh['cvvResult'];
+            // AVS
+            if (in_array($avsResult, array('Y'))) {
+                $avsClass = 'success';
+                $avsIcon  = 'icon-ok-sign';
+            } else {
+                $avsClass = 'important';
+                $avsIcon  = 'icon-exclamation-sign';
+            }
+            // CVV
+            if (in_array($cvvResult, array('M'))) {
+                $cvvClass = 'success';
+                $cvvIcon  = 'icon-ok-sign';
+            } else {
+                $cvvClass = 'important';
+                $cvvIcon  = 'icon-exclamation-sign';
+            }
+
+            // Output
+            echo "
+        <tr>
+            <td>" . killerCart\Util::getServerDateTimeFromUTCDateTime($o['dateOrderPlaced']) . "</td>
+            <td>
+               <form method='POST'>
+                    <input type='hidden' name='s' value='2' />
+                    <input type='hidden' name='p' value='order' />
+                    <input type='hidden' name='oid' value='" . $o['orderID'] . "' />
+                    <button type='submit' name='a' value='view_customer_order_single' class='btn'>
+                        <i class='" . $oscIcon . "'></i>&nbsp;" . $o['orderID'] . "
+                    </button>
+                </form>
+            </td>
+            <td>
+                <!-- Button to trigger Impersonate Customer -->
+                <a class='btn' href='" . cartPublicUrl . "?p=account&customerID=" . $o['customerID'] . "' target='_blank'>
+                    <i class='icon-play'></i>&nbsp;" . $o['customerID'] . "
+                </a>
+            </td>
+            <td>$" . $o['totalOrderPrice'] . "</td>
+            <td><span class='label label-" . $oscClass . "'><i class='icon-white " . $oscIcon . "'></i>&nbsp;" . $oscDesc . "</span></td>
+            <td><span class='label label-" . $odscClass . "'><i class='icon-white " . $odscIcon . "'></i>&nbsp;" . $odscDesc . "</span></td>
+            <td>" . $returnStatus . "</td>
+            <td>" . $returnTextResponse . "</td>
+            <td><span class='label label-" . $avsClass . "'><i class='icon-white " . $avsIcon . "'></i>&nbsp;" . $avsResult . "</td>
+            <td><span class='label label-" . $cvvClass . "'><i class='icon-white " . $cvvIcon . "'></i>&nbsp;" . $cvvResult . "</td>
+        </tr>";
+        } #endforeach:order
+        ?>
+    </table>
+    <?php
+}
+?>
+
+<div class='clearfix'></div>
+<hr />
+<h2>Settled Orders&nbsp;<small>Paid or completed transactions</small></h2>
+<?php
+//
+// Settled Orders
+//
+$sos = $order->getSettledOrders($cartToGet);
+if (empty($sos) || count($sos) < 1) {
+    ?>
+    <div class="alert alert-block alert-info span6 offset3">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h4><i class="icon-info-sign"></i>&nbsp;Sorry!</h4>
+        There are no settled orders. Click <a href='?p=admin'>here</a> for admin home.
+    </div>
+    <?php
+} else {
+    ?>
+    <!-- Settled Orders grid/table view -->
+    <table class='table table-striped table-hover table-condensed'>
+        <tr>
+            <th>Date</th>
+            <th>Order ID</th>
+            <th>Customer ID</th>
+            <th>Order Total</th>
+            <th>Order Status</th>
+            <th>Delivery Status</th>
+            <th>Status</th>
+            <!-- <th>Code</th> -->
+            <th>Response</th>
+            <th>AVS</th>
+            <th>CVV</th>
+        </tr>
+
+        <?php
+// Each customer order
+        foreach ($sos as $o) {
+            $order->id = $o['orderID'];
+
+            // Order Status
+            $osc = $order->getOrderCurrentStatusCode();
+            if (empty($osc)) {
+                $oscClass = 'error';
+                $oscDesc  = 'Incomplete';
+                $oscCode  = 'INC';
+            } else {
+                $oscDesc = $osc['orderStatusDescription'];
+                $oscCode = $osc['orderStatusCode'];
+                if (in_array($oscCode, array('PD', 'CMP'))) {
+                    $oscClass = 'success';
+                    $oscIcon  = 'icon-ok-sign';
+                } elseif (in_array($oscCode, array('ATH', 'ARC'))) {
+                    $oscClass = 'info';
+                    $oscIcon  = 'icon-info-sign';
+                } elseif (in_array($oscCode, array('PND'))) {
+                    $oscClass = 'warning';
+                    $oscIcon  = 'icon-warning-sign';
+                } else {
+                    $oscClass = 'important';
+                    $oscIcon  = 'icon-exclamation-sign';
+                }
+            }
+
+            // Delivery Status
+            $odsc = $order->getOrderCurrentDeliveryStatusCode();
+            if (empty($odsc)) {
+                $odscClass = 'error';
+                $odscDesc  = 'Incomplete';
+                $odscCode  = 'INC';
+            } else {
+                $odscDesc = $odsc['deliveryStatusDescription'];
+                $odscCode = $odsc['deliveryStatusCode'];
+                if (in_array($odscCode, array('SHP', 'CMP'))) {
+                    $odscClass = 'success';
+                    $odscIcon  = 'icon-ok-sign';
+                } elseif (in_array($odscCode, array('RDY', 'SPP', 'ARC'))) {
+                    $odscClass = 'info';
+                    $odscIcon  = 'icon-info-sign';
+                } elseif (in_array($odscCode, array('PND'))) {
+                    $odscClass = 'warning';
+                    $odscIcon  = 'icon-warning-sign';
+                } else {
+                    $odscClass = 'important';
+                    $odscIcon  = 'icon-exclamation-sign';
+                }
+            }
+
+            // @todo Payment Gateway Selector
+            // MercuryPay Results
+            $mp                 = new killerCart\MercuryPay();
+            $oh                 = $mp->getHistory($o['orderID'], $o['customerID']);
+            $returnStatus       = $oh['returnStatus'];
+            //$returnCode = $oh['returnCode'];
+            $returnTextResponse = $oh['returnTextResponse'];
+            $avsResult          = $oh['avsResult'];
+            $cvvResult          = $oh['cvvResult'];
+            // AVS
+            if (in_array($avsResult, array('Y'))) {
+                $avsClass = 'success';
+                $avsIcon  = 'icon-ok-sign';
+            } else {
+                $avsClass = 'important';
+                $avsIcon  = 'icon-exclamation-sign';
+            }
+            // CVV
+            if (in_array($cvvResult, array('M'))) {
+                $cvvClass = 'success';
+                $cvvIcon  = 'icon-ok-sign';
+            } else {
+                $cvvClass = 'important';
+                $cvvIcon  = 'icon-exclamation-sign';
+            }
+
+            // Output
+            echo "
+        <tr>
+            <td>" . killerCart\Util::getServerDateTimeFromUTCDateTime($o['dateOrderPlaced']) . "</td>
+            <td>
+               <form method='POST'>
+                    <input type='hidden' name='s' value='2' />
+                    <input type='hidden' name='p' value='order' />
+                    <input type='hidden' name='oid' value='" . $o['orderID'] . "' />
+                    <button type='submit' name='a' value='view_customer_order_single' class='btn'>
+                        <i class='" . $oscIcon . "'></i>&nbsp;" . $o['orderID'] . "
+                    </button>
+                </form>
+            </td>
+            <td>
+                <!-- Button to trigger Impersonate Customer -->
+                <a class='btn' href='" . cartPublicUrl . "?p=account&customerID=" . $o['customerID'] . "' target='_blank'>
+                    <i class='icon-play'></i>&nbsp;" . $o['customerID'] . "
+                </a>
+            </td>
+            <td>$" . $o['totalOrderPrice'] . "</td>
+            <td><span class='label label-" . $oscClass . "'><i class='icon-white " . $oscIcon . "'></i>&nbsp;" . $oscDesc . "</span></td>
+            <td><span class='label label-" . $odscClass . "'><i class='icon-white " . $odscIcon . "'></i>&nbsp;" . $odscDesc . "</span></td>
+            <td>" . $returnStatus . "</td>
+            <td>" . $returnTextResponse . "</td>
+            <td><span class='label label-" . $avsClass . "'><i class='icon-white " . $avsIcon . "'></i>&nbsp;" . $avsResult . "</td>
+            <td><span class='label label-" . $cvvClass . "'><i class='icon-white " . $cvvIcon . "'></i>&nbsp;" . $cvvResult . "</td>
+        </tr>";
+        } #endforeach:order
+        ?>
+    </table>
+    <?php
+}
+?>
+
+<div class='clearfix'></div>
+<hr />
+<h2>Incomplete Orders&nbsp;<small>Incomplete transactions</small></h2>
+<?php
+//
+// Incomplete Orders
+//
+$ios = $order->getIncompleteOrders($cartToGet);
+if (empty($ios) || count($ios) < 1) {
+    ?>
+    <div class="alert alert-block alert-info span6 offset3">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h4><i class="icon-info-sign"></i>&nbsp;Sorry!</h4>
+        There are no incomplete orders. Click <a href='?p=admin'>here</a> for admin home.
+    </div>
+    <?php
+} else {
+    ?>
+    <!-- Settled Orders grid/table view -->
+    <table class='table table-striped table-hover table-condensed'>
+        <tr>
+            <th>Date</th>
+            <th>Order ID</th>
+            <th>Customer ID</th>
+            <th>Order Total</th>
+            <th>Order Status</th>
+            <th>Delivery Status</th>
+        </tr>
+
+        <?php
+// Each customer order
+        foreach ($ios as $o) {
+            $order->id = $o['orderID'];
+
+            // Order Status
+            $oscClass = 'error';
+            $oscDesc  = 'Incomplete';
+            $oscCode  = 'INC';
+            $oscIcon  = 'icon-exclamation-sign';
+
+            // Delivery Status
+            $odscClass = 'error';
+            $odscDesc  = 'Incomplete';
+            $odscCode  = 'INC';
+            $odscIcon  = 'icon-exclamation-sign';
+
+            // Output
+            echo "
+        <tr>
+            <td>" . killerCart\Util::getServerDateTimeFromUTCDateTime($o['dateOrderPlaced']) . "</td>
+            <td>
+               <form action='" . cartPublicUrl . "admin/' method='POST'>
+                    <input type='hidden' name='s' value='2' />
+                    <input type='hidden' name='p' value='order' />
+                    <input type='hidden' name='oid' value='" . $o['orderID'] . "' />
+                    <button type='submit' name='a' value='view_customer_order_single' class='btn'>
+                        <i class='" . $oscIcon . "'></i>&nbsp;" . $o['orderID'] . "
+                    </button>
+                </form>
+            </td>
+            <td>
+                <!-- Button to trigger Impersonate Customer -->
+                <a class='btn' href='" . cartPublicUrl . "?p=account&customerID=" . $o['customerID'] . "' target='_blank'>
+                    <i class='icon-play'></i>&nbsp;" . $o['customerID'] . "
+                </a>
+            </td>
+            <td>$" . $o['totalOrderPrice'] . "</td>
+            <td><span class='label label-" . $oscClass . "'><i class='icon-white " . $oscIcon . "'></i>&nbsp;" . $oscDesc . "</span></td>
+            <td><span class='label label-" . $odscClass . "'><i class='icon-white " . $odscIcon . "'></i>&nbsp;" . $odscDesc . "</span></td>
+        </tr>";
+        } #endforeach:order
+        ?>
+    </table>
+    <?php
+}
+?>

@@ -1,0 +1,29 @@
+<?php
+$limit = 100;
+?>
+<div class='container'>
+    <h2>Log <small>Only showing last <?php echo $limit; ?> messages</small></h2>
+    <table class='table table-condensed table-hover'>
+        <tr>
+            <th>DateTime</th>
+            <th>Cart ID</th>
+            <th>Type</th>
+            <th>Body</th>
+            <th>File</th>
+            <th>Line</th>
+        </tr>
+        <?php
+        $error = new \Errors();
+        foreach ($error->getMessageLog(NULL, $limit) as $log) {
+            echo "<tr>
+                <td><small>" . killerCart\Util::getServerDateTimeFromUTCDateTime($log['messageDateTime']) . "</small></td>
+                <td><small>" . $log['messageCartID'] . "</small></td>
+                <td><small>" . $log['messageType'] . "</small></td>
+                <td><small>" . $log['messageBody'] . "</small></td>
+                <td><small>" . $log['messageFile'] . "</small></td>
+                <td><small>" . $log['messageLine'] . "</small></td>
+            </tr>";
+        }
+        ?>
+    </table>
+</div>

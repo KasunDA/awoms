@@ -1,0 +1,436 @@
+<?php
+// Images
+$image = new killerCart\Image();
+// Max image display dimensions
+$maxImgW = '128';
+$maxImgH = '128';
+$maxOptImgW = '64';
+$maxOptImgH = '64';
+
+// Message: Update Product in Cart
+if (isset($_POST['a']) && $_POST['a'] == "update_product_in_cart") {
+    ?>
+    <div class='container'>
+        <div class="alert alert-block alert-success span5 offset2">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4><i class="icon-ok"></i>&nbsp;Cart updated!</h4>
+            Your cart has been updated successfully!
+        </div>
+    </div>
+    <?php
+}
+?>
+<div id="cart_view_container" class='container'>
+
+    <div class="page-header span10">
+        <?php
+        // Get count of products in cart
+        $total_cart_qty      = 0;
+        $total_cart_subtotal = 0;
+        //$total_cart_tax = 0;
+        if (!empty($cart->products)) {
+            $product         = new killerCart\Product($cart->session['cartID']);
+            $productCategory = new killerCart\Product_Category();
+            foreach ($cart->products as $cp) {
+                $total_cart_qty += $cp['qty'];
+                $total_cart_subtotal += ($cp['price'] * $cp['qty']);
+                //$total_cart_tax = $total_cart_tax + ($cp->taxRate * $cp->qty);
+                // Options Subtotal
+                if (!empty($cp['options'])) {
+                    $total_cart_options = 0;
+                    foreach ($cp['options'] as $tpo) {
+                        $optionID = $tpo['optionID'];
+                        foreach ($cp['options'][$optionID]['choices'] as $tpoc) {
+                            $price = $tpoc['price'];
+                            $total_cart_options += ($cp['qty'] * $price);
+                        }
+                    }
+                    $total_cart_subtotal += $total_cart_options;
+                }
+            }
+        }
+        if ($total_cart_subtotal > 0) {
+            $subTotalPrice = " subtotal ($" . killerCart\Util::getFormattedNumber($total_cart_subtotal) . ")";
+        } else {
+            $subTotalPrice = '';
+        }
+
+        // Adjust Heading if empty
+        if ($total_cart_qty < 1) {
+            echo "<h1>Your Cart <small>Oh no! Your cart is empty!</small></h1>";
+        } else {
+            echo "<h1>Your Cart <small><span class='badge badge-info'>" . $total_cart_qty . "</span> items" . $subTotalPrice . "</small></h1>";
+        }
+        ?>
+    </div>
+    <!--#page-header-->
+
+    <div class='span9'>
+        <?php
+        // Cart Products
+        if ($total_cart_qty > 0) {
+            ?>
+            <table class='table table-hover'>
+                <thead>
+                    <tr>
+                        <th colspan='2'>Product</th>
+                        <th>Quantity</th>
+                        <?php
+                        if ($subTotalPrice != '') {
+                            ?>
+                            <th colspan='2'>Subtotal</th>
+                            <?php
+                        }
+                        ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach ($cart->products as $tp) {
+                        // Load product data
+                        $tpInfo = $product->getProductInfo($tp['id']);
+                        
+                        // Load images
+                        $tpInfo['images'] = $image->getImageParentInfo($tpInfo['cartID'], 1, $tpInfo['productID']);
+                        if (empty($tpInfo['images'])) {
+                            $showImg = FALSE;
+                        } else {
+                            $i = 0;
+                            foreach ($tpInfo['images'] as $k => $img) {
+                                $i++;
+                                // Get best fit for this img
+                                $bestFit = $image->getBestFitImage($tpInfo['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $maxImgW, $maxImgH);
+                                $showImg = array(
+                                    'imageID' => $img['imageID'],
+                                    'origWidth' => $img['imageWidth'],
+                                    'origHeight' => $img['imageHeight'],
+                                    'origSrc' => cartPublicUrl . "getfile.php?cartID=" . $tpInfo['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$img['imageWidth']."&h=".$img['imageHeight'],
+                                    'bestFitSrc' => cartPublicUrl . "getfile.php?cartID=" . $tpInfo['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'],
+                                    'showWidth' => $bestFit['showWidth'],
+                                    'visibility' => $img['showInCarousel']);
+                                // 1st img only
+                                break;
+                            }
+                        }
+                        ?>
+                        <tr>
+                            <td>
+                                <div class='span2 text-center'>
+                                    <?php
+                                    // Product Name & Img
+                                    if (!empty($showImg)) {
+                                        echo "
+                                            <a href='" . cartPublicUrl . "?p=product&productID=" . $tpInfo['productID'] . "'>
+                                                <img class='img-polaroid' data-src='holder.js/".$maxImgW."x".$maxImgH."' alt='' src='" . $showImg['bestFitSrc'] . "' width='".$showImg['showWidth']."' />
+                                            </a>";
+                                    }
+                                    ?>
+                                </div>
+                            </td>
+                            <td>
+                                <?php
+                                // Product Description
+                                echo "<a href='" . cartPublicUrl . "?p=product&productID=" . $tpInfo['productID'] . "'><h6>" . $tpInfo['productName'] . "</h6></a>
+                                <p>" . $tpInfo['productDescriptionPublic'] . "</p>";
+                                $optionsPrice = 0;
+                                if (!empty($tp['options'])) {
+                                    ?>
+                                    <h6>Options:</h6>
+                                    <?php
+                                    foreach ($tp['options'] as $tpo) {
+                                        $optionID   = $tpo['optionID'];
+                                        $optionInfo = $product->getProductOptionsCustom($cart->session['cartID'], $tpInfo['productID'], $optionID);
+                                        $optionName = $optionInfo['optionNameCustom'];
+                                        $optionType = $optionInfo['optionType'];
+                                        echo '<small>' . $optionName . ':</small><ul>';
+                                        foreach ($tp['options'][$optionID]['choices'] as $tpoc) {
+                                            $choiceValue = $tpoc['choiceValue'];
+                                            $out = "<li>";
+                                            // Image
+                                            if ($optionType == 'image') {
+                                                // Get this img info
+                                                $img = $image->getImageInfoByID($tpoc['choiceImageID']);
+                                                // Get best fit for this img
+                                                $bestFit = $image->getBestFitImage($tpInfo['cartID'], $tpoc['choiceImageID'], $img['imageWidth'], $img['imageHeight'], $maxOptImgW, $maxOptImgH);
+                                                $showImg = array(
+                                                    'imageID' => $img['imageID'],
+                                                    'origWidth' => $img['imageWidth'],
+                                                    'origHeight' => $img['imageHeight'],
+                                                    'origSrc' => cartPublicUrl . "getfile.php?cartID=" . $tpInfo['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$img['imageWidth']."&h=".$img['imageHeight'],
+                                                    'bestFitSrc' => cartPublicUrl . "getfile.php?cartID=" . $tpInfo['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'],
+                                                    'showWidth' => $bestFit['showWidth'],
+                                                    'visibility' => $img['showInCarousel']);
+                                                $choiceValue = "
+                                                    <img class='img-polaroid' data-src='holder.js/" . $maxOptImgW . "x" . $maxOptImgH . "' alt='' src='" . $showImg['bestFitSrc'] . "' width='".$showImg['showWidth']."' />
+                                                    <br />
+                                                    ".$choiceValue;
+                                            } elseif ($optionType == 'textarea') {
+                                                // Textarea
+                                                $choiceValue = killerCart\Util::convertNLToBR($choiceValue);
+                                            }
+                                            // Price
+                                            $price = $tpoc['price'];
+                                            $optionsPrice += $price;
+                                            if ($price > 0) {
+                                                $price = " ($" . $price . ")";
+                                            } else {
+                                                $price = '';
+                                            }
+                                            // Output
+                                            $out .= $choiceValue . $price . '</li>';
+                                            echo $out;
+                                        }
+                                        echo '</ul>';
+                                    }
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <div class='span1'>
+                                    <!-- Select Quantity -->
+                                    <form id="frmProductId<?php echo $tpInfo['productID']; ?>" action="<?php echo cartPublicUrl; ?>" method="POST">
+                                        <input type="hidden" name="p" value="cart" />
+                                        <input type="hidden" name="a" value="update_product_in_cart" />
+                                        <select name='productQty' class="span1">
+                                            <?php
+                                            $min_qty = 1;
+                                            $max_qty = 5;
+                                            for ($i = $min_qty; $i <= $max_qty; $i++) {
+                                                if ($i == $tp['qty']) {
+                                                    $selected = ' selected';
+                                                } else {
+                                                    $selected = '';
+                                                }
+
+                                                $thisSubTotal = $i * ($optionsPrice + $tpInfo['price']);
+                                                if ($thisSubTotal > 0) {
+                                                    $price = " ($" . killerCart\Util::getFormattedNumber($thisSubTotal) . ")";
+                                                } else {
+                                                    $price = '';
+                                                }
+                                                echo "<option value='" . $i . "'" . $selected . ">" . $i . $price . "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                </div>
+                            </td>
+                            <?php
+                            if ($subTotalPrice != '') {
+                                ?>
+                                <td>
+                                    <div class='span1'>
+                                        <!-- Item Subtotal -->
+                                        <?php
+                                        // Show Price?
+                                        // Product Category Info
+                                        $tpCat = $productCategory->getCategoryInfo($tpInfo['categoryID']);
+                                        if (!empty($tpCat['categoryShowPrice'])) {
+                                            echo '$' . killerCart\Util::getFormattedNumber($tp['qty'] * $tpInfo['price']);
+                                            if (!empty($optionsPrice)) {
+                                                echo '<br />+<br />';
+                                                echo '$' . killerCart\Util::getFormattedNumber($tp['qty'] * $optionsPrice);
+                                                echo '<br />=<br />';
+                                                echo '$' . killerCart\Util::getFormattedNumber($tp['qty'] * ($optionsPrice + $tpInfo['price']));
+                                            }
+                                        } else {
+                                            echo '';
+                                        }
+                                        ?>
+                                    </div>
+                                </td>
+                                <?php
+                            }
+                            ?>
+                            <td>
+                                <!-- Update Item Button -->
+                                <button name='productID' type='submit' class='btn btn-primary btn-small' value='<?php echo $tpInfo['productID']; ?>'>
+                                    <i class='icon-refresh icon-white'></i>
+                                </button>
+                                </form>
+
+                                <br /><br />
+                                <!-- Remove Item Button -->
+                                <form id="frmProductId<?php echo $tpInfo['productID']; ?>" action="<?php echo cartPublicUrl; ?>" method="POST">
+                                    <input type="hidden" name="p" value="cart" />
+                                    <input type="hidden" name="a" value="update_product_in_cart" />
+                                    <input type="hidden" name="productQty" value="0" />
+                                    <button name='productID' type='submit' class='btn btn-small' value='<?php echo $tpInfo['productID']; ?>'>
+                                        <i class='icon-remove'></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <?php
+                    } #endforeach:product
+                    ?>
+                </tbody>
+            </table>
+
+            <?php
+            if ($total_cart_subtotal > 0) {
+                ?>
+                <table class='table table-condensed'>
+                    <!-- Subtotal -->
+                    <tr>
+                        <td class='span8'>
+                            <div class='text-right'>
+                                <strong>Subtotal:</strong>
+                            </div>
+                        </td>
+                        <td class='span1'>
+                        </td>
+                        <td class='span2'>
+                            <?php
+                            echo "$" . killerCart\Util::getFormattedNumber($total_cart_subtotal);
+                            ?>
+                        </td>
+                        <td class='span3'></td>
+                    </tr>
+                    <?php
+// Only show tax/shipping/total after address is received and initial order created in DB, and tax applies!
+// Also hides checkout button on bottom if in checkout process
+                    if (
+                            (!empty($_REQUEST['p']) && $_REQUEST['p'] == 'checkout') && ((!empty($_POST['submitted']) && $_POST['submitted']
+                            == 2) ||
+                            (!empty($_POST['a']) && $_POST['a'] == 'placeOrder'))
+                    ) {
+                        $order   = new killerCart\Order();
+                        $taxRate = $order->getOrderTaxRate($cart->session['cartID'], $cart->session['orderID']);
+                        if ($taxRate == '0.00') {
+                            $taxable = NULL;
+                            $tax     = NULL;
+                        } else {
+                            $taxable = $order->getOrderTaxableAmount($cart->session['orderID']);
+                            $tax     = $order->calcOrderTax($cart->session['cartID'], $cart->session['orderID']);
+                        }
+                        ?>
+                        <!-- Taxable amount -->
+                        <tr>
+                            <td>
+                                <div class='text-right'>
+                                    <strong>Taxable:</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <a href='#' class='tooltip-on' data-toggle='tooltip' title='Some products may not be taxable'>
+                                    <i class='icon-question-sign'></i>
+                                </a>
+                            </td>
+                            <td>
+                                <?php
+                                if (empty($taxable)) {
+                                    echo 'N/A';
+                                } else {
+                                    echo '$' . $taxable;
+                                }
+                                ?>
+                            </td>
+                            <td></td>
+                        </tr>
+
+                        <!-- Tax -->
+                        <tr>
+                            <td>
+                                <div class='text-right'>
+                                    <strong>Tax:</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <a href='#' class='tooltip-on' data-toggle='tooltip' title='Tax is only applied for select states'>
+                                    <i class='icon-question-sign'></i>
+                                </a>
+                            </td>
+                            <td>
+                                <?php
+                                if (empty($tax)) {
+                                    echo 'N/A';
+                                } else {
+                                    echo '$' . $tax . ' (' . $taxRate . '%)';
+                                }
+                                ?>
+                            </td>
+                            <td></td>
+                        </tr>
+
+                        <!-- Shipping and Handling-->
+                        <tr>
+                            <td>
+                                <div class='text-right'>
+                                    <strong>Shipping and Handling:</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <a href='#' class='tooltip-on' data-toggle='tooltip' title='Shipping and Handling is applied after the order is received'>
+                                    <i class='icon-question-sign'></i>
+                                </a>
+                            </td>
+                            <td>Pending</td>
+                            <td></td>
+                        </tr>
+
+                        <!-- Total -->
+                        <tr>
+                            <td>
+                                <div class='text-right'>
+                                    <strong>Total:</strong>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <strong>$<?php
+                                    echo killerCart\Util::getFormattedNumber($total_cart_subtotal + $tax);
+                                    ?></strong>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
+                </table>
+                <?php
+            }
+            ?>
+        </div>
+
+        <div class='clearfix'></div>
+
+        <p>&nbsp;</p>
+
+        <div class="row text-right">
+            <div class='span10'>
+                <a href='<?php echo cartPublicUrl; ?>?p=home' class='btn'>
+                    <i class='icon-tags'></i>&nbsp;Continue Shopping
+                </a>
+                <!-- Checkout Button -->
+                <?php
+                if (
+                        !empty($_REQUEST['p']) && $_REQUEST['p'] == 'checkout'
+                ) {
+                    $checkoutBtn = '';
+                } else {
+                    $checkoutBtn = "
+                        <a href='" . cartPublicUrl . "?p=checkout' class='btn btn-success'>
+                            <i class='icon-gift icon-white'></i>&nbsp;Checkout
+                        </a>";
+                }
+                echo $checkoutBtn;
+                ?>
+                <a href='<?php echo cartPublicUrl; ?>?empty=1' class='btn'>
+                    <i class='icon-trash'></i>&nbsp;Empty Cart
+                </a>
+            </div>
+        </div>
+        <?php
+    } #endif:show cart products
+    else {
+        ?>
+        <div class="row">
+            <div class="span">
+                <a href='<?php echo cartPublicUrl; ?>?p=home' class='btn btn-primary'><i class='icon-tags icon-white'></i>&nbsp;Continue Shopping</a>
+            </div>
+        </div>
+        <?php
+    }
+    ?>
+</div>
+<!--END#cart_view_container-->

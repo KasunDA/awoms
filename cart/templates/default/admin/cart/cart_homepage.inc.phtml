@@ -1,0 +1,222 @@
+Storefront Homepage</small></h2>
+<div id='div_admin_edit_cart_homepage' class='row'>
+
+    <!-- /***** BEGIN: EDIT STORE HOMEPAGE FORM *****/ -->
+    <form id="frm_admin_edit_cart_homepage" class="form-horizontal" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="p" value="<?php echo $_REQUEST['p']; ?>" />
+        <input type='hidden' name='qa' value='storefront_carousel' />
+        <input type='hidden' name='m' value='ajax' />
+        <input type='hidden' name='s' value='2' />
+        <input type='hidden' name='cartID' id="cartID" value='<?php echo $s['cartID']; ?>' />
+        
+        <div class="row">
+          <div class="span7 pull-right">
+            <table class='table table-noborder'>
+              <tr>
+                <td>
+                    <?php
+                    $checked = "";
+                    if ($s['storefrontCarousel'])
+                    {
+                      $checked = " checked";
+                    }
+                    ?>
+                  Show Carousel &nbsp;<input type="checkbox" id="showCarousel" name="showCarousel" value="1"<?php echo $checked; ?>/>
+                </td>
+                <td>
+                  <label class="inline">
+                    <?php
+                    $interval = "";
+                    $car = $cart->getStorefrontCarousel($cartID);
+                    if (!empty($car))
+                    {
+                      $interval = $car['interval'];
+                    }
+                    ?>
+                    Swap Every <input type="text" class='span1' id="carouselInterval" name="carouselInterval" value="<?php echo $interval; ?>"> Seconds
+                  </label>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        
+        <div class='row'>
+          <div class='span12 text-center'>
+            
+            <div class="tabbable tabs-below">
+          
+              <div class="tab-content">
+                
+<?php
+if (!empty($car))
+{
+    for ($i = 1; $i <= 5; $i++)
+    {
+      $active = "";
+      if ($i == 1) { $active = " active"; }
+
+      foreach ($car as $k => $v)
+      {
+        if (!preg_match('/^(slide)(\d)(.*)/', $k, $matches)) { continue; }
+        if ($matches[2] != $i) { continue; }
+        if ($matches[3] == 'ImageID') { $slideImageID = $v; }
+        elseif ($matches[3] == 'Title') { $slideTitle = $v; }
+        elseif ($matches[3] == 'URL') { $slideURL = $v; }
+        elseif ($matches[3] == 'Description') { $slideDescription = $v; }
+      }
+
+      // $bi = bestimage
+      $image = new killerCart\Image();
+      $ti = $image->getImageInfoByID($slideImageID);
+      $parentWidth = $ti['imageWidth'];
+      $parentHeight = $ti['imageHeight'];
+      $desiredWidth = 728;
+      $desiredHeight = 450;
+      $si = $image->getBestFitImage($cartID, $slideImageID, $parentWidth, $parentHeight, $desiredWidth, $desiredHeight);
+      $sisrc = "";
+      if (!empty($si['bestWidth']))
+      {
+          $sisrc = "/getfile.php?cartID=".$cartID."&imageID=".$slideImageID."&w=".$si['bestWidth']."&h=".$si['bestHeight'];
+      }
+?>              
+                <div class="tab-pane<?php echo $active; ?>" id="tab<?php echo $i; ?>">
+                  <div class="row">
+                    <div class="span8">
+                      <input type="hidden" id="slide<?php echo $i; ?>ImageID" name="slide<?php echo $i; ?>ImageID" value="<?php echo $slideImageID; ?>"/>
+                      <img id="storefrontSlide<?php echo $i; ?>"
+                           name="storefrontSlide<?php echo $i; ?>"
+                           class="img-polaroid carouselSlideImg"
+                           data-src="holder.js/728x450"
+                           alt=""
+                           src="<?php echo $sisrc; ?>">
+                    </div>
+                    <div class="span4">
+                      <table class='table table-noborder'>
+                        <tr>
+                          <td colspan="2">
+                            <strong>Slide <?php echo $i; ?> Settings</strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>                            
+                              Title:
+                          </td>
+                          <td>
+                             <input type="text" id="slide<?php echo $i; ?>Title" name="slide<?php echo $i; ?>Title" value="<?php echo $slideTitle; ?>">
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                              URL: 
+                          </td>
+                          <td>
+                            <input type="text" id="slide<?php echo $i; ?>URL" name="slide<?php echo $i; ?>URL" value="<?php echo $slideURL; ?>">
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                              Description:
+                          </td>
+                          <td>
+                            <textarea id='slide<?php echo $i; ?>Description' name='slide<?php echo $i; ?>Description' style='height:200px; width:240px;'><?php echo $slideDescription; ?></textarea>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td>
+                            <button class='btn saveCarouselSettings' type='button'>Save</button>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+<?php
+    }
+} else {
+    echo "<div class='alert alert-error span4 offset3'>Please add Cart Images first</div>";
+}
+?>
+              
+              </div>
+
+              <ul class="nav nav-tabs offset1">
+                
+<?php
+if (!empty($car))
+{
+for ($i = 1; $i <= 5; $i++)
+{
+  $active = "";
+  if ($i == 1) { $active = " active"; }
+  
+  foreach ($car as $k => $v)
+  {
+    if (!preg_match('/^(slide)(\d)(.*)/', $k, $matches)) { continue; }
+    if ($matches[2] != $i) { continue; }
+    if ($matches[3] == 'ImageID') { $slideImageID = $v; }
+    elseif ($matches[3] == 'Title') { $slideTitle = $v; }
+    elseif ($matches[3] == 'URL') { $slideURL = $v; }
+    elseif ($matches[3] == 'Description') { $slideDescription = $v; }
+  }
+  
+  // $bi = bestimage
+  $image = new killerCart\Image();
+  $ti = $image->getImageInfoByID($slideImageID);
+  $parentWidth = $ti['imageWidth'];
+  $parentHeight = $ti['imageHeight'];
+  $desiredWidth = 128;
+  $desiredHeight = 128;
+  $si = $image->getBestFitImage($cartID, $slideImageID, $parentWidth, $parentHeight, $desiredWidth, $desiredHeight);
+  $sisrc = "";
+  if (!empty($si['bestWidth']))
+  {
+      $sisrc = "/getfile.php?cartID=".$cartID."&imageID=".$slideImageID."&w=".$si['bestWidth']."&h=".$si['bestHeight'];
+  }
+
+?>  
+                <li<?php echo $active; ?>>
+                  <a href="#tab<?php echo $i; ?>" data-toggle="tab">
+                    <img class="img-polaroid" data-src="holder.js/128x128" alt="" src="<?php echo $sisrc; ?>">
+                    <br />
+                    Slide <?php echo $i; ?>
+                  </a>
+                </li>
+<?php
+}
+}
+?>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+            <div class="span11 offset1">
+                <p>Homepage Description:</p>
+                <textarea id="homepageDescription" name="homepageDescription" class="span11" rows="20"><?php echo $s['storefrontDescription']; ?></textarea>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-primary saveCarouselSettings" type="button">Save</button>
+        </div>
+    </form>
+    <!-- /***** END: EDIT STORE SECURITY FORM *****/ -->
+
+</div>
+<!--#div_admin_edit_cart_security-->
+
+<?php
+// Upload Modal
+$uploadTitle = 'Choose Image for Slide';
+$fileType = 'image';
+include('upload_slide.php');
+
+$thisDir = dirname(__FILE__);
+$pageJavaScript[] = "<script type='text/javascript'>".
+        str_replace('@cartPublicUrl@',
+        cartPublicUrl,
+        file_get_contents($thisDir.'/cart_homepage.js')
+        )."</script>";
+?>

@@ -1,0 +1,23 @@
+Cart Security</small></h2>
+<div id='div_admin_edit_cart_security' class='row'>
+
+    <!-- /***** BEGIN: EDIT STORE SECURITY FORM *****/ -->
+    <form id="frm_admin_edit_cart" class="form-horizontal" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="p" value="<?php echo $_REQUEST['p']; ?>" />
+        <input type='hidden' name='a' value='edit_cart' />
+        <input type='hidden' name='s' value='2' />
+        <input type='hidden' name='cartID' value='<?php echo $cart->id; ?>' />
+
+        <!-- Inner Action Menu -->
+        <div class='row span12'>
+            <button name='ia' value='security_keys' type='submit' class='btn'>
+                <i class='icon-lock'></i>&nbsp;Encryption Keys
+            </button>
+            <p>&nbsp;</p>
+        </div>
+
+    </form>
+    <!-- /***** END: EDIT STORE SECURITY FORM *****/ -->
+
+</div>
+<!--#div_admin_edit_cart_security-->

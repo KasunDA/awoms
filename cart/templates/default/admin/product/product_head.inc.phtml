@@ -1,0 +1,95 @@
+<div class='container'>
+    <div class="page-header">
+        <h1>Product Management<small>&nbsp;<?php echo "Total (" . $productCount['All'] . "), Active (" . $productCount['Active'] . "), Inactive (" . $productCount['Inactive'] . ")"; ?></small></h1>
+    </div>
+    <div class='row'>
+        <div class='span4'>
+
+            <!-- Button for Product Categories Listing -->
+            <a href="<?php echo cartPublicUrl; ?>admin/?p=product_category" role="button" class="btn" >
+                <i class='icon-folder-open'></i>&nbsp;Product Categories
+            </a>
+
+            <!-- Button to trigger modal -->
+            <a href="#newProductModal" role="button" class="btn" data-toggle="modal">
+                <i class='icon-plus'></i>&nbsp;Add New Product
+            </a>
+        </div>
+        
+        <div class='span8'>
+            
+            <!-- View selection -->
+            <div class='pull-right'>
+                
+                <div class='row'>
+                    <div class='span2'>
+
+                        <div class='btn-group' data-toggle='buttons-checkbox' style='padding-top:5px;'>
+                            <button id='btnActiveView' class='btn btn-mini tooltip-on' value='active' data-toggle='tooltip' title='Active'>
+                                <i class='icon-star'></i>
+                            </button>
+
+                            <button id='btnInactiveView' class='btn btn-mini tooltip-on' value='inactive' data-toggle='tooltip' title='Inactive'>
+                                <i class='icon-star-empty'></i>
+                            </button>
+                        </div>
+
+                        <div class='btn-group' data-toggle='buttons-radio' style='padding-top:5px;'>
+                            <button id='btnThumbView' class='selView btn btn-mini tooltip-on' value='thumb' data-toggle='tooltip' title='Thumbnail View'>
+                                <i class='icon-th-large'></i>
+                            </button>
+
+                            <button id='btnGridView' class='selView btn btn-mini tooltip-on' value='grid' data-toggle='tooltip' title='Grid View'>
+                                <i class='icon-list'></i>
+                            </button>
+                        </div>
+
+                    </div>
+                    
+                    <div class='span6'>
+                        
+                        <div class='input-prepend input-append'>
+                            <span class='add-on tooltip-on' data-toggle='tooltip' title='Product Category Filter'><i class='icon-folder-open'></i></span>
+                            <select id='categoryListResults' disabled>
+                                <option>Loading...</option>
+                            </select>
+                        </div>
+
+                        <div class='input-prepend input-append'>
+                            <span class='add-on tooltip-on' data-toggle='tooltip' title='Product Filter'><i class='icon-search'></i></span>
+                            <input id='productFilter' type='text' class='span2' data-provide='typeahead' autocomplete='off' />
+                            <button class='btn btnFilterResults' type='button' class='btn'>Search</button>
+                        </div>
+                
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+        
+            // Populate Category Select List
+            var go = $.ajax({
+                type: 'POST',
+                data: {m: 'ajax',
+                    p: 'product_category',
+                    a: 'getCategories',
+                    cartID: '".$cartToGet."'}
+            })
+            .done(function(results) {
+                $('#categoryListResults').html(results);
+                $('#categoryListResults').removeAttr('disabled');
+            })
+            .fail(function(msg) {
+                alert('Error:' + msg);
+            })
+            .always(function() {
+            });
+        });
+    </script>";

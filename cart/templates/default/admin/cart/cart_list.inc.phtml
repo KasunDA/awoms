@@ -1,0 +1,109 @@
+<?php
+// Init Cart
+$cart       = new killerCart\Cart($_SESSION['cartID']);
+$cartIDs = $cart->getCartIDs('ACTIVE');
+
+// Init Image
+$image = new killerCart\Image();
+$maxImgW = 256;
+$maxImgH = 256;
+
+// Output display settings
+$cols          = 3; // <-- Columns
+$spanMax       = 12; // <-- Max span width
+// Counters
+$pi            = 0; // Counter
+$ci            = 0; // Column tracker
+$magicColWidth = floor($spanMax / $cols); // Autocalculate span size according to # desired columns (max 12!)
+// Begin constructing output
+$out           = "<div class='container'>";
+
+//
+// Foreach cart
+//
+foreach ($cartIDs as $cartID) {
+
+    //
+    // ACL Check
+    //
+    if (empty($globalACL['read'])) {
+        if ($_SESSION['cartID'] != $cartID['cartID']) {
+            continue;
+        }
+    }
+    
+    // Load info
+    $s = $cart->getCartInfo($cartID['cartID']);
+
+    // Increase counter
+    $ci++;
+    $pi++;
+
+    // New row when reached cols limit above
+    if (($ci - 1) % $cols == 0
+            || ($pi == 1)) {
+        $out .= "
+            <div class='row'>";
+    }
+
+    //
+    // Load images
+    //
+    $s['images'] = $image->getImageParentInfo($s['cartID'], 1);
+    if (empty($s['images'])) {
+        $showImg = FALSE;
+    } else {
+        $i = 0;
+        foreach ($s['images'] as $k => $img) {
+            $i++;
+            // Get best fit for this img
+            $bestFit = $image->getBestFitImage($s['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $maxImgW, $maxImgH);
+            $showImg = cartPublicUrl . "getfile.php?cartID=" . $s['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'];
+            // 1st img only... @todo get 'main logo' type etc.
+            break;
+        }
+    }
+
+    //
+    // New Column / Data
+    //
+    $out .= "
+        <div class='span" . $magicColWidth . "'>
+            <div class='row'>
+                <div class='span" . $magicColWidth . " text-center'>
+                    <a href='?p=cart&a=edit_cart&cartID=".$s['cartID']."'>
+                        <img class='img-polaroid' data-src='holder.js/".$maxImgW."x".$maxImgH."' alt='' src='";
+    if (!empty($showImg)) {
+        $out .= $showImg . "' width='".$bestFit['showWidth'];
+    }
+    $out .= "' />
+                        <h5>".$s['cartName']."</h5>
+                    </a>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='span" . $magicColWidth . " text-left'>
+                    <table class='table table-condensed table-bordered'>
+                        <tr>
+                            <td class='span2'><strong>Theme:</strong></td>
+                            <td>".$s['cartTheme']."</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Notes:</strong></td>
+                            <td>".$s['cartNotes']."</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>";
+
+    // End row when reached cols limit above, or last
+    if (($ci % $cols == 0)
+            || ($pi == count($cartIDs))) {
+        $out .= "</div>";
+        $ci = 0;
+    }   
+}
+$out .= "</div>";
+// Display Output
+echo $out;

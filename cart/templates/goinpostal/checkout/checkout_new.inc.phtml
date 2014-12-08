@@ -1,0 +1,436 @@
+<?php
+//
+// Check if customer exists
+//
+if (!empty($_POST['a']) && $_POST['a'] == 'doesCustomerExist'
+) {
+    // Sanitize & Validate
+    $s    = new killerCart\Sanitize();
+    $args = array('email' => FILTER_VALIDATE_EMAIL);
+    $san  = $s->filterArray(INPUT_POST, $args);
+
+    // Save New Customer Profile
+    $customer = new killerCart\Customer();
+    $r        = $customer->doesCustomerExistByEmail($san['email']);
+    if (empty($r)) {
+        echo "&nbsp;<span class='alert-info'><i class='icon-ok'></i>&nbsp;Available!</span>";
+    } else {
+        echo "&nbsp;<span class='alert-error'><i class='icon-remove-circle'></i>&nbsp;Already Exists</span>";
+    }
+    exit();
+}
+?>
+
+<!--BEGIN#cart_checkout_container-->
+<div id="cart_checkout_container" class="container">
+    <div class="page-header span10">
+        <?php
+        // Page Title
+        if (!empty($_POST['submitted']) && $_POST['submitted'] == 3) {
+            ?>
+            <h1>Order Placed! <small>Thank you so much!</small></h1>
+            <?php
+        } else {
+            ?>
+            <h1>Checkout <small>You're almost done!</small></h1>
+            <?php
+        }
+        ?>
+    </div>
+
+    <?php
+    // Skip nav if final step / order placed / free checkout
+    if (($ct > 0) && (empty($_POST['submitted']) || $_POST['submitted'] != 3)
+    ) {
+        ?>
+        <!--BEGIN#cart_checkout_container_steps-->
+        <div id="cart_checkout_container_steps" class="container">
+            <div class='row'>
+                <div class='span4 offset2'>
+                    <ul class="nav nav-pills">
+                        <li
+                        <?php
+                        if (empty($_POST['submitted']) || $_POST['submitted'] == 1) {
+                            echo " class='active'";
+                        }
+                        ?>>
+                            <a href="<?php echo cartPublicUrl; ?>?p=checkout">Step 1: Shipping & Billing Addresses &rsaquo;&rsaquo;</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class='span3'>
+                    <ul class="nav nav-pills">
+                        <li
+                        <?php
+                        if (!empty($_POST['submitted']) && $_POST['submitted'] == 2) {
+                            echo " class='active'";
+                        } elseif (empty($_POST['submitted']) || $_POST['submitted'] < 2) {
+                            echo " class='disabled'";
+                        }
+                        ?>>
+                            <a href="#">Step 2: Payment Method &rsaquo;&rsaquo;</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!--END#cart_checkout_container_steps-->
+        <?php
+    } #endif:notfinalstep_shownav
+// Step 1: Shipping & Billing Addresses
+    if (empty($_POST['submitted'])) {
+
+        if ($ct > 0) {
+            // Show shipping & billing addresses form
+            include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/checkout/checkout_addresses.inc.phtml');
+        } else {
+            // Free checkout (online purchase / no shipping)
+            //
+            // [x] Create new customer ID
+            // [x] Create order
+            // [x] Save cart to DB
+            // 
+            // Create new customer ID
+            $cart->createCustomerID($cart->session['cartID']);
+            // Saves new customer info associated with new customer ID
+            if (!empty($_SESSION['cInfo']['firstName'])) {
+                $fn = $_SESSION['cInfo']['firstName'];
+            } else {
+                $fn = $_SESSION['cInfo']['username'];
+            }
+            $cart->saveCustomerInfo($cart->session['customerID'], $fn, NULL, NULL, NULL, NULL, NULL, $cart->session['fingerprint'],
+                                    $cart->session['visitorIP']);
+            // Save Email for Receipt
+            //$cart->setEmailTo($_SESSION['cInfo']['email']);
+            // Create order
+            $orderAmount = 0;
+            foreach ($cart->products as $p) {
+                $orderAmount += ($p['qty'] * $p['price']);
+                if (!empty($p['options'])) {
+                    $total_cart_options = 0;
+                    foreach ($p['options'] as $tpo) {
+                        $optionID = $tpo['optionID'];
+                        foreach ($p['options'][$optionID]['choices'] as $tpoc) {
+                            $price = $tpoc['price'];
+                            $total_cart_options += ($p['qty'] * $price);
+                        }
+                    }
+                    $orderAmount += $total_cart_options;
+                }
+            }
+            $orderAmount       = killerCart\Util::getFormattedNumber($orderAmount);
+            $taxableAmount     = 0;
+            $taxAmount         = 0;
+            $deliveryAmount    = 0;
+            $shippingAddressID = NULL;
+            $cart->createOrder($cart->session['customerID'], $shippingAddressID, $orderAmount, $taxableAmount, $taxAmount,
+                               $deliveryAmount);
+            // Save cart to DB
+            $cart->saveSession();
+            // Agree to ToS
+            include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/checkout/checkout_billing.inc.phtml');
+        }
+
+        // Step 2: Billing & Place Order
+        // [x] Sanitize Address Form
+        // [x] Create new Customer ID
+        // [x] Save Customer Profile Information
+        // [x] Create Shipping Address ID
+        // [x] Save Shipping Address in Session
+        // [x] Create Billing Address ID
+        // [x] Save Billing Address in Session
+        // [x] Save Billing Address Customer ID Assocation
+        // [x] Save Shipping Address Customer ID Assocation
+        // [x] Create Order ID from Customer ID and Shipping Address ID
+        // [x] Save Order ID in Session
+    } elseif (!empty($_POST['submitted']) && $_POST['submitted'] == 2) {
+
+        // Sanitize & Validate Address form data
+        $s = new killerCart\Sanitize();
+
+        // Sanitize & Validate Address form data
+        $args = array('shipFirstName'    => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipMiddleName'   => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipLastName'     => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipEmail'        => FILTER_VALIDATE_EMAIL,
+            'shipPhone'        => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipCountry'      => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipAddressLine1' => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipAddressLine2' => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipAddressLine3' => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipAddressNotes' => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipCity'         => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipState'        => FILTER_SANITIZE_SPECIAL_CHARS,
+            'shipPostalCode'   => FILTER_SANITIZE_SPECIAL_CHARS);
+        //'shipMethod'       => FILTER_SANITIZE_SPECIAL_CHARS,
+        // If addresses are not same, add billing validation
+        if (empty($_POST['cart_checkout_addresses_form_billing_is_same_checkbox'])) {
+            $argsB = array('billFirstName'    => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billMiddleName'   => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billLastName'     => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billEmail'        => FILTER_VALIDATE_EMAIL,
+                'billPhone'        => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billCountry'      => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billAddressLine1' => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billAddressLine2' => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billAddressLine3' => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billAddressNotes' => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billCity'         => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billState'        => FILTER_SANITIZE_SPECIAL_CHARS,
+                'billPostalCode'   => FILTER_SANITIZE_SPECIAL_CHARS);
+            $args  = array_merge($args, $argsB);
+        }
+        // Create customer account?
+        if (!empty($_POST['newEmail']) && !empty($_POST['newPassphrase'])) {
+            $args['newEmail']      = FILTER_VALIDATE_EMAIL;
+            $args['newPassphrase'] = FILTER_SANITIZE_SPECIAL_CHARS;
+        }
+
+        // Sanitize
+        if (!$san = $s->filterArray(INPUT_POST, $args)) {
+            return false;
+        }
+
+        // Create new customer ID
+        $cart->createCustomerID($cart->session['cartID']);
+
+        // Saves new customer info associated with new customer ID
+        $cart->saveCustomerInfo($cart->session['customerID'], $san['shipFirstName'], $san['shipMiddleName'], $san['shipLastName'],
+                                $san['shipPhone'], $san['shipEmail'], $san['shipAddressNotes'], $cart->session['fingerprint'],
+                                $cart->session['visitorIP']);
+
+        // Create Shipping Address ID
+        $shippingAddressID = $cart->createAddress($san['shipFirstName'], $san['shipMiddleName'], $san['shipLastName'],
+                                                  $san['shipPhone'], $san['shipEmail'], $san['shipAddressLine1'],
+                                                  $san['shipAddressLine2'], $san['shipAddressLine3'], $san['shipCity'],
+                                                  $san['shipPostalCode'], $san['shipState'], $san['shipCountry'],
+                                                  $san['shipAddressNotes']);
+
+        // Billing Address ID == Shipping Address ID 
+        if (!empty($_POST['cart_checkout_addresses_form_billing_is_same_checkbox'])) {
+
+            // Create Billing Address ID
+            $billingAddressID = $shippingAddressID;
+            // Save Email for Receipt
+            $cart->setEmailTo($san['shipEmail']);
+            // Save AVS in session
+            $regex            = '/\d+/';
+            preg_match($regex, $san['shipAddressLine1'], $matches);
+            $cart->setBillingAVS($matches[0], $san['shipPostalCode']);
+
+            // Create Billing Address ID (unique data)
+        } else {
+            $billingAddressID = $cart->createAddress($san['billFirstName'], $san['billMiddleName'], $san['billLastName'],
+                                                     $san['billPhone'], $san['billEmail'], $san['billAddressLine1'],
+                                                     $san['billAddressLine2'], $san['billAddressLine3'], $san['billCity'],
+                                                     $san['billPostalCode'], $san['billState'], $san['billCountry'],
+                                                     $san['billAddressNotes']);
+            // Save Email for Receipt
+            $cart->setEmailTo($san['billEmail']);
+            // Save AVS in session
+            $regex            = '/\d+/';
+            preg_match($regex, $san['billAddressLine1'], $matches);
+            $cart->setBillingAVS($matches[0], $san['billPostalCode']);
+        }
+
+        // Save billing address ID / AVS to session for payment gateway step
+        $cart->setBillingAddressID($billingAddressID);
+
+        // Save customer address assocation
+        // @todo Address Type
+        $cart->saveCustomerAddress($cart->session['customerID'], $shippingAddressID, 'RES');
+        if ($billingAddressID != $shippingAddressID) {
+            $cart->saveCustomerAddress($cart->session['customerID'], $billingAddressID, 'RES');
+        }
+
+        // Create Customer login?
+        if (!empty($san['newEmail'])) {
+            $customer = new killerCart\Customer();
+            $customer->updateCustomerLogin($cart->session['customerID'], $san['newEmail'], $san['newPassphrase'], TRUE);
+        }
+
+        //
+        // Create Order
+        // 
+        // Order amount
+        $orderAmount = 0;
+        foreach ($cart->products as $p) {
+            $orderAmount += ($p['qty'] * $p['price']);
+            if (!empty($p['options'])) {
+                $total_cart_options = 0;
+                foreach ($p['options'] as $tpo) {
+                    $optionID = $tpo['optionID'];
+                    foreach ($p['options'][$optionID]['choices'] as $tpoc) {
+                        $price = $tpoc['price'];
+                        $total_cart_options += ($p['qty'] * $price);
+                    }
+                }
+                $orderAmount += $total_cart_options;
+            }
+        }
+        $orderAmount = killerCart\Util::getFormattedNumber($orderAmount);
+
+        // Create Order ID
+        $cart->createOrder($cart->session['customerID'], $shippingAddressID, $orderAmount);
+
+        // Update order Tax amount
+        $order   = new killerCart\Order();
+        $taxRate = $order->getOrderTaxRate($cart->session['cartID'], $cart->session['orderID']);
+        if ($taxRate != '0.00') {
+            $taxableAmount = $order->getOrderTaxableAmount($cart->session['orderID']);
+            $taxAmount     = $taxableAmount * ($taxRate / 100);
+            $order->setOrderTaxableAmount($cart->session['orderID'], $taxableAmount);
+            $order->setOrderTotalTax($cart->session['orderID'], $taxAmount);
+            $order->setOrderTotalPrice($cart->session['orderID'], $orderAmount + $taxAmount);
+        }
+
+        // Save cart to DB
+        $cart->saveSession();
+
+        // Show billing form
+        include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/checkout/checkout_billing.inc.phtml');
+
+        // Step 3: Place Order
+        // [x] Sanitize Billing Form
+        // [x] Create new Payment Method ID
+        // [x] Save Payment Method Customer ID Assocation
+        // [x] Save Payment Method Order ID Assocation
+        // [] Payment Gateway -> PreAuth
+    } elseif (!empty($_POST['submitted']) && $_POST['submitted'] == 3) {
+
+        // Process Payment
+        if ($ct > 0) {
+
+            // @todo save to order: $san['shipMethod']
+            // Sanitize & Validate Payment Method
+            $s    = new killerCart\Sanitize;
+            $args = array(
+                'paymentNumber1'  => FILTER_SANITIZE_NUMBER_INT,
+                'paymentNumber2'  => FILTER_SANITIZE_NUMBER_INT,
+                'paymentNumber3'  => FILTER_SANITIZE_NUMBER_INT, // @todo
+                'paymentExpMonth' => FILTER_SANITIZE_NUMBER_INT,
+                'paymentExpYear'  => FILTER_SANITIZE_NUMBER_INT,
+                'paymentCardType' => FILTER_SANITIZE_SPECIAL_CHARS,
+                'paymentNotes'    => FILTER_SANITIZE_SPECIAL_CHARS // @todo
+            );
+            if (!$san  = $s->filterArray(INPUT_POST, $args)) {
+                return false;
+            }
+
+            // Detect card type if not custom
+            if (empty($san['paymentCardType'])) {
+                $type = $cart->detectCreditCardType($san['paymentNumber1']);
+            } else {
+                $type = $san['paymentCardType'];
+            }
+
+            // Get last 4 digits of credit card if applicable
+            if (empty($san['paymentNumber3'])) {
+                $san['paymentNumber3'] = substr($san['paymentNumber1'], -4, 4); // Last 4 plain text
+            }
+
+            // Plain data
+            $number1  = $san['paymentNumber1'];
+            $number2  = $san['paymentNumber2'];
+            $number3  = $san['paymentNumber3'];
+            $expMonth = $san['paymentExpMonth'];
+            $expYear  = $san['paymentExpYear'];
+            $notes    = $san['paymentNotes'];
+
+            // Encrypt with cart Public Key for PCI compliance
+            $cartID     = $cart->session['cartID'];
+            $customerID  = $cart->session['customerID'];
+            $orderID     = $cart->session['orderID'];
+            $auth        = new killerCart\Auth();
+            $pubKey      = $auth->getCartUsersPublicKey($cartID);
+            $encNumber1  = $auth->encryptData($pubKey, $number1);
+            $encNumber2  = $auth->encryptData($pubKey, $number2);
+            $encNumber3  = $auth->encryptData($pubKey, $number3);
+            $encExpMonth = $auth->encryptData($pubKey, $expMonth);
+            $encExpYear  = $auth->encryptData($pubKey, $expYear);
+
+            // Create new Payment Method ID            
+            $paymentMethodID = $cart->savePaymentMethod($cartID, $encNumber1, $encNumber2, $encNumber3, $encExpMonth, $encExpYear,
+                                                        $notes, false);
+
+            // Save Payment Method Customer ID Assocation
+            $cart->saveCustomerPaymentMethod($customerID, $paymentMethodID, $type, $cart->session['billing']['addressID']);
+
+            // Save Payment Method Order ID Assocation
+            $cart->saveOrderPaymentMethodID($customerID, $orderID, $paymentMethodID);
+
+            // Order Total to Charge
+            $order  = new killerCart\Order();
+            $amount = $order->getOrderTotalAmount($orderID);
+
+            // Get carts active Payment Gateway
+            $pg         = new killerCart\PaymentGateway();
+            $pgID       = $pg->getCartsActivePaymentGatewayID($cartID);
+            $spg        = $pg->getPaymentGatewayByID($pgID);
+            $merchantID = $spg['gatewayUsername'];
+            $passphrase = $spg['gatewayPassphrase'];
+
+            //
+            //  Load gateway template to *** complete processing ***
+            //
+            include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/checkout/' . $spg['gatewayTemplate'] . '.phtml');
+        } else {
+            //
+            // Free checkout (no billing)
+            //
+            // Assumed 'Authorized' status, default values
+            $orderStatusCode    = 'ATH';
+            $deliveryStatusCode = 'PND';
+            $cartID            = $cart->session['cartID'];
+            $customerID         = $cart->session['customerID'];
+            $orderID            = $cart->session['orderID'];
+            $operatorID         = $cart->session['visitorIP'];
+            $returnStatus       = 'Approved';
+            // Record Order
+            $cart->recordOrder($customerID, $orderID, 0, '', $operatorID, $orderStatusCode, $deliveryStatusCode);
+        }
+
+        //
+        // Check for and send product alerts
+        //
+        $order = new killerCart\Order();
+        $order->orderProductsEmailAlerts($orderID);
+
+        //
+        // Order was authorized
+        //
+        if ($orderStatusCode == 'ATH') {
+
+            //
+            // Empty Cart (if not in debug mode)
+            //
+            if (!cartDebug) {
+                $cart->emptyCart();
+            }
+
+            //
+            // Sets User Exchange if first time checking out as GP authenticated existing user
+            //
+            if (!empty($_SESSION['customerID']) && $_SESSION['customerID'] == 'NEW') {
+                $_SESSION['customerID'] = $customerID;
+                $customer               = new killerCart\Customer();
+                $customer->updateCustomerLogin($_SESSION['customerID'], $_SESSION['cInfo']['username'], NULL, TRUE);
+            }
+        }
+
+        // Save cart to DB
+        $cart->saveSession();
+
+        // Show order summary
+        include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/checkout/checkout_order.inc.phtml');
+    }
+    ?>
+</div>
+<!--END#cart_checkout_container-->
+
+<?php
+// View Cart (unless final step/order placed)
+if (empty($_POST['submitted']) || $_POST['submitted'] != 3) {
+    include(cartPrivateDir . 'templates/' . $cart->getCartTheme() . '/cart/cart_view.inc.phtml');
+}
+?>

@@ -1,0 +1,204 @@
+<!-- /***** ADD NEW CUSTOMER FORM *****/ -->
+<form id="frm_admin_new_customer" class="form-horizontal" method="POST">
+    <div id="newCustomerModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="newCustomerModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times</button>
+            <h3 id="newCustomerModalLabel">Add New Customer</h3>
+        </div>
+        <div class="modal-body">
+
+            <!-- Dynamic Results -->
+            <div id='customerCreateResultsDynamic'></div>
+
+            <div class='clearfix'></div>
+
+            <!-- Cart Owner -->
+            <div class="control-group">
+                <label class="control-label" for="cartID">Cart Owner</label>
+                <div class="controls">
+                    <select id="cartID" name="cartID">
+                        <?php
+                        $cart = new killerCart\Cart($_SESSION['cartID']);
+                        foreach ($cart->getCartIDs('All') as $k => $v) {
+                            // ACL Check
+                            if ($_SESSION['groupID'] != 1 && ($v['cartID'] != $_SESSION['cartID'])
+                            ) {
+                                continue;
+                            }
+                            $s = $cart->getCartInfo($v['cartID']);
+                            ?>
+                            <option value='<?php echo $s['cartID']; ?>'><?php echo $s['cartName']; ?></option>
+                            <?php
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Group -->
+            <div class="control-group">
+                <label class="control-label" for="groupID">
+                    Group
+                </label>
+                <div class="controls">
+                    <select id='groupID' name='groupID' class='span2'>
+                        <option value='0' selected>General (Public)</option>
+                        <option value='1'>Member (Private)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Name -->
+            <div class="control-group">
+                <label class="control-label" for="firstName">Name</label>
+                <div class="controls">
+                    <input type="text" id="firstName" name="firstName" placeholder="First Name" />
+                    <input type="text" id="lastName" name="lastName" placeholder="Last Name" />
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="control-group">
+                <label class="control-label" for="email">Email</label>
+                <div class="controls">
+                    <input type="text" id="email" name="email" placeholder="Enter Email" /><br />
+                    <input type='checkbox' id='sendEmail' name='sendEmail' />&nbsp;<span class='help-inline'><small>Send email notification?</small></span>
+                </div>
+            </div>
+
+            <!-- Username -->
+            <div class="control-group">
+                <label class="control-label" for="username">Username</label>
+                <div class="controls">
+                    <input type="text" id="username" name="username" placeholder="Enter Username" />
+                </div>
+            </div>
+
+            <!-- Passphrase -->
+            <div class="control-group">
+                <label class="control-label" for="passphrase">Passphrase</label>
+                <div class="controls">
+                    <input type="password" id="passphrase" name="passphrase" placeholder="Enter Passphrase" />
+                    <span class="help-inline">
+                        <a href="#" id='userPassphraseGeneratorBtn' role="button" class="btn" data-toggle="modal"><small>Generate</small></a>
+                    </span>
+                    <!-- Passphrase Generator -->
+                    <div id="userPassphraseGenerator">
+                        <?php
+                        $len = 12;
+                        // Very complex
+                        for ($p = 0; $p <= 3; $p++) {
+                            echo htmlentities(killerCart\Auth::randomPassphrase($len)) . '<br />';
+                            $len--;
+                        }
+                        // A little easier to remember
+                        echo htmlentities(killerCart\Auth::randomPassphrase($len, true)) . '<br />';
+                        echo htmlentities(killerCart\Auth::randomPassphrase($len, true)) . '<br />';
+                        ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Allowed -->
+            <div class="control-group">
+                <label class="control-label" for="loginAllowed">
+                    Login Allowed?
+                </label>
+                <div class="controls">
+                    <select id='loginAllowed' name='loginAllowed' class='span2'>
+                        <option value='1' selected>Enabled</option>
+                        <option value='0'>Disabled</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="control-group">
+                <label class="control-label" for="notes">Notes</label>
+                <div class="controls">
+                    <textarea id="notes" name="notes" placeholder="Enter Notes"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="modal-footer">
+            <button id="createCustomerCloseBtn" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button id="createCustomerBtn" type="button" class="btn btn-success">
+                <i class='icon-ok-sign icon-white'></i>&nbsp;Add New Customer
+            </button>
+        </div>
+
+    </div><!--#div_admin_new_customer-->
+
+</form><!--#frm_admin_new_customer-->
+
+
+<?php
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+        
+            // Form Validator
+            $('#frm_admin_new_customer').validate({
+                rules: {
+                    firstName: 'required',
+                    passphrase: {
+                        minlength: 8
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    }
+                }
+            });
+            
+            // Create Customer
+            $('#createCustomerBtn').click(function() {
+                var v = $('#frm_admin_new_customer').valid();
+                if (v === false) {
+                    return false;
+                }
+                var BTN = $(this);
+                var oldHtml = BTN.html();
+                BTN.prop('disabled', true).html('<i class=\'icon-refresh\'></i>&nbsp;Saving...');
+                var go = $.ajax({
+                    type: 'POST',
+                    url: '" . cartPublicUrl . "admin/?p=customer',
+                    data: {m: 'ajax',
+                        p: 'customer',
+                        a: 'createCustomer',
+                        cartID: $('#cartID').val(),
+                        groupID: $('#groupID').val(),
+                        firstName: $('#firstName').val(),
+                        lastName: $('#lastName').val(),
+                        email: $('#email').val(),
+                        username: $('#username').val(),
+                        passphrase: $('#passphrase').val(),
+                        loginAllowed: $('#loginAllowed').val(),
+                        notes: $('#notes').val()
+                    }
+                })
+                .done(function(results) {
+                    $('#customerCreateResultsDynamic').html(results);
+                    BTN.html('<i class=\'icon-ok icon-white\'></i>&nbsp;Done!');
+                })
+                .fail(function(msg) {
+                    alert('Error: ' + msg);
+                })
+                .always(function() {
+                });
+            });
+            
+            // Admin :: Customer :: New Customer Modal :: Close :: Refresh Page (if needed)
+            $('#createCustomerCloseBtn').click(function() {
+                var refresh = $('#customerCreateResultsDynamic').html();
+                if (refresh != '') {
+                    location.reload();
+                }
+            });
+
+        });
+    </script>
+";

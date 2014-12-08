@@ -1,0 +1,86 @@
+<?php
+// Subcategories
+$subCats       = FALSE;
+$lastSubCatID  = 0;
+// Begin constructing output
+$out           = "
+    <div class='container'>
+        <div class='row'>
+            <div class='span12'>
+                <table class='table table-condensed table-bordered table-striped'>
+                    <tr>
+                        <th>Category Name</th>
+                        <th>Code</th>
+                        <th>Description (Private)</th>
+                        <th>Description (Public)</th>
+                    </tr>";
+//
+// Foreach category
+//
+foreach ($categoryIDs as $categoryID) {
+
+    // Load info
+    $c = $category->getCategoryInfo($categoryID['categoryID']);
+    
+    //
+    // ACL Check: Cart limit
+    //
+    if (empty($globalACL['read'])) {
+        if ($_SESSION['cartID'] != $c['cartID']) {
+            continue;
+        }
+    }
+    
+    // Search array
+    $allCatNames[] = $c['categoryName'];
+
+    // New row for sub-cats / cats separation
+    // If has parent
+    if (!empty($c['parentCategoryID'])) {
+        // Already on subcats, check if same group or new row
+        // If this parent is different from last parent
+        if ($c['parentCategoryID'] != $lastSubCatID) {
+            // New group
+            $parentCategoryInfo = $category->getCategoryInfo($c['parentCategoryID']);
+            $lastSubCatID       = $c['parentCategoryID'];
+            $lastSubCatName     = $parentCategoryInfo['categoryName'];
+            $out .= "<tr><th colspan='4'><h2>" . $lastSubCatName . "&nbsp;<small>Subcategories</small></h2></th></tr>";
+            $subCats            = TRUE;
+        }
+    }
+
+    //
+    // New Column / Data
+    //
+    $out .= "
+            <tr>
+                <td class='span3'>
+                    <a name='categoryID' href='?p=product_category&a=edit_category&categoryID=" . $c['categoryID'] . "'>
+                        <h5>".$c['categoryName']."</h5>
+                    </a>
+                </td>
+                <td class='span1'>
+                    ".$c['categoryCode']."
+                </td>
+                <td class='span4'>";
+    if (!empty($c['categoryDescriptionPrivate'])) {
+        $out .= htmlspecialchars(substr(trim(killerCart\Util::convertBRToNL($c['categoryDescriptionPrivate'])), 0, 100)) . "...";
+        
+    }
+    $out .= "
+                </td>
+                <td class='span4'>";
+    if (!empty($c['categoryDescriptionPublic'])) {
+        $out .= htmlspecialchars(substr(trim(killerCart\Util::convertBRToNL($c['categoryDescriptionPublic'])), 0, 100)) . "...";
+    }
+    $out .= "
+                </td>
+            </tr>";
+}
+$out .= "       </table>
+            </div>
+        </div>
+    </div>";
+
+// Display Output
+echo $out;

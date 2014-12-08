@@ -1,0 +1,57 @@
+<?php
+// Skip prompt if cart is empty
+if (!isset($cart->products) || count($cart->products) < 1) {
+    //	header('Location: ' . cartPublicUrl . '?p=home');
+    //	exit;
+}
+//	Step 1 of 2
+elseif (!isset($_POST['s']) || $_POST['s'] == 1) {
+    ?>
+    <!--BEGIN#cart_empty_container-->
+    <div id="cart_empty_container" class="container">
+        <div class="page-header span12">
+            <h1>Empty Cart <small>Are you sure you want to empty your cart?</small></h1>
+        </div>
+        <div class="row">
+            <div class="span">
+                <form id="frmCartEmptyRequest" action="<?php echo cartPublicUrl; ?>" method="POST">
+                    <p>
+                        <input type='hidden' name='p' value='cart' />
+                        <input type='hidden' name='s' value='3' />
+                        <a href='<?php echo cartPublicUrl; ?>?p=home' class='btn btn-primary'>
+                            <i class='icon-tags icon-white'></i>&nbsp;No, Continue Shopping!
+                        </a>
+                    </p>
+                </form>
+            </div>
+            <div class="span">
+                <form id="frmCartEmptyRequest" action="<?php echo cartPublicUrl; ?>" method="POST">
+                    <p>
+                        <input type='hidden' name='p' value='cart' />
+                        <input type='hidden' name='empty' value='1' />
+                        <input type='hidden' name='s' value='2' />
+                        <button name='a' value='empty_cart' type='submit' class='btn btn-danger submit'>
+                            <i class='icon-trash icon-white'></i>&nbsp;Yes, Empty Cart!
+                        </button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--END#cart_empty_container-->
+    <?php
+    //	Step 2 of 2
+} elseif ($_POST['s'] == 2) {
+    $cart->emptyCart();
+    $cart->saveSession();
+    ?>
+    <div class='container'>
+        <div class="alert alert-block alert-success span5 offset2">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4><i class="icon-ok"></i>&nbsp;Cart emptied!</h4>
+            Your cart has been emptied successfully!
+        </div>
+    </div>
+    <?php
+}
+?>

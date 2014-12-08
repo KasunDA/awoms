@@ -1,0 +1,403 @@
+<!-- Variables from cart.php -->
+Edit Cart</small></h2>
+<div id='div_admin_edit_cart' class='row'>
+
+    <!-- /***** BEGIN: EDIT STORE FORM *****/ -->
+    <form id='frm_admin_edit_cart' class='form-horizontal' method='POST' enctype='multipart/form-data'>
+        <input type='hidden' name='m' value='ajax' />
+        <input type='hidden' name='p' value='<?php echo $_REQUEST['p']; ?>' />
+        <input type='hidden' name='a' value='edit_cart' />
+        <input type='hidden' name='cartID' id='cartID' value='<?php echo $s['cartID']; ?>' />
+        <input type='hidden' name='s' value='2' />
+
+        <!-- Inner Action Menu -->
+        <div class='row span12'>
+            <a href='<?php echo cartPublicUrl; ?>admin/?p=cart&a=edit_cart&cartID=<?php echo $s['cartID']; ?>&ia=security&s=2' type='button' class='btn'>
+                <i class='icon-lock'></i>&nbsp;Cart Security
+            </a>
+            <!-- Button to trigger PaymentGateway modal -->
+            <a href="#newCartPaymentGatewayModal" role="button" class="btn" data-toggle="modal">
+                <i class='icon-leaf'></i>&nbsp;New Payment Gateway
+            </a>
+            <a href='<?php echo cartPublicUrl; ?>admin/?p=user' class='btn'>
+                <i class='icon-user'></i>&nbsp;Cart Users
+            </a>
+            <a href="#cartTaxesModal" role="button" class="btn" data-toggle="modal">
+                <i class='icon-magnet'></i>&nbsp;Taxes
+            </a>
+            <a href='<?php echo cartPublicUrl; ?>admin/?p=cart&a=edit_cart&cartID=<?php echo $s['cartID']; ?>&ia=homepage&s=2' type='button' class='btn'>
+                <i class='icon-home'></i>&nbsp;Storefront Homepage
+            </a>
+            <a href="#cartTermsOfServiceModal" role="button" class="btn" data-toggle="modal">
+                <i class='icon-pencil'></i>&nbsp;Terms of Service
+            </a>
+            <a href="#cartExportModal" role="button" class="btn" data-toggle="modal">
+                <i class='icon-download'></i>&nbsp;Backup/Export Data
+            </a>
+            <p>&nbsp;</p>
+        </div>
+
+        <div class='row'>
+            
+            <!-- Dynamic AJAX Results -->
+            <div id='divCartResults' class='span4 offset3'></div>
+
+            <!-- Left Column -->
+            <div class='span7'>
+
+                <h3>Cart Info</h3>
+
+                <!-- Cart Name -->
+                <div class="control-group">
+                    <label class="control-label" for="cartName">Name</label>
+                    <div class="controls">
+                        <input type="text" id="cartName" name="cartName" value="<?php echo $s['cartName']; ?>">
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="control-group">
+                    <label class="control-label" for="cartStatus">Status</label>
+                    <div class="controls">
+                        <select name='cartStatus'>
+                            <option value='1'<?php
+                            if ($s['cartActive'] == 1) {
+                                echo ' selected';
+                            }
+                            ?>>Active</option>
+                            <option value='0'<?php
+                                    if ($s['cartActive'] == 0) {
+                                        echo ' selected';
+                                    }
+                                    ?>>Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Payment Gateway -->
+                <div class="control-group">
+                    <label class="control-label" for="cartPaymentGateway">Payment Gateway</label>
+                    <div class="controls">
+                        <select name='cartPaymentGateway'>
+                            <option value=''>--Select Payment Gateway--</option>
+                            <?php
+                            if (!empty($cartsPaymentGateways)) {
+                                foreach ($cartsPaymentGateways as $spg) {
+                                    if ($spg['gatewayID'] == $paymentGatewayIDActive) {
+                                        $selected = ' selected';
+                                    } else {
+                                        $selected = '';
+                                    }
+                                    echo "<option value='" . $spg['gatewayID'] . "'" . $selected . ">" . $spg['gatewayName'] . "</option>";
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Theme -->
+                <div class="control-group">
+                    <label class="control-label" for="cartTheme">Theme</label>
+                    <div class="controls">
+                        <input type='text' name='cartTheme' value='<?php echo $s['cartTheme']; ?>'>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="control-group">
+                    <label class="control-label" for="cartNotes">Notes</label>
+                    <div class="controls">
+                        <textarea id="cartNotes" name="cartNotes"><?php echo $s['cartNotes']; ?></textarea>
+                    </div>
+                </div>
+
+                <h3>Cart Contacts</h3>
+
+                <!-- Phone
+                <div class="control-group">
+                    <label class="control-label" for="cartPhone">Phone</label>
+                    <div class="controls">
+                        <input type="text" id="cartPhone" name="cartPhone" placeholder="Phone" value='<?php
+                        //echo $s['cartPhone'];
+                        ?>' />
+                    </div>
+                </div>
+                 -->
+
+                <!-- Orders Email -->
+                <div class="control-group">
+                    <label class="control-label" for="cartEmailOrders">Orders Email</label>
+                    <div class="controls">
+                        <input type="text" id="cartEmailOrders" name="cartEmailOrders" placeholder="orders@ehod.ler" value='<?php echo $s['emailOrders']; ?>' />
+                    </div>
+                </div>
+
+                <!-- Contact Email -->
+                <div class="control-group">
+                    <label class="control-label" for="cartEmailContact">Contact Email</label>
+                    <div class="controls">
+                        <input type="text" id="cartEmailContact" name="cartEmailContact" placeholder="contact@ehod.ler" value='<?php echo $s['emailContact']; ?>' />
+                    </div>
+                </div>
+
+                <!-- Errors Email -->
+                <div class="control-group">
+                    <label class="control-label" for="cartEmailErrors">Errors Email</label>
+                    <div class="controls">
+                        <input type="text" id="cartEmailErrors" name="cartEmailErrors" placeholder="errors@ehod.ler" value='<?php echo $s['emailErrors']; ?>' />
+                    </div>
+                </div>
+
+                <h3>Cart Address</h3>
+                <?php
+                if (empty($address['addressID']))
+                {
+                    $addressID = "NULL";
+                } else {
+                    $addressID = $address['addressID'];
+                }
+                ?>
+                <input type='hidden' name='cartAddressID' value='<?php echo $addressID; ?>' />
+
+                <!-- Country -->
+                <div class="control-group">
+                    <label class="control-label" for="cartCountry">Country</label>
+                    <div class="controls">
+                        <input type="text" id="cartCountry" name="cartCountry" placeholder="Country" value="<?php echo $address['country']; ?>" />
+                    </div>
+                </div>
+
+                <!-- Address Line 1 -->
+                <div class="control-group">
+                    <label class="control-label" for="cartLine1">Address Line 1</label>
+                    <div class="controls">
+                        <input type="text" id="cartLine1" name="cartLine1" placeholder="Address Line 1" value="<?php echo $address['line1']; ?>" />
+                    </div>
+                </div>
+
+                <!-- Address Line 2 -->
+                <div class="control-group">
+                    <label class="control-label" for="cartLine2">Address Line 2</label>
+                    <div class="controls">
+                        <input type="text" id="cartLine2" name="cartLine2" placeholder="Address Line 2" value="<?php echo $address['line2']; ?>" />
+                    </div>
+                </div>
+
+                <!-- Address Line 3 -->
+                <div class="control-group">
+                    <label class="control-label" for="cartLine3">Address Line 3</label>
+                    <div class="controls">
+                        <input type="text" id="cartLine3" name="cartLine3" placeholder="Address Line 3" value="<?php echo $address['line3']; ?>" />
+                    </div>
+                </div>
+
+                <!-- City -->
+                <div class="control-group">
+                    <label class="control-label" for="cartCity">City</label>
+                    <div class="controls">
+                        <input type="text" id="cartCity" name="cartCity" placeholder="City" value="<?php echo $address['city']; ?>" />
+                    </div>
+                </div>
+
+                <!-- State / Province / County -->
+                <div class="control-group">
+                    <label class="control-label" for="cartState">State / Province / County</label>
+                    <div class="controls">
+                        <input type="text" id="cartState" name="cartState" placeholder="State / Province / County" value="<?php echo $address['stateProvinceCounty']; ?>" />
+                    </div>
+                </div>
+
+                <!-- Zip / Postcode -->
+                <div class="control-group">
+                    <label class="control-label" for="cartZip">Zip / Postcode</label>
+                    <div class="controls">
+                        <input type="text" id="cartZip" name="cartZip" placeholder="Zip / Postcode" value="<?php echo $address['zipPostcode']; ?>" />
+                    </div>
+                </div>
+
+                <!-- Address Notes -->
+                <div class="control-group">
+                    <label class="control-label" for="cartAddressNotes">Address Notes</label>
+                    <div class="controls">
+                        <textarea id="cartAddressNotes" name="cartAddressNotes" placeholder="Address Notes"><?php echo $address['addressNotes']; ?></textarea>
+                    </div>
+                </div>
+                
+                <!-- Submit -->
+                <div class="form-actions">
+                    <div class='span6'>
+                        <a href='#top' id='btnSaveCart' type="button" class="btn btn-success"><i class='icon-ok-sign icon-white'></i>&nbsp;Save Cart</a>
+                    </div>
+                </div>
+
+            </div>
+            <!-- End Left Column -->
+
+            <!-- Right Column -->
+            <div class='span5'>
+
+                <!-- Cart Images (Upload modal) -->
+                <div class="control-group">
+                    <h2>Images</h2>
+
+                    <!-- Button to trigger modal -->
+                    <a href="#uploadModal" role="button" class="btn" data-toggle="modal"><i class='icon-plus'></i>&nbsp;Add Images</a>
+                    <?php
+                    // Upload Modal
+                    $uploadTitle = 'Image Upload';
+                    $fileType = 'image';
+                    include('upload.php');
+                    ?>
+
+                    <!-- Cart Images (Existing list) -->
+                    <div class='clearfix'></div>
+                    <?php
+                    $image = new killerCart\Image();
+                    // Max image display dimensions
+                    $maxImgW = '384';
+                    $maxImgH = '384';
+                    // Load images
+                    $s['images'] = $image->getImageParentInfo($s['cartID'], 1);
+                    if (empty($s['images'])) {
+                        $showImgs = FALSE;
+                    } else {
+                        $i = 0;
+                        $showImgs = array();
+                        foreach ($s['images'] as $k => $img) {
+                            $i++;
+                            // Get best fit for this img
+                            $bestFit = $image->getBestFitImage($s['cartID'], $img['imageID'], $img['imageWidth'], $img['imageHeight'], $maxImgW, $maxImgH);
+                            $showImgs[] = array(
+                                'imageID' => $img['imageID'],
+                                'origWidth' => $img['imageWidth'],
+                                'origHeight' => $img['imageHeight'],
+                                'origSrc' => cartPublicUrl . "getfile.php?cartID=" . $s['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$img['imageWidth']."&h=".$img['imageHeight'],
+                                'bestFitSrc' => cartPublicUrl . "getfile.php?cartID=" . $s['cartID'] . "&imageID=" . $img['imageID'] . "&w=".$bestFit['bestWidth']."&h=".$bestFit['bestHeight'],
+                                'showWidth' => $bestFit['showWidth']);
+                        }
+                        ?>
+                        <table class='table table-noborder table-condensed'>
+                                <?php
+                                $i = 0;
+                                foreach ($showImgs as $img) {
+                                    $i++;
+                                    echo "
+                                        <tr>
+                                            <td>
+                                                <button type='button' value='" . $img['imageID'] . "' class='btn btn-danger btn-mini btnRemoveImg pull-right'>
+                                                    <i class='icon-remove-sign icon-white'></i>
+                                                </button>
+                                                <center>
+                                                    <a href='" . $img['origSrc'] . "' target='_blank'>
+                                                        <img class='img-polaroid' data-src='holder.js/".$maxImgW."x".$maxImgH."' src='" . $img['bestFitSrc'] . "' width='".$img['showWidth']."' />
+                                                    </a>
+                                                </center>
+                                            </td>
+                                        </tr>";
+                                    }
+                                ?>
+                        </table>
+                        <?php
+                    }
+                    ?>
+                </div>
+
+            </div>
+            <!-- End Right Column -->
+
+        </div>
+
+    </form>
+    <!-- /***** END: EDIT STORE FORM *****/ -->
+
+</div>
+<!--#div_admin_edit_cart-->
+
+<?php
+
+var_dump($s);
+
+include('cart_tos.phtml');
+include('cart_payment_gateway_new_form.inc.phtml');
+include('cart_taxes.phtml');
+include('cart_export.phtml');
+?>
+
+<?php
+$pageJavaScript[] = "
+    <script type='text/javascript'>
+        $(document).ready(function() {
+
+            // Admin :: Cart :: Remove Image
+            $('.btnRemoveImg').click(function() {
+                var r = confirm('Are you sure you want to permanently delete this image?');
+                if (r == false) {
+                    return false;
+                }
+                var go = $.ajax({
+                    type: 'POST',
+                    data: {m: 'ajax',
+                        cartID: $('#cartID').val(),
+                        imageID: $(this).val(),
+                        a: 'removeImage'}
+                })
+                .done(function(results) {
+                    window.location.reload();
+                })
+                .fail(function(msg) {
+                    alert('Error:' + msg);
+                })
+                .always(function() {
+                });
+            });
+
+            // Admin :: Cart :: Edit cart form validation
+            $('#frm_admin_edit_cart').validate({
+                rules: {
+                    cartName: 'required',
+                    cartTheme: 'required',
+                    cartEmailOrders: {
+                        required: true,
+                        email: true
+                    },
+                    cartEmailContact: {
+                        required: true,
+                        email: true
+                    },
+                    cartEmailErrors: {
+                        required: true,
+                        email: true
+                    }
+                }
+            });
+
+            // Admin :: Cart :: Edit Cart :: Save
+            $('#btnSaveCart').click(function() {
+                var v = $('#frm_admin_edit_cart').valid();
+                if (v === false) {
+                    alert('One or more fields on the parent form did not pass validation. Please check your fields and try again.');
+                    return false;
+                }
+                var BTN = $(this);
+                var oldHtml = BTN.html();
+                BTN.prop('disabled', true).html('<i class=\'icon-refresh\'></i>&nbsp;Saving...');
+                var go = $.ajax({
+                    type: 'POST',
+                    url: '" . cartPublicUrl . "admin/?p=cart',
+                    data: $('#frm_admin_edit_cart').serialize()
+                })
+                .done(function(results) {
+                    $('#divCartResults').html(results);
+                    BTN.prop('disabled', false).html(oldHtml);                    
+                })
+                .fail(function(msg) {
+                    alert('Error: ' + msg);
+                })
+                .always(function() {
+                });
+            });
+
+        });
+    </script>
+";

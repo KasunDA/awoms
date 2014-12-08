@@ -33,24 +33,24 @@ More info: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritemap
  >         RewriteRule   ^(.*)              ${url-aliases:$1|/404.html} [NC,L,QSA]
   
 # Example Apache VirtualHost Configuration
- > <VirtualHost *:80>
- > 	# Main domain
- >         ServerName gpfc.com
+ > 	<VirtualHost *:80>
+ > 		# Main domain
+ >         	ServerName gpfc.com
  > 
- > 	# List all brands domains and aliases here
- >         ServerAlias www.gpfc.com gpfc.local www.gpfc.local hutno8.com www.hutno8.com hutno8.local www.hutno8.local vinonbrew.com www.vinonbrew.com vinonbrew.local www.vinonbrew.local
+ > 		# List all brands domains and aliases here
+ >         	ServerAlias www.gpfc.com gpfc.local www.gpfc.local hutno8.com www.hutno8.com hutno8.local www.hutno8.local vinonbrew.com www.vinonbrew.com vinonbrew.local www.vinonbrew.local
  > 
- >         ServerAdmin webmaster@gpfc.com
+ >         	ServerAdmin webmaster@gpfc.com
  > 
- > 	# Path to site folders
- >         DocumentRoot /home/dirt/Projects/GPFC/public
- >         <Directory /home/dirt/Projects/GPFC>
- >                 Options All
- >                 AllowOverride All
- >                 Require all granted
- >         </Directory>
- >         ErrorLog /home/dirt/Projects/GPFC/logs/error.log
- >         CustomLog /home/dirt/Projects/GPFC/logs/access.log combined
+ > 		# Path to site folders
+ >         	DocumentRoot /home/dirt/Projects/GPFC/public
+ >         	<Directory /home/dirt/Projects/GPFC>
+ >              	Options All
+ >                 	AllowOverride All
+ >                 	Require all granted
+ >         	</Directory>
+ >         	ErrorLog /home/dirt/Projects/GPFC/logs/error.log
+ >         	CustomLog /home/dirt/Projects/GPFC/logs/access.log combined
  > 
  >         # RewriteMap
  >         RewriteEngine On

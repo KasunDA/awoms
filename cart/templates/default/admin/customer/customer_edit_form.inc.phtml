@@ -1,0 +1,201 @@
+<?php
+/**
+ * From customer.php:
+ * 
+ * $customer = Customer() class
+ * $c = getCustomerInfo() data
+ */
+?>
+<div class='modal-header'>
+    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times</button>
+    <h3 id='customerModallbl'>#<?php echo $c['customerID'] . " " . $c['firstName']; ?></h3>
+</div>
+<div class='modal-body'>
+    <?php
+    // Save results
+    if (isset($r)) {
+        ?>
+        <div class="alert alert-block alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4>Success!</h4>
+            Customer information updated successfully!
+            <input type='hidden' id='needRefresh' name='needRefresh' value='1' />
+        </div>
+        <?php
+    } else {
+        echo "<input type='hidden' id='needRefresh' name='needRefresh' value='0' />";
+    }
+    ?>
+
+    <input type='hidden' id='editCustomerID' name='editCustomerID' value='<?php echo $c['customerID']; ?>' />
+
+    <!-- Company Name -->
+    <div class='control-group'>
+        <label class='control-label' for='editCompanyName'>
+            Company Name
+        </label>
+        <div class='controls'>
+            <input type='text' name='editCompanyName' id='editCompanyName' value='<?php echo $c['companyName']; ?>' />
+        </div>
+    </div>
+
+    <!-- Name -->
+    <div class='control-group'>
+        <label class='control-label' for='editFirstName'>
+            Name
+        </label>
+        <div class='controls'>
+            <input type='text' name='editFirstName' id='editFirstName' value='<?php echo $c['firstName']; ?>' />
+            <input type='text' name='editMiddleName' id='editMiddleName' value='<?php echo $c['middleName']; ?>' class='span2' />
+            <input type='text' name='editLastName' id='editLastName' value='<?php echo $c['lastName']; ?>' />
+        </div>
+    </div>
+
+    <!-- Email -->
+    <div class='control-group'>
+        <label class='control-label' for='editEmail'>
+            Email
+        </label>
+        <div class='controls'>
+            <input type='text' name='editEmail' id='editEmail' value='<?php echo $c['email']; ?>' />
+        </div>
+    </div>
+
+    <!-- Phone -->
+    <div class='control-group'>
+        <label class='control-label' for='editPhone'>
+            Phone
+        </label>
+        <div class='controls'>
+            <input type='text' name='editPhone' id='editPhone' value='<?php echo $c['phone']; ?>' />
+        </div>
+    </div>
+
+    <!-- Username -->
+    <div class='control-group'>
+        <label class='control-label' for='editUsername'>
+            Username
+        </label>
+        <div class='controls'>
+            <input type='text' name='editUsername' id='editUsername' value='<?php echo $c['username']; ?>' />
+        </div>
+    </div>
+
+    <!-- Passphrase -->
+    <div class='control-group'>
+        <label class='control-label' for='editPassphrase'>
+            New Passphrase
+        </label>
+        <div class='controls'>
+            <input type='password' name='editPassphrase' id='editPassphrase' placeholder='New Passphrase' />
+        </div>
+    </div>
+
+    <!-- Login Allowed? -->
+    <div class='control-group'>
+        <label class='control-label' for='editLoginAllowed'>
+            Login Allowed
+        </label>
+        <div class='controls'>
+            <select name='editLoginAllowed' id='editLoginAllowed'>
+                <option value='0'<?php
+                if (empty($c['loginAllowed'])) {
+                    echo ' selected';
+                }
+                ?>>Disabled</option>
+                <option value='1'<?php
+                if (!empty($c['loginAllowed'])) {
+                    echo ' selected';
+                }
+                ?>>Enabled</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Notes -->
+    <div class='control-group'>
+        <label class='control-label' for='editNotes'>
+            Notes
+        </label>
+        <div class='controls'>
+            <textarea name='editNotes' id='editNotes'><?php echo $c['notes']; ?></textarea>
+        </div>
+    </div>
+
+</div>
+
+<?php
+$thisJavaScript = "
+<script type='text/javascript'>
+    $(document).ready(function() {
+
+        // Admin :: Customer :: Edit Form Validation
+        $('#frm_admin_edit_customer').validate({
+            rules: {
+                editFirstName: 'required',
+                editEmail: {
+                    required: true,
+                    email: true
+                },
+                editUsername: 'required',
+                editPassphrase: {
+                    minlength: 8
+                }
+            }        
+        });
+
+        // Admin :: Customer :: Edit Form Save Click
+        $('#customerModalSaveBtn').click(function() {
+            var valid = $('#frm_admin_edit_customer').valid();
+            if (valid === false) {
+                return false;
+            }
+            var customerID = $('#editCustomerID').val();
+            var companyName = $('#editCompanyName').val();
+            var firstName = $('#editFirstName').val();
+            var middleName = $('#editMiddleName').val();
+            var lastName = $('#editLastName').val();
+            var email = $('#editEmail').val();
+            var phone = $('#editPhone').val();
+            var notes = $('#editNotes').val();
+            var username = $('#editUsername').val();
+            var passphrase = $('#editPassphrase').val();
+            var loginAllowed = $('#editLoginAllowed').val();
+            var go = $.ajax({
+                type: 'POST',
+                data: {m: 'ajax',
+                    a: 'saveCustomerInfo',
+                    customerID: customerID,
+                    companyName: companyName,
+                    firstName: firstName,
+                    middleName: middleName,
+                    lastName: lastName,
+                    email: email,
+                    phone: phone,
+                    notes: notes,
+                    username: username,
+                    passphrase: passphrase,
+                    loginAllowed: loginAllowed
+                }
+                })
+                .done(function(results) {
+                    $('#customerEditModalDynamic').html(results);
+                })
+                .fail(function(msg) {
+                    alert('Error:' + msg.val());
+                })
+                .always(function() {
+                });
+           return false; // Prevents normal form submission
+        });
+
+        // Admin :: Customer :: Edit Modal :: Close :: Refresh Page (if needed)
+        $('#customerModalCloseBtn').click(function() {
+            var refresh = $('#needRefresh').val();
+            if (refresh == 1) {
+                location.reload();
+            }
+        });
+    });
+</script>";
+echo $thisJavaScript;

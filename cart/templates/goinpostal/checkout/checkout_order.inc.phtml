@@ -1,0 +1,44 @@
+<div class='clear'></div>
+<p>&nbsp;</p>
+
+<!--BEGIN:#cart_checkout_order_container-->
+<div id="cart_checkout_order_container" class="container">
+
+    <?php
+    // Payment approved, order complete
+    if ($returnStatus == 'Approved') {
+        ?>
+        <p class='lead'>Order number: #<strong><?php echo $cart->session['orderID']; ?></strong></p>
+        <p class='lead'>Customer ID: #<strong><?php echo $cart->session['customerID']; ?></strong></p>
+        <p>Thank you for your order! You will receive an email confirmation shortly.</p>
+        <p>You may wish to print this page out for your reference, although you will also receive a printable receipt via email shortly.</p>
+        <?php
+        // Offline processing required
+    } elseif ($returnStatus == 'Offline') {
+        ?>
+        <div class="alert alert-block span6 offset3">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4>Manual Processing Required!</h4>
+            Please note that your order requires further manual processing before it is completed. You have <strong>not</strong> been charged at this time.
+        </div>
+
+        <div class='clearfix'></div>
+
+        <p class='lead'>Order number: #<strong><?php echo $cart->session['orderID']; ?></strong></p>
+        <p class='lead'>Customer ID: #<strong><?php echo $cart->session['customerID']; ?></strong></p>
+        <p>Thank you for your order! You will receive an email confirmation shortly.</p>
+        <p>You may wish to print this page out for your reference, although you will also receive a printable receipt via email shortly.</p>
+        <?php
+        // Payment was not approved, order incomplete
+    } else {
+        ?>
+        <div class="alert alert-block alert-error span6 offset3">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <h4>Not Approved!</h4>
+            We're sorry but we are unable to approve the order based on the information you have provided. Please contact us to complete your order, or try again - you have <strong>NOT</strong> been charged.
+        </div>
+        <?php
+    }
+    ?>
+</div>
+<!--END:#cart_checkout_order_container-->
