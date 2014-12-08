@@ -8,10 +8,33 @@
  */
 $('.callAPI').click(function() {
     console.log('.callAPI Clicked...');
+    
     // Controller = name
     var controller = $(this).attr('name');
     // Action = value
     var action = $(this).val();
+    
+    // Confirm deletes
+    if (action === "delete")
+    {
+        if (!confirm('Are you sure you want to PERMANENTLY DELETE this and all child objects?')) {
+            return false;
+        }
+    }
+    
+    // Confirm cancel
+    if (action === "cancel")
+    {
+        if (confirm('Are you sure you want to LOSE ALL CHANGES?')) {
+            location.href = "/"+controller+"/readall";
+        }
+        return false;
+    }
+    
+    // Disable button
+    $(this).prop('disabled', true).addClass('button_disabled');
+    $(this).html('Please wait...');
+    
     // Form
     var formID = $(this).parents('form:first').attr('ID');
     // Clear/Hide results div
@@ -35,6 +58,15 @@ $('.callAPI').click(function() {
 function callAPI(controller, action, formID) {
     console.log('callAPI: controller: ' + controller + ' action: ' + action + ' formID: ' + formID);
 
+    // TinyMCE
+    console.log('Checking for tinymce...');
+    //if ($('.tinymce').text().length > 0)
+    if ($('#inp_pageBody').length > 0)
+    {
+        console.log('Found tinymce...');
+        tinymce.get("inp_pageBody").save();
+    }
+   
     // Serialized form data with ajax method appended
     var frmInput = $('#' + formID).serialize();
     frmInput += '&m=ajax';
@@ -75,11 +107,14 @@ function handleAPIResults(controller, action, formID, results) {
     var divResults = $('#divResults');
     divResults.html(results);
     divResults.show();
+    // Go To Top
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
 }
 
 /**
+ * For use with jQueryUI:
+ * 
  * Open Modal Button Handler
- */
 $('.openModal').click(function() {
 
     var modalID = $(this).val();
@@ -91,3 +126,4 @@ $('.openModal').click(function() {
     $('#' + modalID).removeClass('hidden');
     $('#' + modalID).dialog('open');
 });
+ */

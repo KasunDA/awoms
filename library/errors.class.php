@@ -70,14 +70,14 @@ class Errors
      * @version   Release: v1.0.1
      * 
      * @param string $msg Message to record
-     * @param int $storeID Optional Brand ID to associate message with, 1 if null
+     * @param int $cartID Optional Brand ID to associate message with, 1 if null
      * @param string $type Optional Type of message to classify, info if null
      * @param string $file Optional File source
      * @param string $line Optional Line source
      * 
      * @return boolean
      */
-    public function dbLogger($msg, $brandID = NULL, $type = NULL, $file = NULL, $line = NULL)
+    private function dbLogger($msg, $brandID = NULL, $cartID = NULL, $type = NULL, $file = NULL, $line = NULL)
     {
         try
         {
@@ -85,17 +85,18 @@ class Errors
             if ($brandID == NULL) $brandID = 1;
             if (empty($this->DB))
             {
-                $this->DB = new Database();
+                $this->DB = new \Database();
                 #Errors::debugLogger('Unable to write to messageLog (No DB): '.$msg, 0, TRUE);
                 #return false;
             }
             $this->sql     = "
                 INSERT INTO messageLog
-                (messageDateTime, messageBrandID, messageType, messageBody, messageFile, messageLine)
+                (messageDateTime, brandID, messageCartID, messageType, messageBody, messageFile, messageLine)
                 VALUES
-                (:messageDateTime, :messageBrandID, :messageType, :messageBody, :messageFile, :messageLine)";
+                (:messageDateTime, :brandID, :messageCartID, :messageType, :messageBody, :messageFile, :messageLine)";
             $this->sqlData = array(':messageDateTime' => Utility::getDateTimeUTC(),
-                ':messageBrandID'  => $brandID,
+                ':brandID'  => $brandID,
+                ':messageCartID' => $cartID,
                 ':messageType'     => $type,
                 ':messageBody'     => $msg,
                 ':messageFile'     => $file,
@@ -297,16 +298,7 @@ class Errors
         /* Message Handling */
         $brandID = NULL;
         if (defined("BRAND_ID")) $brandID = BRAND_ID; # Needed in case error is db related
-        
-        // Special ignore case for PDO construct Notices: (moved to warning/notice section below changing halt to true)
-#        if (preg_match('/MySQL server has gone away/', $message)
-#                || preg_match('/An established connection was aborted by the software in your host machine/', $message))
-#        {
-#            self::debugLogger("Skipping DB notice '".$message."'");
-#            // return false; // false - shows xdebug (continues to php handler)
-#            return true; // true - doesnt show xdebug (prevents continuing to php handler)
-#        }
-        
+
         // Record in cartDebug.log
         self::debugLogger($txtBody);
 
@@ -356,7 +348,8 @@ class Errors
 
         // Record error in database (last because if db issue then rest of things can complete before this fails)
         $e = new self();
-        $e->dbLogger($message, $brandID, $subject, $file, $line);
+        $cartID = NULL;
+        $e->dbLogger($message, $brandID, $cartID, $subject, $file, $line);
 
         // Display error or not?
         if ($supressError === FALSE)

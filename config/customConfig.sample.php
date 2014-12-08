@@ -5,6 +5,16 @@ define('ERROR_EMAIL', 'senderrors@tohere.com');
 // Set this to your preferred default time zone according to https://php.net/manual/en/timezones.php
 date_default_timezone_set('America/New_York');
 
+// If using Windows, set the path to OpenSSL.cnf:
+$drives = array("C", "D", "E"); // Used to switch between dev/prod environments
+foreach ($drives as $drive)
+{
+    $openSSLConfig = $drive . ":/Services/Apache/httpd-2.4.9-win32-VC11/conf/openssl.cnf";
+    if (!is_file($openSSLConfig)) { $openSSLConfig = FALSE; } else { break; }
+}
+
+define('OPENSSL_CONFIG', $openSSLConfig);
+
 /***** ERROR_LEVEL
  * Set ERROR_LEVEL to the level of details to record, higher levels include all child levels (e.g. 5 includes 4,3,2,1)
  * 10 (Everything!) - Utilities(), Sanitize() - (PCI Violation!) Will cause a lot of logging *Be sure to only enable temporarily and delete logs afterwards as they contain sensitive info*

@@ -2,10 +2,18 @@
 
 class Usergroup extends Model
 {
-    protected static function getUsergroupColumns()
+    protected static function getColumns()
     {
         $cols = array('usergroupID', 'brandID', 'usergroupName', 'usergroupActive', 'parentUserGroupID');
         return $cols;
+    }
+
+    public function getWhere($where = NULL, $cols = NULL, $order = NULL, $aclWhere = NULL, $in = NULL, $loadChildren = FALSE)
+    {
+        if ($order == NULL) {
+            $order = "brandID, parentUserGroupID, usergroupName";
+        }
+        return parent::getWhere($where, $cols, $order, $aclWhere, $in, $loadChildren);
     }
 
     /**
@@ -15,8 +23,9 @@ class Usergroup extends Model
      */
     public static function LoadExtendedItem($item)
     {
-        $Brand = new Brand();
-        $item['brand'] = $Brand->getSingle(array('brandID' => $item['brandID']));
+        //$Brand         = new Brand();
+        //$item['brand'] = $Brand->getSingle(array('brandID' => $item['brandID']));
         return $item;
     }
+
 }

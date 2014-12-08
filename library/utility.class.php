@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Utility class
  *
@@ -6,233 +7,34 @@
  *
  * PHP version 5
  *
- * @author    dirt <dirt@awoms.com>
+ * @author    dirt <dirt@GPFC.com>
  * @license   MIT/X see LICENSE
  * @version   v00.00.00
  */
 class Utility
 {
-    /**
-     * handleFileUpload
-     * 
-     * Handles all file uploads
-     * 
-     * @since v00.00.00
-     * 
-     * @version v00.00.00
-     * 
-     * @uses SimpleImage
-     * 
-     * @param string $htmlFilesName
-     * @param string  $fileType
-     * @param int $storeID
-     * @param null|int $productID
-     * @param null|int $categoryID
-     * @param null|int $customerID
-     * @param null|int $userID
-     * 
-     * @return boolean
-     * 
-     * @todo Sanitize POST
-     */
-    public static function handleFileUpload($htmlFilesName, $fileType, $storeID, $productID = NULL, $categoryID = NULL,
-                                            $customerID = NULL, $userID = NULL)
-    {
-        Errors::debugLogger(__METHOD__, 100);
-        Errors::debugLogger(func_get_args(), 100);
-        //
-        // File Type
-        //
-        if ($fileType == 'image') {
-            //
-            // Images
-            //
-
-            // Init Image
-            $image = new Image();
-
-            // Define text overlay if set
-            if (!empty($_POST['enableTextOverlay'])) {
-                $textOverlay  = $_POST['textOverlay'];
-                $fontFile     = $_POST['fontFile'];
-                $fontSize     = $_POST['fontSize'];
-                $fontColor    = $_POST['fontColor'];
-                $fontPosition = $_POST['fontPosition'];
-                $xOffset      = $_POST['xOffset'];
-                $yOffset      = $_POST['yOffset'];
-            } else {
-                $textOverlay  = NULL;
-                $fontFile     = NULL;
-                $fontSize     = NULL;
-                $fontColor    = NULL;
-                $fontPosition = NULL;
-                $xOffset      = NULL;
-                $yOffset      = NULL;
-            }
-        }
-
-        //
-        // Handle each file
-        //
-        $fileCount = count($_FILES[$htmlFilesName]['name']);
-        for ($i = 0; $i < $fileCount; $i++) {
-
-            //
-            // Images
-            //
-            if ($fileType == 'image') {
-                // Save orig image info to database
-                $originalRaw   = $_FILES[$htmlFilesName]['tmp_name'][$i];
-                $simpleImage   = new SimpleImage($originalRaw);
-                $info          = $simpleImage->get_original_info();
-                $ext           = $info['format'];
-                $width         = $info['width'];
-                $height        = $info['height'];
-                $orient        = $info['orientation'];
-                $storeID       = $storeID;
-                $imageID       = 'DEFAULT';
-                $active        = 1;
-                $filesName     = $_FILES[$htmlFilesName]['name'][$i];
-                $name          = str_replace("." . substr($filesName, strrpos($filesName, '.') + 1), "", $filesName);
-                $parentImageID = NULL;
-                $sortOrder     = NULL;
-                $imageVisibility = 1;
-                $imageID       = $image->saveImageInfo($storeID, $imageID, $parentImageID, $active, $name, $ext, $width, $height,
-                                                       $orient, $userID, $customerID, $categoryID, $productID, $sortOrder, $imageVisibility);
-                echo "
-                    <table class='table table-bordered'>
-                        <tr>
-                            <td class='span2'>
-                                Saved original:<br /> $width x $height
-                            </td>
-                            <td class='span6'>
-                                <img src='" . cartPublicUrl . "getfile.php?storeID=" . $storeID . "&imageID=" . $imageID . "&w=" . $width . "&h=" . $height . "' />
-                            </td>
-                        </tr>";
-
-                // Make nested image folder if not exist
-                $destPath = cartImagesDir . $storeID . '/' . $imageID;
-                self::createNestedDirectory($destPath);
-
-                // Where to save original image
-                $origImgPath = $destPath . '/' . $imageID . '.' . $width . 'x' . $height . '.' . $ext;
-
-                // If file already exists, rename (safe delete) existing file
-                if (file_exists($origImgPath)) {
-                    $j = 0;
-                    while (TRUE) {
-                        $renameFile = $destPath . '/' . $imageID . '.' . $width . 'x' . $height . '.' . $j . '.' . $ext;
-                        if (file_exists($renameFile)) {
-                            $j++;
-                            continue;
-                        }
-                        if (!rename($origImgPath, $renameFile)) {
-                            trigger_error('Could not rename existing file (j:' . $j . '): ' . $origImgPath, E_USER_NOTICE);
-                            return false;
-                        }
-                        break;
-                    }
-                }
-
-                // Save original image
-                $failedToCreateImage = FALSE;
-                if (!empty($textOverlay)) {
-                    // Add text overlay
-                    if (!$image->createImage($originalRaw, $origImgPath, $width, $height, $textOverlay, $fontFile, $fontSize,
-                                             $fontColor, $fontPosition, $xOffset, $yOffset)) {
-                        $failedToCreateImage = TRUE;
-                    }
-                } else {
-                    // Move raw uploaded file from tmp
-                    if (!move_uploaded_file($originalRaw, $origImgPath)) {
-                        $failedToCreateImage = TRUE;
-                    } else {
-                        $originalRaw = $origImgPath;
-                    }
-                }
-                if ($failedToCreateImage === TRUE) {
-                    // Set image to inactive in database if fails
-                    $image->setImageActive($storeID, $imageID, 0);
-                    trigger_error('Could not save orig file: ' . $originalRaw, E_USER_NOTICE);
-                    return false;
-                }
-
-                // Create new sizes if selected
-                if (!empty($_POST['size'])) {
-                    foreach ($_POST['size'] as $sizeReq) {
-                        // Only creates max size allowed and doesnt duplicate same size
-                        if (($sizeReq > $height) && ($sizeReq > $width)) {
-                            echo '<tr><td><cite>Skipped:</cite></td><td>' . $sizeReq . ' x ' . $sizeReq . '</td></tr>';
-                            continue;
-                        }
-                        // Load original image data to get best fit for new size
-                        $origSimpleImage = new SimpleImage($originalRaw);
-                        $origSimpleImage->best_fit($sizeReq, $sizeReq);
-                        $bfW             = $origSimpleImage->get_width();
-                        $bfH             = $origSimpleImage->get_height();
-                        // Save new image size info to db
-                        $parentImageID   = $imageID;
-                        $userID          = NULL;
-                        $customerID      = NULL;
-                        $categoryID      = NULL;
-                        $productID       = NULL;
-                        $sortOrder       = NULL;
-                        $visibility      = NULL;
-                        $subImageID      = $image->saveImageInfo($storeID, 'DEFAULT', $imageID, $active, $name, $ext, $bfW, $bfH,
-                                                                 $orient, $userID, $customerID, $categoryID, $productID, $sortOrder, $visibility);
-                        $newImg          = $destPath . '/' . $imageID . '.' . $bfW . 'x' . $bfH . '.' . $ext;
-                        // If file already exists, rename existing file
-                        if (file_exists($newImg)) {
-                            $z = 0;
-                            while (TRUE) {
-                                $renameFile = $destPath . '/' . $imageID . '.' . $bfW . 'x' . $bfH . '.' . $z . '.' . $ext;
-                                if (file_exists($renameFile)) {
-                                    $z++;
-                                    continue;
-                                }
-                                if (!rename($newImg, $renameFile)) {
-                                    trigger_error('Could not rename existing file (z:' . $z . '): ' . $newImg, E_USER_NOTICE);
-                                    return false;
-                                }
-                                break;
-                            }
-                        }
-                        echo "<tr>
-                                <td>Saved resized: $bfW x $bfH</td>
-                                <td>
-                                    <img src='" . cartPublicUrl . "getfile.php?storeID=" . $storeID . "&imageID=" . $subImageID . "&w=" . $bfW . "&h=" . $bfH . "' />
-                                </td>
-                            </tr>";
-                        // Create resized image (best_fit)
-                        $image->createImage($origImgPath, $newImg, $bfW, $bfH, $textOverlay, $fontFile, $fontSize, $fontColor,
-                                            $fontPosition, $xOffset, $yOffset);
-                    }
-                }
-                echo "</table>";
-            }
-        }
-    }
 
     /**
      * createNestedDirectory
-     * 
+     *
      * Creates nested directory path (creates parent folders if needed)
-     * 
+     *
      * @static
-     * 
+     *
      * @version v00.00.00
-     * 
+     *
      * @since v00.00.00
-     * 
+     *
      * @param string $dirPath
-     * 
+     *
      * @return boolean
      */
     public static function createNestedDirectory($dirPath)
     {
         Errors::debugLogger(__METHOD__, 0);
         Errors::debugLogger(func_get_args(), 10);
-        if (!is_dir($dirPath) && !@mkdir($dirPath, 0777, true)) {
+        if (!is_dir($dirPath) && !@mkdir($dirPath, 0777, true))
+        {
             trigger_error('Could not create folder: ' . $dirPath, E_USER_ERROR);
             return false;
         }
@@ -240,15 +42,15 @@ class Utility
 
     /**
      * getDateTimeUTC
-     * 
+     *
      * Gets the current time in UTC
-     * 
+     *
      * @static
-     * 
+     *
      * @param string $format Desired datetime format to return default of YYYY-MM-DD HH:MM:SS
      *
      * @return date UTC datetime of NOW in desired format
-     * 
+     *
      * @todo optional param for desired timezone to convert server value to
      */
     public static function getDateTimeUTC($format = null)
@@ -256,7 +58,8 @@ class Utility
         Errors::debugLogger(__METHOD__, 100);
         Errors::debugLogger(func_get_args(), 100);
         // Default format if none passed
-        if ($format === NULL) {
+        if ($format === NULL)
+        {
             $format = "Y-m-d H:i:s";
         }
         return $gmdate = gmdate($format);
@@ -266,14 +69,14 @@ class Utility
      * getServerDateTimeFromUTCDateTime
      *
      * Converts the provided UTC datetime to local server time
-     * 
+     *
      * @static
-     * 
+     *
      * @param date $utcDateTime UTC datetime to convert
      * @param string $format Desired datetime format to return default of YYYY-MM-DD HH:MM:SS
-     * 
+     *
      * @return date $serverDateTime Server datetime of provided UTC datetime in desired format
-     * 
+     *
      * @todo optional param for desired timezone to convert UTC value to
      */
     public static function getServerDateTimeFromUTCDateTime($utcDateTime, $dateTimeZone = NULL, $format = NULL)
@@ -281,18 +84,22 @@ class Utility
         Errors::debugLogger(__METHOD__, 10);
         Errors::debugLogger(func_get_args(), 10);
         // Default timezone
-        if ($dateTimeZone === NULL) {
+        if ($dateTimeZone === NULL)
+        {
             // Attempt to use date.timezone declared in servers php.ini
             //$dateTimeZone = new DateTimeZone(ini_get('date.timezone'));
             // Manually set our own timezone if server does not declare a default
             //if (empty($dateTimeZone)) {
             $dateTimeZone = new DateTimeZone('America/New_York');
             //}
-        } else {
+        }
+        else
+        {
             $dateTimeZone = new DateTimeZone($dateTimeZone);
         }
         // Default format
-        if ($format === NULL) {
+        if ($format === NULL)
+        {
             $format = "Y-m-d H:i:s";
         }
         // Convert UTC DateTime to Server DateTime
@@ -303,23 +110,25 @@ class Utility
 
     /**
      * getPastDateTimeUTC
-     * 
+     *
      * Subtracts x number of days from NOW or provided datetime in UTC
-     * 
+     *
      * @param type $days Days to subtract from datetime
      * @param type $start Optional datetime start to subtract from, defaults to NOW (UTC)
      * @param string $format Optional format to return datetime in
-     * 
+     *
      * @return date UTC DateTime after math applied
      */
     public static function getPastDateTimeUTC($days, $start = NULL, $format = NULL)
     {
         Errors::debugLogger(__METHOD__, 10);
         Errors::debugLogger(func_get_args(), 10);
-        if (empty($start)) {
+        if (empty($start))
+        {
             $start = self::getDateTimeUTC();
         }
-        if (empty($format)) {
+        if (empty($format))
+        {
             $format = "Y-m-d H:i:s";
         }
         $endDateTime = new \DateTime($start, new \DateTimeZone('UTC'));
@@ -329,15 +138,15 @@ class Utility
 
     /**
      * getFormattedNumber
-     * 
+     *
      * Returns the number in the desired format
-     * 
+     *
      * @param type $number Number to format
      * @param int $decimals Number of decimal points
      * @param type $decimalPoint Decimal point separator
      * @param type $thousandsSep Thousands separator
      * @param type $locale Locale to use defaults to local system
-     * 
+     *
      * @return float Number in desired format
      */
     public static function getFormattedNumber($number, $decimals = NULL, $decimalPoint = NULL, $thousandsSep = NULL, $locale = NULL)
@@ -345,24 +154,31 @@ class Utility
         Errors::debugLogger(__METHOD__, 10);
         Errors::debugLogger(func_get_args(), 10);
         // Default Decimals
-        if ($decimals === NULL) {
+        if ($decimals === NULL)
+        {
             $decimals = 2;
         }
         // Use locale if needed
-        if ($decimalPoint === NULL || $thousandsSep === NULL) {
+        if ($decimalPoint === NULL || $thousandsSep === NULL)
+        {
             // Default Locale
-            if ($locale === NULL) {
+            if ($locale === NULL)
+            {
                 setlocale(LC_ALL, '');
-            } else {
+            }
+            else
+            {
                 setlocale(LC_ALL, $locale);
             }
             $locale = localeconv();
             // Default Decimal Point
-            if ($decimalPoint === NULL) {
+            if ($decimalPoint === NULL)
+            {
                 $decimalPoint = $locale['decimal_point'];
             }
             // Default Thousands Separator
-            if ($thousandsSep === NULL) {
+            if ($thousandsSep === NULL)
+            {
                 $thousandsSep = $locale['thousands_sep'];
             }
         }
@@ -381,44 +197,47 @@ class Utility
         Errors::debugLogger(__METHOD__, 100);
         Errors::debugLogger(func_get_args(), 100);
         $ip = $_SERVER['REMOTE_ADDR'];
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        if (!empty($_SERVER['HTTP_CLIENT_IP']))
+        {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        }
+        elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+        {
             $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
         }
         return $ip;
     }
-    
+
     /**
      * getTemplateFileLocations
-     * 
+     *
      * Searches for appropriate custom template files and returns array of valid file paths
-     * 
+     *
      * Example:
      *  views/templates/BRAND/THEME/CONTROLLER/name.php
      *  views/templates/BRAND/THEME/name.php
      *  views/name.php
-     * 
+     *
      * @param string $name
      * @param boolean $customFirst set to false to have default files be searched first
      * @param boolean $includeAllFound set to true to include all found files
-     * 
+     *
      * @returns array
      */
     public static function getTemplateFileLocations($name, $customFirst = TRUE, $includeAllFound = FALSE)
     {
-        
+
         // Views folder
         $viewsFolder = ROOT . DS . 'application' . DS . 'views' . DS;
 
         // Possible locations
         $fileLocations = array();
-        
-        $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $_SESSION['controller'] . DS . $name .'.php';
-        $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $name .'.php';
-        $fileLocations[] = $viewsFolder . DS . $_SESSION['controller'] . DS . $name .'.php';
-        $fileLocations[] = $viewsFolder .  $name .'.php';
-        
+
+        $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $_SESSION['controller'] . DS . $name . '.php';
+        $fileLocations[] = $viewsFolder . 'templates' . DS . BRAND_LABEL . DS . BRAND_THEME . DS . $name . '.php';
+        $fileLocations[] = $viewsFolder . DS . $_SESSION['controller'] . DS . $name . '.php';
+        $fileLocations[] = $viewsFolder . $name . '.php';
+
         // Default or Custom takes precedence?
         if (!$customFirst)
         {
@@ -436,59 +255,85 @@ class Utility
             {
                 if (!$includeAllFound)
                 {
-                    $fileLocations = array();
+                    $fileLocations   = array();
                     $fileLocations[] = $fileLoc;
                     break;
                 }
             }
             $i++;
         }
-        
+
         return $fileLocations;
     }
 
     /**
      * Returns "include(x)" results into variable instead of instantly parsing them as the default include/get_file_contents (which shows code) does
-     * 
+     *
      * @param type $filename
-     * 
+     *
      * @return boolean
      */
-    public static function get_include_contents($filename) {
-        if (is_file($filename)) {
+    public static function get_include_contents($filename)
+    {
+        if (is_file($filename))
+        {
             ob_start();
             include $filename;
             return ob_get_clean();
         }
         return false;
     }
-        
+
     /**
-     * Ensures things like "Goin' Postal" are displayed as "Goin&#39 Postal"
-     * Also protects against injection attacks
-     * 
-     * @uses htmlentities
-     * 
+     * Ensures things like "Goin' Postal" are displayed as "Goin&#039; Postal"
+     * Protects against injection attacks
+     *
+     * @uses htmlspecialchars
+     *
      * @param array|string $raw
      * @return array|string
      */
     public static function makeRawDbTextSafeForHtmlDisplay($raw)
     {
-        array_walk_recursive($raw, function (&$value) {
-            $value = htmlentities($value, ENT_QUOTES);
-        });
+        array_walk_recursive($raw,
+                             function (&$value)
+            {
+                // $value = htmlentities($value, ENT_QUOTES);
+                $value = htmlspecialchars($value, ENT_QUOTES, "UTF-8", FALSE);
+            });
         return $raw;
     }
-    
+
+    /**
+     * Ensures things like "Goin&#039; Postal" are displayed as "Goin' Postal"
+     *
+     * @uses htmlspecialchars_decode
+     *
+     * @param array|string $raw
+     * @return array|string
+     */
+    public static function makeSafeDbTextReadyForHtmlDisplay($raw)
+    {
+        array_walk_recursive($raw,
+                             function (&$value)
+            {
+
+                //echo "<br />Cleaning value: ".$value;
+                //$value = htmlspecialchars($value, ENT_QUOTES, "UTF-8", FALSE);
+                $value = htmlspecialchars_decode($value, ENT_NOQUOTES);
+            });
+        return $raw;
+    }
+
     /**
      * convertNLToBR
-     * 
+     *
      * Converts newlines to <br />
-     * 
+     *
      * @since v1.0.2
-     * 
+     *
      * @param string $string
-     * 
+     *
      * @return string
      */
     public static function convertNLToBR($string)
@@ -500,13 +345,13 @@ class Utility
 
     /**
      * convertBRToNL
-     * 
+     *
      * Converts <br /> to newlines (\r\n)
-     * 
+     *
      * @since v1.0.2
-     * 
+     *
      * @param string $string
-     * 
+     *
      * @return string
      */
     public static function convertBRToNL($string)
@@ -521,13 +366,13 @@ class Utility
 
     /**
      * stripBR
-     * 
+     *
      * Strips all <br /> from string
-     * 
+     *
      * @since v1.0.2
-     * 
+     *
      * @param string $string
-     * 
+     *
      * @return string
      */
     public static function stripBR($string)
@@ -540,46 +385,142 @@ class Utility
 
     /**
      * getPaymentMethodCodeLogo
-     * 
+     *
      * Gets logo of payment method code/type
-     * 
+     *
      * @since v1.0.3
-     * 
+     *
      * @param string $paymentMethodCode Code
-     * 
+     *
      * @return string Image filename
      */
     public static function getPaymentMethodCodeLogo($paymentMethodCode)
     {
-        if ($paymentMethodCode == 'AMEX') {
+        if ($paymentMethodCode == 'AMEX')
+        {
             $img = 'amex_logo_mini.gif';
-        } elseif ($paymentMethodCode == 'VISA') {
+        }
+        elseif ($paymentMethodCode == 'VISA')
+        {
             $img = 'visa_logo_mini.gif';
-        } elseif ($paymentMethodCode == 'MC') {
+        }
+        elseif ($paymentMethodCode == 'MC')
+        {
             $img = 'mastercard_logo_mini.gif';
-        } elseif ($paymentMethodCode == 'DISC') {
+        }
+        elseif ($paymentMethodCode == 'DISC')
+        {
             $img = 'discover_logo_mini.gif';
-        } elseif ($paymentMethodCode == 'CHK') {
+        }
+        elseif ($paymentMethodCode == 'CHK')
+        {
             $img = 'check_icon_mini.png';
-        } elseif ($paymentMethodCode == 'ECHK') {
+        }
+        elseif ($paymentMethodCode == 'ECHK')
+        {
             $img = 'echeck_logo_mini.gif';
-        } elseif ($paymentMethodCode == 'WIRE') {
+        }
+        elseif ($paymentMethodCode == 'WIRE')
+        {
             $img = 'echeck_logo_mini.gif';
-        } elseif ($paymentMethodCode == 'PAYP') {
+        }
+        elseif ($paymentMethodCode == 'PAYP')
+        {
             $img = 'paypal_logo_mini.gif';
-        } elseif ($paymentMethodCode == 'CASH') {
+        }
+        elseif ($paymentMethodCode == 'CASH')
+        {
             $img = 'cash.png';
-        } else {
+        }
+        else
+        {
             $img = 'unknown.png';
         }
         return $img;
     }
 
     /**
+     * randomPassphrase
+     *
+     * Generate random passphrase, simple or complex characters with optional length
+     *
+     * @since v1.0.3
+     *
+     * @static
+     *
+     * @access public
+     *
+     * @param int $len Optional length of password, defaults to 12
+     * @param boolean $simple Optional flag for simple characters only (no punctuation etc)
+     *
+     * @return string Passphrase
+     */
+    public static function randomPassphrase($len = NULL, $simple = NULL)
+    {
+        if ($len === NULL)
+        {
+            $len = 12;
+        }
+        if ($simple !== NULL)
+        {
+            return substr(hash('sha512', rand()), 0, $len);
+        }
+        $r = '';
+        for ($i = 0; $i < $len; $i++)
+        {
+            $r .= chr(mt_rand(33, 126));
+        }
+        return $r;
+    }
+
+    /**
+     * Generates <option> list for State select list use in template
+     */
+    public static function GetStateChoiceList($SelectedState = FALSE)
+    {
+        $choiceList = "<option value=''>-- None --</option>";
+        $states     = self::getStateList();
+        if (!empty($states))
+        {
+            $choiceList = "<option value=''>-- SELECT --</option>";
+            $optgroup   = NULL;
+            foreach ($states as $stateCode => $stateLabel)
+            {
+                // Group by Country
+                if (preg_match('/^--/', $stateCode))
+                {
+                    if ($optgroup != NULL)
+                    {
+                        $choiceList .= "</optgroup>";
+                    }
+                    $optgroup = $stateLabel;
+                    $choiceList .= "<optgroup label='" . $stateLabel . "'>";
+                    continue;
+                }
+
+                $selected = '';
+                if ($SelectedState !== FALSE && $SelectedState !== "ALL" && $stateCode == $SelectedState)
+                {
+                    $selected = " selected";
+                }
+                $choiceList .= "
+                    <option value='" . $stateCode . "'" . $selected . ">"
+                    . $stateLabel .
+                    "</option>";
+            }
+            if ($optgroup != NULL)
+            {
+                $choiceList .= "</optgroup>";
+            }
+        }
+        return $choiceList;
+    }
+
+    /**
      * getStateList
-     * 
+     *
      * Returns list of state code => state label
-     * 
+     *
      * @return array State Code => State Label
      */
     public static function getStateList()
@@ -665,10 +606,36 @@ class Utility
     }
 
     /**
+     * Generates <option> list for Country select list use in template
+     */
+    public static function GetCountryChoiceList($SelectedCountry = FALSE)
+    {
+        $choiceList = "<option value=''>-- None --</option>";
+        $countries  = self::getCountryList();
+        if (!empty($countries))
+        {
+            $choiceList = "<option value=''>-- SELECT --</option>";
+            foreach ($countries as $code => $label)
+            {
+                $selected = '';
+                if ($SelectedCountry !== FALSE && $SelectedCountry !== "ALL" && $code == $SelectedCountry)
+                {
+                    $selected = " selected";
+                }
+                $choiceList .= "
+                    <option value='" . $code . "'" . $selected . ">"
+                    . $label .
+                    "</option>";
+            }
+        }
+        return $choiceList;
+    }
+
+    /**
      * getCountryList
-     * 
+     *
      * Returns list of country code & country label
-     * 
+     *
      * @return array Country Code => Country Label
      */
     public static function getCountryList()

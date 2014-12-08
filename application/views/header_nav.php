@@ -15,35 +15,29 @@
         <nav>
 
             <?php
-            // Get dynamic menu
-            $Menu = new Menu();
-            if (!empty($_SESSION['user_logged_in'])) {
-                if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
-                {
-                    $Menus['header_nav'] = $Menu->getMenu("admin");
-                    $finalMenu = "<div id='cssmenu'>" . $Menus['header_nav'] . "</div>";
-                    $pageJavaScript[] = "
-                        $('#cssmenu').prepend('<div id=\"menu-button\">Menu</div>');
-                            $('#cssmenu #menu-button').on('click', function(){
-                                var menu = $(this).next('ul');
-                                if (menu.hasClass('open')) {
-                                    menu.removeClass('open');
-                                }
-                                else {
-                                    menu.addClass('open');
-                                }
-                            });";
-                }
-                elseif ($_SESSION['user']['usergroup']['usergroupName'] == "Store Owners")
-                {
-                    $Menus['header_nav'] = $Menu->getMenu("Owners Top Menu", "menu_horizontal menu_header menu_hover");
-                    $finalMenu = "<div id='usermenu'>" . $Menus['header_nav'] . "</div>";
-                }
+            /* Dynamic Menu: heading_nav */
+            $finalMenu = NULL;
+            if (!empty($_SESSION['user_logged_in'])
+                    && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
+            {
+                // Admins need special menu JS and div id
+
+                $finalMenu = "<div id='cssmenu'>" . $Menus['heading_nav'] . "</div>";
+                // JS required for Admin menu
+                $pageJavaScript[] = "
+                    $('#cssmenu').prepend('<div id=\"menu-button\">Menu</div>');
+                        $('#cssmenu #menu-button').on('click', function(){
+                            var menu = $(this).next('ul');
+                            if (menu.hasClass('open')) { menu.removeClass('open'); }
+                            else { menu.addClass('open'); }
+                        });";
             }
+            
             if (empty($finalMenu))
             {
-                $Menus['header_nav'] = $Menu->getMenu("Hut Top Menu", "menu_horizontal menu_header menu_hover");
-                $finalMenu = "<div id='usermenu'>" . $Menus['header_nav'] . "</div>";
+                // Not logged in or no custom menu
+
+                $finalMenu = "<div id='usermenu'>" . $Menus['heading_nav'] . "</div>";
             }
             echo $finalMenu;
             ?>

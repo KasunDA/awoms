@@ -2,10 +2,19 @@
 
 class RewriteMapping extends Model
 {
-    protected static function getRewriteMappingColumns()
+    protected static function getColumns()
     {
         $cols = array('rewriteMappingID', 'aliasURL', 'actualURL', 'sortOrder', 'domainID');
         return $cols;
+    }
+    
+    public function getWhere($where = NULL, $cols = NULL, $order = NULL, $aclWhere = NULL, $in = NULL, $loadChildren = FALSE)
+    {
+        if ($order == NULL)
+        {
+            $order = "domainID, sortOrder, aliasURL, actualURL";
+        }
+        return parent::getWhere($where, $cols, $order, $aclWhere, $in, $loadChildren);
     }
     
     public function update($data, $table = NULL)
@@ -26,11 +35,11 @@ class RewriteMapping extends Model
         Errors::debugLogger($data);
         
         // DB Changes
-        parent::update($data);
+        parent::update($data, $table);
         
         // Create new rewrite rule
         $r = self::rewriteRuleExists($matchDomain['domainName'].$data['aliasURL']);
-        if (!empty($r))
+        if (empty($r))
         {
             if (!empty($matchDomain))
             {
@@ -45,6 +54,10 @@ class RewriteMapping extends Model
     private function createRewriteRule($alias, $actual)
     {
         $map = ROOT . DS . "url-alias-map.txt";
+        if (!is_file($map))
+        {
+            file_put_contents($map, '');
+        }
         $current = file_get_contents($map);
         $new = $alias." ".$actual."\n";
         $current .= $new;
@@ -86,20 +99,21 @@ class RewriteMapping extends Model
     }
     
     /**
-     * Checks if rewrite rule exists
+     * Checks if rewrite rule exists in map.txt
      * 
      * @param string $alias dev.test.com/myalias
      * @param int $domainID
      * 
      * @return boolean
      */
-    private function rewriteRuleExists($alias)
+    public function rewriteRuleExists($alias)
     {
         // Matching terms
         $matchAliasURL = $alias;
         
         // Alias Map Rewrite
         $map = ROOT . DS . "url-alias-map.txt";
+        if (!is_file($map)) { return false; }
         $handle = @fopen($map, "r");
         $found = FALSE;
         
@@ -110,13 +124,12 @@ class RewriteMapping extends Model
                 $rule = explode(' ', $line);
                 $alias = trim($rule[0]);
                 $actual = trim($rule[1]);
-                #Errors::debugLogger(__METHOD__.': *** looking for alias: '.$alias.' => actual: '.$actual);
                 if ($alias[0] == "/")
                 {
                     // Global alias begins with "/" - ignoring domain name
-                    if (preg_match('/'.str_replace('/', '\/', $matchAliasURL).'/', $alias))
+                    // Is alias exact match? ^$
+                    if (preg_match('/^'.str_replace('/', '\/', $matchAliasURL).'$/', $alias))
                     {
-                        #Errors::debugLogger(__METHOD__.': *** Found Global Match');
                         $found = TRUE;
                         break;
                     }
@@ -125,24 +138,25 @@ class RewriteMapping extends Model
                 {
                     // Domain alias beings with "domain."
                     $d = explode('/', $alias);
-                    $matchDomain = $Domain->getSingle(array('domainName' => $d[0]));
-                    if (preg_match('/'.str_replace('/', '\/', $matchAliasURL).'/', $alias))
+                    $domainName = $d[0];
+                    $matchDomain = $Domain->getSingle(array('domainName' => $domainName));
+                    // Is alias exact match? ^$
+                    if (preg_match('/^'.str_replace('/', '\/', $matchAliasURL).'$/', $alias))
                     {
-                        #Errors::debugLogger(__METHOD__.': *** Found Domain Match');
                         $found = TRUE;
                         $res['domainID'] = $matchDomain['domainID'];
                         break;
                     }
                 }
             }
-#            if (!feof($handle)) {
-#                echo "Error: unexpected fgets() fail\n";
-#            }
+            if ($found !== TRUE && !feof($handle)) {
+                trigger_error("Error: unexpected fgets() fail\n");
+            }
             fclose($handle);
+            $res['found'] = $found;
+            $res['actual'] = $actual;
         }
         
-        $res['found'] = $found;
-        $res['actual'] = $actual;
         if ($found === TRUE)
         {
             return $res;

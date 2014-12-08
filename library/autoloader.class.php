@@ -7,7 +7,7 @@
  *
  * PHP version 5.4
  * 
- * @author    Brock Hensley <Brock@AWOMS.com>
+ * @author    Brock Hensley <Brock@GPFC.com>
  * 
  * @version   v00.00.0000
  * 
@@ -39,14 +39,19 @@ class Autoloader
     } else {
       $libraries = array(
         ROOT . DS . 'library' . DS . strtolower($class) . '.class.php',
-        ROOT . DS . 'application' . DS . 'models' . DS . strtolower($class) . '.model.php'
-      );
+        ROOT . DS . 'application' . DS . 'models' . DS . strtolower($class) . '.model.php');
+        // CART: Classname passed must start with namespace e.g. killerCart\Class
+        $className = explode('\\', $class);
+        if (count($className) > 1 && $className[0] == "killerCart") {
+            $className = $className[1];
+            $filePath = ROOT . DS . 'cart' . DS . 'lib' . DS . strtolower($className) . '.inc.php';
+            $libraries[] = $filePath;
+        }
     }
     $loaded = FALSE;
     foreach ($libraries as $library) {
       if (is_file($library)) {
         if (require_once($library)) {
-          // echo '<h5>Loaded class '.$class.' @ '.$library.'</h5>';
           $loaded = TRUE;
           break;
         }

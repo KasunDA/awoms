@@ -2,16 +2,18 @@
 
 class MenuLink extends Model
 {
-    protected static function getMenuLinkColumns()
+    protected static function getColumns()
     {
         $cols = array('linkID', 'menuID', 'sortOrder', 'parentLinkID', 'display', 'url', 'linkActive');
         return $cols;
     }
-    
-    public function update($data, $table = NULL)
+
+    public function getWhere($where = NULL, $cols = NULL, $order = NULL, $aclWhere = NULL, $in = NULL, $loadChildren = FALSE)
     {
-        Errors::debugLogger(__METHOD__.': ');
-        Errors::debugLogger($data, 90);
-        parent::update($data, $table);
+        if ($order == NULL) {
+            $order = "menuID, parentLinkID, sortOrder, display, url";
+        }
+        return parent::getWhere($where, $cols, $order, $aclWhere, $in, $loadChildren);
     }
+
 }

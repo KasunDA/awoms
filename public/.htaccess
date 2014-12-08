@@ -8,5 +8,3 @@ RewriteCond %{REQUEST_FILENAME} !-d
 #http://httpd.apache.org/docs/2.2/rewrite/flags.html
 RewriteRule ^(.*)$ index.php?url=$1 [PT,L,QSA]
 #</IfModule>
-
-

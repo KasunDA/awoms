@@ -7,7 +7,7 @@
  *
  * PHP version 5.4
  * 
- * @author    Brock Hensley <Brock@AWOMS.com>
+ * @author    Brock Hensley <Brock@GPFC.com>
  * 
  * @version   v00.00.0000
  * 
@@ -121,7 +121,8 @@ class Template
         if ($this->template == "json"
                 || $this->template == "ajax"
                 || $this->template == "m"
-                || $this->controller == 'install')
+                || $this->controller == 'install'
+                || ($this->controller == 'tests' && $this->action == 'servertest'))
         {
             $omitHeaderFooter = TRUE;
         }

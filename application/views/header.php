@@ -56,3 +56,6 @@
                 if (!empty($resultsMsg)) {
                     echo $resultsMsg;
                 }
+?>
+
+                <div id='divResults'></div>

@@ -2,24 +2,24 @@
 
 /**
  * Model class
- * 
+ *
  * CRUD database operations
- * 
+ *
  * PHP version 5.4
- * 
- * @author    Brock Hensley <Brock@AWOMS.com>
- * 
+ *
+ * @author    Brock Hensley <Brock@GPFC.com>
+ *
  * @version   v00.00.0000
- * 
+ *
  * @since     v00.00.0000
- * 
+ *
  * @example $db = Database::getDB();
  */
 class Model extends Database
 {
     /**
      * Model data
-     * 
+     *
      * @var string $model Model
      * @var string $table Table
      */
@@ -27,52 +27,55 @@ class Model extends Database
 
     /**
      * __construct
-     * 
+     *
      * Magic method executed on new class
-     * 
+     *
      * @since v00.00.0000
-     * 
+     *
      * @version v00.00.0000
-     * 
+     *
      * @uses Database()
      * @uses routeRequest()
-     * 
+     *
      * @param string $model Model name
      * @param string $table Table name
      */
     public function __construct()
     {
-        if (empty($this->db)) {
+        if (empty($this->db))
+        {
             parent::connect();
         }
-        $this->model = get_class($this);
+        $this->model = get_class($this);        
         $this->table = strtolower($this->model) . "s";
+        $this->table = preg_replace("/sss$/", "sses", $this->table); // Addresses
     }
 
     /**
      * __destruct
-     * 
+     *
      * Magic method executed on class end
-     * 
+     *
      * @since v00.00.0000
-     * 
+     *
      * @version v00.00.0000
      */
     #public function __destruct() {
     // Triggers Database::__destruct [?]
     #}
+
     /**
      * update
-     * 
+     *
      * Used to execute INSERT or UPDATE queries on a SINGLE table
-     * 
+     *
      * @since v00.00.0000
-     * 
+     *
      * @version v00.00.0000
-     * 
+     *
      * @param array $data Data col=>data
      * @param string $table Optional table to specify otherwise uses $this->model
-     * 
+     *
      * @return int Auto inc ID
      */
     function update($data, $table = NULL)
@@ -82,8 +85,10 @@ class Model extends Database
         $dups          = '';
         $this->sqlData = array();
         $colID         = '';
-        foreach ($data as $col => $val) {
-            if ($colID == '' && preg_match('/ID/', $col) && preg_match('/DEFAULT/', $val)) {
+        foreach ($data as $col => $val)
+        {
+            if ($colID == '' && preg_match('/ID/', $col) && preg_match('/DEFAULT/', $val))
+            {
                 $colID = $col;
                 $dupUp = " `" . $colID . "`=LAST_INSERT_ID(`" . $colID . "`), ";
                 continue;
@@ -97,7 +102,8 @@ class Model extends Database
         $vals = substr($vals, 0, -2); // Trim last ', '
         $dups = substr($dups, 0, -2); // Trim last ', '
 
-        if ($table === NULL) {
+        if ($table === NULL)
+        {
             $table = $this->table;
         }
 
@@ -108,62 +114,70 @@ class Model extends Database
         (" . $vals . ")
       ON DUPLICATE KEY UPDATE ";
 
-        if (!empty($dupUp)) {
+        if (!empty($dupUp))
+        {
             $this->sql .= $dupUp;
         }
 
         $this->sql .= $dups;
-        
+
         return $this->query($this->sql, $this->sqlData);
     }
 
     /**
      * select
-     * 
+     *
      * Used to execute SELECT queries on a SINGLE table
-     * 
+     *
      * @since v00.00.0000
-     * 
+     *
      * @version v00.00.0000
-     * 
+     *
      * @param array $columns
      * @param string|array $where Optional col => val
      * @param string $order Optional
      * @param string $table Optional table to specify otherwise uses $this->model
      * @param array $in Optional IN array - use with $where string: $where='col', $in=array('this','or','that')
-     * 
+     *
      * @return array SQL results
      */
     public function select($columns, $where = NULL, $order = NULL, $table = NULL, $in = NULL)
     {
         // Columns
-        if (is_array($columns)) {
+        if (is_array($columns))
+        {
             $cols = "`" . implode("`,`", $columns) . "`";
-        } else {
+        }
+        else
+        {
             $cols = $columns;
         }
 
         // Table
-        if ($table === NULL) {
+        if ($table === NULL)
+        {
             $table = $this->table;
         }
 
         // Where
-        if ($where !== NULL) {
+        if ($where !== NULL)
+        {
             // PDO Prepared Statements using array key => value
-            if (is_array($where)) {
-                
+            if (is_array($where))
+            {
+
                 $whrs          = '';
                 $this->sqlData = array();
-                foreach ($where as $col => $val) {
-                    
+                foreach ($where as $col => $val)
+                {
+
                     // If using IN, and last col's val is empty, join that to where for IN appended next
                     if (empty($val) && !empty($in) && is_array($in))
                     {
                         $in_col = $col;
                         continue;
                     }
-                    
+
                     // WHERE x = :x, y = :y
                     $whrs .= $col . " = :" . $col . " AND ";
                     // ':x' = 'x123', ':y' = 'y321'
@@ -179,75 +193,97 @@ class Model extends Database
             FROM " . $table;
 
         // WHERE
-        if (!empty($where)) {
+        if (!empty($where))
+        {
             $this->sql .= "
             WHERE " . $where;
-            
+
             // IN ?
             if (!empty($in) && is_array($in))
             {
                 $_in = "(";
                 foreach ($in as $n)
                 {
-                    $_in .= $n.",";
+                    $_in .= $n . ",";
                 }
                 $_in = substr($_in, 0, -1); // Trim last ','
                 $_in .= ")";
-                
+
                 // No empty column; normal where string
                 if (empty($in_col))
                 {
                     $this->sql .= "
-                    IN ".$_in;
-                } else {
+                    IN " . $_in;
+                }
+                else
+                {
                     // empty column was passed in where array
-                    $this->sql .= " AND ".$in_col." IN ".$_in;
+                    $this->sql .= " AND " . $in_col . " IN " . $_in;
                 }
             }
         }
 
-        if (!empty($order)) {
+        if (!empty($order))
+        {
             $this->sql .= "
             ORDER BY " . $order;
         }
-        
-        if (!empty($this->sqlData)) {
-            return Utility::makeRawDbTextSafeForHtmlDisplay($this->query($this->sql, $this->sqlData));
+
+        // DB values are stored encoded as special characters (&amp; &quote; &gt; etc.)
+        // This returns the decoded values ready for output to HTML
+        if (!empty($this->sqlData))
+        {
+            $res = $this->query($this->sql, $this->sqlData);
         }
-        return Utility::makeRawDbTextSafeForHtmlDisplay($this->query($this->sql));
+        else
+        {
+            $res = $this->query($this->sql);
+        }
+
+        // In case an insert made it into the DB that includes ' or " or & etc., convert it to safe land first
+        $clean  = Utility::makeRawDbTextSafeForHtmlDisplay($res);
+        // Now we now its safe, so decode html entities for display
+        $return = Utility::makeSafeDbTextReadyForHtmlDisplay($clean);
+
+        return $return;
     }
 
     /**
      * delete
-     * 
+     *
      * Used to execute DELETE queries on a SINGLE table
-     * 
+     *
      * @since v00.00.0000
-     * 
+     *
      * @version v00.00.0000
-     * 
+     *
      * @param array $data Data col=>data
      * @param string $table Optional table to specify otherwise uses $this->model
      * @param int $limit Optional limit clause
-     * 
+     *
      * @return boolean
      */
     function delete($data, $table = NULL, $limit = FALSE)
     {
         if (empty($data)) return false;
-        
+
         $vals          = '';
         $this->sqlData = array();
-        foreach ($data as $col => $val) {
-            if (empty($vals)) {
+        foreach ($data as $col => $val)
+        {
+            if (empty($vals))
+            {
                 $vals = $col . " = :" . $col;
-            } else {
+            }
+            else
+            {
                 $vals .= " AND " . $col . " = :" . $col;
             }
             $this->sqlData[':' . $col] = $val;
         }
 
-        if ($table === NULL) {
+        if ($table === NULL)
+        {
             $table = $this->table;
         }
 
@@ -255,201 +291,264 @@ class Model extends Database
             DELETE FROM " . $table . "
             WHERE " . $vals . " ";
 
-        if ($limit != FALSE) {
-            if ($limit == TRUE) {
+        if ($limit != FALSE)
+        {
+            if ($limit == TRUE)
+            {
                 $limit = 1;
             }
             $this->sql .= " LIMIT " . $limit;
         }
         $res = $this->query($this->sql, $this->sqlData);
-        if (!empty($res)) {
+        if (!empty($res))
+        {
             return true;
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
 
     /**
      * ACL: Non-admins restricted list to active brand for these controllers (they have brandID field)
-     * 
+     *
      * @return array|null
      */
     private function aclWhere()
     {
-        $res = array();
+        $res          = array();
         $res['where'] = NULL;
-        $res['in'] = NULL;
-        
+        $res['in']    = NULL;
+
         // No session if we are looking up domain so allow
-        // Also allow rewrite lookups
-        if (empty($_SESSION) || $this->table == "rewritemappings")
+        // Also allow:
+        // rewrite lookups -> session/start
+        // brands -> session/start
+        // stores -> sample
+        // usergroups -> login
+        // users -> login --------------------<<
+        // addresses -> ?
+        //Errors::debugLogger("Model.aclWhere :: Checking... (table: ".$this->table.")", 10);
+        if (empty($_SESSION)
+            || $_SESSION['controller'] == "install"
+            || $_SESSION['controller'] == "tests"
+            || ($_SESSION['controller'] == "users" && $_SESSION['action'] == "login")
+            || in_array($this->table,
+                        array(
+                'rewritemappings',
+                'brands',
+                // 'stores', -- Moved to store.model
+                'usergroups',
+                'menulinks', // @todo move to model
+                //'users', -- Moved to user.model
+                'addresses',
+                'bodycontents')))
         {
+            //Errors::debugLogger("Returning as-is", 10);
             return $res;
         }
 
         if (empty($_SESSION['user']))
         {
-            // Use brandID from active domain/session
-            $brandID = $_SESSION['brandID'];
+            // Anonymous User: Use brandID from active domain/session
+            if (empty($_SESSION['brandID']))
+            {
+                $brandID = BRAND_ID;
+            }
+            else
+            {
+                $brandID = $_SESSION['brandID'];
+            }
         }
         else
         {
-            // Use brandID from usergroup (can be different from live brandID)
+
+            if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators"
+                && $_SESSION['user']['usergroup']['brandID'] == 1)
+            {
+                // Global Admin / Brand; allow all
+                return $res;
+            }
+
+            // Non-Admin: Ensure ACLWhere is limited by BrandID etc.
+            // Use brandID from users.usergroup (can be different from live brandID)
             $brandID = $_SESSION['user']['usergroup']['brandID'];
         }
 
-        // Tables that do NOT have brandID column but still need to be restricted by the associated brand
-        // users -> usergroup -> brand
-        // menulinks -> menu -> brand
-        // comments|body -> comment|article -> brand
-        if (in_array($this->table, array('users', 'menulinks', 'comments', 'bodycontents')))
-        {
-            if ($this->table == 'users')
-            {
-                // users -> usergroup -> brand (brand has many usergroups, uses in:)
-                // get users where usergroupID in (all usergroupIDs belonging to brandID)
-                $res['where'] = 'usergroupID';
-                $Usergroup = new Usergroup();
-                $ins = $Usergroup->getWhere(array('brandID' => $brandID));
-                foreach ($ins as $in)
-                {
-                    $res['in'] .= $in['usergroupID'].",";
-                }
-                $res['in'] = substr($res['in'], 0, -1);
-            }
-            elseif ($this->table == 'menulinks')
-            {
-                // menulinks -> menu -> brand (brand has many menus, uses in:)
-                // get menulinks where menuID in (all menuIDs belonging to brandID)
-                $res['where'] = 'menuID';
-                $Menu = new Menu();
-                $ins = $Menu->getWhere(array('brandID' => $brandID));
-                foreach ($ins as $in)
-                {
-                    $res['in'] .= $in['menuID'].",";
-                }
-                $res['in'] = substr($res['in'], 0, -1);
-            }
-            elseif ($this->table == 'comments'
-                    || $this->table == 'bodycontents')
-            {
-                // @TODO:
+        /*
+         *
+          // Tables that do NOT have brandID column but still need to be restricted by the associated brand
+          // users -> usergroup -> brand
+          // menulinks -> menu -> brand
+          // comments|body -> comment|article -> brand
+          if (in_array($this->table, array('users', 'menulinks', 'comments', 'bodycontents'))) {
+          if ($this->table == 'users') {
+          // users -> usergroup -> brand (brand has many usergroups, uses in:)
+          // get users where usergroupID in (all usergroupIDs belonging to brandID)
+          //                $res['where'] = 'usergroupID';
+          //                $Usergroup    = new Usergroup();
+          //                $ins          = $Usergroup->getWhere(array('brandID' => $brandID));
+          //                foreach ($ins as $in) {
+          //                    $res['in'] .= $in['usergroupID'] . ",";
+          //                }
+          //                $res['in'] = substr($res['in'], 0, -1);
+          } elseif ($this->table == 'menulinks') {
+          // menulinks -> menu -> brand (brand has many menus, uses in:)
+          // get menulinks where menuID in (all menuIDs belonging to brandID)
+          $res['where'] = 'menuID';
+          $Menu         = new Menu();
+          $ins          = $Menu->getWhere(array('brandID' => $brandID));
+          foreach ($ins as $in) {
+          $res['in'] .= $in['menuID'] . ",";
+          }
+          $res['in'] = substr($res['in'], 0, -1);
+          } elseif ($this->table == 'comments' || $this->table == 'bodycontents') {
+          // @TODO:
+          // commentID/bodyContentID => parentItemTypEID => parentItemID => articleID/commentID => brandID
+          // comments/body -> parentitem (typeid) -> brand (brand has many parent items, uses in:)
+          // get comments where parentitem(of parentitemTypeID) in (all parentItemIDs (oftypeID) belonging to brandID)
+          // need to do article, page, comment...
+          }
 
-                // commentID/bodyContentID => parentItemTypEID => parentItemID => articleID/commentID => brandID
-                
-                // comments/body -> parentitem (typeid) -> brand (brand has many parent items, uses in:)
-
-                // get comments where parentitem(of parentitemTypeID) in (all parentItemIDs (oftypeID) belonging to brandID)
-                
-                // need to do article, page, comment...
-            }
-
-            return $res;
-        }
+          return $res;
+          }
+         *
+         *
+         */
 
         // Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
         if (empty($_SESSION['user'])
-                || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
-                || $_SESSION['user']['usergroup']['brandID'] != 1)
+            || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
+            || $_SESSION['user']['usergroup']['brandID'] != 1)
         {
             $res['where'] = array('brandID' => $brandID);
         }
-        
+
         return $res;
     }
 
     /**
-     * Gets all items
-     * 
-     * @uses aclWhere
-     * 
-     * @return array
-     */
-    public function getAll()
-    {
-        $cols     = "*";
-        $aclWhere = self::aclWhere();
-        
-        if (!empty($aclWhere['where'])) { $where = $aclWhere['where']; } else { $where = NULL; }
-        if (!empty($aclWhere['in'])) { $in = $aclWhere['in']; } else { $in = NULL; }
-        $order    = NULL;
-        $table    = NULL;
-        
-        if ($in != NULL && !is_array($in))
-        {
-            $in = explode(',', $in);
-        }
-        
-        $all      = self::select($cols, $where, $order, $table, $in);
-        
-        // Load Extended Item Info
-        $newItems = array();
-        foreach ($all as $item)
-        {
-            /* Controller specific: */
-            $model = $this->model;
-            $item  = $model::LoadExtendedItem($item); //."sController";
-            $newItems[] = $item;
-        }
-        
-        return $newItems;
-    }
-
-    /**
      * Returns single item of results or false if none found
-     * 
+     *
      * @uses getWhere
-     * 
+     *
      * @param array $where
      * @param array $in
      * @return boolean|array
      */
-    public function getSingle($where, $in = NULL)
+    public function getSingle($where, $in = NULL, $loadChildren = FALSE)
     {
-        $res = self::getWhere($where, $in);
-        if (!empty($res))
+        $_model = $this;
+        $res    = $_model->getWhere($where, NULL, NULL, NULL, $in);
+        if (empty($res))
         {
-            return $res[0];
+            return false;
         }
-        return false;
+        $item = $res[0];
+        if ($loadChildren !== FALSE)
+        {
+            $model = $this->model;
+            $item  = $model::LoadExtendedItem($item);
+        }
+        return $item;
     }
-    
+
     /**
      * Gets items matching where clause
-     * 
+     *
      * @uses aclWhere
-     * 
+     *
      * @param array $where = array('col' => 'findMe');
-     * 
+     *
      * @return array
      */
-    public function getWhere($where, $in = NULL)
+    public function getWhere($where = NULL, $cols = NULL, $order = NULL, $aclWhere = NULL, $in = NULL, $loadChildren = FALSE)
     {
-        $cols     = "*";
+        if ($where == NULL)
+        {
+            $where = array();
+        }
+        if (empty($cols))
+        {
+            $cols = "*";
+        }
 
-        // Every query is restricted by BrandID here
-        $aclWhere = self::aclWhere();
-        
-        if (!empty($aclWhere['where'])) { $_where = $aclWhere['where']; } else { $_where = NULL; }
-        if (!empty($aclWhere['in'])) { $_in = $aclWhere['in']; } else { $_in = NULL; }
-        if (is_array($_where)) {
+        // If we don't pass in a custom aclWhere:
+        // Use aclWhere() which adds BrandID to WHERE clause if logged in user is a non-Administrator
+        if (empty($aclWhere) || (empty($aclWhere['where']) && empty($aclWhere['in'])))
+        {
+            //Errors::debugLogger("Applying ACL to getWhere to append BrandID...");
+            $aclWhere = self::aclWhere();
+        }
+
+        // ACL Where may contain an array of IDs to use in a 'WHERE x IN (1,2,3)' query
+        if (!empty($aclWhere['where']))
+        {
+            $_where = $aclWhere['where'];
+        }
+        else
+        {
+            $_where = NULL;
+        }
+        if (!empty($aclWhere['in']))
+        {
+            $_in = $aclWhere['in'];
+            if (!is_array($_in))
+            {
+                $_in = explode(',', $_in);
+            }
+        }
+        else
+        {
+            $_in = NULL;
+        }
+
+        // Combine original where with ACL where
+        if (is_array($_where) && is_array($where))
+        {
             $where = array_replace_recursive($where, $_where);
         }
-        if (is_array($_in)) {
+        else
+        {
+            if (!empty($_where))
+            {
+                $where = $_where; // Overwrite with ACL where?
+            }
+        }
+        if (is_array($_in) && is_array($in))
+        {
             $in = array_replace_recursive($in, $_in);
         }
-        
+        else
+        {
+            if (!empty($_in))
+            {
+                $in = $_in; // Overwrite with ACL in?
+            }
+        }
+
+        // Get Items based on ACL where
         // Can append/merge: $aclWhere['col'] = 'val' (--unless using $in--);
-        $order = NULL;
         $table = NULL;
         $all   = self::select($cols, $where, $order, $table, $in);
 
+        if ($loadChildren !== FALSE)
+        {
+            $model = $this->model;
+            $new   = array();
+            foreach ($all as $item)
+            {
+                $new[] = $model::LoadExtendedItem($item);
+            }
+            $all = $new;
+        }
         return $all;
     }
 
     /**
      * Load additional model specific info when getWhere is called
-     * 
+     *
      * @param type $item
      */
     public static function LoadExtendedItem($item)
@@ -460,19 +559,21 @@ class Model extends Database
 
     /**
      * saveBodyContents
-     * 
+     *
      * Used to save body contents of x parent item (used by multiple models)
-     * 
+     *
      * @since v00.00.0000
-     * 
+     *
      * @version v00.00.0000
-     * 
+     *
      * @param type $parentItemID
      * @param type $parentItemTypeID
      * @param type $bodyContentText
      * @param type $userID
-     * 
+     *
      * @return int Body ID
+     *
+     * @TODO Move to bodyContents model
      */
     public function saveBodyContents($parentItemID, $parentItemTypeID, $bodyContentText, $userID)
     {
@@ -487,7 +588,8 @@ class Model extends Database
         $data  = array('DEFAULT', $parentItemID, $parentItemTypeID, $bodyContentActive, $bodyContentDateModified, $bodyContentText, $userID);
         $final = array();
         $i     = 0;
-        foreach ($cols as $col) {
+        foreach ($cols as $col)
+        {
             $final[$col] = $data[$i];
             $i++;
         }
@@ -497,19 +599,21 @@ class Model extends Database
 
     /**
      * getBodyContents
-     * 
+     *
      * Used to get body contents of x parent item (used by multiple models)
-     * 
+     *
      * @since v00.00.0000
-     * 
+     *
      * @version v00.00.0000
-     * 
+     *
      * @param int $parentItemID
      * @param int $parentItemTypeID
      * @param int $bodyContentID Optional where clause
      * @param int $bodyContentActive Optional
-     * 
+     *
      * @return array SQL results
+     *
+     * @TODO Move to bodyContents model
      */
     public function getBodyContents($parentItemID, $parentItemTypeID, $bodyContentID = NULL, $bodyContentActive = NULL)
     {
@@ -522,13 +626,15 @@ class Model extends Database
             ':parentItemTypeID' => $parentItemTypeID);
 
         // bodyContentID
-        if ($bodyContentID !== NULL) {
+        if ($bodyContentID !== NULL)
+        {
             $this->sql .= " AND bodyContentID = :bodyContentID";
             $this->sqlData[':bodyContentID'] = $bodyContentID;
         }
 
         // bodyContentActive
-        if ($bodyContentActive !== NULL) {
+        if ($bodyContentActive !== NULL)
+        {
             $this->sql .= " AND bodyContentActive = :bodyContentActive";
             $this->sqlData[':bodyContentActive'] = $bodyContentActive;
         }
@@ -538,14 +644,16 @@ class Model extends Database
 
     /**
      * setBodyContentActive
-     * 
+     *
      * Sets all other body contents to inactive to make the chosen id active
-     * 
+     *
      * @param int $parentItemID
      * @param int $parentItemTypeID
      * @param int $bodyContentID
-     * 
+     *
      * @return type
+     *
+     * @TODO Move to bodyContents model
      */
     public function setBodyContentActive($parentItemID, $parentItemTypeID, $bodyContentID)
     {

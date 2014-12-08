@@ -15,6 +15,15 @@ class Article extends Model
         return $r[0]['refParentItemTypeID'];
     }
 
+    public function getWhere($where = NULL, $cols = NULL, $order = NULL, $aclWhere = NULL, $in = NULL, $loadChildren = FALSE)
+    {
+        if ($order == NULL)
+        {
+            $order = "brandID, articleName, articleDatePublished";
+        }
+        return parent::getWhere($where, $cols, $order, $aclWhere, $in, $loadChildren);
+    }
+    
     /**
      * Load additional model specific info when getWhere is called
      * 

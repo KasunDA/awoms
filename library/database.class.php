@@ -17,7 +17,14 @@ class Database
    * @var string $sql Database query sql
    * @var array $sqlData Database query data
    */
-  protected $db, $sql, $sqlData;
+  protected $sql, $sqlData;
+  
+  /*
+   * Instance of the database class
+   *
+   * @static Database $db
+   */
+  private static $db;
 
   /**
    * Constructor
@@ -25,14 +32,7 @@ class Database
    * @uses connect()
    */
   public function __construct() {
-    self::connect();
-  }
-
-  /**
-   * Destructor
-   */
-  public function __destruct() {
-    $this->db = NULL;
+      self::connect();
   }
 
   /**
@@ -45,19 +45,41 @@ class Database
    * @return PDO $db
    */
   public function connect() {
-    if (empty($this->db)) {
+    if (empty(self::$db)) {
       try {
         $dsn      = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME;
-        $this->db = new PDO($dsn, DB_USER, DB_PASSWORD, array(
+        self::$db = new PDO($dsn, DB_USER, DB_PASSWORD, array(
           PDO::ATTR_PERSISTENT       => true,
           PDO::ATTR_ERRMODE          => PDO::ERRMODE_EXCEPTION,
-          PDO::ATTR_EMULATE_PREPARES => true));
+          PDO::ATTR_EMULATE_PREPARES => true,
+          PDO::ATTR_TIMEOUT          => 30)); // @TODO DB_TIMEOUT Val
       } catch (PDOException $e) {
           trigger_error("Error #D001: Database issue. " . $e->getMessage(), E_USER_ERROR);
       }
     }
-    return $this->db;
+    return self::$db;
   }
+  
+    /*
+     * Gets an instance of the Database class
+     *
+     * @static $instance
+     * 
+     * @return Database An instance of the database singleton class
+     */
+    public static function getInstance()
+    {
+        if (empty(self::$db)) {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__, 10);
+            try {
+                self::$db = new \Database();
+            } catch (PDOException $e) {
+                trigger_error("Error #D002: " . $e->getMessage(), E_USER_ERROR);
+            }
+        }
+        Errors::debugLogger(__METHOD__.'@'.__LINE__, 10);
+        return self::$db;
+    }
 
   /**
    * query
@@ -87,10 +109,10 @@ class Database
       $results = false;
       
       // Allow for rollback if query fails
-      $this->db->beginTransaction();
+      self::$db->beginTransaction();
       
       // Prepared query statements
-      $sth     = $this->db->prepare($query);
+      $sth     = self::$db->prepare($query);
       
       // Execute prepared statement, with or without arguments
       if (empty($args)) {
@@ -117,8 +139,9 @@ class Database
           // Has arrays in args
           foreach ($args as $arg) {
             foreach ($arg as $k => $v) {
-              // Check items for "NULL" string to NULL conversion
-              if ($v === "NULL") {
+              // Check items values for "NULL" string to NULL conversion
+              // Check items values for "DEFAULT" string to NULL conversion
+              if ($v === "NULL" || $v === "DEFAULT") {
                 $arg[$k] = NULL;
               }
             }
@@ -132,7 +155,8 @@ class Database
           // No arrays in args
           foreach ($args as $a => $arg) {
             // Check items for "NULL" string to NULL conversion
-            if ($arg === "NULL") {
+            // Check items values for "DEFAULT" string to NULL conversion
+            if ($arg === "NULL" || $arg === "DEFAULT") {
               $args[$a] = NULL;
             }
           }
@@ -153,7 +177,7 @@ class Database
       }
       // INSERT/UPDATE/REPLACE: Return number of affected rows / array of affected ids ?
       elseif ($tokens[0] == "INSERT" || $tokens[0] == "UPDATE" || $tokens[0] == "REPLACE") { // <-- UPDATE/REPLACE supposed to be here? -- insert on duplicate key update = ?
-        $results = $this->db->lastInsertId();
+        $results = self::$db->lastInsertId();
       }
       // Else: Return number of affected rows
       else {
@@ -163,12 +187,19 @@ class Database
       //
       // Attempt to commit changes, triggers exception if fails
       //
-      $this->db->commit();
+      self::$db->commit();
 
     } catch (PDOException $e) {
       // Rollback changes on failure
-      $this->db->rollBack();
-      trigger_error("Error #D002: Query issue. Message: " . $e->getMessage() . "<hr />Query: " . $query, E_USER_ERROR);
+      self::$db->rollBack();
+      $errMsg = $e->getMessage();
+      #if (preg_match('/(table or view not found)/', $errMsg))
+      #{
+          // Setup wizard
+          #header('Location: /install/wizard');
+          #exit(0);
+      #}
+      trigger_error("Error #D003: Query issue. Message: " . $e->getMessage() . "<hr />Query: " . $query, E_USER_ERROR);
       return false;
     }
     // Return results

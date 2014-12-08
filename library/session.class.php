@@ -7,7 +7,7 @@
  *
  * PHP version 5.4
  * 
- * @author    Brock Hensley <Brock@AWOMS.com>
+ * @author    Brock Hensley <Brock@GPFC.com>
  * 
  * @version   v00.00.0000
  * 
@@ -34,7 +34,7 @@ class Session
     public function __construct()
     {
         Errors::debugLogger(__METHOD__, 100);
-        $this->DB = new Database();
+        $this->DB = new \Database();
         $this->doIKnowYou();
     }
 
@@ -140,20 +140,22 @@ class Session
 
         $Encryption = new Encryption();
         $enc        = $Encryption->encrypt($sessionData['expiresTime'], $sessionData['fingerprint'], serialize($sessionData));
-        $DB   = new Database();
+        $DB   = new \Database();
         $sql  = "INSERT INTO `sessions`
-					(`fingerprint`, `brandID`, `setTime`, `expiresTime`, `visitorIP`, `session`)
+					(`fingerprint`, `brandID`, `cartID`, `setTime`, `expiresTime`, `visitorIP`, `session`)
 					VALUES
-					(:fingerprint, :brandID, :setTime, :expiresTime, :visitorIP, :session)
+					(:fingerprint, :brandID, :cartID, :setTime, :expiresTime, :visitorIP, :session)
 					ON DUPLICATE KEY UPDATE
 						`fingerprint` = :fingerprint,
 						`brandID` = :brandID,
+                        `cartID` = :cartID,
 						`setTime` = :setTime,
 						`expiresTime` = :expiresTime,
 						`visitorIP` = :visitorIP,
 						`session` = :session";
         $sql_data   = array(':fingerprint' => $sessionData['fingerprint'],
             ':brandID'     => $sessionData['brandID'],
+            ':cartID'     => $sessionData['cartID'],
             ':setTime'     => $sessionData['setTime'],
             ':expiresTime' => $sessionData['expiresTime'],
             ':visitorIP'   => $sessionData['visitorIP'],
@@ -180,7 +182,7 @@ class Session
 
         $fingerprint = $_COOKIE[BRAND_LABEL];
         $this->sql   = "
-			SELECT brandID, setTime, expiresTime, visitorIP, session
+			SELECT brandID, cartID, setTime, expiresTime, visitorIP, session
 			FROM sessions
 			WHERE brandID = :brandID
               AND fingerprint = :fingerprint";
@@ -205,7 +207,9 @@ class Session
         if (!isset($this->data['session']['user_logged_in']))
         {
             $this->data['session']['user_logged_in'] = FALSE;
+            // @TODO assign to brands anonymous user group?
         }
+        
         Errors::debugLogger(__METHOD__ . ':  Session user_logged_in: ' . $this->data['session']['user_logged_in'], 100);
         return true;
     }
@@ -315,7 +319,13 @@ class Session
         }
 
         // Cookie parameters
+        
+        $Brand = new Brand();
+        $brand = $Brand->getSingle(array('brandID' => BRAND_ID));
+        
+        $this->data['session']['brand'] = $brand;
         $this->data['session']['brandID']    = BRAND_ID;
+        $this->data['session']['cartID']    = NULL;
         $this->data['session']['name']       = BRAND_LABEL;
         $this->data['session']['domain']     = "." . BRAND_DOMAIN; // Leading "." allows all sub-domains
         $this->data['session']['storeTheme'] = BRAND_THEME;

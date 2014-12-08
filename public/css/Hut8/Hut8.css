@@ -11,7 +11,7 @@
 /** Structure **/
 body {
     color: #FFF;
-    
+
     background-attachment: fixed;
     background-image: url(./images/structure/background.jpg);
     background-repeat: no-repeat;
@@ -63,7 +63,7 @@ body {
 
 /* Footer */
 .footer-container
-{    
+{
     background-image: url(./images/structure/background-tile.jpg);
     background-repeat: repeat-y;
     background-position: center;
@@ -77,14 +77,14 @@ ul.menu_footer_wood li
     height          : 65px;
 
     float: left;
-    
+
     margin-left: 15px !important;
     margin-bottom: 3px !important;
-    
+
     background-image: url(./images/items/wood_tile.png);
     background-repeat: no-repeat;
     background-position: 50% 50%;
-    
+
     text-align: center;
 }
 ul.menu_footer_wood li a {
@@ -96,7 +96,7 @@ ul.menu_footer_wood li a {
     padding: 10px 15px;
     color: #FFF;
     font-family: Daniel Bold, Daniel;
-    font-size: 1.1em;    
+    font-size: 1.1em;
     font-weight: normal;
 
     *display  : inline; /* haslayout for IE6/7 */
@@ -133,7 +133,7 @@ h1{
 {
     width: 300px;
     margin-left: 100px;
-    float: left;    
+    float: left;
 }
 .login_form_right_col
 {
@@ -144,7 +144,7 @@ h1{
 {
     padding-left: 20px;
     padding-top: 15px;
-    
+
     background-attachment: scroll;
     background-image: url(./images/items/clear-box.png);
     background-repeat: no-repeat;
@@ -174,4 +174,26 @@ h1{
 .ws_images img
 {
     margin: 0px !important;
+}
+
+.muted
+{
+    color: #e5e5e5 !important;
+}
+
+/* Form Action */
+table.form_actions
+{
+    background-color: tan;
+}
+
+/* Table Bordered */
+table.bordered, table.bordered_outside
+{
+    border: 2px solid tan !important;
+}
+table.bordered th,
+table.bordered td
+{
+    border: 1px solid tan !important;
 }

@@ -2,10 +2,18 @@
 
 class Domain extends Model
 {
-    protected static function getDomainColumns()
+    protected static function getColumns()
     {
-        $cols = array('domainID', 'brandID', 'domainName', 'domainActive', 'parentDomainID');
+        $cols = array('domainID', 'brandID', 'domainName', 'domainActive', 'parentDomainID', 'storeID');
         return $cols;
+    }
+
+    public function getWhere($where = NULL, $cols = NULL, $order = NULL, $aclWhere = NULL, $in = NULL, $loadChildren = FALSE)
+    {
+        if ($order == NULL) {
+            $order = "brandID, storeID, parentDomainID, domainName";
+        }
+        return parent::getWhere($where, $cols, $order, $aclWhere, $in, $loadChildren);
     }
 
     /**
@@ -15,9 +23,24 @@ class Domain extends Model
      */
     public static function LoadExtendedItem($item)
     {
-        $Brand         = new Brand();
-        $b = $Brand->getSingle(array('brandID'     => $item['brandID'], 'brandActive' => 1));
-        $item['brand'] = $b;
+//        if (empty($item['brand']))
+//        {
+//            $Brand         = new Brand();
+//            $b             = $Brand->getSingle(array('brandID'     => $item['brandID'], 'brandActive' => 1));
+//            $item['brand'] = $b;
+//        }
+
+        if (empty($item['rewriteRules'])) {
+            $RewriteMapping       = new RewriteMapping();
+            $rw                   = $RewriteMapping->getWhere(array('domainID' => $item['domainID']));
+            $item['rewriteRules'] = $rw;
+        }
+
+        if (!empty($item['storeID']) && empty($item['store'])) {
+            $Store         = new Store();
+            $s             = $Store->getSingle(array('storeID' => $item['storeID']));
+            $item['store'] = $s;
+        }
 
         return $item;
     }

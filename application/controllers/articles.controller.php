@@ -61,7 +61,7 @@ class ArticlesController extends Controller
      * 
      * @return boolean
      */
-    public static function createStepFinish($id)
+    public static function createStepFinish($id, $data)
     {
         // Save article body
         $Article       = new Article();
@@ -72,17 +72,6 @@ class ArticlesController extends Controller
         return true;
     }
 
-    /**
-     * Pre-selects brand ID
-     * 
-     * @param int $ID
-     * @param array $data
-     */
-    public function prepareFormCustom($ID = NULL, $data)
-    {
-        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-        parent::prepareForm($ID, $data['inp_brandID']);
-    }
 
 //    /**
 //     * View

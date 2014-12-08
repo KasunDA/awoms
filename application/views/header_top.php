@@ -15,8 +15,8 @@
                     <?php
                 }
                 ?>
-                <li><a href="/users/home"><?php echo $_SESSION['user']['userName']; ?></a></li>
-                <li><a href="/users/logout">Log Out</a></li>
+                <li><a href="/profile"><?php echo $_SESSION['user']['userName']; ?></a></li>
+                <li><a href="/logout">Log Out</a></li>
                 <?php
             } else {
                 ?>

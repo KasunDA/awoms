@@ -34,11 +34,11 @@
   text-decoration: none;
   display: block;
   margin: 0;
-  -webkit-transition: color .2s ease;
-  -moz-transition: color .2s ease;
-  -ms-transition: color .2s ease;
-  -o-transition: color .2s ease;
-  transition: color .2s ease;
+  -webkit-transition: color .2s ease !important;
+  -moz-transition: color .2s ease !important;
+  -ms-transition: color .2s ease !important;
+  -o-transition: color .2s ease !important;
+  transition: color .2s ease !important;
 }
 #cssmenu ul li ul {
   position: absolute;
@@ -74,7 +74,7 @@
   height: 0;
   width: 0;
   border: 3px solid transparent;
-  border-left-color: #ffffff;
+  border-left-color: #ffffff !important;
   z-index: 2;
   top: 15px;
   right: 15px;
@@ -83,7 +83,7 @@
   font-size: 14px;
   font-weight: 400;
   text-transform: none;
-  color: #000000;
+  color: #000000 !important;
   letter-spacing: 0;
   display: block;
   width: 140px;
@@ -91,7 +91,7 @@
 }
 #cssmenu ul li ul li:hover > a,
 #cssmenu ul li ul li.active > a {
-  color: #2b5c97;
+  color: #2b5c97 !important;
 }
 #cssmenu ul li ul li:hover:after,
 #cssmenu ul li ul li.active:after {
@@ -141,7 +141,7 @@
   display: block;
   content: '';
   border: 4px solid transparent;
-  border-top-color: #2b5c97;
+  border-top-color: #2b5c97 !important;
   z-index: 2;
   height: 0;
   width: 0;
@@ -150,7 +150,7 @@
   top: 21px;
 }
 #cssmenu > ul > li > a {
-  color: #ffffff;
+  color: #ffffff !important;
   padding: 15px 20px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -165,15 +165,15 @@
 }
 #cssmenu > ul > li:hover > a,
 #cssmenu > ul > li.active > a {
-  color: #000000;
+  color: #000000 !important;
 }
 #cssmenu > ul > li:hover > a:after,
 #cssmenu > ul > li.active > a:after {
-  background: #000000;
+  background: #000000 !important;
 }
 #cssmenu > ul > li:hover > a:before,
 #cssmenu > ul > li.active > a:before {
-  border-top-color: #ffffff;
+  border-top-color: #ffffff !important;
 }
 #cssmenu > ul > li:hover > ul {
   left: 0;
@@ -235,14 +235,14 @@
   }
   #cssmenu ul li ul li a {
     padding: 8px 20px 8px 35px;
-    color: #ffffff;
+    color: #ffffff !important;
     width: auto;
   }
   #cssmenu ul li ul ul li a {
     padding: 8px 20px 8px 50px;
   }
   #cssmenu ul li ul li:hover > a {
-    color: #000000;
+    color: #000000 !important;
   }
   #cssmenu #menu-button {
     display: block;
@@ -255,7 +255,7 @@
     font-weight: 700;
     font-size: 14px;
     letter-spacing: 1px;
-    color: #ffffff;
+    color: #ffffff !important;
     cursor: pointer;
   }
   #cssmenu #menu-button:after {

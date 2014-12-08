@@ -2,51 +2,64 @@
 
 class ACL extends Model
 {
-    protected static function getACLColumns()
+
+    protected static function getColumns()
     {
         $cols = array('brandID', 'usergroupID', 'userID', 'controller', 'create', 'read', 'update', 'delete');
         return $cols;
     }
 
+    public function getWhere($where = NULL, $cols = NULL, $order = NULL, $aclWhere = NULL, $in = NULL, $loadChildren = FALSE)
+    {
+        if ($order == NULL)
+        {
+            $order = "brandID, usergroupID, userID, `controller`, `create`, `read`, `update`, `delete`";
+        }
+        return parent::getWhere($where, $cols, $order, $aclWhere, $in, $loadChildren);
+    }
+
     /**
      * Checks User Access Rights
-     * 
+     *
      * Check logged in users authorization for requested action
-     * 
+     *
      * @param string $redirect What to return if no permissions: login | 403 | false
-     * 
+     *
      * @uses ReturnFailedAuth
-     * 
+     *
      * @return boolean|header(Location:...
      */
-    public static function IsUserAuthorized($controller, $action, $redirect = NULL)
+    public static function IsUserAuthorized($_controller, $_action, $redirect = NULL)
     {
         $ACL = new ACL();
-        
-        Errors::debugLogger(__METHOD__ . ': ' . $controller . '/' . $action, 90);
+
+        Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action, 90);
         // Allowed anonymous access:
         if (
-                (DEVELOPMENT_ENVIRONMENT === TRUE && $controller == "tests") ||
-                // Install Wizard
-                ($controller == "install" && $action == "wizard") ||
-                // Home
-                ($controller == "home" && $action == "home") ||
-                // Users login
-                ($controller == "users" && in_array($action, array('login', 'logout'))) ||
-                // Anonymous Page/Article/Comment/
-                (empty($_SESSION['user']) && in_array($controller, array('pages', 'articles', 'comments')) && in_array($action,
-                                                                                                                       array('read', 'readall')))
-        ) {
+            (DEVELOPMENT_ENVIRONMENT === TRUE && $_controller == "tests")
+            || ($_controller == "install")
+            || ($_controller == "home" && $_action == "home")
+            || ($_controller == "users" && in_array($_action, array('login', 'logout')))
+            || (
+            empty($_SESSION['user'])
+            && in_array($_controller, array('pages', 'articles', 'comments', 'stores'))
+            && in_array($_action, array('read', 'readall')
+            )
+            )
+        )
+        {
             return true;
         }
 
         #Errors::debugLogger("* Checking for Non-Anonymous User ACL *");
-        if (empty($_SESSION['user'])) {
+        if (empty($_SESSION['user']))
+        {
             return self::ReturnFailedAuth($redirect);
         }
 
         // User is logged in, allow access to /admin/home (/owners) - template does rest
-        if ($controller == 'admin' && $action == 'home') {
+        if ($_controller == 'admin' && $_action == 'home' || $_controller == 'tools')
+        {
             return true;
         }
 
@@ -56,30 +69,43 @@ class ACL extends Model
         $usergroupID = $_SESSION['user']['usergroup']['usergroupID'];
 
         // CRUD taken from controller/action
-        if ($action == 'create') {
+        if ($_action == 'create')
+        {
             $crud = "create";
-        } elseif ($action == 'readall' || $action == 'view' || $action = 'home') {
+        }
+        elseif ($_action == 'readall' || $_action == 'read' || $_action == 'home')
+        {
             $crud = "read";
-        } elseif ($action == 'update') {
+        }
+        elseif ($_action == 'update')
+        {
             $crud = "update";
-        } elseif ($action == 'delete') {
+        }
+        elseif ($_action == 'delete')
+        {
             $crud = "delete";
         }
 
         // Search in order of user -> brand/group -> group defaults
         // Brand's User Defaults override?
-        $test = $ACL->PermissionCheckUserLevel($userID, $controller, $crud);
-        if ($test === TRUE) {
+        $test = $ACL->PermissionCheckUserLevel($userID, $_controller, $crud);
+        if ($test === TRUE)
+        {
             return true;
-        } elseif ($test === FALSE) {
+        }
+        elseif ($test === FALSE)
+        {
             return self::ReturnFailedAuth($redirect);
         }
 
         // Group Defaults:
-        $test = $ACL->PermissionCheckDefaultGroupLevel($usergroupID, $controller, $crud);
-        if ($test === TRUE) {
+        $test = $ACL->PermissionCheckDefaultGroupLevel($usergroupID, $_controller, $crud);
+        if ($test === TRUE)
+        {
             return true;
-        } elseif ($test === FALSE) {
+        }
+        elseif ($test === FALSE)
+        {
             return self::ReturnFailedAuth($redirect);
         }
 
@@ -89,7 +115,7 @@ class ACL extends Model
 
     /**
      * Check ACL by User ID
-     * 
+     *
      * @param type $userID
      * @param type $controller
      * @param type $crud
@@ -97,13 +123,15 @@ class ACL extends Model
      */
     public function PermissionCheckUserLevel($userID, $controller, $crud)
     {
-        $results = self::getSingle(array('userID' => $userID,
-            'controller' => $controller));
+        $results = self::getSingle(array('userID'     => $userID,
+                'controller' => $controller));
 
-        if (!empty($results)) {
+        if (!empty($results))
+        {
 
             Errors::debugLogger(__METHOD__ . ': Found user specific ACL (' . $results[$crud] . ')...', 90);
-            if ($results[$crud] == 1) {
+            if ($results[$crud] == 1)
+            {
                 // Access explicitly ALLOWED:
                 Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 90);
                 return true;
@@ -118,7 +146,7 @@ class ACL extends Model
 
     /**
      * Check ACL by Group ID
-     * 
+     *
      * @param type $usergroupID
      * @param type $controller
      * @param type $crud
@@ -127,11 +155,13 @@ class ACL extends Model
     public function PermissionCheckDefaultGroupLevel($usergroupID, $controller, $crud)
     {
         $results = self::getSingle(array('usergroupID' => $usergroupID,
-            'controller' => $controller));
+                'controller'  => $controller));
 
-        if (!empty($results)) {
+        if (!empty($results))
+        {
             Errors::debugLogger(__METHOD__ . ': Found group specific ACL (' . $results[$crud] . ')...', 90);
-            if ($results[$crud] == 1) {
+            if ($results[$crud] == 1)
+            {
                 // Access explicitly ALLOWED:
                 Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 90);
                 return true;
@@ -146,27 +176,53 @@ class ACL extends Model
 
     /**
      * Handle Access Denied
-     * 
+     *
      * @param string $redirect
      * @return boolean
      */
     public static function ReturnFailedAuth($redirect)
     {
         #Errors::debugLogger(__METHOD__, 90);
-        if ($redirect == "login" && empty($_SESSION['user'])) {
+        if ($redirect == "login" && empty($_SESSION['user']))
+        {
             #$_SESSION['ErrorMessage'] = "Login Required";
             #$_SESSION['ErrorRedirect'] = NULL;
             #$_SESSION['ErrorRedirect'] = "/users/login?returnURL=/" . $_SESSION['controller'] . "/" . $_SESSION['action'];
             #Session::saveSessionToDB();
             Errors::debugLogger("* ACL Returning False -> Login *");
-            if ($_SESSION['controller'] == 'admin' && $_SESSION['action'] == 'home') {
+            if (!empty($_SESSION['controller'])
+                    && !empty($_SESSION['action'])
+                    && $_SESSION['controller'] == 'admin'
+                    && $_SESSION['action'] == 'home')
+            {
                 $returnURL = "owners";
-            } else {
-                $returnURL = $_SESSION['controller'] . '/' . $_SESSION['action'];
             }
+            else
+            {
+                $q = "";
+                if (!empty($_SESSION['query']))
+                {
+                    $q = "/" . implode('/', $_SESSION['query']);
+                }
+                if (!empty($_SESSION['controller'])
+                    && !empty($_SESSION['action']))
+                {
+                    $returnURL = $_SESSION['controller'] . '/' . $_SESSION['action'] . $q;
+                }
+            }
+            
+            # Custom return URL from session (ie files)
+            if (!empty($_SESSION['returnURL']))
+            {
+                $returnURL = $_SESSION['returnURL'];
+            }
+            
+            Errors::debugLogger("Redirecting to login with returnURL: ".$returnURL);
             header('Location: /users/login?returnURL=/' . $returnURL);
             exit(0);
-        } elseif ($redirect == "403" || ($redirect == "login" && !empty($_SESSION['user']))) {
+        }
+        elseif ($redirect == "403" || ($redirect == "login" && !empty($_SESSION['user'])))
+        {
             #$_SESSION['ErrorMessage'] = "Access Denied";
             #$_SESSION['ErrorRedirect'] = NULL;
             #$_SESSION['ErrorRedirect'] = "/users/login?access=1&returnURL=/" . $_SESSION['controller'] . "/" . $_SESSION['action'];
@@ -174,23 +230,25 @@ class ACL extends Model
             Errors::debugLogger("* ACL Returning False -> 403 *");
             header('Location: /users/login?access=1&returnURL=/' . $_SESSION['controller'] . '/' . $_SESSION['action']);
             exit(0);
-        } else {
+        }
+        else
+        {
             Errors::debugLogger("* ACL Returning False -> False *");
             return false;
         }
     }
-    
+
     public static function UpdateAccess($brandID, $usergroupID, $userID, $controller, $create, $read, $_update, $delete)
     {
         $ACL = new ACL();
-        $ACL->update(array('brandID' => $brandID,
+        $ACL->update(array('brandID'     => $brandID,
             'usergroupID' => $usergroupID,
-            'userID' => $userID,
-            'controller' => $controller,
-            'create' => $create,
-            'read' => $read,
-            'update' => $_update,
-            'delete' => $delete));
+            'userID'      => $userID,
+            'controller'  => $controller,
+            'create'      => $create,
+            'read'        => $read,
+            'update'      => $_update,
+            'delete'      => $delete));
     }
 
 }

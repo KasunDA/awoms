@@ -9,8 +9,9 @@ class TestsController extends Controller
 
     public function home($args = NULL)
     {
-
     }
     
-    
+    public function servertest()
+    {
+    }
 }

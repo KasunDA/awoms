@@ -91,7 +91,7 @@ class CommentsController extends Controller
      * 
      * @return boolean
      */
-    public static function createStepFinish($id)
+    public static function createStepFinish($id, $data)
     {
         // Save comment body
         $Comment = new Comment();

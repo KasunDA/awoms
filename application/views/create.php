@@ -1,9 +1,29 @@
 <?php
-// Handle submitted form
-if ($this->step == 2)
+if ($this->step == 1)
 {
+    // Create/Update Form
+    if (
+        (!empty($formID))
+        && /* ACL: Must have one of Create/Update/Delete access for form */
+        (ACL::IsUserAuthorized($this->controller, "create")
+        || ACL::IsUserAuthorized($this->controller, "update")
+        || ACL::IsUserAuthorized($this->controller, "delete"))
+    )
+    {
+        ?>
+        <div class='step1_output'>
+            <?php
+            include(ROOT . DS . 'application' . DS . 'views' . DS . $this->controller . DS . 'createForm.php');
+            ?>
+        </div>
+        <?php
+    }
+}
+elseif ($this->step == 2)
+{
+    // Handle submitted form
     // Custom Label
-    $label = trim(ucfirst($this->controller), "s");
+    $label = preg_replace("/s$/", "", ucwords($this->controller));
     if ($label == "Usergroup")
     {
         $label = "Group";
@@ -12,40 +32,38 @@ if ($this->step == 2)
     // Success or Failure message
     if (is_bool($success) && $success == TRUE)
     {
-?>
+        ?>
         <!-- Success Results -->
         <div id="divInnerResults" class="alert success">
-          <?php echo "<p>".$label." created successfully!</p>"; ?>
+            <?php echo "<p>" . $label . " " . $this->action . "d successfully!</p>"; ?>
+            <META http-equiv='refresh' content='0;URL=<?php echo "/" . $this->controller . "/readall"; ?>'/>
         </div>
-<?php
+        <?php
     }
     else
     {
-?>
+        ?>
         <!-- Failure Results -->
         <div id="divInnerResults" class="alert failure">
-          <?php
-            echo "<p>".$label." failed to create!</p>";
-            if (!empty($success)) { echo "<p>".$success."</p>"; } // Reason msg
-          ?>
+            <?php
+            echo "<p>" . $label . " failed to " . $this->action . "!</p>";
+            if (!empty($success))
+            {
+                echo "<p>" . $success . "</p>";
+            } // Reason msg
+            ?>
         </div>
-<?php
-        // Important return here to avoid list/form
-        return;
+        <?php
     }
-}
+    ?>
 
-
-// Readall
-if (file_exists(ROOT.DS.'application'.DS.'views'.DS.BRAND.DS.$this->controller.DS.'readall.php'))
-{
-    include(ROOT.DS.'application'.DS.'views'.DS.BRAND.DS.$this->controller.DS.'readall.php');
-}
-elseif (file_exists(ROOT.DS.'application'.DS.'views'.DS.$this->controller.DS.'readall.php'))
-{
-    include(ROOT.DS.'application'.DS.'views'.DS.$this->controller.DS.'readall.php');
-}
-else
-{
-    include('readall.php');
+    <script>
+        // Submitted form reloads list with new data which duplicates the forms etc.
+        // This hides the orig readall data and button
+        console.log('Hiding original step1 page output...');
+        $('div.step1_output').hide();
+        // Add Button
+        $('#openModalCreate<?php echo ucfirst($this->controller); ?>').hide();
+    </script>
+    <?php
 }

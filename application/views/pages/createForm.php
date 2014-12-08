@@ -2,7 +2,8 @@
   <input type='hidden' name='step' value='2' />
   <input type='hidden' name='inp_pageID' value='<?php echo $pageID; ?>' />
 
-  <table cellpadding='2' cellspacing='0'>
+    <h1>Page Information</h1>
+    <table class="bordered">
 
 <?php
     // Brand List - Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
@@ -76,7 +77,7 @@ if (!empty($menuChoiceList))
                 </td>
                 <td>
 
-                    <select name='inp_menuID'>
+                    <select name='inp_menuID' style="width:400px">
                     <?=$menuChoiceList;?>
                     </select>
 <?php
@@ -104,6 +105,28 @@ if (!empty($inp_pageShowTitle)) {
 ?>
             <input type="radio" name="inp_pageShowTitle" value="1"/>&nbsp;Yes
             <input type="radio" name="inp_pageShowTitle" value="0" checked/>&nbsp;No
+<?php
+}
+?>
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td>
+            Login Restricted
+        </td>
+        <td>
+<?php
+if (!empty($inp_pageRestricted)) {
+?>
+            <input type="radio" name="inp_pageRestricted" value="1" checked/>&nbsp;Yes
+            <input type="radio" name="inp_pageRestricted" value="0"/>&nbsp;No
+<?php
+} else {
+?>
+            <input type="radio" name="inp_pageRestricted" value="1"/>&nbsp;Yes
+            <input type="radio" name="inp_pageRestricted" value="0" checked/>&nbsp;No
 <?php
 }
 ?>
@@ -160,9 +183,7 @@ if (!empty($inp_pageShowTitle)) {
       </td>
       <td>
         <textarea id='inp_pageBody' name='inp_pageBody' cols='60' rows='8' class="tinymce" style="min-height: 445px; min-width: 680px;"><?php
-        
           $tinyMCEInputID = "inp_pageBody";
-        
           if (isset($inp_pageBody)) {
             echo $inp_pageBody['bodyContentText']; // @todo [] NL to BR ---- WYSIWYG!
           }
@@ -247,4 +268,29 @@ if (!empty($page['pageJavaScript']))
     </tr>
 
   </table>
+    
+    <!-- Form Action Buttons -->
+    <table class="form_actions">
+        <tr>
+            <td>
+                <?php
+                if ($this->action != "create"
+                        && ACL::IsUserAuthorized($this->controller, "delete")) {
+                ?>
+                <button type="button" class="callAPI button_delete" name="<?=$this->controller;?>" value="delete">
+                    Delete
+                </button>
+                <?php
+                }
+                ?>
+                <button type="button" class="callAPI button_cancel" name="<?=$this->controller;?>" value="cancel">
+                    Cancel
+                </button>
+                <button type="button" class="callAPI button_save" name="<?=$this->controller;?>" value="<?=$this->action;?>">
+                    Save
+                </button>
+            </td>
+        </tr>
+    </table>
+
 </form>

@@ -21,15 +21,18 @@ class PagesController extends Controller
      */
     public static function createStepInput($k, $v)
     {
+        //Errors::debugLogger(__FILE__.'@'.__LINE__.' createStepInput...',10);
         // Page info and body are in separate tables
         // MenuID on creation to create menu link
         if (in_array($k, array('inp_pageBody', 'inp_menuID', 'inp_pageAlias'))) {
+            //Errors::debugLogger(__FILE__."@".__LINE__." k:$k = v:$v",10);
             self::$staticData[$k] = $v;
             return true;
         }
 
         // We need page title, brandID if creating menu
         if (in_array($k, array('inp_pageName', 'inp_brandID'))) {
+            //Errors::debugLogger(__FILE__."@".__LINE__." k:$k = v:$v",10);
             self::$staticData[$k] = $v;
         }
         return false;
@@ -44,6 +47,8 @@ class PagesController extends Controller
      */
     public static function createStepPreSave()
     {
+        Errors::debugLogger(__FILE__.'@'.__LINE__.' createStepPreSave...',10);
+        
         $data               = array();
         $data['pageActive'] = 1;
         $data['userID']     = $_SESSION['user']['userID'];
@@ -66,8 +71,10 @@ class PagesController extends Controller
      * 
      * @return boolean
      */
-    public static function createStepFinish($id)
+    public static function createStepFinish($id, $data)
     {
+        Errors::debugLogger(__FILE__.'@'.__LINE__.' createStepFinish...',10);
+        
         // Save page body
         $Page          = new Page();
         $bodyType      = $Page->getPageTypeID();
@@ -76,8 +83,9 @@ class PagesController extends Controller
         $Page->setBodyContentActive($id, $bodyType, $bodyContentID);
 
         // Create menu link?
-        if (!empty(self::$staticData['inp_menuID'])) {
-
+        if (!empty(self::$staticData['inp_menuID'])
+                && self::$staticData['inp_menuID'] != "NULL") {
+            Errors::debugLogger("Create menu link...");
             $display = self::$staticData['inp_pageName'];
             $alias   = self::$staticData['inp_pageAlias'];
             $actualURL = '/pages/read/' . $id;
@@ -115,50 +123,35 @@ class PagesController extends Controller
     }
 
     /**
-     * Pre-selects brand ID
-     * 
-     * @param int $ID
-     * @param array $data
+     * @param type $args
      */
-    public function prepareFormCustom($ID = NULL, $data)
+    public function read($args)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-        parent::prepareForm($ID, $data['inp_brandID']);
+        if (is_array($args)) {
+            $ID = $args[0];
+        } else {
+            $ID = $args;
+        }
+        
+        // Ensures page exists
+        parent::read($args);
+        
+        // ACL: Ensures user has permission to view requested page
+        if (!empty($this->template->data['page']['pageRestricted']))
+        {
+            // Page is restricted
+            if (empty($_SESSION['user_logged_in'])
+                    || !in_array($_SESSION['user']['usergroup']['usergroupName'], array('Administrators', 'Store Owners')))
+            {
+                // Access Denied
+                unset($this->template->data['page']);
+                $this->set('success', FALSE);
+                header('Location: /' . $this->controller . '/readall');
+            }
+        }
     }
-
-//    /**
-//     * View
-//     */
-//    public function view()
-//    {
-//        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-//        $getReq = func_get_args();
-//        $this->set('title', 'Pages :: View');
-//        if (empty($getReq[0])) {
-//            $this->set('resultsMsg', 'Missing page ID...');
-//            $this->set('page', NULL);
-//            $this->set('pageBody', NULL);
-//            return;
-//        }
-//        $pageID = $getReq[0];
-//
-//        // Get page info
-//        $page = $this->Page->getPageInfo($pageID);
-//        if (empty($page)
-//                || $page['pageActive'] == 0)
-//                // ACL @TODO
-//                // || $page['brandID'] != BRAND_ID)
-//        {
-//            $this->set('resultsMsg', 'Page not found...');
-//            $this->set('ACLAllowed', FALSE);            
-//            $this->set('page', NULL);
-//            $this->set('pageBody', NULL);
-//            return;
-//        }
-//
-//        // Get page body
-//        $pageBody = $this->Page->getBodyContents($pageID, $this->Page->getPageTypeID());
-//
+    
 //        // Get page comments
 //        $pageComments     = $this->Page->getPageComments($pageID);
 //        $pageCommentsList = array();

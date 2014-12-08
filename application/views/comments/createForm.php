@@ -21,7 +21,8 @@
     <input type='hidden' name='inp_parentItemID' value='<?php echo $parentItemID; ?>' />
 
 
-    <table cellpadding='2' cellspacing='0'>
+    <h1>Comment</h1>
+    <table class="bordered">
 
         <tr>
             <td>
@@ -62,18 +63,30 @@
 
         </div>
 
+    </table>
+
+    <!-- Form Action Buttons -->
+    <table class="form_actions">
         <tr>
             <td>
-        <center>
-            <!-- Submit -->
-            <button type='submit'>Go</button>
-        </center>
-        </td>
-        <td>
-            &nbsp;
-        </td>
+                <?php
+                if ($this->action != "create"
+                        && ACL::IsUserAuthorized($this->controller, "delete")) {
+                ?>
+                <button type="button" class="callAPI button_delete" name="<?=$this->controller;?>" value="delete">
+                    Delete
+                </button>
+                <?php
+                }
+                ?>
+                <button type="button" class="callAPI button_cancel" name="<?=$this->controller;?>" value="cancel">
+                    Cancel
+                </button>
+                <button type="submit" class="callAPI button_save" name="<?=$this->controller;?>" value="update">
+                    Save
+                </button>
+            </td>
         </tr>
-
     </table>
 
 </form>

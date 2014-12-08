@@ -3,7 +3,7 @@
 if ($this->step == 2)
 {
     // Custom Label
-    $label = trim(ucfirst($this->controller), "s");
+    $label = preg_replace("/s$/","", ucwords($this->controller));
     if ($label == "Usergroup")
     {
         $label = "Group";
@@ -30,9 +30,17 @@ if ($this->step == 2)
           ?>
         </div>
 <?php
-        // Important return here to avoid list/form
-        return;
     }
+?>
+    <script>
+        // Submitted form reloads list with new data which duplicates the forms etc.
+        // This hides the orig readall data and button
+        console.log('Hiding original step1 page output...');
+        $('div.step1_output').hide();
+        // Add Button
+        $('#openModalCreate<?php echo ucfirst($this->controller); ?>').hide();
+    </script>
+<?php
 }
 
 

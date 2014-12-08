@@ -14,7 +14,7 @@ class DomainsController extends Controller
      * 
      * @return boolean
      */
-    public static function createStepFinish($id)
+    public static function createStepFinish($id, $data)
     {
         $Domain = new Domain();
         $RewriteMapping = new RewriteMapping();
@@ -62,14 +62,14 @@ class DomainsController extends Controller
     public function GetDomainChoiceList($SelectedID = FALSE)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-        $domainsList = $this->Domain->getAll();
+        $domainsList = $this->Domain->getWhere();
         if (empty($domainsList)) {
             $domainChoiceList = "<option value=''>-- None --</option>";
         } else {
             $domainChoiceList = '';
             foreach ($domainsList as $domain) {
                 $selected = '';
-                if ($SelectedID != FALSE && $SelectedID != "ALL" && $domain['domainID'] == $SelectedID) {
+                if ($SelectedID !== FALSE && $SelectedID !== "ALL" && $domain['domainID'] == $SelectedID) {
                     $selected = " selected";
                 }
                 $domainChoiceList .= "<option value='" . $domain['domainID'] . "'" . $selected . ">" . $domain['domainName'] . "</option>";
@@ -77,16 +77,5 @@ class DomainsController extends Controller
         }
         return $domainChoiceList;
     }
-    
-    /**
-     * Pre-selects brand ID
-     * 
-     * @param int $ID
-     * @param array $data
-     */
-    public function prepareFormCustom($ID = NULL, $data)
-    {
-        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-        parent::prepareForm($ID, $data['inp_brandID']);
-    }
+
 }

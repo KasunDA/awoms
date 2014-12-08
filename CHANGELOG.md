@@ -26,4 +26,3 @@
  - [ ] favicon (per brand) 
  
  
- 

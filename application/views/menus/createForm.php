@@ -1,8 +1,9 @@
 <form id='<?php echo $formID; ?>'  method='POST'>
     <input type='hidden' name='step' value='2' />
     <input type='hidden' name='inp_menuID' value='<?php echo $menuID; ?>' />
-
-    <table cellpadding='2' cellspacing='0'>
+  
+    <h1>Menu Information</h1>
+    <table class="bordered">
 
 <?php
     // Brand List - Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
@@ -33,6 +34,33 @@
 
         <tr>
             <td>
+                Login Restricted
+            </td>
+            <td>
+<?php
+$checked = "";
+if (!empty($inp_menuRestricted)) {
+    $checked = " checked";
+}
+?>
+                <input type="hidden" id="inp_menuRestricted" name="inp_menuRestricted" value="0"/>
+                <input type="checkbox" id="inp_menuRestricted" name="inp_menuRestricted" value="1"<?php echo $checked; ?>/>
+            </td>
+        </tr>
+    
+        <tr>
+            <td>
+                Menu Type
+            </td>
+            <td>
+                <select id='inp_menuType' name='inp_menuType'/>
+                    <?=$menuTypeChoiceList;?>
+                </select>
+            </td>
+        </tr>
+    
+        <tr>
+            <td>
                 Menu Name
             </td>
             <td>
@@ -40,7 +68,7 @@
         if (isset($inp_menuName)) {
             echo $inp_menuName;
         } else {
-            echo "Default Heading Navigation Menu";
+            echo "Default";
         }
         ?>' size='40' autocomplete="off" />
             </td>
@@ -67,7 +95,6 @@
 
     </table>
 
-
 <?php
 $pageJavaScript[] = file_get_contents(ROOT.DS.'application'.DS.'views'.DS.'menus'.DS.'menuJavaScript.js');
 
@@ -76,8 +103,13 @@ $pageJavaScript[] = file_get_contents(ROOT.DS.'application'.DS.'views'.DS.'menus
 if ($menuID != 'DEFAULT')
 {
 ?>
+    <h1>Menu Links</h1>
+    <table class="bordered">
+        <tr>
+            <td>
+                
     <!-- Menu Links -->
-    <table cellpadding='2' cellspacing='0'>
+    <table class="no-border">
         <tr>
             <th align="center" width="100">
                 <button type="button" id="addLink" class="alert only-img add" title="Add Link"></button>
@@ -97,11 +129,11 @@ if ($menuID != 'DEFAULT')
         </tr>
     </table>
 
-    <table cellpadding='2' cellspacing='0' id="menuLinksTable">
+    <table id="menuLinksTable">
         
         <!-- Cloneable row -->
         <tr>
-            <td align="center" width="100">
+            <td align="center" width="120">
                 <button type="button" class="alert only-img up" title="Move Up"></button>
                 <button type="button" class="alert only-img down" title="Move Down"></button>
                 <button type="button" class="alert only-img remove" title="Remove"></button>
@@ -131,7 +163,7 @@ if (!empty($menu['links']))
 
 ?>
         <tr>
-            <th align="center" width="100">
+            <th align="center" width="120">
                 <button type="button" class="alert only-img up" title="Move Up"></button>
                 <button type="button" class="alert only-img down" title="Move Down"></button>
                 <button type="button" class="alert only-img remove" title="Remove"></button>
@@ -157,8 +189,38 @@ if (!empty($menu['links']))
 
     </table>
 
+    
+            </td>
+        </tr>
+    </table>
+    
 <?php
 }
 ?>
+
+    <!-- Form Action Buttons -->
+    <table class="form_actions">
+        <tr>
+            <td>
+                <?php
+                if ($this->action != "create"
+                        && ACL::IsUserAuthorized($this->controller, "delete")) {
+                ?>
+                <button type="button" class="callAPI button_delete" name="<?=$this->controller;?>" value="delete">
+                    Delete
+                </button>
+                <?php
+                }
+                ?>
+                <button type="button" class="callAPI button_cancel" name="<?=$this->controller;?>" value="cancel">
+                    Cancel
+                </button>
+                <button type="button" class="callAPI button_save" name="<?=$this->controller;?>" value="<?=$this->action;?>">
+                    Save
+                </button>
+            </td>
+        </tr>
+    </table>
+
     
 </form>
