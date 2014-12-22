@@ -332,6 +332,7 @@ class Errors
                             </div>";
                     }
                 }
+                echo $_SESSION['ErrorMessage'];
                 return true;
             }
             // Return False here lets PHP/XDebug take over and show us all warnings in dev mode
@@ -364,6 +365,7 @@ class Errors
         }
         
         // Always returning true to skip PHP error handler and allow template to finish
+        echo $_SESSION['ErrorMessage'];
         return true;
     }
 }

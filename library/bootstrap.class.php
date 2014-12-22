@@ -39,11 +39,9 @@ class Bootstrap
     public function __construct($url, $template)
     {
         Errors::debugLogger("*************** BS URL: " . $url . " template(m): " . $template);
-
         // Install Wizard and Server Tests skip
         if ($url != 'install/wizard' && $url != 'tests/servertest')
         {
-
             # Look up the requested domain and its matching brand
             self::lookupDomainBrand();
 
@@ -52,7 +50,6 @@ class Bootstrap
         }
         else
         {
-
             // Define constants @TODO Move to session?
             if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443)
             {
@@ -111,10 +108,13 @@ class Bootstrap
     {
         // Domain lookup
         $Domain = new Domain();
-        $domain = $Domain->getSingle(array('domainName' => $_SERVER['HTTP_HOST']));
+        
+        // Remove 'www.' prefix
+        $domainName = $_SERVER['HTTP_HOST'];
+        $domainName = str_replace("www.", "", $domainName);
+        $domain = $Domain->getSingle(array('domainName' => $domainName));
         if (empty($domain))
         {
-
             $Brand = new Brand();
             if (empty($Brand->getWhere()))
             {
@@ -123,7 +123,7 @@ class Bootstrap
                 exit(0);
             }
 
-            trigger_error("Domain not found that matches " . $_SERVER['HTTP_HOST']);
+            trigger_error("Domain not found that matches " . $domainName);
             die();
             exit();
         }
@@ -167,7 +167,6 @@ class Bootstrap
         }
 
         define('CART_ID', $cartID);
-
         define('BRAND_ID', $brand['brandID']);
         define('BRAND', $brand['brandName']);
         define('BRAND_URL', PROTOCOL . $domain['domainName'] . '/');

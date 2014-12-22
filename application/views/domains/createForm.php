@@ -45,6 +45,7 @@
     <tr class='<?php echo $class; ?>'>
       <td>
         Store
+        <p class='muted'>You can assign a domain name to a specific store to be brought to that store when visited</p>
       </td>
       <td>
         <select name='inp_storeID'>
@@ -60,7 +61,8 @@
       <td>
         <!-- Domain -->
         Domain Name
-        <small class='muted'>http://</small>
+        <small class='muted'>http://www.<br />Exclude www. prefix</small>
+        
       </td>
       <td>
         <input type='text' id='inp_domainName' name='inp_domainName' value='<?php

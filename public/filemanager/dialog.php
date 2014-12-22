@@ -86,7 +86,6 @@ else
         Errors::debugLogger("Grabbed RF.subfolder from Session into rfm_subfolder: ".$rfm_subfolder,10);
     }
     
-    // RFM_SUBFOLDER === ACL JAIL????????????        
     // ACL Starting Folder:
     $forcedACL = FAlSE;
     if (!empty($_SESSION['user'])
@@ -101,19 +100,19 @@ else
     {
         // Store Owner is logged on
         Errors::debugLogger("Store Owner is logged on, jailing rfm_subfolder to store folder...");
-
         // @TODO Owner with multiple stores
+        Errors::debugLogger("BrandID: ".$_SESSION['brand']['brandID'],10);
         Errors::debugLogger("UserID: ".$_SESSION['user']['userID'],10);
+        
         $Store = new Store();
         $store = $Store->getSingle(array('ownerID' => $_SESSION['user']['userID']));
         Errors::debugLogger("StoreID: ".$store['storeID'],10);
-        
-        Errors::debugLogger("Ensuring subdir is contained within Store #".$store['storeID']." folder...");
-        // subdir must begin with Stores/#/ including trailing slash
-        if (!preg_match('/^Stores\/'.$store['storeID'].'\//', $rfm_subfolder))
+        Errors::debugLogger("Ensuring subdir is contained within Brand #".$_SESSION['brand']['brandID']." Store #".$store['storeID']." folder...");
+        // subdir must begin with Brands/#/Stores/#/ including trailing slash
+        if (!preg_match('/^Brands\/'.$_SESSION['brand']['brandID'].'\/Stores\/'.$store['storeID'].'\//', $rfm_subfolder))
         {
-            Errors::debugLogger("Subdir is NOT yet jailed to Store folder!");
-            $storeSubdir = "Stores/".$store['storeID']."/";
+            Errors::debugLogger("Subdir is NOT yet jailed to Brand/Store folder!");
+            $storeSubdir = "Brands/".$_SESSION['brand']['brandID']."/Stores/".$store['storeID']."/";
             $rfm_subfolder = $storeSubdir; //.$rfm_subfolder;
             Errors::debugLogger("New ACL rfm_subfolder = ".$rfm_subfolder);
             // Creates folder for first use later...

@@ -1,118 +1,262 @@
-<h1>User Guide</h1>
-<hr/>
-<h2>Table of Contents</h2>
-<ul>
-<li><a href="#setupwizard">Setup Wizard</a></li>
-<li><a href="#brands">Brands</a></li>
-<li><a href="#domains">Domains</a></li>
-<li><a href="#menus">Menus</a></li>
-<li><a href="#services">Services</a></li>
-<li><a href="#stores">Stores</a></li>
-<li><a href="#groups">Groups</a></li>
-<li><a href="#advanced">Advanced</a></li>
-</ul>
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta class="anchor" name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>User Guide</title>
+        <link rel="stylesheet" href="public/css/normalize.min.css">
+        <link rel="stylesheet" href="public/css/main.css">
+        <!-- Modernizr (keep after styles and in header) -->
+        <script src="public/js/libs/modernizr-respond/2.6.2-respond-1.1.0/modernizr-respond.min.js"></script>
+        <script src="public/js/libs/jquery/2.1.1/jquery.min.js"></script>
+        <style>
+            .muted
+            {
+                color: #666 !important;
+            }
+            h2
+            {
+                border-top: 1px solid black;
+            }
+            .sub
+            {
+                display:inline-block;
+                margin-top: 20px !important;
+                margin-bottom: 0px !important;
+            }
+            a, a:visited, a:active
+            {
+                color: navy !important;
+            }
+            a:hover
+            {
+                color: darkorange !important;
+            }
+            a.anchor
+            {
+                color: black !important;
+            }
+            ul
+            {
+                margin:5px;
+            }
+        </style>
+    </head>
+    <body style="margin: 25px;">
+        <h1>User Guide</h1>
+        <h2>Table of Contents</h2>
+        <ul>
+            <li><a href="#setupwizard">Setup Wizard</a>
+                <ul>
+                    <li><a href="#wiz_sampledata">Sample Data</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#globaladmin">Global Administration</a>
+                <ul>
+                    <li><a href="#brands">Brands</a></li>
+                    <li><a href="#domains">Domains</a></li>
+                    <li>
+                        <a href="#menus">Menus</a>
+                        <ul>
+                            <li><a href="#mnu_menulinks">Menu Links</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#stores">Stores</a></li>
+                    <li><a href="#groups">Groups</a></li>
+                    <li>
+                        <a href="#advanced">Advanced</a>
+                        <ul>
+                            <li><a href="#adv_adminmenu">Admin Menu</a></li>
+                            <li><a href="#adv_menusloaded">Menus Loaded</a></li>
+                            <li><a href="#adv_templatesandthemes">Templates and Themes</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#training">Training Examples</a>
+                <ul>
+                    <li><a href="#trn_newbrand">Creating a new Brand</a></li>
+                </ul>
+            </li>
+        </ul>
 
-<a name="setupwizard"><h2>Setup Wizard</h2></a>
-First visit to the site will detect that the database needs to be prepared and redirect you to the Setup Wizard (/install/wizard). Server tests will be ran to ensure a few required components are present such as encryption and image libraries. If any test fails, you will need to install the missing component on the server and try again before the install wizard will be able to continue.
+        <a class="anchor" name="setupwizard"><h2>Setup Wizard</h2></a>
+        <p>First visit to the site will detect that the database needs to be prepared and redirect you to the Setup Wizard (<b><cite>/install/wizard</cite></b>). Server tests will be ran to ensure a few required components are present such as encryption and image libraries. If any test fails, you will need to install the missing component on the server and try again before the install wizard will be able to continue.</p>
 
-<h3>Sample Data</h3>
-After the installation completes, you are presented with the option to install Sample Data. This will add a few brands, groups, users, menus, etc. so that you can dive right into getting familiar with the system and not have to add these manually to start testing.
+        <a class="anchor" name="wiz_sampledata"><h3 class="sub">Sample Data</h3></a> - <a href='#top'>Top</a>
+        <p>After the installation completes, you are presented with the option to install Sample Data. This will add a few brands, groups, users, menus, etc. so that you can dive right into getting familiar with the system and not have to add these manually to start testing.</p>
 
-<h2>Global Administration</h2>
-<ol>
-<li>Enter the Global Administrator credentials and log in through the main brand's login page e.g. gpfc.com/users/login</li>
-</ol>
+        <a class="anchor" name="globaladmin"><h2>Global Administration</h2></a>
+        <p>The Global Administrator account created in the Setup Wizard is the only account that can create things such as Brands, Domains, Services, Menus, and Stores.</p>
+        <p>To log in as the Global Administrator account, you must log in through the main brand's login page (<b><cite>/users/login</cite></b> or if you have URL Rewrites enabled: <b><cite>/admin</cite></b>)</p>
 
-<a name="brands"><h3>Brands</h3></a>
-The brands page lists all brands in the system.
-<ul>
-<li>Brand Name</li>
-<li>Brand Label - This unique brand identifier is used for Theme folders and should <b>not</b> contain spaces, e.g. GPFC</li>
-<li>Brand Email</li>
-<li>Acive Theme - This theme name is used to decide which templates to use, e.g. default or specialthemename</li>
-</ul>
+        <a class="anchor" name="brands"><h3 class="sub">Brands</h3></a> - <a href='#top'>Top</a>
+        <p>The brands page lists all brands in the system.</p>
+        <p class='muted'><b>Note:</b> Some options may not be available until after the brand has been created.</p>
+        <ul>
+        <li>Brand Name</li>
+        <li>Brand Label - This unique brand identifier is used for Theme folders and should <b>not</b> contain spaces, e.g. GPFC</li>
+        <li>Brand Email</li>
+        <li>Acive Theme - This theme name is used to decide which templates to use, e.g. default or specialthemename</li>
+        </ul>
 
-<a name="domains"><h3>Domains</h3></a>
-Domains are associated to Brands and can also be specifically assigned to a Store of that Brand e.g. hutno8.com or hutno8zephyrhills.com
-<ul>
-<li>Brand - The brand to assign the domain to</li>
-<li>Store - (optional) The store to assign the domain to</li>
-<li>Domain Name - Exclude the www prefix</li>
-</ul>
+        <a class="anchor" name="domains"><h3 class="sub">Domains</h3></a> - <a href='#top'>Top</a>
+        <p>Domains are associated to Brands and can also be specifically assigned to a Store of that Brand e.g. hutno8.com or hutno8zephyrhills.com</p>
+        <ul>
+        <li>Brand - The brand to assign the domain to</li>
+        <li>Store - (optional) The store to assign the domain to</li>
+        <li>Domain Name - Exclude the www prefix</li>
+        </ul>
 
-<a name="menus"><h3>Menus</h3></a>
-Menus are associated to Brands. You can have multiple menus associated to a single Brand. For example you may have a "Top Menu" and a "Bottom Menu" and display those menus at different sections of the site.
-<ul>
-<li>Brand - The brand to associate this menu to</li>
-<li>Login Restricted - If this is enabled, the menu will only be displayed if the user is logged into the system. This is useful for menus only shown to Store Owners.</li>
-<li>Menu Type
-	<ul>
-	<li>Top Bar - Top horizontal bar navigation for Login/Logout/Profile links across top of page</li>
-	<li>Heading Nav - Main top navigation bar in heading or logo</li>
-	<li>Body - An inline menu used in page bodys</li>
-	<li>Footer Left/Middle/Right - Bottom menus used in footer</li>
-	</ul>
-</li>
-<li>Menu Name - Unique identifier</li>
-<li>Active - You can set a menu to Inactive to hide it without deleting it. Useful for seasonal menus.</li>
-</ul>
+        <a class="anchor" name="menus"><h3 class="sub">Menus</h3></a> - <a href='#top'>Top</a>
+        <p>Menus are associated to Brands. You can have multiple menus associated to a single Brand. For example you may have a "Top Menu" and a "Bottom Menu" and display those menus at different sections of the site.</p>
+        <ul>
+        <li>Brand - The brand to associate this menu to</li>
+        <li>Login Restricted - If this is enabled, the menu will only be displayed if the user is logged into the system. This is useful for menus only shown to Store Owners.</li>
+        <li>Menu Type
+                <ul>
+                <li>Top Bar - Top horizontal bar navigation for Login/Logout/Profile links across top of page</li>
+                <li>Heading Nav - Main top navigation bar in heading or logo</li>
+                <li>Body - An inline menu used in page bodys</li>
+                <li>Footer Left/Middle/Right - Bottom menus used in footer</li>
+                </ul>
+        </li>
+        <li>Menu Name - Unique identifier</li>
+        <li>Active - You can set a menu to Inactive to hide it without deleting it. Useful for seasonal menus.</li>
+        </ul>
 
-<h4>Menu Links</h4>
-Menu links are associated to Menus. Menu links can be manually added to menus, or automatically added to menus when creating a Page. Menu links can use Alias URLs for SEO so, for example, instead of the url being /stores/readall it can show as /locations.
-<ul>
-<li>Display - The display text of the link e.g. Locations</li>
-<li>Alias URL - The display url of the link e.g. /locations</li>
-<li>Actual Page - If the link is to a Page, you can select the Page here instead of having to manually enter the target URL</li>
-<li>URL - You can manually enter what the actual URL will translate to here e.g. /stores/readall</li>
-</ul>
+        <a class="anchor" name="mnu_menulinks"><h4 class="sub">Menu Links</h4></a> - <a href='#top'>Top</a>
+        <p>Menu links are associated to Menus. Menu links can be manually added to menus, or automatically added to menus when creating a Page. Menu links can use Alias URLs for SEO so, for example, instead of the url being /stores/readall it can show as /locations.</p>
+        <ul>
+        <li>Display - The display text of the link e.g. Locations</li>
+        <li>Alias URL - The display url of the link e.g. /locations</li>
+        <li>Actual Page - If the link is to a Page, you can select the Page here instead of having to manually enter the target URL</li>
+        <li>URL - You can manually enter what the actual URL will translate to here e.g. /stores/readall</li>
+        </ul>
 
-<a name="services"><h3>Services</h3></a>
-Services are associated to Brands. All possible services offered by a brand should be added to this list. At the store level, you can select which services apply to each store.
-<ul>
-<li>Brand</li>
-<li>Name</li>
-<li>Description</li>
-</ul>
+        <a class="anchor" name="services"><h3 class="sub">Services</h3></a> - <a href='#top'>Top</a>
+        <p>Services are associated to Brands. All possible services offered by a brand should be added to this list. At the store level, you can select which services apply to each store.</p>
+        <ul>
+        <li>Brand</li>
+        <li>Name</li>
+        <li>Description</li>
+        </ul>
 
-<a name="stores"><h3>Stores</h3></a>
-Stores are associated to Brands.
-<ul>
-<li>Brand</li>
-<li>Store Number</li>
-</ul>
+        <a class="anchor" name="stores"><h3 class="sub">Stores</h3></a> - <a href='#top'>Top</a>
+        <p>Stores are associated to Brands.</p>
+        <ul>
+        <li>Brand</li>
+        <li>Store Number</li>
+        </ul>
 
-<h4>Contacts</h4>
-The Owner contact can be selected after adding Users to the Store. This grants the selected user the Store Owner role.
+        <h4>Contacts</h4>
+        <p>The Owner contact can be selected after adding Users to the Store. This grants the selected user the Store Owner role.</p>
 
-<h4>Services</h4>
-Services can be selected for each store after being added to the Brand's services list. Only the selected services will show as available on the store page.
+        <h4>Services</h4>
+        <p>Services can be selected for each store after being added to the Brand's services list. Only the selected services will show as available on the store page.</p>
 
-<a name="groups"><h3>Groups</h3></a>
-Groups are associated to Brands. Currently there are these group types to choose from:
-<ul>
-<li>Administrators - Unrestricted access to all stores of assigned brand</li>
-<li>Store Owners - Store Owner access to assigned store of assigned brand</li>
-<li>Users - User access to assigned store of assigned brand</li>
-</ul>
+        <a class="anchor" name="groups"><h3 class="sub">Groups</h3></a> - <a href='#top'>Top</a>
+        <p>Groups are associated to Brands. Currently there are these group types to choose from:</p>
+        <ul>
+        <li>Administrators - Unrestricted access to all stores of assigned brand</li>
+        <li>Store Owners - Store Owner access to assigned store of assigned brand</li>
+        <li>Users - User access to assigned store of assigned brand</li>
+        </ul>
 
-<a name="pages"><h3>Pages</h3></a>
-Pages are associated to Brands. When adding a new page, there are many options:
-<ul>
-<li>Brand</li>
-<li>Title - Title of page</li>
-<li>SEO Alias - URL of page, overrides Title in URL</li>
-<li>Add to Menu - Adds the page as a new menu link to the selected Menu. If an SEO Alias is entered, that alias will be used as the target URL.</li>
-<li>Display Title - If True, the title will be printed as the Heading of the page when viewing the page.</li>
-<li>Login Restricted - If True, the page will require the user to be authenticated before viewing the page. This is useful for Owners pages.</li>
-<li>Short Description - Short meta description, typically shows up in search results captions.</li>
-<li>Long Description - Long meta description. Usually used by search engines.</li>
-<li>Body - WYSIWYG editor with Filemanager</li>
-<li>JavaScript Scripts to Include - Custom/advanced pages can use external javascript files for added functionality.</li>
-<li>Active - Page can be set to Inactive to hide page without actually deleting it.</li>
-</ul>
+        <a class="anchor" name="pages"><h3 class="sub">Pages</h3></a> - <a href='#top'>Top</a>
+        <p>Pages are associated to Brands. When adding a new page, there are many options:</p>
+        <ul>
+        <li>Brand</li>
+        <li>Title - Title of page</li>
+        <li>SEO Alias - URL of page, overrides Title in URL</li>
+        <li>Add to Menu - Adds the page as a new menu link to the selected Menu. If an SEO Alias is entered, that alias will be used as the target URL.</li>
+        <li>Display Title - If True, the title will be printed as the Heading of the page when viewing the page.</li>
+        <li>Login Restricted - If True, the page will require the user to be authenticated before viewing the page. This is useful for Owners pages.</li>
+        <li>Short Description - Short meta description, typically shows up in search results captions.</li>
+        <li>Long Description - Long meta description. Usually used by search engines.</li>
+        <li>Body - WYSIWYG editor with Filemanager</li>
+        <li>JavaScript Scripts to Include - Custom/advanced pages can use external javascript files for added functionality.</li>
+        <li>Active - Page can be set to Inactive to hide page without actually deleting it.</li>
+        </ul>
 
-<a name="advanced"><h2>Advanced</h2></a>
-<h3>Admin Menu</h3>
-Defined in <cite>application/models/menu.model.php</cite>
-<h3>Menus Loaded</h3>
-Defined in <cite>library/controller.class.php</cite>
+        <a class="anchor" name="advanced"><h2>Advanced</h2></a>
+        <a class="anchor" name="adv_adminmenu"><h3 class="sub">Admin Menu</h3></a> - <a href='#top'>Top</a>
+        Defined in <b><cite>application/models/menu.model.php</cite></b>
+        <a class="anchor" name="adv_menusloaded"><h3 class="sub">Menus Loaded</h3></a> - <a href='#top'>Top</a>
+        Defined in <b><cite>library/controller.class.php</cite></b>
+        <a class="anchor" name="adv_templatesandthemes"><h3 class="sub">Templates and Themes</h3></a> - <a href='#top'>Top</a>
+        <b>Note:</b> Custom CSS stylesheet files must be placed in <b><cite>public/css/&lt;Brand Label&gt;/&lt;Theme Name&gt;</cite></b> folder (for example: <b><cite>public/css/GPFC/GPFC.css</cite></b>)
+        <ul>
+            <li>A brand's <b><cite>Active Theme</cite></b> value of <b><cite>default</cite></b> will use the default theme (for example: <b><cite>application/views/stores/readall_list_public.php</cite></b>)</li>
+            <li>Custom Theme folders are located in <b><cite>application/views/templates</cite></b> in the format of <b><cite>&lt;Brand Label&gt;/&lt;Theme Name&gt;</cite></b> (for example: <b><cite>application/views/templates/GPFC/default</cite></b>)
+            <li>Change a brand's <b><cite>Active Theme</cite></b> value to a matching custom theme folder name located in the templates directory to use those theme files. Any requested page found in the Active Theme folder will be used instead of the default theme page. For example, a theme folder can contain a single customized page such as <b><cite>application/views/templates/GPFC/default/stores/readall_list_public.php</cite></b>. Any page not found in the custom theme folder will use the default theme folder, this way you don't have to copy the entire theme to make one customization.</li>
+        </ul>
+        
+        
+        <a class="anchor" name="training"><h2>Training Examples</h2></a>
+        <p>Use the guides below to get familiar with the system.</p>
+
+        <a class="anchor" name="trn_newbrand"><h3 class="sub">Creating a new Brand</h3></a> - <a href='#top'>Top</a>
+        <p>Follow these steps to create a new brand:</p>
+        <ol>
+            <li>Add Brand
+                <ol>
+                    <li>Log into the main site as the Global Administrator</li>
+                    <li>Navigate to <b><cite>Brands &gt; Add Brand</cite></b></li>
+                    <li>Fill out the form with the information for your new brand and Save</li>
+                </ol>
+            </li>
+            <li>Customize Store Owner
+                <ol>
+                    <li>Navigate to <b><cite>Users</cite></b> and under the new brand click on the automatically made Store Owners account</li>
+                    <li>Change the username, passphrase, email and rest of the profile as desired and Save</li>
+                </ol>
+            </li>
+            <li>Add Domains<p class='muted'>Repeat these steps for each domain belonging to your new brand. Each domain alias will also need to be entered e.g. domain.com, domain.org, domain.us.</p>
+                <ol>
+                    <li>Navigate to <b><cite>Domains &gt; Add Domain</cite></b></li>
+                    <li>Fill out the form with the information for your new brand and Save</li>
+                </ol>
+            </li>
+            <li>Add Services<p class='muted'>Repeat these steps for each service offered by your new brand.</p>
+                <ol>
+                    <li>Navigate to <b><cite>Services &gt; Add Service</cite></b></li>
+                    <li>Fill out the form with the information for your new brand service and Save</li>
+                </ol>
+            </li>
+            <li>Add Store<p class='muted'>Repeat these steps for each store location offered by your new brand.</p>
+                <ol>
+                    <li>Navigate to <b><cite>Stores &gt; Add Store</cite></b></li>
+                    <li>Fill out the form with the information for your new brand store and Save</li>
+                    <li>After you have added the store, you can edit the store and see all available options for that store.
+                        <ol>
+                            <li><b>Store Owner:</b> Under "Contacts" change the "Owner" dropdown to select the correct Store Owner user account associated with this store location</li>
+                        </ol>
+                    </li>
+                </ol>
+            </li>
+            <li>Add Pages<p class='muted'>Repeat these steps for each page offered by your new brand.</p>
+                <ol>
+                    <li>Navigate to <b><cite>Pages &gt; Add Page</cite></b></li>
+                    <li>Fill out the form with the information for your new brand page and Save</li>
+                </ol>
+            </li>
+            <li>Customize Menus
+                <ol>
+                    <li>Navigate to <b><cite>Brands &gt; Menus</cite></b></li>
+                    <li>Customize each menu as desired</li>
+                </ol>
+            </li>
+        </ol>
+
+    </body>
+</html>

@@ -347,6 +347,33 @@ class BrandsController extends Controller
          * ***** */
         Install::InstallCart(NULL, $id);
 
+        /**
+         * Create default Public and Private folders for brand's files
+         */
+        $p = ROOT.DS.'public'.DS.'file'.DS.'source'.DS.'Brands'.DS.$id.DS.'Public';
+        if (!file_exists($p))
+        {
+            mkdir($p, 0777, true);
+        }
+        
+        $p = ROOT.DS.'public'.DS.'file'.DS.'thumbs'.DS.'Brands'.DS.$id.DS.'Public';
+        if (!file_exists($p))
+        {
+            mkdir($p, 0777, true);
+        }
+        
+        $p = ROOT.DS.'public'.DS.'file'.DS.'source'.DS.'Brands'.DS.$id.DS.'Private';
+        if (!file_exists($p))
+        {
+            mkdir($p, 0777, true);
+        }
+        
+        $p = ROOT.DS.'public'.DS.'file'.DS.'thumbs'.DS.'Brands'.DS.$id.DS.'Private';
+        if (!file_exists($p))
+        {
+            mkdir($p, 0777, true);
+        }
+        
         return true;
     }
 
@@ -360,6 +387,7 @@ class BrandsController extends Controller
     public function GetBrandChoiceList($SelectedID = FALSE)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        Errors::debugLogger("SelectedID: $SelectedID");
         $brandsList = $this->Brand->getWhere();
         if (empty($brandsList))
         {
@@ -387,71 +415,6 @@ class BrandsController extends Controller
     public static function deleteStepFinish($args = NULL)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
-        $ID = $args;
-
-        // Session
-        $DB    = new \Database();
-        $query = "
-            DELETE FROM sessions
-            WHERE brandID = :brandID
-            ";
-        $DB->query($query, array(':brandID' => $ID));
-
-        // MessageLog
-        $query = "
-            DELETE FROM messageLog
-            WHERE messageBrandID = :brandID
-            ";
-        $DB->query($query, array(':brandID' => $ID));
-
-        // Domain (rewrite mappings)
-        $Domain         = new Domain();
-        $domains        = $Domain->getWhere(array('brandID' => $ID));
-        $RewriteMapping = new RewriteMapping();
-        foreach ($domains as $domain)
-        {
-            $domain       = $Domain->getSingle(array('domainID' => $domain['domainID']));
-            $rewriteRules = $RewriteMapping->getWhere(array('domainID' => $domain['domainID']));
-            foreach ($rewriteRules as $rewriteRule)
-            {
-                $RewriteMapping->removeRewriteRule($rewriteRule['aliasURL'], $domain['domainName'], $domain['domainID']);
-            }
-        }
-        $Domain->delete(array('brandID' => $ID));
-
-        // MenuLinks (Menus)
-        $Menu     = new Menu();
-        $ms       = $Menu->getWhere(array('brandID' => $ID));
-        $MenuLink = new MenuLink();
-        foreach ($ms as $m)
-        {
-            $MenuLink->delete(array('menuID' => $m['menuID']));
-        }
-        // Menu
-        $Menu->delete(array('brandID' => $ID));
-
-        // ACL
-        $ACL = new ACL();
-        $ACL->delete(array('brandID' => $ID));
-
-        // Page
-        $Page = new Page();
-        $Page->delete(array('brandID' => $ID));
-
-        // Article
-        $Article = new Article();
-        $Article->delete(array('brandID' => $ID));
-
-        // Users (Usergroups)
-        $Usergroup = new Usergroup();
-        $ugs       = $Usergroup->getWhere(array('brandID' => $ID));
-        $User      = new User();
-        foreach ($ugs as $ug)
-        {
-            $User->delete(array('usergroupID' => $ug['usergroupID']));
-        }
-        // Usergroup
-        $Usergroup->delete(array('brandID' => $ID));
     }
 
 }

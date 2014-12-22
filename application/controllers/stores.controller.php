@@ -102,6 +102,34 @@ class StoresController extends Controller
         $storeID = $id;
         $Store   = new Store();
         $store   = $data;
+        
+        /**
+         * Create default Public and Private folders for brand's files
+         */
+        $p = ROOT.DS.'public'.DS.'file'.DS.'source'.DS.'Brands'.DS.$store['brandID'].DS.'Stores'.DS.$storeID.DS.'Public';
+        if (!file_exists($p))
+        {
+            mkdir($p, 0777, true);
+        }
+        
+        $p = ROOT.DS.'public'.DS.'file'.DS.'thumbs'.DS.'Brands'.DS.$store['brandID'].DS.'Stores'.DS.$storeID.DS.'Public';
+        if (!file_exists($p))
+        {
+            mkdir($p, 0777, true);
+        }
+        
+        $p = ROOT.DS.'public'.DS.'file'.DS.'source'.DS.'Brands'.DS.$store['brandID'].DS.'Stores'.DS.$storeID.DS.'Private';
+        if (!file_exists($p))
+        {
+            mkdir($p, 0777, true);
+        }
+        
+        $p = ROOT.DS.'public'.DS.'file'.DS.'thumbs'.DS.'Brands'.DS.$store['brandID'].DS.'Stores'.DS.$storeID.DS.'Private';
+        if (!file_exists($p))
+        {
+            mkdir($p, 0777, true);
+        }
+        
 //        $store   = $Store->getSingle(array('storeID' => $storeID));
         // Now that the parent model data is saved, you can do whatever is needed with self::$staticData and link it to the parent model id $id
         if (empty(self::$staticData))

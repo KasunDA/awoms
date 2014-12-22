@@ -37,7 +37,7 @@
             <p><a href="/users/password">Forgot password?</a></p>
         </div>
         <div class="login_form_right_col">
-            <img src="/css/<?=$_SESSION['brand']['brandLabel'];?>/images/items/login.jpg"/>
+            <!-- <img src="/css/<?=$_SESSION['brand']['brandLabel'];?>/images/items/login.jpg"/> -->
         </div>
     </div>
 

@@ -27,6 +27,7 @@ Bootstrap::lookupDomainBrand();
 new Session();
 Errors::debugLogger("Checking if user has files read access...");
 $_SESSION['returnURL'] = "file/".$file;
+Errors::debugLogger('Requested File: "'.$file.'"');
 
 // Normal ACL check for straight image request
 #if (!ACL::IsUserAuthorized("files", "read", TRUE)) # TRUE redirects to login if denied
@@ -36,19 +37,6 @@ $_SESSION['returnURL'] = "file/".$file;
 #}
 # @TODO: DISABLED: Anonymous views to Pages with restricted images not showing images. Temporariliy disabling ACL check for anon to allow images to work on pages
 
-// File info
-//$pattern = "/(source|thumbs)\/(.+)(\/.+\..+)$/";
-$pattern = "/(source|thumbs)\/(.+)(\..+)$/";
-Errors::debugLogger('Requested File: "'.$file.'"');
-Errors::debugLogger("Extracting path info...",10);
-$r=preg_match_all($pattern, $file, $matches);
-if (empty($r))
-{
-    Errors::debugLogger("Requested file did not match the expected format, die()...");
-    die("Requested file not found");
-    return;
-}
-
 Errors::debugLogger("Checking if file exists...");
 if (!is_file($file))
 {
@@ -57,83 +45,160 @@ if (!is_file($file))
     return;
 }
 
-#public/files/thumbs/testpic.jpg
-#public/files/source/testpic.jpg
-#public/files/source/test.pic.jpg
-#public/files/source/testsub/testpic.jpg
-#public/files/source/Stores/2/teststore2pic.jpg <--- Restricted by store #
-#public/files/source/Stores/2/test.store2pic.jpg <--- Restricted by store #
-#public/files/source/Stores/2/testsub/store2pic.jpg <--- Restricted by store #
-#.............(1).....(2)......................(3)
+# Possible request formats:
+# 
+#  #1) Store Picture
+#.....................(1)........(2)......(3)..(4).(5)(6)
+#      public/files/source/Brands/1/Stores/2/Public/x.jpg
+#      
+#  #2) Brand Picture
+#.....................(1)........(2)..(3).(4)(5)
+#      public/files/source/Brands/1/Public/x.jpg
+#      
+#  #3) Global Picture
+#.....................(1)....(2).(3)(4)
+#      public/files/source/Public/x.jpg
 
-$size  = $matches[1]; # source or thumbs
-$size  = $size[0];
-$where = $matches[2]; # filepath/filename
-$where = $where[0];
-$ext = $matches[3]; # ext
-$ext = $ext[0];
-
-Errors::debugLogger(sprintf('Size: %s Where: %s Ext: %s', $size, $where, $ext));
-
-# Ensure user has access to requested folder
-Errors::debugLogger(sprintf('Checking if user has access to requested size (%s) and folder (%s)', $size, $where));
-$allowedByACL = FALSE;
-
-// Admins have access to everything
-if (!empty($_SESSION['user'])
-            && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
+$foundMatch = FALSE;
+$size       = NULL;
+$brandID    = NULL;
+$storeID    = NULL;
+$public     = FALSE;
+$where      = NULL;
+$ext        = NULL;
+if (!$foundMatch)
 {
-    Errors::debugLogger("(Administrators) Setting AllowedByACL to TRUE...");
-    $allowedByACL = TRUE;
-}
-// If user is store owner, ensure path begins with Stores/# and ensure user has permission to that store
-elseif (!empty($_SESSION['user'])
-            && $_SESSION['user']['usergroup']['usergroupName'] == "Store Owners")
-{
-    $r = preg_match_all('/(^Stores\/)(\d)\//', $where, $matches);
-    $storeID = 0;
-    if (empty($r))
+    // Format #1) Store Picture
+    #.....................(1)........(2)......(3)..(4).(5)(6)
+    #      public/files/source/Brands/1/Stores/2/Public/x.jpg
+    $pattern = "/(source|thumbs)\/Brands\/(\d+)\/Stores\/(\d+)\/(Public|Private)\/(.+)(\..+)$/";
+    Errors::debugLogger("Extracting path info with pattern #1: $pattern...",10);
+    $r=preg_match_all($pattern, $file, $matches);
+    if ($r)
     {
-        Errors::debugLogger("File path ($where) does NOT begin with Stores/#...",10);
-    }
-    else
-    {
-        // Requested File's store ID
-        $storeID = $matches[2];
+        $foundMatch = TRUE;
+        $size  = $matches[1]; # source or thumbs
+        $size  = $size[0];
+        $brandID = $matches[2]; # brand #
+        $brandID = $brandID[0];
+        $storeID = $matches[3]; # store #
         $storeID = $storeID[0];
-        Errors::debugLogger("File path ($where) begins with Stores/#...",10);
-        Errors::debugLogger("Store ID: ".$storeID,10);
+        $p = $matches[4];
+        $p = $p[0];
+        if ($p == "Public") { $public = TRUE; } else { $public = FALSE; }
+        $where = $matches[5]; # filepath/filename
+        $where = $where[0];
+        $ext = $matches[6]; # ext
+        $ext = $ext[0];
+        Errors::debugLogger(sprintf('Request parsed: Size: (%s) Brand: (%s) Store: (%s) Public: (%s) Where: (%s) Ext: (%s)', $size, $brandID, $storeID, $public, $where, $ext));
     }
-    
-    // Load store to find what Brand it belongs to
-    $store = new Store();
-    $storeFile = $store->getSingle(array('storeID' => $storeID));
-    $storeFileBrandID = $storeFile['brandID'];
-    Errors::debugLogger("storeFileBrandID: ",$storeFileBrandID,10);
-    
-    //if ($storeID != $_SESSION['user']['usergroup']['storeID'])
-    if ($storeFileBrandID != $_SESSION['brandID'])
+}
+
+if (!$foundMatch)
+{
+    // Format #2) Brand Picture
+    #.....................(1)........(2)..(3).(4)(5)
+    #      public/files/source/Brands/1/Public/x.jpg
+    $pattern = "/(source|thumbs)\/Brands\/(\d+)\/(Public|Private)\/(.+)(\..+)$/";
+    Errors::debugLogger("Extracting path info with pattern #2: $pattern...",10);
+    $r=preg_match_all($pattern, $file, $matches);
+    if ($r)
     {
-        Errors::debugLogger("Requested path store ID (brandID) does NOT match store owner ID (brandID)!");
-        
-        // If visitor is viewing a page created by store owner then allow image viewing
-        if ($_SESSION['controller'] == 'pages' && $_SESSION['action'] == 'read')
+        $foundMatch = TRUE;
+        $size  = $matches[1]; # source or thumbs
+        $size  = $size[0];
+        $brandID = $matches[2]; # brand #
+        $brandID = $brandID[0];
+        $p = $matches[3];
+        $p = $p[0];
+        if ($p == "Public") { $public = TRUE; } else { $public = FALSE; }
+        $where = $matches[4]; # filepath/filename
+        $where = $where[0];
+        $ext = $matches[5]; # ext
+        $ext = $ext[0];
+        Errors::debugLogger(sprintf('Request parsed: Size: (%s) Brand: (%s) Public: (%s) Where: (%s) Ext: (%s)', $size, $brandID, $public, $where, $ext));
+    }
+}
+
+if (!$foundMatch)
+{
+    // Format #3) Global Picture
+    #.....................(1)....(2).(3)(4)
+    #      public/files/source/Public/x.jpg
+    $pattern = "/(source|thumbs)\/(Public|Private)\/(.+)(\..+)$/";
+    Errors::debugLogger("Extracting path info with pattern #3: $pattern...",10);
+    $r=preg_match_all($pattern, $file, $matches);
+    if ($r)
+    {
+        $foundMatch = TRUE;
+        $size  = $matches[1]; # source or thumbs
+        $size  = $size[0];
+        $p = $matches[2];
+        $p = $p[0];
+        if ($p == "Public") { $public = TRUE; } else { $public = FALSE; }
+        $where = $matches[3]; # filepath/filename
+        $where = $where[0];
+        $ext = $matches[4]; # ext
+        $ext = $ext[0];
+        Errors::debugLogger(sprintf('Request parsed: Size: (%s) Public: (%s) Where: (%s) Ext: (%s)', $size, $public, $where, $ext));
+    }
+}
+
+if (!$foundMatch)
+{
+    Errors::debugLogger("Requested file did not match any expected formats, die()...");
+    die("Requested file not found.");
+    return;
+}
+
+if ($public)
+{
+    Errors::debugLogger(sprintf('Is Public, ACL = Allowed...'));
+    $allowedByACL = TRUE;
+} else {
+    
+    // Check ACL for access to Private file
+    Errors::debugLogger(sprintf('Is Private, Checking ACL...'));
+    $allowedByACL = FALSE;
+    
+    // Admins have access to everything
+    if (!empty($_SESSION['user'])
+                && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
+    {
+        Errors::debugLogger("Is Administrator, setting AllowedByACL to TRUE...");
+        $allowedByACL = TRUE;
+    } else {
+    
+        // Request is for private Brand file:
+        // ensure user's usergroup is part of this brand
+        if ($brandID != NULL)
         {
-            Errors::debugLogger("Overriding ALLOW ACL for Pages/Read");
-            $allowedByACL = TRUE;
+            Errors::debugLogger("Request is for private Brand file...");
+            if ($brandID == $_SESSION['user']['usergroup']['brandID'])
+            {
+                Errors::debugLogger("Brand # matches! Setting AllowedByACL to TRUE...");
+                $allowedByACL = TRUE;
+            } else {
+                Errors::debugLogger("Brand # does NOT match! Setting AllowedByACL to FALSE...");
+                $allowedByACL = FALSE;
+            }
         }
         
-    } else {
-        Errors::debugLogger("Requested path store ID (brandID) matches store owner ID (brandID)");
-        Errors::debugLogger("Setting AllowedByACL to TRUE...");
-        $allowedByACL = TRUE;
+        // Request is for private Store file:
+        // ensure user's usergroup is part of this store @TODO? Assign store# to group?
+        if ($storeID != NULL)
+        {
+            Errors::debugLogger("Request is for private Store file...");
+            if ($storeID == $_SESSION['user']['usergroup']['storeID'])
+            {
+                Errors::debugLogger("Store # matches! Setting AllowedByACL to TRUE...");
+                $allowedByACL = TRUE;
+            } else {
+                Errors::debugLogger("Store # does NOT match! Setting AllowedByACL to FALSE...");
+                $allowedByACL = FALSE;
+            }
+        }
     }
-}
-else
-{
-    # Public/Anonymous
-    Errors::debugLogger("Temporarily allowing guest access...",10);
-    $allowedByACL = TRUE;
 }
 
 $allowedLabel = "No";
@@ -141,21 +206,17 @@ if ($allowedByACL === TRUE)
 {
     $allowedLabel = "Yes";
     Errors::debugLogger("Found file $file... Allowed: " . $allowedLabel);
-    
     Errors::debugLogger("Getting filesize...",10);
     $filesize = (string)(filesize($file));
     Errors::debugLogger("Filesize: ".$filesize,10);
-
     $filename = basename($file);
     Errors::debugLogger("Basename: ".$filename,10);
-    
     $mode = "inline"; # Needed for inline image display
     if (!empty($_GET['mode']))
     {
         $mode = "attachment"; # Will force download of file
     }
     Errors::debugLogger("Display mode: ".$mode,10);
-    
     header('Pragma: private');
     header('Cache-control: private, must-revalidate');
     header("Content-Type: application/octet-stream");

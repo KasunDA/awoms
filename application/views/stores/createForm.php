@@ -82,8 +82,6 @@ if ($storeID == 'DEFAULT')
     <input type='hidden' name='step' value='2' />
     <input type='hidden' name='inp_storeID' value='<?php echo $storeID; ?>' />
 
-    <button type="button" class="button_save" id="storeImages">Store Images</button>
-
     <div id="accordion">
 
         <h1>Store Information</h1>
@@ -464,6 +462,3 @@ if ($storeID == 'DEFAULT')
     </table>
 
 </form>
-
-<?php
-$pageJavaScript[] = file_get_contents(ROOT . DS . "application" . DS . "views" . DS . "stores" . DS . "storeImages.js");

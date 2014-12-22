@@ -344,5 +344,12 @@ class UsersController extends Controller
         header('Location: /users/login?logoutSuccess=1');
         exit(0);
     }
+    
+    public function password()
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+
+        $this->set('title', 'Users :: Password');
+    }
 
 }

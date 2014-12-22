@@ -23,6 +23,7 @@
         <tr>
             <td>
                 Brand Label
+                <p class="muted">This unique brand identifier is used for Theme folders and should not contain spaces, e.g. GPFC
             </td>
             <td>
                 <input type='text' id='inp_brandLabel' name='inp_brandLabel' value='<?php
@@ -61,6 +62,7 @@
             <tr>
                 <td>
                     Active Theme
+                    <p class="muted">This theme name is used to decide which templates to use, e.g. default or xmas</p>
                 </td>
                 <td>
                     <input type='text' id='inp_activeTheme' name='inp_activeTheme' value='<?php

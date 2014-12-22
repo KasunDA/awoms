@@ -39,7 +39,7 @@ class ACL extends Model
             (DEVELOPMENT_ENVIRONMENT === TRUE && $_controller == "tests")
             || ($_controller == "install")
             || ($_controller == "home" && $_action == "home")
-            || ($_controller == "users" && in_array($_action, array('login', 'logout')))
+            || ($_controller == "users" && in_array($_action, array('login', 'logout', 'password')))
             || (
             empty($_SESSION['user'])
             && in_array($_controller, array('pages', 'articles', 'comments', 'stores'))

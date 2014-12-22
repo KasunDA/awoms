@@ -13,7 +13,7 @@ body {
     color: #333 !important;
 /*    
     background-attachment: fixed;
-    background-image: url(./images/structure/background.jpg);
+    background-image: url(images/structure/background.jpg);
     background-repeat: no-repeat;
     background-position: center top;*/
 }
@@ -22,44 +22,44 @@ body {
 #wrapper {
 /*    background-repeat: repeat-y;
     background-position: center center;
-    background-image: url(./images/structure/background-tile.jpg);*/
+    background-image: url(images/structure/background-tile.jpg);*/
 }
 
 /* Top Nav */
 #top {
 /*    background-attachment: scroll;
-    background-image: url(./images/structure/top.jpg);
+    background-image: url(images/structure/top.jpg);
     background-repeat: no-repeat;
     background-position: center 0%;*/
 }
 
 /* Header */
 .header, .header-full {
-    padding-top: 475px !important;
+    /* padding-top: 475px !important; */
 }
 .header {
-    background-image: url('images/structure/header-graphic1.jpg') !important;
+    /* background-image: url('images/structure/header-graphic1.jpg') !important; */
 }
 .header-full {
-    background-image: url('images/structure/header-graphic1.jpg') !important;
+    /* background-image: url('images/structure/header-graphic1.jpg') !important; */
 }
 
 /* Middle separator */
 .middle {
 /*    background-attachment: scroll;
-    background-image: url(./images/structure/middle.png);
+    background-image: url(images/structure/middle.png);
     background-repeat: no-repeat;
     background-position: center;*/
 }
 .middle-full {
 /*    background-attachment: scroll;
-    background-image: url(./images/structure/middle-full.png);
+    background-image: url(images/structure/middle-full.png);
     background-repeat: no-repeat;
     background-position: center;*/
 }
 .middle-small {
 /*    background-attachment: scroll;
-    background-image: url(./images/structure/middle-smaller.png);
+    background-image: url(images/structure/middle-smaller.png);
     background-repeat: no-repeat;
     background-position: center;*/
 }
@@ -67,7 +67,7 @@ body {
 /* Footer */
 .footer-container
 {    
-/*    background-image: url(./images/structure/background-tile.jpg);
+/*    background-image: url(images/structure/background-tile.jpg);
     background-repeat: repeat-y;
     background-position: center;
     background-attachment: scroll;*/
@@ -93,7 +93,7 @@ ul.menu_footer_wood li
     margin-left: 15px !important;
     margin-bottom: 3px !important;
     
-    background-image: url(./images/items/wood_tile.png) !important;
+    background-image: url(images/items/wood_tile.png) !important;
     background-repeat: no-repeat !important;
     background-position: 50% 50% !important;
     
@@ -190,7 +190,7 @@ h1{
     padding-top: 15px !important;
     
     background-attachment: scroll !important;
-    background-image: url(./images/items/clear-box.png) !important;
+    background-image: url(images/items/clear-box.png) !important;
     background-repeat: no-repeat !important;
     background-position: 10px 5px !important;
 }
@@ -208,7 +208,7 @@ h1{
 /************************************************************************/
 /* Floating FDD */
 .floatingFDD {
-/*    background-image: url(./images/fdd-wood-bg.png);
+/*    background-image: url(images/fdd-wood-bg.png);
     background-repeat: no-repeat;
     background-position: 50% 50%;*/
 }

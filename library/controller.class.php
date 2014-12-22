@@ -199,10 +199,10 @@ class Controller
         $this->set('isGlobalAdmin', $isGlobalAdmin);
 
         /*
-         * Brand selection list (Global Admin Only)
+         * Brand selection list
          */
         $BrandChoiceList = FALSE;
-        if ($isGlobalAdmin && (!empty($data['inp_brandID']) || !empty($data['brand'])))
+        if (!empty($data['inp_brandID']) || !empty($data['brand']))
         {
             if (!empty($data['inp_brandID']))
             {
@@ -213,6 +213,8 @@ class Controller
                 $BrandChoiceList = $data['brand']['inp_brandID'];
             }
         }
+        Errors::debugLogger("BrandChoiceList: $BrandChoiceList");
+        
         // Global Admin + object has brandID field
         // OR on page that requires BrandID field
         $showBrandChoiceListOnThesePages = array('files', 'services', 'domains', 'stores', 'usergroups', 'menus', 'pages', 'articles');
@@ -320,11 +322,6 @@ class Controller
             $this->set('userChoiceListClass', $userChoiceListClass);
         }
 
-
-
-
-
-
         // Domain selection list
         $DomainChoiceList = FALSE;
         if (!empty($data['inp_domainID']) || !empty($data['domain']))
@@ -343,7 +340,6 @@ class Controller
             $domains = new DomainsController('domains', 'Domain', NULL, 'json');
             $this->set('domainChoiceList', $domains->GetDomainChoiceList($DomainChoiceList));
         }
-
 
         // Menu selection list
         $MenuChoiceList = FALSE;

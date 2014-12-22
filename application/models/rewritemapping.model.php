@@ -136,9 +136,11 @@ class RewriteMapping extends Model
                 }
                 else
                 {
-                    // Domain alias beings with "domain."
+                    // Domain alias begins with "domain."
                     $d = explode('/', $alias);
                     $domainName = $d[0];
+                    // Remove 'www.' prefix
+                    $domainName = str_replace("www.", "", $domainName);
                     $matchDomain = $Domain->getSingle(array('domainName' => $domainName));
                     // Is alias exact match? ^$
                     if (preg_match('/^'.str_replace('/', '\/', $matchAliasURL).'$/', $alias))
