@@ -46,12 +46,16 @@
             {
                 margin:5px;
             }
+            ul.bordered
+            {
+                border: 2px solid #ccc;
+            }
         </style>
     </head>
     <body style="margin: 25px;">
         <h1>User Guide</h1>
         <h2>Table of Contents</h2>
-        <ul>
+        <ul class="bordered">
             <li><a href="#setupwizard">Setup Wizard</a>
                 <ul>
                     <li><a href="#wiz_sampledata">Sample Data</a></li>
@@ -102,16 +106,23 @@
         <a class="anchor" name="brands"><h3 class="sub">Brands</h3></a> - <a href='#top'>Top</a>
         <p>The brands page lists all brands in the system.</p>
         <p class='muted'><b>Note:</b> Some options may not be available until after the brand has been created.</p>
-        <ul>
-        <li>Brand Name</li>
-        <li>Brand Label - This unique brand identifier is used for Theme folders and should <b>not</b> contain spaces, e.g. GPFC</li>
-        <li>Brand Email</li>
-        <li>Acive Theme - This theme name is used to decide which templates to use, e.g. default or specialthemename</li>
+        <ul class="bordered">
+            <li>Brand Name</li>
+            <li>Brand Label - This unique brand identifier is used for Theme folders and should <b>not</b> contain spaces, e.g. GPFC</li>
+            <li>Brand Email</li>
+            <li>Acive Theme - This theme name is used to decide which templates to use, e.g. default or specialthemename</li>
+        </ul>
+        <p>When a new Brand is created a few items are automatically created to aid you (defaults set in <b><cite>application/controllers/brands.controller.php</cite></b>) including:</p>
+        <ul class="bordered">
+            <li>Menus and Menu Links</li>
+            <li>Usergroups (Administrators, Store Owners, Users)</li>
+            <li>The first Store Owner account</li>
+            <li>Cart</li>
         </ul>
 
         <a class="anchor" name="domains"><h3 class="sub">Domains</h3></a> - <a href='#top'>Top</a>
         <p>Domains are associated to Brands and can also be specifically assigned to a Store of that Brand e.g. hutno8.com or hutno8zephyrhills.com</p>
-        <ul>
+        <ul class="bordered">
         <li>Brand - The brand to assign the domain to</li>
         <li>Store - (optional) The store to assign the domain to</li>
         <li>Domain Name - Exclude the www prefix</li>
@@ -119,11 +130,11 @@
 
         <a class="anchor" name="menus"><h3 class="sub">Menus</h3></a> - <a href='#top'>Top</a>
         <p>Menus are associated to Brands. You can have multiple menus associated to a single Brand. For example you may have a "Top Menu" and a "Bottom Menu" and display those menus at different sections of the site.</p>
-        <ul>
+        <ul class="bordered">
         <li>Brand - The brand to associate this menu to</li>
         <li>Login Restricted - If this is enabled, the menu will only be displayed if the user is logged into the system. This is useful for menus only shown to Store Owners.</li>
         <li>Menu Type
-                <ul>
+                <ul class="bordered">
                 <li>Top Bar - Top horizontal bar navigation for Login/Logout/Profile links across top of page</li>
                 <li>Heading Nav - Main top navigation bar in heading or logo</li>
                 <li>Body - An inline menu used in page bodys</li>
@@ -136,7 +147,7 @@
 
         <a class="anchor" name="mnu_menulinks"><h4 class="sub">Menu Links</h4></a> - <a href='#top'>Top</a>
         <p>Menu links are associated to Menus. Menu links can be manually added to menus, or automatically added to menus when creating a Page. Menu links can use Alias URLs for SEO so, for example, instead of the url being /stores/readall it can show as /locations.</p>
-        <ul>
+        <ul class="bordered">
         <li>Display - The display text of the link e.g. Locations</li>
         <li>Alias URL - The display url of the link e.g. /locations</li>
         <li>Actual Page - If the link is to a Page, you can select the Page here instead of having to manually enter the target URL</li>
@@ -145,7 +156,7 @@
 
         <a class="anchor" name="services"><h3 class="sub">Services</h3></a> - <a href='#top'>Top</a>
         <p>Services are associated to Brands. All possible services offered by a brand should be added to this list. At the store level, you can select which services apply to each store.</p>
-        <ul>
+        <ul class="bordered">
         <li>Brand</li>
         <li>Name</li>
         <li>Description</li>
@@ -153,7 +164,7 @@
 
         <a class="anchor" name="stores"><h3 class="sub">Stores</h3></a> - <a href='#top'>Top</a>
         <p>Stores are associated to Brands.</p>
-        <ul>
+        <ul class="bordered">
         <li>Brand</li>
         <li>Store Number</li>
         </ul>
@@ -166,7 +177,7 @@
 
         <a class="anchor" name="groups"><h3 class="sub">Groups</h3></a> - <a href='#top'>Top</a>
         <p>Groups are associated to Brands. Currently there are these group types to choose from:</p>
-        <ul>
+        <ul class="bordered">
         <li>Administrators - Unrestricted access to all stores of assigned brand</li>
         <li>Store Owners - Store Owner access to assigned store of assigned brand</li>
         <li>Users - User access to assigned store of assigned brand</li>
@@ -174,7 +185,7 @@
 
         <a class="anchor" name="pages"><h3 class="sub">Pages</h3></a> - <a href='#top'>Top</a>
         <p>Pages are associated to Brands. When adding a new page, there are many options:</p>
-        <ul>
+        <ul class="bordered">
         <li>Brand</li>
         <li>Title - Title of page</li>
         <li>SEO Alias - URL of page, overrides Title in URL</li>
@@ -195,7 +206,7 @@
         Defined in <b><cite>library/controller.class.php</cite></b>
         <a class="anchor" name="adv_templatesandthemes"><h3 class="sub">Templates and Themes</h3></a> - <a href='#top'>Top</a>
         <b>Note:</b> Custom CSS stylesheet files must be placed in <b><cite>public/css/&lt;Brand Label&gt;/&lt;Theme Name&gt;</cite></b> folder (for example: <b><cite>public/css/GPFC/GPFC.css</cite></b>)
-        <ul>
+        <ul class="bordered">
             <li>A brand's <b><cite>Active Theme</cite></b> value of <b><cite>default</cite></b> will use the default theme (for example: <b><cite>application/views/stores/readall_list_public.php</cite></b>)</li>
             <li>Custom Theme folders are located in <b><cite>application/views/templates</cite></b> in the format of <b><cite>&lt;Brand Label&gt;/&lt;Theme Name&gt;</cite></b> (for example: <b><cite>application/views/templates/GPFC/default</cite></b>)
             <li>Change a brand's <b><cite>Active Theme</cite></b> value to a matching custom theme folder name located in the templates directory to use those theme files. Any requested page found in the Active Theme folder will be used instead of the default theme page. For example, a theme folder can contain a single customized page such as <b><cite>application/views/templates/GPFC/default/stores/readall_list_public.php</cite></b>. Any page not found in the custom theme folder will use the default theme folder, this way you don't have to copy the entire theme to make one customization.</li>

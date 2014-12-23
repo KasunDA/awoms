@@ -3,8 +3,16 @@ dbConfig.php
 customConfig.php
 googleAnalytics.php
 googleSiteVerification.php
-files/
+.settings/
+.buildpath
+.project
 url-alias-map.txt
+
+# Images and Files
+cart/images/
+public/file/source/
+public/file/thumbs/
+/files/
 
 # Logs
 logs/

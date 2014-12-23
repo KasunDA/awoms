@@ -608,6 +608,17 @@ else
             $files   = scandir($current_path . $rfm_subfolder . $subdir);
             $n_files = count($files);
 
+            //brand # -> name lookup for friendly label
+            Errors::debugLogger("Checking if brand folder # lookup needed (".$current_path . $rfm_subfolder . $subdir.")...");
+            $brandLookup = FALSE;
+            if (preg_match('/^\.\.\/file\/source\/Brands\/$/', $current_path . $rfm_subfolder . $subdir))
+            {
+                Errors::debugLogger("Brand folder # lookup needed...");
+                $brandLookup = TRUE;
+                $Brand = new Brand();
+                $brandList = $Brand->getWhere();
+            }
+            
             //php sorting
             $sorted         = array();
             $current_folder = array();
@@ -909,7 +920,7 @@ else
                                     '..' && $subdir == '') || in_array($file, $hidden_folders) || ($filter != '' && $file != ".." && strpos($file,
                                                                                                                                             $filter) ===
                                     false)) continue;
-                                $new_name = fix_filename($file, $transliteration);
+                                $new_name = fix_filename($file, $transliteration);                                
                                 if ($file != '..' && $file != $new_name)
                                 {
                                     //rename
@@ -983,6 +994,21 @@ else
                                         }
                                         else
                                         {
+                                            Errors::debugLogger("Brand Lookup: $brandLookup File: $file");
+                                            $label = $file;
+                                            if ($brandLookup && preg_match('/^\d+$/', $label))
+                                            {
+                                                Errors::debugLogger("Brand folder # lookup...");
+                                                foreach ($brandList as $bll)
+                                                {
+                                                    Errors::debugLogger("bll: ".$bll['brandName']);
+                                                    if ($bll['brandID'] == $label)
+                                                    {
+                                                        $label = $bll['brandName'];
+                                                        Errors::debugLogger("Brand folder # lookup label: $label");
+                                                    }
+                                                }
+                                            }
                                             ?>
                                             </a>
                                             <div class="box">
@@ -991,7 +1017,7 @@ else
                                                 {
                                                     echo "ellipsis";
                                                 }
-                                                ?>"><a class="folder-link" data-file="<?php echo $file ?>" href="dialog.php?<?php echo $get_params . rawurlencode($src) . "&" . uniqid() ?>"><?php echo $file; ?></a></h4>
+                                                ?>"><a class="folder-link" data-file="<?php echo $file ?>" href="dialog.php?<?php echo $get_params . rawurlencode($src) . "&" . uniqid() ?>"><?php echo $label; ?></a></h4>
                                             </div>
                                             <input type="hidden" class="name" value=""/>
                                             <input type="hidden" class="date" value="<?php echo $file_array['date']; ?>"/>
@@ -1003,6 +1029,14 @@ else
                                             <?php
                                             if ($show_folder_size)
                                             {
+                                                $orig_file_prevent_rename = $file_prevent_rename;
+                                                $orig_file_prevent_delete = $file_prevent_delete;
+                                                if ($file != $label)
+                                                {
+                                                    // Don't allow renaming or deleting of brand folders (of fake label brand # -> label)
+                                                    $file_prevent_rename = TRUE;
+                                                    $file_prevent_delete = TRUE;
+                                                }
                                                 ?><div class="file-size"><?php echo makeSize($file_array['size']) ?></div><?php } ?>
                                             <div class='file-extension'><?php echo lang_Type_dir; ?></div>
                                             <figcaption>
@@ -1020,7 +1054,13 @@ else
                                                     ?>"></i>
                                                 </a>
                                             </figcaption>
-                                        <?php } ?>
+                                        <?php
+                                        
+                                            // Put values back to origs
+                                            $file_prevent_rename = $orig_file_prevent_rename;
+                                            $file_prevent_delete = $orig_file_prevent_delete;
+                                        
+                                            } ?>
                                     </figure>
                                 </li>
                                 <?php
