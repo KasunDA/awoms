@@ -33,16 +33,16 @@ More info: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritemap
  >         RewriteRule   ^(.*)              ${url-aliases:$1|/404.html} [NC,L,QSA]
   
 # Example Apache VirtualHost Configuration
- > <VirtualHost *:80>
- > 	# Main domain
+ >         <VirtualHost *:80>
+ >         # Main domain
  >         ServerName gpfc.com
  > 
- > 	# List all brands domains and aliases here
+ >         # List all brands domains and aliases here
  >         ServerAlias www.gpfc.com gpfc.local www.gpfc.local hutno8.com www.hutno8.com hutno8.local www.hutno8.local vinonbrew.com www.vinonbrew.com vinonbrew.local www.vinonbrew.local
  > 
  >         ServerAdmin webmaster@gpfc.com
  > 
- > 	# Path to site folders
+ >         # Path to site folders
  >         DocumentRoot /home/dirt/Projects/GPFC/public
  >         <Directory /home/dirt/Projects/GPFC>
  >                 Options All
@@ -63,7 +63,7 @@ More info: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritemap
  >         # Match generic aliases /example /admin/home
  >         RewriteCond   ${url-aliases:$1}  >"" [NC]
  >         RewriteRule   ^(.*)              ${url-aliases:$1|/404.html} [NC,L,QSA]
- > </VirtualHost>
+ >         </VirtualHost>
   
 # Contact
 @author Brock Hensley <brock.hensley@gmail.com>
