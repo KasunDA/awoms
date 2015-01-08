@@ -250,7 +250,7 @@ class Errors
         $error = error_get_last();
         if ($error) {
             self::debugLogger(__METHOD__, 1, true);
-            $visitorIP = Utility::getVisitorIP();
+            $visitorIP = "5.3.3"; # Utility::getVisitorIP();
             $subject  = 'Shutdown';
             $txtBody  = "
                 [Shutdown]

@@ -116,7 +116,8 @@ class Bootstrap
         if (empty($domain))
         {
             $Brand = new Brand();
-            if (empty($Brand->getWhere()))
+            $found = $Brand->getWhere();
+            if (empty($found))
             {
                 // Setup wizard
                 header('Location: /install/wizard');

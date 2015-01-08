@@ -7,7 +7,8 @@ class InstallController extends Controller
         // @TODO No wizard if already setup (current work around in database class, if error contains missing table, redirects to wizard)
         // Need to query if table exists, otherwise get error when trying to query for brands list when table not there yet
         $Brand = new Brand();
-        if (!empty($Brand->getWhere(array('brandActive' => 1)))) {
+        $found = $Brand->getWhere(array('brandActive' => 1));
+        if (!empty($found)) {
             header('Location: /admin/home');
             exit(0);
         }
