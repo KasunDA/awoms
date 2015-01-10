@@ -58,7 +58,9 @@ class ACL extends Model
         }
 
         // User is logged in, allow access to /admin/home (/owners) - template does rest
-        if ($_controller == 'admin' && $_action == 'home' || $_controller == 'tools')
+        // and Help
+        if (($_controller == 'admin' && $_action == 'home' || $_controller == 'tools')
+                || ($_controller == 'help' && $_action == 'home'))
         {
             return true;
         }

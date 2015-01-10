@@ -7,6 +7,7 @@
                 // Authenticated User Navigation
                 if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators") {
                     ?>
+                    <li><a href="/help">Help</a></li>
                     <li><a href="/owners">Admin</a></li>
                     <?php
                 } else {
