@@ -302,12 +302,14 @@ class BrandsController extends Controller
         $data['linkActive']   = 1;
         $MenuLink->update($data);
 
+        /*
         $data['menuID']       = $menuID;
         $data['sortOrder']    = 3;
         $data['parentLinkID'] = NULL;
         $data['display']      = 'Log Out';
         $data['url']          = '/logout';
         $data['linkActive']   = 1;
+         */
         $MenuLink->update($data);
 
         // Menu: (Owners) Your Body

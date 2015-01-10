@@ -1,6 +1,6 @@
 <?php
 
-class Help extends Model
+class Home extends Model
 {
   
 }

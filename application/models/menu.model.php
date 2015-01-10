@@ -332,9 +332,11 @@ class Menu extends Model
                 "url"     => "/comments/readall");
         }
 
+        /*
         $menu['Log Out'] = array(
             "display" => "Log Out",
             "url"     => "/users/logout");
+         */
 
         /** End construct menu based off ACL * */
         $finalMenu = self::buildMenu($menu);
