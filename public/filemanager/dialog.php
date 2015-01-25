@@ -1,7 +1,7 @@
 <?php
 include('config/config.php');
 /**
- * GPFC Integration
+ * AWOMS Integration
  */
 Errors::debugLogger("Checking if user has files Read access...", 10);
 if (!ACL::IsUserAuthorized("files", "read"))
@@ -13,7 +13,7 @@ $_SESSION['RF']["verify"] = "RESPONSIVEfilemanager";
 if (isset($_POST['submit']))
 {
     /**
-     * GPFC Integration
+     * AWOMS Integration
      */
     Errors::debugLogger("Post received, checking if user has Create/Update permissions...");
     if (
@@ -306,7 +306,7 @@ else
     ));
 
     /**
-     * GPFC Integration
+     * AWOMS Integration
      */
     Session::saveSessionToDB();    
     // No need to edit below this, pretty stock GUI code

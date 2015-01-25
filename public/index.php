@@ -8,18 +8,13 @@ require_once (ROOT . DS . 'config' . DS . 'config.php');
 
 // URL from ../.htaccess
 $global = array();
-if ($_SERVER['REQUEST_METHOD'] == "GET")
+if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == "POST")
 {
-    $global['input'] = $_GET;
-}
-elseif ($_SERVER['REQUEST_METHOD'] == "POST")
-{
-    $global['input'] = $_POST;
+    $global['input'] = $_POST;    
 }
 else
 {
-    trigger_error("Unknown Request Method '".$_SERVER['REQUEST_METHOD']."'");
-    die();exit();
+    $global['input'] = $_GET;
 }
 
 // Default Page or Requested URL (sanitized)

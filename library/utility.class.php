@@ -7,7 +7,7 @@
  *
  * PHP version 5
  *
- * @author    dirt <dirt@GPFC.com>
+ * @author    Brock Hensley <Brock@AWOMS.com>
  * @license   MIT/X see LICENSE
  * @version   v00.00.00
  */
@@ -196,12 +196,17 @@ class Utility
     {
         Errors::debugLogger(__METHOD__, 100);
         Errors::debugLogger(func_get_args(), 100);
-        $ip = $_SERVER['REMOTE_ADDR'];
+        
+        $ip = "Unknown";
+        if (!empty($_SERVER['REMOTE_ADDR']))
+        {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
         if (!empty($_SERVER['HTTP_CLIENT_IP']))
         {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
         }
-        elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
         {
             $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
         }

@@ -9,16 +9,16 @@ if (!defined("HOST")) { define('HOST', 'dev.hutno8.com'); }
 // Database Server Port
 if (!defined("PORT")) { define('PORT', '3306'); }
 // Database Username
-if (!defined("USER")) { define('USER', 'GPFC_Cart'); }
+if (!defined("USER")) { define('USER', 'AWOMS_Cart'); }
 // Database Password
 if (!defined("PASS")) { define('PASS', 'F7!unm75@mh'); }
 // Database Name
-if (!defined("DBNAME")) { define('DBNAME', 'GPFC'); }
+if (!defined("DBNAME")) { define('DBNAME', 'AWOMS'); }
 // Database Timeout
 if (!defined("DBTIMEOUT")) { define('DBTIMEOUT', '15'); }
     
     /********************/
-    /* GPFC Integration */
+    /* AWOMS Integration */
     if (!defined("DS")) { define('DS', DIRECTORY_SEPARATOR); }
     if (!defined("ROOT")) { define('ROOT', dirname(dirname(__FILE__))); }
     require_once (ROOT.DS."config".DS."config.php");
@@ -72,16 +72,16 @@ if (!defined("DBTIMEOUT")) { define('DBTIMEOUT', '15'); }
      * Example: 'C:\wamp\www\devcart.com\private\cart\\' <-- note the end slash must be a double slash if using backslash/windows
      */
     if (!defined('cartPrivateDir')) {
-        define('cartPrivateDir', 'E:/Projects/GPFC/cart/');
+        define('cartPrivateDir', 'E:/Projects/AWOMS/cart/');
     }
     if (!defined('cartImagesDir')) {
-        define('cartImagesDir', 'E:/Projects/GPFC/cart/images/');
+        define('cartImagesDir', 'E:/Projects/AWOMS/cart/images/');
     }
     if (!defined('cartLogDir')) {
-        define('cartLogDir', 'E:/Projects/GPFC/cart/logs/');
+        define('cartLogDir', 'E:/Projects/AWOMS/cart/logs/');
     }
     if (!defined('cartAdminDir')) {
-        define('cartAdminDir', 'E:/Projects/GPFC/public/cart/admin/');
+        define('cartAdminDir', 'E:/Projects/AWOMS/public/cart/admin/');
     }
     /***** Debug Mode
      * Set $cartDebug to true when in Debug/Dev mode to show detailed error messages

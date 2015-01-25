@@ -23,7 +23,7 @@
         <tr>
             <td>
                 Brand Label
-                <p class="muted">This unique brand identifier is used for Theme folders and should not contain spaces, e.g. GPFC
+                <p class="muted">This unique brand identifier is used for Theme folders and should not contain spaces, e.g. AWOMS
             </td>
             <td>
                 <input type='text' id='inp_brandLabel' name='inp_brandLabel' value='<?php

@@ -6,11 +6,11 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Schema GPFC
+-- Schema AWOMS
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `GPFC` ;
-CREATE SCHEMA IF NOT EXISTS `GPFC` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
-USE `GPFC` ;
+DROP SCHEMA IF EXISTS `AWOMS` ;
+CREATE SCHEMA IF NOT EXISTS `AWOMS` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
+USE `AWOMS` ;
 
 -- -----------------------------------------------------
 -- Table `brands`

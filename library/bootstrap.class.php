@@ -8,7 +8,7 @@
  *
  * PHP version 5.4
  *
- * @author    Brock Hensley <Brock@GPFC.com>
+ * @author    Brock Hensley <Brock@AWOMS.com>
  *
  * @version   v00.00.0000
  *
