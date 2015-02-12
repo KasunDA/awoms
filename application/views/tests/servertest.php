@@ -59,6 +59,13 @@ function testOpenSSL($opensslConfigPath = NULL)
     return $decrypted;
 }
 
+function testMySqlLowercaseTableNames()
+{
+    $test = RewriteMapping::getWhere(array('ID' => 1));
+    var_dump($test);
+    return FALSE;
+}
+
 function runServerTests()
 {
     $pass = TRUE;
@@ -67,7 +74,7 @@ function runServerTests()
     $results .= "<table class='bordered'><tr><td>Mcrypt</td><td>";
     if (!defined("MCRYPT_MODE_CFB")) {
         $pass = FALSE;
-        $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail</span> Ensure php5-mcrypt is installed and enabled";
+        $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail</span> Try installing <strong>php-mcrypt</strong>";
     } else {
         $results .= "<span style='background-color:green;color:white;padding:10px;'>Pass</span>";
     }
@@ -77,7 +84,7 @@ function runServerTests()
     $results .= "<tr><td>Soap</td><td>";
     if (!defined("SOAP_1_1")) {
         $pass = FALSE;
-        $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail</span>";
+        $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail</span> Try installing <strong>php-soap</strong>";
     } else {
         $results .= "<span style='background-color:green;color:white;padding:10px;'>Pass</span>";
     }
@@ -101,6 +108,17 @@ function runServerTests()
     if (empty($res)) {
         $pass = FALSE;
         $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail " . $res . "</span> Ensure php5-gd is installed and enabled";
+    } else {
+        $results .= "<span style='background-color:green;color:white;padding:10px;'>" . $res . "</span>";
+    }
+    $results .= "</td></tr>";
+    
+    // MySQL (lowercase_table_names)
+    $results .= "<tr><td>MySQL</td><td>";
+    $res = testMySqlLowercaseTableNames();
+    if (empty($res)) {
+        $pass = FALSE;
+        $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail " . $res . "</span> If using Linux, ensure MySQL my.ini setting <strong>lower_case_table_names</strong> is set to 1";
     } else {
         $results .= "<span style='background-color:green;color:white;padding:10px;'>" . $res . "</span>";
     }
