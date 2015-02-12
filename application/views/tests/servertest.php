@@ -62,12 +62,8 @@ function testOpenSSL($opensslConfigPath = NULL)
 function testMySqlLowercaseTableNames()
 {
     $RewriteMapping = new RewriteMapping();
-    $test = $RewriteMapping->getWhere(array('rewriteMappingID' => 1));
-    if (!empty($test))
-    {
-        return TRUE;
-    }
-    return FALSE;
+    $RewriteMapping->getWhere(array('rewriteMappingID' => 1));
+    return TRUE;
 }
 
 function runServerTests()
