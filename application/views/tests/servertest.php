@@ -107,7 +107,7 @@ function runServerTests()
     {$res = "Pass";} else {$res = FALSE;}
     if (empty($res)) {
         $pass = FALSE;
-        $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail " . $res . "</span> Ensure php5-gd is installed and enabled";
+        $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail " . $res . "</span> Try installing <strong>php-gd</strong>";
     } else {
         $results .= "<span style='background-color:green;color:white;padding:10px;'>" . $res . "</span>";
     }
@@ -120,7 +120,7 @@ function runServerTests()
         $pass = FALSE;
         $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail " . $res . "</span> If using Linux, ensure MySQL my.ini setting <strong>lower_case_table_names</strong> is set to 1";
     } else {
-        $results .= "<span style='background-color:green;color:white;padding:10px;'>" . $res . "</span>";
+        $results .= "<span style='background-color:green;color:white;padding:10px;'>Pass</span>";
     }
     $results .= "</td></tr></table>";
     
