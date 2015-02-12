@@ -36,7 +36,8 @@ class ACL extends Model
         Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action, 90);
         // Allowed anonymous access:
         if (
-            (DEVELOPMENT_ENVIRONMENT === TRUE && $_controller == "tests")
+            $_controller == "help"
+            || $_controller == "tests"
             || ($_controller == "install")
             || ($_controller == "home" && $_action == "home")
             || ($_controller == "users" && in_array($_action, array('login', 'logout', 'password')))
