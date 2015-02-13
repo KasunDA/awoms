@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AWOMS Integration
+ * GPFC Integration
  */
 // Global definitions
 if (!defined('DS'))

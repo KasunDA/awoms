@@ -22,7 +22,7 @@ More info: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritemap
 1. Edit the Virtual Host section for the site and add the lines below - be sure to specify the path to the file according to your installation path.
  >         # RewriteMap
  >         RewriteEngine On
- >         RewriteMap    url-aliases        txt:/home/Projects/AWOMS/url-alias-map.txt
+ >         RewriteMap    url-aliases        txt:/home/Projects/GPFC/url-alias-map.txt
  > 
  >         # Match domain specific aliases: domain.com/about /pages/view/12
  >         RewriteCond   ${url-aliases:%{SERVER_NAME}$1}  >"" [NC]
@@ -35,26 +35,26 @@ More info: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritemap
 # Example Apache VirtualHost Configuration
  >         <VirtualHost *:80>
  >         # Main domain
- >         ServerName awoms.com
+ >         ServerName gpfc.com
  > 
  >         # List all brands domains and aliases here
- >         ServerAlias www.awoms.com awoms.local www.awoms.local hutno8.com www.hutno8.com hutno8.local www.hutno8.local vinonbrew.com www.vinonbrew.com vinonbrew.local www.vinonbrew.local
+ >         ServerAlias www.gpfc.com gpfc.local www.gpfc.local hutno8.com www.hutno8.com hutno8.local www.hutno8.local vinonbrew.com www.vinonbrew.com vinonbrew.local www.vinonbrew.local
  > 
- >         ServerAdmin webmaster@awoms.com
+ >         ServerAdmin webmaster@gpfc.com
  > 
  >         # Path to site folders
- >         DocumentRoot /home/dirt/Projects/AWOMS/public
- >         <Directory /home/dirt/Projects/AWOMS>
+ >         DocumentRoot /home/dirt/Projects/GPFC/public
+ >         <Directory /home/dirt/Projects/GPFC>
  >                 Options All
  >                 AllowOverride All
  >                 Require all granted
  >         </Directory>
- >         ErrorLog /home/dirt/Projects/AWOMS/logs/error.log
- >         CustomLog /home/dirt/Projects/AWOMS/logs/access.log combined
+ >         ErrorLog /home/dirt/Projects/GPFC/logs/error.log
+ >         CustomLog /home/dirt/Projects/GPFC/logs/access.log combined
  > 
  >         # RewriteMap
  >         RewriteEngine On
- >         RewriteMap    url-aliases        txt:/home/Projects/AWOMS/url-alias-map.txt
+ >         RewriteMap    url-aliases        txt:/home/Projects/GPFC/url-alias-map.txt
  > 
  >         # Match domain specific aliases: domain.com/about /pages/view/12
  >         RewriteCond   ${url-aliases:%{SERVER_NAME}$1}  >"" [NC]

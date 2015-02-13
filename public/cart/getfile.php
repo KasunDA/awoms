@@ -14,7 +14,7 @@
  * Example: "/var/www/vhosts/cart.com/private/cart/cart_settings.inc.php"
  * Example: "C:\wamp\www\cart.com\private\cart\cart_settings.inc.php";
  *****/
-$cartPrivateSettingsFile = "E:/Projects/AWOMS/cart/cart_settings.inc.php";
+$cartPrivateSettingsFile = "E:/Projects/GPFC/cart/cart_settings.inc.php";
 require_once($cartPrivateSettingsFile);
 \Errors::debugLogger(PHP_EOL . '***** New GetFile Load (' . $_SERVER['REQUEST_URI'] . ') *****', 10, true);
 \Errors::debugLogger(PHP_EOL . serialize($_GET) . PHP_EOL . '*****' . PHP_EOL, 10);

@@ -1,4 +1,4 @@
-USE `AWOMS`;
+USE `GPFC`;
 
 DELETE FROM users
 WHERE userID > 1;

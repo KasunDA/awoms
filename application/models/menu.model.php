@@ -246,6 +246,26 @@ class Menu extends Model
                     "url"     => "/stores/create");
             }
         }
+        
+        // Carts
+        /*
+        if (ACL::IsUserAuthorized('carts', 'create'))
+            {
+                // Add to Stores sub-menu if can
+                if (!empty($menu['Stores']))
+                {
+                    $menu['Stores']['sub']['Carts']['sub']['Add Cart'] = array(
+                        "display" => "Add Cart",
+                        "url"     => "/carts/create");
+                }
+                else
+                {
+                    $menu['Carts']['sub']['Add Carts'] = array(
+                        "display" => "Add Service",
+                        "url"     => "/carts/create");
+                }
+            }
+            */
 
         // Users
         if (ACL::IsUserAuthorized('users', 'readall'))

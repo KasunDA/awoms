@@ -14,7 +14,7 @@ if (count(get_included_files()) == 1) {
  * Example: "/var/www/vhosts/cart.com/private/cart/cart_settings.inc.php"
  * Example: "C:\wamp\www\cart.com\private\cart\cart_settings.inc.php";
  *****/
-$cartPrivateSettingsFile = "E:/Projects/AWOMS/cart/cart_settings.inc.php";
+$cartPrivateSettingsFile = "E:/Projects/GPFC/cart/cart_settings.inc.php";
 require_once($cartPrivateSettingsFile);
 \Errors::debugLogger(PHP_EOL . '***** New Page Load (' . $_SERVER['REQUEST_URI'] . ') *****', 1, true);
 \Errors::debugLogger(PHP_EOL . serialize($_POST) . PHP_EOL . '*****' . PHP_EOL, 8);
