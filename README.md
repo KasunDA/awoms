@@ -15,6 +15,10 @@ See LICENSE... spoiler alert: MIT (open-source... FREE!)
   1. The Master.sql script needs to be ran to setup the database before the wizard can complete
 1. Visit the site to start the Install Wizard
   
+# Notes
+ - MySQL lower_case_table_names=1
+ - PHP short_open_tag=On
+  
 # URL Alias Rewrite Mapping Configuration
 This Apache RewriteMap configuration change is required in order for shortcuts like /owners or /locations to work. Otherwise you would have to access them via /admin/home or /stores/readall.  
 The rewrite mappings are stored in the **url-alias-map.txt** file.  
