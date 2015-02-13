@@ -333,7 +333,8 @@ class Session
         $portTest = parse_url(BRAND_DOMAIN);
         
         Errors::debugLogger('Domain for cookie: '.$portTest['host'], 100);
-        $this->data['session']['domain']     = "." . $portTest['host']; // Leading "." allows all sub-domains
+        //$this->data['session']['domain']     = "." . $portTest['host']; // Leading "." allows all sub-domains
+        $this->data['session']['domain']     = $portTest['host'];
         $this->data['session']['storeTheme'] = BRAND_THEME;
         $this->data['session']['https']      = 0;
         
