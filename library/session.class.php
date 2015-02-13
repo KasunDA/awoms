@@ -327,14 +327,21 @@ class Session
         $this->data['session']['brandID']    = BRAND_ID;
         $this->data['session']['cartID']    = NULL;
         $this->data['session']['name']       = BRAND_LABEL;
+
+        // If custom Port, exclude Port
+        $host = parse_url(BRAND_DOMAIN);
+        $host = $host['host'];
         
-        // If direct IP, exclude prefix?
-        // If custom Port, exclude Port?
-        $portTest = parse_url(BRAND_DOMAIN);
+        // If direct IP, exclude prefix
+        if (!preg_match('/^\d/', $host))
+        {
+            $host = ".".$host;
+        }
         
-        Errors::debugLogger('Domain for cookie: '.$portTest['host'], 100);
+        
+        Errors::debugLogger('Domain for cookie: '.$host, 100);
         //$this->data['session']['domain']     = "." . $portTest['host']; // Leading "." allows all sub-domains
-        $this->data['session']['domain']     = $portTest['host'];
+        $this->data['session']['domain']     = $host;
         $this->data['session']['storeTheme'] = BRAND_THEME;
         $this->data['session']['https']      = 0;
         
