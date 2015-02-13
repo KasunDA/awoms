@@ -319,7 +319,7 @@ class Session
         }
 
         // Cookie parameters
-        
+        Errors::debugLogger('Looking up brand... '.BRAND_ID, 100);
         $Brand = new Brand();
         $brand = $Brand->getSingle(array('brandID' => BRAND_ID));
         
@@ -327,6 +327,9 @@ class Session
         $this->data['session']['brandID']    = BRAND_ID;
         $this->data['session']['cartID']    = NULL;
         $this->data['session']['name']       = BRAND_LABEL;
+        
+        // If direct IP, exclude prefix?
+        Errors::debugLogger('Domain for cookie: '.BRAND_DOMAIN, 100);
         $this->data['session']['domain']     = "." . BRAND_DOMAIN; // Leading "." allows all sub-domains
         $this->data['session']['storeTheme'] = BRAND_THEME;
         $this->data['session']['https']      = 0;
@@ -335,6 +338,7 @@ class Session
         $this->data['session']['domainID'] = BRAND_DOMAIN_ID;
         
         if (HTTPS) {
+            Errors::debugLogger('Enabling https...', 100);
             $this->data['session']['https'] = 1;
         }
         $httponly = true; // This stops javascript being able to access the session id.
