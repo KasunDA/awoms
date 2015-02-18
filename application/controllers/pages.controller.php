@@ -135,10 +135,7 @@ class PagesController extends Controller
         }
         
         // Ensures page exists
-        Errors::debugLogger("Ensures page exists...",10);
         parent::read($args);
-        
-        Errors::debugLogger("Past read...", 10);
         
         // ACL: Ensures user has permission to view requested page
         if (!empty($this->template->data['page']['pageRestricted']))

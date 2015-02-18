@@ -122,16 +122,26 @@ $brand = $Brand->getSingle(array('brandID' => $store['brandID']));
                 'hrsSat' => 'Saturday',
                 'hrsSun' => 'Sunday');
             $hours = "<table>";
+            $showHours = FALSE;
             foreach ($days as $code => $codeLabel)
             {
-                $hours .= "<tr><td>" . $codeLabel . "</td><td>" . $store[$code] . "</td></tr>";
+                if (!empty($store[$code]))
+                {
+                    $showHours = TRUE;
+                    $hours .= "<tr><td>" . $codeLabel . "</td><td>" . $store[$code] . "</td></tr>";
+                }
             }
             $hours .= "</table>";
+
+            if ($showHours)
+            {
             ?>
             <h2><strong>Hours</strong></h2>
             <?= $hours; ?>
 
             <?php
+            }
+            
             // Facebook
             if (!empty($store['facebookURL']))
             {

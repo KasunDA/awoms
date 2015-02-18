@@ -31,9 +31,11 @@ class ACL extends Model
      */
     public static function IsUserAuthorized($_controller, $_action, $redirect = NULL)
     {
+        Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action . ' (redirect: ' . $redirect . ')', 10);
         $ACL = new ACL();
 
-        Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action, 100);
+
+
         // Allowed anonymous access:
         if (
             $_controller == "help"
@@ -42,24 +44,30 @@ class ACL extends Model
             || ($_controller == "home" && $_action == "home")
             || ($_controller == "users" && in_array($_action, array('login', 'logout', 'password')))
             || (empty($_SESSION['user'])
-                && in_array($_controller, array('pages', 'articles', 'comments', 'stores', 'menus', 'menulinks'))
-                && in_array($_action, array('read', 'readall')))
+                && in_array($_controller, array(
+                    'pages',
+                    'articles',
+                    'comments',
+                    'stores',
+                    'menus',
+                    'menulinks'))
+                    && in_array($_action, array('read', 'readall')))
         )
         {
             return true;
         }
 
-        #Errors::debugLogger("* Checking for Non-Anonymous User ACL *");
         if (empty($_SESSION['user']))
         {
+            Errors::debugLogger("* Anonymous User *");
             return self::ReturnFailedAuth($redirect);
         }
 
         // User is logged in, allow access to /admin/home (/owners) - template does rest
         // and Help
-        if (($_controller == 'admin' && $_action == 'home' || $_controller == 'tools')
-                || ($_controller == 'help' && $_action == 'home'))
+        if (($_controller == 'admin' && $_action == 'home') || $_controller == 'tools' || ($_controller == 'help' && $_action == 'home'))
         {
+            Errors::debugLogger("User is logged in, allowed basic pages #001");
             return true;
         }
 
@@ -86,7 +94,7 @@ class ACL extends Model
             $crud = "delete";
         }
 
-        // Search in order of user -> brand/group -> group defaults
+        // ACL Deny Search in order of User -> Brand/Group -> Group defaults
         // Brand's User Defaults override?
         $test = $ACL->PermissionCheckUserLevel($userID, $_controller, $crud);
         if ($test === TRUE)
@@ -95,6 +103,7 @@ class ACL extends Model
         }
         elseif ($test === FALSE)
         {
+            Errors::debugLogger("* Failed User Level Check *");
             return self::ReturnFailedAuth($redirect);
         }
 
@@ -106,10 +115,12 @@ class ACL extends Model
         }
         elseif ($test === FALSE)
         {
+            Errors::debugLogger("* Failed Group Level Check *");
             return self::ReturnFailedAuth($redirect);
         }
 
         // No entry found for allow or deny so returning false (deny)
+        Errors::debugLogger("* Failed *");
         return self::ReturnFailedAuth($redirect);
     }
 
