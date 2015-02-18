@@ -33,7 +33,7 @@ class ACL extends Model
     {
         $ACL = new ACL();
 
-        Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action, 90);
+        Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action, 100);
         // Allowed anonymous access:
         if (
             $_controller == "help"
@@ -41,12 +41,9 @@ class ACL extends Model
             || ($_controller == "install")
             || ($_controller == "home" && $_action == "home")
             || ($_controller == "users" && in_array($_action, array('login', 'logout', 'password')))
-            || (
-            empty($_SESSION['user'])
-            && in_array($_controller, array('pages', 'articles', 'comments', 'stores'))
-            && in_array($_action, array('read', 'readall')
-            )
-            )
+            || (empty($_SESSION['user'])
+                && in_array($_controller, array('pages', 'articles', 'comments', 'stores', 'menus', 'menulinks'))
+                && in_array($_action, array('read', 'readall')))
         )
         {
             return true;
@@ -132,15 +129,15 @@ class ACL extends Model
         if (!empty($results))
         {
 
-            Errors::debugLogger(__METHOD__ . ': Found user specific ACL (' . $results[$crud] . ')...', 90);
+            Errors::debugLogger(__METHOD__ . ': Found user specific ACL (' . $results[$crud] . ')...', 100);
             if ($results[$crud] == 1)
             {
                 // Access explicitly ALLOWED:
-                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 90);
+                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 100);
                 return true;
             }
             // Required access explicitly DENIED:
-            Errors::debugLogger(__METHOD__ . ': ACL DENIED', 90);
+            Errors::debugLogger(__METHOD__ . ': ACL DENIED', 100);
             return false;
         }
         // No entry found
@@ -162,15 +159,15 @@ class ACL extends Model
 
         if (!empty($results))
         {
-            Errors::debugLogger(__METHOD__ . ': Found group specific ACL (' . $results[$crud] . ')...', 90);
+            Errors::debugLogger(__METHOD__ . ': Found group specific ACL (' . $results[$crud] . ')...', 100);
             if ($results[$crud] == 1)
             {
                 // Access explicitly ALLOWED:
-                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 90);
+                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 100);
                 return true;
             }
             // Required access explicitly DENIED:
-            Errors::debugLogger(__METHOD__ . ': ACL DENIED', 90);
+            Errors::debugLogger(__METHOD__ . ': ACL DENIED', 100);
             return false;
         }
         // No entry found
@@ -185,7 +182,7 @@ class ACL extends Model
      */
     public static function ReturnFailedAuth($redirect)
     {
-        #Errors::debugLogger(__METHOD__, 90);
+        Errors::debugLogger(__METHOD__);
         if ($redirect == "login" && empty($_SESSION['user']))
         {
             #$_SESSION['ErrorMessage'] = "Login Required";

@@ -509,7 +509,8 @@ class Menu extends Model
     public function getMenu($menuType, $menuName = NULL, $ulClass = NULL, $menuTitle = NULL)
     {
         // Admin
-        if (!empty($_SESSION['user_logged_in']) && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
+        if (!empty($_SESSION['user_logged_in'])
+                && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
         {
             if ($menuType == "Heading Nav")
             {

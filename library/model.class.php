@@ -342,14 +342,12 @@ class Model extends Database
             || $_SESSION['controller'] == "install"
             || $_SESSION['controller'] == "tests"
             || ($_SESSION['controller'] == "users" && $_SESSION['action'] == "login")
-            || in_array($this->table,
+            || in_array(strtolower($this->table),
                         array(
                 'rewritemappings',
                 'brands',
-                // 'stores', -- Moved to store.model
                 'usergroups',
-                'menulinks', // @todo move to model
-                //'users', -- Moved to user.model
+                'menulinks', // @todo move to menulinks.model like stores/users
                 'addresses',
                 'bodycontents')))
         {
