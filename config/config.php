@@ -35,8 +35,10 @@ spl_autoload_register(array('Autoloader', 'loadClass'));
 // Encoding
 mb_internal_encoding('UTF-8');
 
-// Load Version
+// Load Product/Version
 $versionFile = ROOT.DS.'config'.DS.'version.txt';
 if (file_exists($versionFile)){$version = file_get_contents($versionFile);}else{$version = "v00.00.00";}
-define('ProductName', 'GPFC PHP MVC CMS');
+$productName = ROOT.DS.'config'.DS.'product.txt';
+if (file_exists($productName)){$product = file_get_contents($productName);}else{$product = "GPFC PHP MVC CMS";}
+define('ProductName', $product);
 define('Version', $version);

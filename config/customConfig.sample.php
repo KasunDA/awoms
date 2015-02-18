@@ -1,18 +1,21 @@
 <?php
 // Set this to an email address to receive any errors triggered by the site
-define('ERROR_EMAIL', 'senderrors@tohere.com');
+define('ERROR_EMAIL', 'errors@localhost');
 
 // Set this to your preferred default time zone according to https://php.net/manual/en/timezones.php
 date_default_timezone_set('America/New_York');
 
 // If using Windows, set the path to OpenSSL.cnf:
-$drives = array("C", "D", "E"); // Used to switch between dev/prod environments
-foreach ($drives as $drive)
+$openSSLConfig = FALSE;
+if (preg_match('/Win/', PHP_OS))
 {
-    $openSSLConfig = $drive . ":/Services/Apache/httpd-2.4.9-win32-VC11/conf/openssl.cnf";
-    if (!is_file($openSSLConfig)) { $openSSLConfig = FALSE; } else { break; }
+    $drives = array("C", "D", "E"); // Used to switch between dev/prod environments
+    foreach ($drives as $drive)
+    {
+        $openSSLConfig = $drive . ":/Services/Apache/httpd-2.4.9-win32-VC11/conf/openssl.cnf";
+        if (!is_file($openSSLConfig)) { $openSSLConfig = FALSE; } else { break; }
+    }
 }
-
 define('OPENSSL_CONFIG', $openSSLConfig);
 
 /***** ERROR_LEVEL
@@ -29,6 +32,7 @@ define('OPENSSL_CONFIG', $openSSLConfig);
  * 1 (Info) - If msg lvl undefined assumes level 1
  * 0 (None) - Disabled (Unless forced) - Recommended for production
  *****/
+
 if ($_SERVER['SERVER_ADDR'] == '127.0.0.1' || $_SERVER['SERVER_ADDR'] == '::1') {
     // Localhost development settings (no need to change these)
     define('DEVELOPMENT_ENVIRONMENT', TRUE);
@@ -37,8 +41,8 @@ if ($_SERVER['SERVER_ADDR'] == '127.0.0.1' || $_SERVER['SERVER_ADDR'] == '::1') 
     ini_set('display_errors', 'On');
 } else {
     // Production settings (set ERROR_LEVEL as desired with notes above in mind, 0-1 recommended for live server)
-    define('DEVELOPMENT_ENVIRONMENT', FALSE);
-    define('ERROR_LEVEL', 1);
-    define('USE_XDEBUG_OUTPUT', FALSE);
-    ini_set('display_errors', 'Off');
+    define('DEVELOPMENT_ENVIRONMENT', TRUE);
+    define('ERROR_LEVEL', 10);
+    define('USE_XDEBUG_OUTPUT', TRUE);
+    ini_set('display_errors', 'On');
 }

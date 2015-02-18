@@ -12,11 +12,12 @@ See LICENSE... spoiler alert: MIT (open-source... FREE!)
 1. Copy **config/dbConfig.sample.php** to **config/dbConfig.php**
 1. Edit **config/dbConfig.php**
   1. Set the database server variables appropriately (the database needs to exist in order for the wizard to do the rest)
-  1. The Master.sql script needs to be ran to setup the database before the wizard can complete
+  1. **The Master.sql script needs to be executed on the target database to setup the database before the wizard can be started**
 1. Visit the site to start the Install Wizard
+1. View the /help after installing for more information
   
 # Notes
- - MySQL lower_case_table_names=1
+ - MySQL lower_case_table_names=2
  - PHP short_open_tag=On
   
 # URL Alias Rewrite Mapping Configuration
