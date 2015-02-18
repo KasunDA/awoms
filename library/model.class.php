@@ -47,8 +47,10 @@ class Model extends Database
             parent::connect();
         }
         $this->model = get_class($this);        
-        $this->table = strtolower($this->model) . "s";
-        $this->table = preg_replace("/sss$/", "sses", $this->table); // Addresses
+        $this->table = lcfirst($this->model) . "s";
+        
+        // Fix for Addresses table
+        $this->table = preg_replace("/sss$/", "sses", $this->table);
     }
 
     /**
