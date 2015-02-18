@@ -49,6 +49,12 @@ class Model extends Database
         $this->model = get_class($this);        
         $this->table = lcfirst($this->model) . "s";
         
+        // Fix for case sensitivity
+        if ($this->model == "ACL")
+        {
+            $this->table = "acls";
+        }
+        
         // Fix for Addresses table
         $this->table = preg_replace("/sss$/", "sses", $this->table);
     }
