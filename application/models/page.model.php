@@ -22,8 +22,8 @@ class Page extends Model
             $order = "brandID, pageName, pageDatePublished";
         }
         
-        $all = parent::getWhere(NULL, $cols, $order, $aclWhere);
-        
+        $all = parent::getWhere($where, $cols, $order, $aclWhere, $in, $loadChildren);
+
         $i = 0;
         foreach ($all as $_page)
         {

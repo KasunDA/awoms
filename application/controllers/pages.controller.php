@@ -135,7 +135,10 @@ class PagesController extends Controller
         }
         
         // Ensures page exists
+        Errors::debugLogger("Ensures page exists...",10);
         parent::read($args);
+        
+        Errors::debugLogger("Past read...", 10);
         
         // ACL: Ensures user has permission to view requested page
         if (!empty($this->template->data['page']['pageRestricted']))
@@ -145,6 +148,7 @@ class PagesController extends Controller
                     || !in_array($_SESSION['user']['usergroup']['usergroupName'], array('Administrators', 'Store Owners')))
             {
                 // Access Denied
+                Errors::debugLogger("Access Denied, redirecting...", 10);
                 unset($this->template->data['page']);
                 $this->set('success', FALSE);
                 header('Location: /' . $this->controller . '/readall');

@@ -575,7 +575,8 @@ class Controller
 
         // Logged in Store Owners - with 1 store - redirect to update single store
         if (!empty($_SESSION['user'])
-            && in_array($_SESSION['user']['usergroup']['usergroupName'], array("Administrators", "Store Owners"))
+            && in_array($_SESSION['user']['usergroup']['usergroupName'],
+                    array("Administrators", "Store Owners"))
             && $this->controller == "stores"
             && $this->action == "readall"
             && count($items) == 1)
@@ -585,6 +586,7 @@ class Controller
             exit(0);
         }
 
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__." Setting items...");
         $this->set($this->controller, $items);
 
         // If user is logged in
@@ -595,25 +597,30 @@ class Controller
             || ACL::IsUserAuthorized($this->controller, "update")
             || ACL::IsUserAuthorized($this->controller, "delete")))
         {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__." IsAuth to CRUD",10);
             $_m = $this->model;
             $_c = $_m . "sController";
             if (method_exists($_c, 'prepareFormCustom'))
             {
+                Errors::debugLogger(__METHOD__ . '@' . __LINE__." Calling custom prepareFormCustom...",10);
                 $_c::prepareFormCustom($prepareFormID, $this->template->data);
             }
             else
             {
+                Errors::debugLogger(__METHOD__ . '@' . __LINE__." Calling prepareForm...",10);
                 self::prepareForm($prepareFormID, $this->template->data);
             }
         }
         else
         {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__." Not IsAuth...");
             // Global Admin? (for Brands List)
             $isGlobalAdmin = FALSE;
             if (!empty($_SESSION['user'])
                 && $_SESSION['user']['usergroup']['usergroupName'] == 'Administrators'
                 && $_SESSION['user']['usergroup']['brandID'] == 1)
             {
+                Errors::debugLogger(__METHOD__ . '@' . __LINE__." IsGlobalAdmin: True");
                 $isGlobalAdmin = TRUE;
             }
             $this->set('isGlobalAdmin', $isGlobalAdmin);
@@ -633,15 +640,18 @@ class Controller
 
         // Load Item or Redirect to ViewAll if item doesn't exist
         $ID = self::itemExists($args);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__." ID: ".$ID);
 
         if ($this->step == 1)
         {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__." Step: 1");
             // Loads view all list
             self::readall($ID);
             return true;
         }
         elseif ($this->step == 2)
         {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__." Step: 2");
             // Use create method to update existing
             $res = self::create();
             $this->set('success', $res);
@@ -720,6 +730,8 @@ class Controller
      */
     protected function itemExists($args)
     {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        
         $ID        = FALSE;
         $idColName = strtolower($this->model) . 'ID';
 
@@ -744,11 +756,13 @@ class Controller
         // Confirm this ID exists (load item if found)
         if (!empty($ID))
         {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__ . ' Confirming ID (' . $idColName . ' => ' . $ID . ') exists...', 10);
+
             $item = self::callModelFunc('getSingle', array(array($idColName => $ID), NULL, NULL, NULL, NULL, TRUE));
             #$item = self::callModelFunc('getSingle', array($idColName => $ID));
             if (!empty($item))
             {
-
+                Errors::debugLogger("Item found, checking access...",10);
                 // ACL: User access for this item? (returns to readll if no)
                 $_m = $this->model;
                 if (method_exists($_m, 'userHasAccessToItem'))
@@ -772,6 +786,7 @@ class Controller
                 }
 
                 $this->set(strtolower($this->model), $item);
+                Errors::debugLogger("Returning ID: ".$ID, 10);
                 return $ID;
             }
         }
