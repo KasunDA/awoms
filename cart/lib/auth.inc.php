@@ -89,7 +89,6 @@ class Auth
     public function checkCartUserLogin($username, $password)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         $this->sql = "
                 SELECT
                     su.userID, su.password, su.email, su.userActive,
@@ -155,7 +154,7 @@ class Auth
                                                                                                                  $password);
             // If user has no keypair, call makeKeys to handle
             if (empty($_SESSION['unprotPrivKey'])) {
-                \Errors::debugLogger(__METHOD__ . ': Generating initial cart and user encryption keys on first login');
+                \Errors::debugLogger(__METHOD__ . ': Generating initial cart and user encryption keys on first login', 100);
                 $this->makeCartUserKeys($_SESSION['cartID'], $_SESSION['userID'], $password);
             }
             return true;
@@ -201,7 +200,6 @@ class Auth
     public function checkCustomerUserLogin($username, $passphrase)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         $this->sql = "
                 SELECT
                     ci.customerID, ci.email, ci.username, ci.passphrase, ci.loginAllowed, ci.lastFailedLoginDate, ci.lastFailedLoginIP,
@@ -435,7 +433,6 @@ class Auth
     public function makeCartUserKeys($cartID, $userID, $passphrase)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         // Cart & user new pub/priv keys
         //$opensslConfigPath = NULL;
         /**************/
@@ -477,7 +474,6 @@ class Auth
     public function changeCartUserPrivateKeyPassphrase($passphrase)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         
         //$opensslConfigPath = NULL;
 //        if (OPMODE == "DEV")
@@ -542,7 +538,6 @@ class Auth
     public function extractProtectedPrivateKey($keyPair, $passphrase, $opensslConfigPath)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         $config = array(
             "digest_alg"         => "sha512",
             "private_key_bits"   => 4096,
@@ -576,7 +571,6 @@ class Auth
     private function extractPublicKey($keyPair)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         $pubKey = openssl_pkey_get_details($keyPair);
         return $pubKey["key"];
     }
@@ -594,7 +588,6 @@ class Auth
     private function saveCartUserPrivateKey($protPrivKey, $userID)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         $this->sql     = "
             UPDATE users
             SET protectedPrivateKey = :protPrivKey
@@ -623,7 +616,6 @@ class Auth
     private function saveCartPublicKey($publicKey, $cartID)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         $this->sql     = "
             UPDATE carts
             SET cartPublicKey = :publicKey
@@ -651,7 +643,6 @@ class Auth
     public function getCartUsersProtectedPrivateKey($userID)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         $this->sql     = "
             SELECT protectedPrivateKey
             FROM cartUsers
@@ -679,7 +670,6 @@ class Auth
     public function getCartUsersPublicKey($cartID)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         $this->sql     = "
             SELECT cartPublicKey
             FROM carts
@@ -707,7 +697,6 @@ class Auth
     public function getUnprotectedPrivateKey($protPrivKey = NULL, $passphrase = NULL)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         if (empty($protPrivKey) || empty($passphrase)) {
             \Errors::debugLogger(__METHOD__ . ': empty');
             return false;
@@ -748,7 +737,6 @@ class Auth
     public function encryptData($pubKey, $data)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         $encrypted = false;
         openssl_public_encrypt($data, $encrypted, $pubKey);
         if (empty($encrypted)) {
@@ -771,7 +759,6 @@ class Auth
     public function decryptData($encrypted, $unprotPrivKey)
     {
         \Errors::debugLogger(__METHOD__, 5);
-        \Errors::debugLogger(func_get_args(), 9);
         $decrypted = false;
         openssl_private_decrypt(base64_decode($encrypted), $decrypted, $unprotPrivKey);
         if (empty($decrypted)) {

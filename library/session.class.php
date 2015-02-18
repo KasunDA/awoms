@@ -329,15 +329,23 @@ class Session
         $this->data['session']['name']       = BRAND_LABEL;
 
         // If custom Port, exclude Port
+        Errors::debugLogger('Parsing URL...'.BRAND_DOMAIN, 100);
         $host = parse_url(BRAND_DOMAIN);
-        $host = $host['host'];
+        if (!empty($host) && !empty($host['host']))
+        {
+            $host = $host['host'];
+            Errors::debugLogger('Parsed Host: '.$host, 100);
+        } else {
+            $host = BRAND_DOMAIN;
+            Errors::debugLogger('Host = Brand_Domain: '.$host, 100);
+        }
         
         // If direct IP, exclude prefix
         if (!preg_match('/^\d/', $host))
         {
             $host = ".".$host;
+            Errors::debugLogger('IP Host: '.$host, 100);
         }
-        
         
         Errors::debugLogger('Domain for cookie: '.$host, 100);
         //$this->data['session']['domain']     = "." . $portTest['host']; // Leading "." allows all sub-domains
