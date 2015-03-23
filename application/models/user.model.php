@@ -199,6 +199,7 @@ class User extends Model
         $groups    = $UserGroup->getWhere(array('brandID'         => BRAND_ID, 'usergroupActive' => 1));
         if (empty($groups))
         {
+            Errors::debugLogger(__METHOD__.': Empty Groups');
             return false;
         }
 
@@ -217,11 +218,13 @@ class User extends Model
 
         if (empty($_user))
         {
+            Errors::debugLogger(__METHOD__.': User not found');
             return false;
         }
 
         if (crypt($passphrase, $_user['passphrase']) == $_user['passphrase'])
         {
+            Errors::debugLogger(__METHOD__.': Passphrase matches');
             //$_user = self::LoadExtendedItem($_user);
             // Update user settings (success login)
             $updatedUser = array('userID'              => $_user['userID'],
@@ -232,6 +235,7 @@ class User extends Model
             return $_user;
         }
 
+        Errors::debugLogger(__METHOD__.': Passphase failed');
         // Update user settings (failed login)
         $updatedUser = array('userID'              => $_user['userID'],
             'lastFailedLoginDate' => Utility::getDateTimeUTC(),

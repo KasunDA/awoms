@@ -5,6 +5,7 @@
 /************************************************************************/
 /** Structure **/
 body {
+    background-color: #000;
     /*
     background-attachment: fixed;
     background-image: url(./images/structure/background.jpg);
@@ -30,14 +31,16 @@ body {
     background-repeat: no-repeat;
     background-position: center 0%;*/
 }
-.header {
+.header, .header-full {
     /* Top Header (under top nav bar, includes nav links and logo, 960x156)) */
+    /* Use header-full if front-page (.header) uses larger space than rest of pages like Hut */
+    height: 46px;
     background-image: url(./images/structure/header.jpg);
 }
-.header-full {
-    /*
-    background-image: url(./images/structure/header-full.png);
-    */
+
+/* GP specific */
+#main-container {
+    padding: 0px;
 }
 
 /* Middle separator */
@@ -66,15 +69,13 @@ body {
     */
 }
 
-/* Footer */
+/* Footer (Bottom right logo in footer nav links 960x209)*/
 .footer-container
 {
-    /*
-    background-image: url(./images/structure/background-tile.jpg);
-    background-repeat: repeat-y;
-    background-position: center;
+    background-image: url(./images/structure/gp-cash.jpg);
+    background-repeat: no-repeat;
+    background-position: right;
     background-attachment: scroll;
-    */
 }
 /************************************************************************/
 
@@ -86,4 +87,19 @@ body {
     background-repeat: no-repeat;
     background-position: 50% 50%;
     */
+}
+
+/************************************************************************/
+/* Custom CSS */
+
+/* Removes padding and margin */
+.no-padding {
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+/* Removes border and margin from img */
+.plain-img {
+    border: none !important;
+    margin: 0px !important;
 }
