@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Goin' Postal's custom styles - defaults by brock@brockhensley.com
+   ========================================================================== */
+
+/************************************************************************/
+/** Structure **/
+body {
+    /*
+    background-attachment: fixed;
+    background-image: url(./images/structure/background.jpg);
+    background-repeat: no-repeat;
+    background-position: center top;
+    */
+}
+
+/* Main Div */
+#wrapper {
+    /*
+    background-repeat: repeat-y;
+    background-position: center center;
+    background-image: url(./images/structure/background-tile.jpg);
+    */
+}
+
+/* Top Nav (very top nav bar, 960x32) */
+#top {
+    background-color: #000;
+/*    background-attachment: scroll;
+    background-image: url(./images/structure/top.jpg);
+    background-repeat: no-repeat;
+    background-position: center 0%;*/
+}
+.header {
+    /* Top Header (under top nav bar, includes nav links and logo, 960x156)) */
+    background-image: url(./images/structure/header.jpg);
+}
+.header-full {
+    /*
+    background-image: url(./images/structure/header-full.png);
+    */
+}
+
+/* Middle separator */
+.middle {
+    /*
+    background-attachment: scroll;
+    background-image: url(./images/structure/middle.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    */
+}
+.middle-full {
+    /*
+    background-attachment: scroll;
+    background-image: url(./images/structure/middle-full.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    */
+}
+.middle-small {
+    /*
+    background-attachment: scroll;
+    background-image: url(./images/structure/middle-smaller.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    */
+}
+
+/* Footer */
+.footer-container
+{
+    /*
+    background-image: url(./images/structure/background-tile.jpg);
+    background-repeat: repeat-y;
+    background-position: center;
+    background-attachment: scroll;
+    */
+}
+/************************************************************************/
+
+/************************************************************************/
+/* Floating FDD */
+.floatingFDD {
+    /*
+    background-image: url(./images/fdd-wood-bg.png);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    */
+}
