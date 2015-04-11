@@ -7,7 +7,7 @@
  *
  * PHP version 5.4
  * 
- * @author    Brock Hensley <Brock@GPFC.com>
+ * @author    Brock Hensley <Brock@brockhensley.com>
  * 
  * @version   v00.00.0000
  * 
@@ -86,8 +86,8 @@ class Encryption
      */
     function decrypt($key, $authKey, $encrypted)
     {
-        Errors::debugLogger(__METHOD__, 99);
-        Errors::debugLogger(func_get_args(), 99);
+        Errors::debugLogger(__METHOD__, 1000);
+        Errors::debugLogger(func_get_args(), 1000);
         $size       = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CFB);
         $encrypted  = base64_decode($encrypted);
         $iv         = substr($encrypted, 0, $size);

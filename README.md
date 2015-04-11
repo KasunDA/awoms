@@ -71,4 +71,4 @@ More info: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritemap
  >         </VirtualHost>
   
 # Contact
-@author Brock Hensley <brock.hensley@gmail.com>
+@author Brock Hensley <brock@brockhensley.com>

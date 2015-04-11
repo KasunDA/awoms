@@ -13,7 +13,7 @@ use DateInterval;
  *
  * @category  killerCart
  * @package   killerCart
- * @author    Brock Hensley <brock.hensley@gmail.com>
+ * @author    Brock Hensley <brock@brockhensley.com>
  * @copyright 2014 Goin' Postal Franchise Corporation
  * @license   Private
  * @version   Release: v01.03.00

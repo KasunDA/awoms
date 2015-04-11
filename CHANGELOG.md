@@ -13,5 +13,6 @@
  - [x] Brand Theme folder support
  - [ ] (dynamic) Brand (domain etc) selection list (ACL to view/change)
  - [/] Sanitization
- - [ ] ... CSS style
+ - [ ] CSS style (per brand)
+ - [ ] CSS editor
  - [ ] favicon (per brand)

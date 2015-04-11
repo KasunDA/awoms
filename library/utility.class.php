@@ -7,7 +7,7 @@
  *
  * PHP version 5
  *
- * @author    Brock Hensley <Brock@GPFC.com>
+ * @author    Brock Hensley <Brock@brockhensley.com>
  * @license   MIT/X see LICENSE
  * @version   v00.00.00
  */
@@ -194,8 +194,7 @@ class Utility
      */
     public static function getVisitorIP()
     {
-        Errors::debugLogger(__METHOD__, 100);
-        Errors::debugLogger(func_get_args(), 100);
+        Errors::debugLogger(__METHOD__.': Intentionally NOT logging IP address to log file', 1000);
         
         $ip = "Unknown";
         if (!empty($_SERVER['REMOTE_ADDR']))

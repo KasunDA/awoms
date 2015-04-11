@@ -10,7 +10,7 @@ namespace killerCart;
  *
  * @category  Cart
  * @package   Cart
- * @author    Brock Hensley <brock.hensley@gmail.com>
+ * @author    Brock Hensley <brock@brockhensley.com>
  * @copyright 2014 Goin' Postal Franchise Corporation
  * @license   Private
  * @version   Release: v1.0.1
