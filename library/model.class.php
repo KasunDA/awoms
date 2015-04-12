@@ -428,7 +428,7 @@ class Model extends Database
             || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
             || $_SESSION['user']['usergroup']['brandID'] != 1)
         {
-            Errors::debugLogger("Appending BrandID for added Security...", 1000);
+            //Errors::debugLogger("Appending BrandID for added Security...", 1000);
             $res['where'] = array('brandID' => $brandID);
         }
         return $res;
@@ -548,7 +548,7 @@ class Model extends Database
             $new   = array();
             foreach ($all as $item)
             {
-                Errors::debugLogger(__METHOD__.'@'.__LINE__.'Loading children items for item...',10);
+                Errors::debugLogger(__METHOD__.'@'.__LINE__.': Loading children items for item...',10);
                 $new[] = $model::LoadExtendedItem($item);
             }
             $all = $new;

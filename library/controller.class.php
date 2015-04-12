@@ -567,7 +567,7 @@ class Controller
             || ACL::IsUserAuthorized($this->controller, "update")
             || ACL::IsUserAuthorized($this->controller, "delete")))
         {
-            Errors::debugLogger(__METHOD__ . '@' . __LINE__." IsAuth to CRUD",10);
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.": Authorized to Create/Update/Delete? Yes.",10);
             $_m = $this->model;
             $_c = $_m . "sController";
             if (method_exists($_c, 'prepareFormCustom'))
@@ -583,7 +583,12 @@ class Controller
         }
         else
         {
-            Errors::debugLogger(__METHOD__ . '@' . __LINE__." Not IsAuth...");
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.": Authorized to Create/Update/Delete? No.",10);
+
+            // Load Item?
+            $ID = self::itemExists($prepareFormID);
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__." ID: ".$ID);
+
             // Global Admin? (for Brands List)
             $isGlobalAdmin = FALSE;
             if (!empty($_SESSION['user'])
@@ -630,7 +635,7 @@ class Controller
             || ACL::IsUserAuthorized($this->controller, "update")
             || ACL::IsUserAuthorized($this->controller, "delete")))
         {
-            Errors::debugLogger(__METHOD__ . '@' . __LINE__." IsAuth to CRUD",10);
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.": Authorized to Create/Update/Delete? Yes.",10);
             $_m = $this->model;
             $_c = $_m . "sController";
             if (method_exists($_c, 'prepareFormCustom'))
@@ -646,7 +651,8 @@ class Controller
         }
         else
         {
-            Errors::debugLogger(__METHOD__ . '@' . __LINE__." Not IsAuth...");
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.": Authorized to Create/Update/Delete? No.",10);
+
             // Global Admin? (for Brands List)
             $isGlobalAdmin = FALSE;
             if (!empty($_SESSION['user'])
@@ -688,7 +694,6 @@ class Controller
 
             // Load single item
             self::read($ID);
-
 
             return true;
         }
@@ -799,9 +804,10 @@ class Controller
         // Confirm this ID exists (load item if found)
         if (!empty($ID))
         {
-            Errors::debugLogger(__METHOD__ . '@' . __LINE__ . ' Confirming ID (' . $idColName . ' => ' . $ID . ') exists...', 10);
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__ . ' Confirming ID (' . $idColName . ' => ' . $ID . ') exists and loading item with extended children...', 10);
 
-            $item = self::callModelFunc('getSingle', array(array($idColName => $ID), NULL, NULL, NULL, NULL, TRUE));
+            $loadExtendedItem = TRUE;
+            $item = self::callModelFunc('getSingle', array(array($idColName => $ID), NULL, $loadExtendedItem));
             #$item = self::callModelFunc('getSingle', array($idColName => $ID));
             if (!empty($item))
             {
@@ -818,18 +824,21 @@ class Controller
                     //self::userHasAccessToItem($this->controller, $item);
                 }
 
+                Errors::debugLogger(__METHOD__.'@'.__LINE__.': Setting '.$idColName.' = '.$ID);
                 $this->set($idColName, $ID);
 
                 /* Controller specific: */
                 $model = $this->model;
-                #$item  = $model::LoadExtendedItem($item); //."sController";
+                #done above: #$item  = $model::LoadExtendedItem($item); //."sController";
                 // Gets/sets input data from post, must begin with "inp_"
                 foreach ($item as $k => $v)
                 {
                     $this->set("inp_" . $k, $v);
                 }
 
+                Errors::debugLogger(__METHOD__.'@'.__LINE__.': Setting '.$this->model.' = item');
                 $this->set(strtolower($this->model), $item);
+
                 Errors::debugLogger(__METHOD__.'@'.__LINE__."Returning ID: ".$ID, 10);
                 return $ID;
             }

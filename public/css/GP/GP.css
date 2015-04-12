@@ -6,6 +6,7 @@
 /** Structure **/
 body {
     background-color: #000;
+    color: #e0e0e0;
     /*
     background-attachment: fixed;
     background-image: url(./images/structure/background.jpg);
@@ -76,6 +77,29 @@ body {
     background-repeat: no-repeat;
     background-position: right;
     background-attachment: scroll;
+}
+/************************************************************************/
+
+/************************************************************************/
+/* Text Styles */
+.body-text {
+    color: #e0e0e0;
+}
+.body-text-bold {
+    color: #e0e0e0;
+}
+.body-text-bold-nj {
+    color: #e0e0e0;
+}
+.subheader-text-bold {
+    color: #e0e0e0;
+}
+.body-text-small {
+    color: #e0e0e0;
+}
+.header-text,
+h1{
+    color: #e0e0e0;
 }
 /************************************************************************/
 

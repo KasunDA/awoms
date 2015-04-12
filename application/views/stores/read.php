@@ -1,4 +1,3 @@
-
 <?php
 // Address
 if (!empty($store['address']))
