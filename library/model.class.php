@@ -452,7 +452,7 @@ class Model extends Database
             return false;
         }
         $item = $res[0];
-        if ($loadChildren !== FALSE)
+        if (!empty($loadChildren))
         {
             $model = $this->model;
             $item  = $model::LoadExtendedItem($item);
@@ -542,12 +542,13 @@ class Model extends Database
         $table = NULL;
         $all   = self::select($cols, $where, $order, $table, $in);
 
-        if ($loadChildren !== FALSE)
+        if (!empty($loadChildren))
         {
             $model = $this->model;
             $new   = array();
             foreach ($all as $item)
             {
+                Errors::debugLogger(__METHOD__.'@'.__LINE__.'Loading children items for item...',10);
                 $new[] = $model::LoadExtendedItem($item);
             }
             $all = $new;

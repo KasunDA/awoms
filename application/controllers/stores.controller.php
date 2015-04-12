@@ -203,7 +203,8 @@ class StoresController extends Controller
 
         // Remove child objects so we can delete parent model
         $Store = new Store();
-        $Store->DeleteExtendedItem($args);
+        $s = $Store->getSingle(array('storeID' => $args));
+        $Store->DeleteExtendedItem($s);
     }
 
     /**

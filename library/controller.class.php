@@ -552,21 +552,54 @@ class Controller
     /**
      * Read
      *
-     * @param array $args
+     * @param string $prepareFormID
      * @return boolean
      */
-    public function read($args)
+    public function read($prepareFormID)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
-        // Back to ViewAll if item doesn't exist
-        $ID = self::itemExists($args);
-
+        // If user is logged in
+        // AND has at least one permission to Create/Update/Delete
+        // Then: Prepare Create Form (custom controller override or default)
+        if (!empty($_SESSION['user_logged_in'])
+            && (ACL::IsUserAuthorized($this->controller, "create")
+            || ACL::IsUserAuthorized($this->controller, "update")
+            || ACL::IsUserAuthorized($this->controller, "delete")))
+        {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__." IsAuth to CRUD",10);
+            $_m = $this->model;
+            $_c = $_m . "sController";
+            if (method_exists($_c, 'prepareFormCustom'))
+            {
+                Errors::debugLogger(__METHOD__ . '@' . __LINE__." Calling custom prepareFormCustom...",10);
+                $_c::prepareFormCustom($prepareFormID, $this->template->data);
+            }
+            else
+            {
+                Errors::debugLogger(__METHOD__ . '@' . __LINE__." Calling prepareForm...",10);
+                self::prepareForm($prepareFormID, $this->template->data);
+            }
+        }
+        else
+        {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__." Not IsAuth...");
+            // Global Admin? (for Brands List)
+            $isGlobalAdmin = FALSE;
+            if (!empty($_SESSION['user'])
+                && $_SESSION['user']['usergroup']['usergroupName'] == 'Administrators'
+                && $_SESSION['user']['usergroup']['brandID'] == 1)
+            {
+                Errors::debugLogger(__METHOD__ . '@' . __LINE__." IsGlobalAdmin: True");
+                $isGlobalAdmin = TRUE;
+            }
+            $this->set('isGlobalAdmin', $isGlobalAdmin);
+        }
         return true;
     }
 
     /**
-     * ReadALl
+     * ReadAll
      */
     public function readall($prepareFormID = FALSE)
     {
@@ -638,15 +671,25 @@ class Controller
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
-        // Load Item or Redirect to ViewAll if item doesn't exist
+        // Verifies item exists, ACL for item, and Loads item if found
+        // Redirects back to ViewAll if item doesn't exist
         $ID = self::itemExists($args);
         Errors::debugLogger(__METHOD__ . '@' . __LINE__." ID: ".$ID);
 
         if ($this->step == 1)
         {
             Errors::debugLogger(__METHOD__ . '@' . __LINE__." Step: 1");
+
+            // [ ] Not sure why Update Store 4 loads All Stores in background...
+            // another scenario where this is needed?
+            //
             // Loads view all list
-            self::readall($ID);
+            //self::readall($ID);
+
+            // Load single item
+            self::read($ID);
+
+
             return true;
         }
         elseif ($this->step == 2)
@@ -691,9 +734,9 @@ class Controller
             // Delete item
             $idColName = strtolower($this->model) . 'ID';
             $function  = 'delete';
-            $args      = array($idColName => $ID);
+            $args      = array(array($idColName => $ID));
+            // had to put into another array for delete to work ^
             $res       = self::callModelFunc($function, $args);
-
             $this->set('success', $res);
         }
 
@@ -762,11 +805,12 @@ class Controller
             #$item = self::callModelFunc('getSingle', array($idColName => $ID));
             if (!empty($item))
             {
-                Errors::debugLogger("Item found, checking access...",10);
+                Errors::debugLogger(__METHOD__.'@'.__LINE__."Item found...",10);
                 // ACL: User access for this item? (returns to readll if no)
                 $_m = $this->model;
                 if (method_exists($_m, 'userHasAccessToItem'))
                 {
+                    Errors::debugLogger(__METHOD__.'@'.__LINE__."ACL check required, checking access...",10);
                     $_m::userHasAccessToItem($this->controller, $item);
                 }
                 else
@@ -786,13 +830,13 @@ class Controller
                 }
 
                 $this->set(strtolower($this->model), $item);
-                Errors::debugLogger("Returning ID: ".$ID, 10);
+                Errors::debugLogger(__METHOD__.'@'.__LINE__."Returning ID: ".$ID, 10);
                 return $ID;
             }
         }
 
         // Not found, return to readall page
-        Errors::debugLogger(__METHOD__ . ': Item not found...');
+        Errors::debugLogger(__METHOD__.'@'.__LINE__.': Item not found...');
         $this->set('success', FALSE);
         header('Location: /' . $this->controller . '/readall');
         exit(0);
