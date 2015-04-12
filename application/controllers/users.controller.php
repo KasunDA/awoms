@@ -344,12 +344,171 @@ class UsersController extends Controller
         header('Location: /users/login?logoutSuccess=1');
         exit(0);
     }
-    
+
+    /**
+     * Lost Password
+     */
+    private $salt = "r"; // Because
     public function password()
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        $this->set('title', 'Users :: Lost Password?');
+        $this->set('step', $this->step);
+        $this->set('formID', "frmLostPassword");
+        $this->set('success', TRUE);
 
-        $this->set('title', 'Users :: Password');
+        // Step 1 = Lost Password form displayed
+        // Step 2 = Lost Password form submitted: lp entry saved, email sent
+        // Step 3 = Reset Password form displayed; lp entry validated (temp code from temp url)
+        // Step 4 = Reset Password form submitted; user password updated, lp entries deleted
+
+        Errors::debugLogger(__METHOD__.': Raw Step: '.$this->step);
+
+        if ($this->step == 1 && !empty($_SESSION['query']))
+        {
+            if (!empty($_SESSION['query'][0]))
+            {
+                // TempCode in URL = Step 3
+                Errors::debugLogger(__METHOD__.': Overriding Step to Step 3');
+                $this->set('step', 3);
+                $this->step = 3;
+            }
+        }
+
+        Errors::debugLogger(__METHOD__.': New Step: '.$this->step);
+
+        if ($this->step == 1)
+        {
+            Errors::debugLogger(__METHOD__.': Lost Password form displayed');
+        }
+        elseif ($this->step == 2)
+        {
+            Errors::debugLogger(__METHOD__.': Lost Password form submitted');
+            // Send lost password for entered username
+            // (not displaying whether its valid username or not to prevent phishing)
+            $username   = $_POST['inp_userName'];
+            if (!empty($username))
+            {
+                $this->set('inp_userName', $username);
+                $reqUser = $this->User->getSingle(array('userName' => $username));
+                if (!empty($reqUser))
+                {
+                    Errors::debugLogger(__METHOD__.': Sending Lost Password Email');
+                    $this->sendLostPasswordEmail($reqUser['userEmail'], $username, $reqUser['userID']);
+                }
+            }
+        }
+        elseif ($this->step == 3)
+        {
+            // New password reset
+            Errors::debugLogger(__METHOD__.': Reset Password form displayed');
+            $tempCode = $_SESSION['query'][0];
+            $res = preg_match_all('/^('.$this->salt.')(.+)/', $tempCode, $matches);
+            if (empty($res))
+            {
+                Errors::debugLogger(__METHOD__.': Salt not found');
+                $this->set('success', FALSE);
+                return;
+            }
+            $rawCode = $matches[2];
+            $rawCode = $rawCode[0];
+            $tempCode = $rawCode;
+
+            $lostPassword = new LostPassword();
+            Errors::debugLogger(__METHOD__.': Looking up entry for Temp Code: '.$tempCode);
+            $entry = $lostPassword->getSingle(array('tempCode' => $tempCode));
+            if (empty($entry))
+            {
+                Errors::debugLogger(__METHOD__.': Entry not found');
+                $this->set('success', FALSE);
+            } else {
+                Errors::debugLogger(__METHOD__.': Entry found, UserID: '.$entry['userID'].' DateCreated: '.$entry['dateCreated']);
+                $UTC = new DateTimeZone("UTC");
+                $datetime1 = new DateTime(Utility::getDateTimeUTC(), $UTC);
+                $datetime2 = new DateTime($entry['dateCreated'], $UTC);
+                $interval = $datetime1->diff($datetime2);
+                $hours = $interval->h;
+                $expiresAfterHowManyHours = 12;
+                if ($hours >= $expiresAfterHowManyHours)
+                {
+                    Errors::debugLogger(__METHOD__.': Entry expired');
+                    $this->set('success', FALSE);
+                    return;
+                }
+                $this->set('userID', $entry['userID']);
+            }
+
+        }
+        elseif ($this->step == 4)
+        {
+            Errors::debugLogger(__METHOD__.': Reset Password form submitted');
+            $pass1 = $_POST['inp_userPassword'];
+            $pass2 = $_POST['inp_userPasswordConfirm'];
+            $this->set('userID', $_POST['userID']);
+            if (strcmp($pass1, $pass2) != 0)
+            {
+                Errors::debugLogger(__METHOD__.': Passwords do not match');
+                $this->set('success', FALSE);
+                return;
+            }
+
+            Errors::debugLogger(__METHOD__.': Resetting userID '.$_POST['userID'].' new password...');
+            $u = new User();
+            $u->update(array('userID' => $_POST['userID'], 'passphrase' => $pass1));
+
+            Errors::debugLogger(__METHOD__.': Removing all LostPassword entries for userID '.$_POST['userID'].'...');
+            $lp = new LostPassword();
+            $lp->delete(array('userID' => $_POST['userID']));
+
+        }
+    }
+
+    /**
+     * sendLostPasswordEmail
+     * 
+     * @param string $to
+     * @param string $userName
+     */
+    public function sendLostPasswordEmail($to, $userName, $userID)
+    {
+        Errors::debugLogger(__METHOD__.":: sendLostPasswordEmail", 100);
+        $from = $_SESSION['brand']['brandEmail'];
+        $replyto = $from;
+        $cc = NULL;
+        $bcc = NULL;
+        $subject = "Lost Password Email";
+        $brandName = $_SESSION['brand']['brandName'];
+        $brandDomain = BRAND_DOMAIN;
+
+        $lostPassword = new LostPassword();
+        $tempCode = $this->salt.$lostPassword->NewEntry($userID);
+        $url = "https://$brandDomain/users/password/$tempCode";
+
+        $body = <<<___EOS
+<h3>
+    Lost Password Recovery Email from $brandName
+</h3>
+<p>
+    You or someone targeting your username '$userName' has requested a Lost Password Recovery Email.
+</p>
+<p>
+    <strong>If you did NOT request this:</strong> No action is required from you, however, please consider changing your password to a secure password in case someone is attempting to compromise your account.
+</p>
+<p>
+    <strong>If you DID request this:</strong> Please copy and paste the URL below into your browser to reset your password.
+</p>
+<p>
+    <a href="$url">$url</a>
+</p>
+<p>
+    This email along with the URL above will self-destruct in 12 hours. Please contact support with any questions.
+</p>
+___EOS;
+        $sent = Email::sendEmail($to, $from, $replyto, $cc, $bcc, $subject, $body);
+        if (!$sent)
+        {
+            $this->set('success', FALSE);
+        }
     }
 
 }

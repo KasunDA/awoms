@@ -258,18 +258,19 @@ class Session
     private function validateVisitor()
     {
         Errors::debugLogger(__METHOD__, 1000);
-
         $liveIP = Utility::getVisitorIP();
-        Errors::debugLogger(__METHOD__ . ':  Comparing get_visitorIP (' . $liveIP . ') with DB (' . $this->data['session']['visitorIP'] . ')',
-                            1000);
         if ($liveIP == $this->data['session']['visitorIP']) {
             Errors::debugLogger(__METHOD__ . ':  Visitor IP matches what we stored from last session!', 1000);
             return true;
         }
-
         // Visitor IP changed, need to re-login (if this isn't a login attempt)
-        Errors::debugLogger(__METHOD__ . ':  Visitor IP ['.$liveIP.'] does NOT match what we stored from last session ['.$this->data['session']['visitorIP'].']! *** ALERT ***: ',
-                            1, TRUE);
+        if (DEVELOPMENT_ENVIRONMENT)
+        {
+            // Only logging IPs in DEV ENV for testing/validation. Hidden in Production for security/privacy.
+            Errors::debugLogger(__METHOD__ . ':  Visitor IP ['.$liveIP.'] does NOT match what we stored from last session ['.$this->data['session']['visitorIP'].']! *** ALERT *** ', 1, TRUE);
+        } else {
+            Errors::debugLogger(__METHOD__ . ':  Visitor IP does NOT match what we stored from last session! *** ALERT *** ', 1, TRUE);
+        }
         return false;
     }
 

@@ -12,6 +12,22 @@ DROP SCHEMA IF EXISTS `GPFCCMS` ;
 CREATE SCHEMA IF NOT EXISTS `GPFCCMS` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
 USE `GPFCCMS` ;
 
+
+-- -----------------------------------------------------
+-- Table `lostPasswords` -- ! MySQL Workbench not working so created this outside of mwb file !
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `lostPasswords` ;
+
+CREATE TABLE IF NOT EXISTS `lostPasswords` (
+  `ID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tempCode` VARCHAR(255) NOT NULL,
+  `userID` BIGINT(20) UNSIGNED NOT NULL,
+  `dateCreated` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE INDEX `lostpassword_id_UNIQUE` (`ID` ASC))
+ENGINE = InnoDB;
+
+
 -- -----------------------------------------------------
 -- Table `addresses`
 -- -----------------------------------------------------

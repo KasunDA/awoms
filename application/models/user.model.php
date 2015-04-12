@@ -194,7 +194,6 @@ class User extends Model
     public function ValidateLogin($username, $passphrase)
     {
         Errors::debugLogger(__METHOD__ . ': username: ' . $username . ' brandid: ' . BRAND_ID);
-
         $UserGroup = new UserGroup();
         $groups    = $UserGroup->getWhere(array('brandID'         => BRAND_ID, 'usergroupActive' => 1));
         if (empty($groups))
@@ -256,11 +255,14 @@ class User extends Model
      * @var string $cryptSalt Salt to use in crypt
      * @param string $passphrase Plaintext passphrase to hash
      *
+     * This gets called automatically when you update a user with a new plaintext passphrase,
+     * dont call this directly then try to update user it will double-encrypt the password!
+     *
      * @static
      *
      * @return string Hashed passphrase
      */
-    public static function getPassphraseHash($passphrase)
+    private static function getPassphraseHash($passphrase)
     {
         Errors::debugLogger(__METHOD__, 5);
         // Select highest available Crypt algorithm

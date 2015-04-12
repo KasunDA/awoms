@@ -31,10 +31,8 @@ class ACL extends Model
      */
     public static function IsUserAuthorized($_controller, $_action, $redirect = NULL)
     {
-        Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action . ' (redirect: ' . $redirect . ')', 10);
+        Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action . ' (redirect: ' . $redirect . ')', 1000);
         $ACL = new ACL();
-
-
 
         // Allowed anonymous access:
         if (

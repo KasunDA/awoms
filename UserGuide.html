@@ -265,3 +265,29 @@ Defined in <b><cite>library/controller.class.php</cite></b>
         </ol>
     </li>
 </ol>
+
+<h1>Unsorted Notes</h1>
+<hr/>
+
+<pre>
+
+    /**
+     * Utilities::getTemplateFileLocations
+     *
+     * Searches for appropriate custom template files and returns array of valid file paths
+     *
+     * Example:
+     *  views/templates/BRAND/THEME/CONTROLLER/name.php
+     *  views/templates/BRAND/THEME/name.php
+     *  views/name.php
+     *
+     * @param string $name
+     * @param boolean $customFirst set to false to have default files be searched first
+     * @param boolean $includeAllFound set to true to include all found files
+     *
+     * @returns array
+     */
+    public static function getTemplateFileLocations($name, $customFirst = TRUE, $includeAllFound = FALSE)
+
+
+</pre>

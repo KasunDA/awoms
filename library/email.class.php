@@ -16,6 +16,7 @@ class Email
         $to = false, $from = false, $replyto = false, $cc = false, $bcc = false, $subject = false, $body = false
     )
     {
+        Errors::debugLogger(__METHOD__.': to: '.$to);
         // Email Headers
         $headers   = array();
         $headers[] = "MIME-Version: 1.0";
@@ -39,7 +40,8 @@ class Email
         // Mail it
         try {
             // @TODO smtp server settings
-            @mail($to, $subject, $body, implode("\r\n", $headers), '-f '.$from);
+            mail($to, $subject, $body, implode("\r\n", $headers), '-f '.$from);
+            Errors::debugLogger(__METHOD__.": Email sent successfully!");
             return true;
         } catch (\Exception $e) {
             trigger_error('Unable to send email. ' . $e->getMessage(), E_USER_WARNING);

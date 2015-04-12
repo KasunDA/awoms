@@ -330,7 +330,7 @@ class Model extends Database
         $res['in']    = NULL;
 
         // No session if we are looking up domain so allow
-        // Also allow:
+        // Also allow: (Models that do not have BrandID column...)
         // rewrite lookups -> session/start
         // brands -> session/start
         // stores -> sample
@@ -341,7 +341,7 @@ class Model extends Database
         if (empty($_SESSION)
             || $_SESSION['controller'] == "install"
             || $_SESSION['controller'] == "tests"
-            || ($_SESSION['controller'] == "users" && $_SESSION['action'] == "login")
+            || ($_SESSION['controller'] == "users" && in_array($_SESSION['action'], array('login','password')))
             || in_array(strtolower($this->table),
                         array(
                 'rewritemappings',
@@ -384,7 +384,7 @@ class Model extends Database
 
         /*
          *
-          // Tables that do NOT have brandID column but still need to be restricted by the associated brand
+          // @TODO Tables that do NOT have brandID column but still need to be restricted by the associated brand
           // users -> usergroup -> brand
           // menulinks -> menu -> brand
           // comments|body -> comment|article -> brand
@@ -428,9 +428,9 @@ class Model extends Database
             || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
             || $_SESSION['user']['usergroup']['brandID'] != 1)
         {
+            Errors::debugLogger("Appending BrandID for added Security...", 1000);
             $res['where'] = array('brandID' => $brandID);
         }
-
         return $res;
     }
 
@@ -464,9 +464,12 @@ class Model extends Database
      * Gets items matching where clause
      *
      * @uses aclWhere
-     *
      * @param array $where = array('col' => 'findMe');
-     *
+     * @param string $cols
+     * @param string $order
+     * @param array $aclWhere
+     * @param array $in
+     * @param bool $loadChildren
      * @return array
      */
     public function getWhere($where = NULL, $cols = NULL, $order = NULL, $aclWhere = NULL, $in = NULL, $loadChildren = FALSE)
@@ -484,7 +487,7 @@ class Model extends Database
         // Use aclWhere() which adds BrandID to WHERE clause if logged in user is a non-Administrator
         if (empty($aclWhere) || (empty($aclWhere['where']) && empty($aclWhere['in'])))
         {
-            //Errors::debugLogger("Applying ACL to getWhere to append BrandID...");
+            //Errors::debugLogger(__METHOD__.'@'.__LINE__."Applying ACL to getWhere to append BrandID...",1000);
             $aclWhere = self::aclWhere();
         }
 
