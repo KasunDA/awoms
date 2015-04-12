@@ -3,6 +3,13 @@
 class Store extends Model
 {
 
+    /**
+     * Log Level
+     *
+     * @var int $logLevel Config log level; 0 would always be logged, 9999 would only be logged in Dev
+     */
+    protected static $logLevel = 10;
+
     protected static function getColumns()
     {
 
@@ -48,7 +55,7 @@ class Store extends Model
         if (!empty($_SESSION['user_logged_in'])
             && $_SESSION['user']['usergroup']['usergroupName'] == "Store Owners")
         {
-            Errors::debugLogger("Store Owner is logged on... appending AclWhere...",10);
+            Errors::debugLogger("Store Owner is logged on... appending AclWhere...", Store::$logLevel);
             $aclWhere['where'] = array('ownerID' => $_SESSION['user']['userID']);
             $aclWhere['in']    = NULL;
         }
@@ -58,39 +65,37 @@ class Store extends Model
 
     /**
      * Load additional model specific info when getWhere/getSingle is called
+     * Loads children items
      *
      * @param array $item
      */
     public static function LoadExtendedItem($item)
     {
-        // Load linked or child items if necessary
-//        if (empty($item['brand']))
-//        {
-//            $Brand         = new Brand();
-//            $item['brand'] = $Brand->getSingle(array('brandID' => $item['brandID']));
-//        }
-        // Address
+        Errors::debugLogger(__METHOD__, Store::$logLevel);
         if (empty($item['address']))
         {
-            $item['address'] = NULL;
             if (!empty($item['addressID']))
             {
+                // Get Addresses belonging to store
+                Errors::debugLogger(__METHOD__.": Get Addresses belonging to store: (addressID: ".$item['addressID'].")...",Store::$logLevel);
                 $Address         = new Address();
                 $item['address'] = $Address->getSingle(array('addressID' => $item['addressID']));
+            } else {
+                Errors::debugLogger(__METHOD__.": WARNING: addressID is empty!");
             }
         }
 
-        // Domain
-        if (empty($item['address']))
-        {
-            $Domain          = new Domain();
-            $item['domains'] = $Domain->getWhere(array('brandID' => $item['brandID'],
-                'storeID' => $item['storeID']));
-        }
+        // Get Domains belonging to store
+        Errors::debugLogger(__METHOD__.": Get Domains belonging to store: (brandID: ".$item['brandID']." storeID: ".$item['storeID'].")...",Store::$logLevel);
+        $Domain          = new Domain();
+        $item['domains'] = $Domain->getWhere(array('brandID' => $item['brandID'],
+            'storeID' => $item['storeID']));
+        Errors::debugLogger(__METHOD__.": (Domain count: ".count($item['domains']).")", Store::$logLevel);
 
-        // Services
         if (empty($item['services']))
         {
+            // Get Services associated to store
+            Errors::debugLogger(__METHOD__.": Get Services associated to store: (storeID: ".$item['storeID'].")...", Store::$logLevel);
             $item['services'] = array();
             $Service          = new Service();
             $serviceIDs       = $Service->select("*", array('storeID' => $item['storeID']), NULL, "refStoreServices");
@@ -98,13 +103,39 @@ class Store extends Model
             {
                 $item['services'][] = $Service->getSingle(array('serviceID' => $serviceID['serviceID']));
             }
-            #$where = array('storeID' => $item['storeID']);
-            #$s     = $Brand->select("*", $where, NULL, 'storeServices');
-            #if (!empty($s)) {
-            #$item['services'] = $s[0];
-            #} else {
-            #$item['services'] = $s;
-            #}
+            Errors::debugLogger(__METHOD__.": (Service count: ".count($item['services']).")", Store::$logLevel);
+        }
+        return $item;
+    }
+
+    /**
+     * Deletes model and any children items
+     *
+     * @param array $item
+     */
+    public static function DeleteExtendedItem($item)
+    {
+        Errors::debugLogger(__METHOD__);
+        if (!empty($item['addressID']))
+        {
+            // Delete Addresses belonging to store
+            Errors::debugLogger(__METHOD__.": Delete Addresses belonging to store: (addressID: ".$item['addressID'].")...");
+            $Address         = new Address();
+            $Address->delete(array('addressID' => $item['addressID']));
+        }
+
+        // Delete Domains belonging to store
+        Errors::debugLogger(__METHOD__.": Delete Domains belonging to store: (brandID: ".$item['brandID']." storeID: ".$item['storeID'].")...");
+        $Domain          = new Domain();
+        $Domain->delete(array('brandID' => $item['brandID'],
+            'storeID' => $item['storeID']));
+
+        if (!empty($item['services']))
+        {
+            // Delete Service associates belonging to store
+            Errors::debugLogger(__METHOD__.": Delete Service associates belonging to store: (storeID: ".$item['storeID'].")...");
+            $Service          = new Service();
+            $Service->delete(array('storeID' => $item['storeID']) , "refStoreServices");
         }
         return $item;
     }

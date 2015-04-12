@@ -23,6 +23,13 @@ class Encryption
     protected $data = array();
 
     /**
+     * Log Level
+     * 
+     * @var int $logLevel Config log level; 0 would always be logged, 9999 would only be logged in Dev 
+     */
+    protected static $logLevel = 9999;
+
+    /**
      * __construct
      * 
      * Magic method executed on new class
@@ -67,8 +74,8 @@ class Encryption
      */
     function encrypt($key, $authKey, $plain)
     {
-        Errors::debugLogger(__METHOD__, 9999);
-        Errors::debugLogger(func_get_args(), 9999);
+        Errors::debugLogger(__METHOD__, Encryption::$logLevel);
+        Errors::debugLogger(func_get_args(), Encryption::$logLevel);
         $size       = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CFB);
         $iv         = mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
         $cipherText = mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $plain, MCRYPT_MODE_CFB, $iv);
@@ -86,8 +93,8 @@ class Encryption
      */
     function decrypt($key, $authKey, $encrypted)
     {
-        Errors::debugLogger(__METHOD__, 9999);
-        Errors::debugLogger(func_get_args(), 9999);
+        Errors::debugLogger(__METHOD__, Encryption::$logLevel);
+        Errors::debugLogger(func_get_args(), Encryption::$logLevel);
         $size       = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CFB);
         $encrypted  = base64_decode($encrypted);
         $iv         = substr($encrypted, 0, $size);

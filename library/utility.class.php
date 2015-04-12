@@ -13,6 +13,12 @@
  */
 class Utility
 {
+    /**
+     * Log Level
+     *
+     * @var int $logLevel Config log level; 0 would always be logged, 9999 would only be logged in Dev
+     */
+    protected static $logLevel = 7000;
 
     /**
      * createNestedDirectory
@@ -31,8 +37,8 @@ class Utility
      */
     public static function createNestedDirectory($dirPath)
     {
-        Errors::debugLogger(__METHOD__, 0);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, Utility::$logLevel);
+        Errors::debugLogger(func_get_args(), Utility::$logLevel);
         if (!is_dir($dirPath) && !@mkdir($dirPath, 0777, true))
         {
             trigger_error('Could not create folder: ' . $dirPath, E_USER_ERROR);
@@ -55,8 +61,8 @@ class Utility
      */
     public static function getDateTimeUTC($format = null)
     {
-        Errors::debugLogger(__METHOD__, 100);
-        Errors::debugLogger(func_get_args(), 100);
+        Errors::debugLogger(__METHOD__, Utility::$logLevel);
+        Errors::debugLogger(func_get_args(), Utility::$logLevel);
         // Default format if none passed
         if ($format === NULL)
         {
@@ -81,8 +87,8 @@ class Utility
      */
     public static function getServerDateTimeFromUTCDateTime($utcDateTime, $dateTimeZone = NULL, $format = NULL)
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, Utility::$logLevel);
+        Errors::debugLogger(func_get_args(), Utility::$logLevel);
         // Default timezone
         if ($dateTimeZone === NULL)
         {
@@ -121,8 +127,8 @@ class Utility
      */
     public static function getPastDateTimeUTC($days, $start = NULL, $format = NULL)
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, Utility::$logLevel);
+        Errors::debugLogger(func_get_args(), Utility::$logLevel);
         if (empty($start))
         {
             $start = self::getDateTimeUTC();
@@ -151,8 +157,8 @@ class Utility
      */
     public static function getFormattedNumber($number, $decimals = NULL, $decimalPoint = NULL, $thousandsSep = NULL, $locale = NULL)
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, Utility::$logLevel);
+        Errors::debugLogger(func_get_args(), Utility::$logLevel);
         // Default Decimals
         if ($decimals === NULL)
         {
@@ -194,7 +200,7 @@ class Utility
      */
     public static function getVisitorIP()
     {
-        Errors::debugLogger(__METHOD__.': Intentionally NOT logging IP address to log file', 1000);
+        Errors::debugLogger(__METHOD__.': Intentionally NOT logging IP address to log file', Utility::$logLevel);
         
         $ip = "Unknown";
         if (!empty($_SERVER['REMOTE_ADDR']))
@@ -342,8 +348,8 @@ class Utility
      */
     public static function convertNLToBR($string)
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, Utility::$logLevel);
+        Errors::debugLogger(func_get_args(), Utility::$logLevel);
         return str_ireplace(PHP_EOL, "<br />", $string);
     }
 
@@ -360,8 +366,8 @@ class Utility
      */
     public static function convertBRToNL($string)
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, Utility::$logLevel);
+        Errors::debugLogger(func_get_args(), Utility::$logLevel);
         $breaks = array("<br />", "<br>", "<br/>", "&lt;br /&gt;", "&lt;br/&gt;", "&lt;br&gt;");
         $r      = str_ireplace($breaks, PHP_EOL, $string);
         //var_dump($breaks, $string, $r);
@@ -381,8 +387,8 @@ class Utility
      */
     public static function stripBR($string)
     {
-        Errors::debugLogger(__METHOD__, 10);
-        Errors::debugLogger(func_get_args(), 10);
+        Errors::debugLogger(__METHOD__, Utility::$logLevel);
+        Errors::debugLogger(func_get_args(), Utility::$logLevel);
         $breaks = array("<br />", "<br>", "<br/>", "<br />", "&lt;br /&gt;", "&lt;br/&gt;", "&lt;br&gt;");
         return str_ireplace($breaks, '', $string);
     }
@@ -529,7 +535,7 @@ class Utility
      */
     public static function getStateList()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, Utility::$logLevel);
         $stateList = array(
             '-- UNITED STATES --' => '-- UNITED STATES --',
             'AL'                  => 'Alabama',
@@ -644,7 +650,7 @@ class Utility
      */
     public static function getCountryList()
     {
-        Errors::debugLogger(__METHOD__, 10);
+        Errors::debugLogger(__METHOD__, Utility::$logLevel);
         $countryList = array(
             'US' => 'United States',
             'UM' => 'United States Minor Outlying Islands',

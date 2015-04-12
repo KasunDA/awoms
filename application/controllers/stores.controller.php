@@ -199,18 +199,11 @@ class StoresController extends Controller
     public static function deleteStepFinish($args = NULL)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        Errors::debugLogger($args);
 
         // Remove child objects so we can delete parent model
-        // Remove address
-        $Address = new Address();
-        $Address->delete(array('addressID' => $args), 'addresses');
-
-        // Remove store services
         $Store = new Store();
-        $Store->delete(array('storeID' => $args), 'storeServices');
-
-        // Remove carts
-        // @TODO
+        $Store->DeleteExtendedItem($args);
     }
 
     /**

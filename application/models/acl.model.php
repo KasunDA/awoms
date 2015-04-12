@@ -3,6 +3,13 @@
 class ACL extends Model
 {
 
+    /**
+     * Log Level
+     *
+     * @var int $logLevel Config log level; 0 would always be logged, 9999 would only be logged in Dev
+     */
+    protected static $logLevel = 8000;
+
     protected static function getColumns()
     {
         $cols = array('brandID', 'usergroupID', 'userID', 'controller', 'create', 'read', 'update', 'delete');
@@ -31,7 +38,7 @@ class ACL extends Model
      */
     public static function IsUserAuthorized($_controller, $_action, $redirect = NULL)
     {
-        Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action . ' (redirect: ' . $redirect . ')', 1000);
+        Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action . ' (redirect: ' . $redirect . ')', ACL::$logLevel);
         $ACL = new ACL();
 
         // Allowed anonymous access:
@@ -57,7 +64,7 @@ class ACL extends Model
 
         if (empty($_SESSION['user']))
         {
-            Errors::debugLogger("* Anonymous User *");
+            Errors::debugLogger("* Anonymous User *", ACL::$logLevel);
             return self::ReturnFailedAuth($redirect);
         }
 
@@ -65,7 +72,7 @@ class ACL extends Model
         // and Help
         if (($_controller == 'admin' && $_action == 'home') || $_controller == 'tools' || ($_controller == 'help' && $_action == 'home'))
         {
-            Errors::debugLogger("User is logged in, allowed basic pages #001");
+            Errors::debugLogger("User is logged in, allowed basic pages #001", ACL::$logLevel);
             return true;
         }
 
@@ -101,7 +108,7 @@ class ACL extends Model
         }
         elseif ($test === FALSE)
         {
-            Errors::debugLogger("* Failed User Level Check *");
+            Errors::debugLogger("* Failed User Level Check *", ACL::$logLevel);
             return self::ReturnFailedAuth($redirect);
         }
 
@@ -113,12 +120,12 @@ class ACL extends Model
         }
         elseif ($test === FALSE)
         {
-            Errors::debugLogger("* Failed Group Level Check *");
+            Errors::debugLogger("* Failed Group Level Check *", ACL::$logLevel);
             return self::ReturnFailedAuth($redirect);
         }
 
         // No entry found for allow or deny so returning false (deny)
-        Errors::debugLogger("* Failed *");
+        Errors::debugLogger("* Failed *", ACL::$logLevel);
         return self::ReturnFailedAuth($redirect);
     }
 
@@ -138,15 +145,15 @@ class ACL extends Model
         if (!empty($results))
         {
 
-            Errors::debugLogger(__METHOD__ . ': Found user specific ACL (' . $results[$crud] . ')...', 100);
+            Errors::debugLogger(__METHOD__ . ': Found user specific ACL (' . $results[$crud] . ')...', ACL::$logLevel);
             if ($results[$crud] == 1)
             {
                 // Access explicitly ALLOWED:
-                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 100);
+                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', ACL::$logLevel);
                 return true;
             }
             // Required access explicitly DENIED:
-            Errors::debugLogger(__METHOD__ . ': ACL DENIED', 100);
+            Errors::debugLogger(__METHOD__ . ': ACL DENIED', ACL::$logLevel);
             return false;
         }
         // No entry found
@@ -168,15 +175,15 @@ class ACL extends Model
 
         if (!empty($results))
         {
-            Errors::debugLogger(__METHOD__ . ': Found group specific ACL (' . $results[$crud] . ')...', 100);
+            Errors::debugLogger(__METHOD__ . ': Found group specific ACL (' . $results[$crud] . ')...', ACL::$logLevel);
             if ($results[$crud] == 1)
             {
                 // Access explicitly ALLOWED:
-                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', 100);
+                Errors::debugLogger(__METHOD__ . ': ACL APPROVED', ACL::$logLevel);
                 return true;
             }
             // Required access explicitly DENIED:
-            Errors::debugLogger(__METHOD__ . ': ACL DENIED', 100);
+            Errors::debugLogger(__METHOD__ . ': ACL DENIED', ACL::$logLevel);
             return false;
         }
         // No entry found
@@ -191,14 +198,14 @@ class ACL extends Model
      */
     public static function ReturnFailedAuth($redirect)
     {
-        Errors::debugLogger(__METHOD__);
+        Errors::debugLogger(__METHOD__, ACL::$logLevel);
         if ($redirect == "login" && empty($_SESSION['user']))
         {
             #$_SESSION['ErrorMessage'] = "Login Required";
             #$_SESSION['ErrorRedirect'] = NULL;
             #$_SESSION['ErrorRedirect'] = "/users/login?returnURL=/" . $_SESSION['controller'] . "/" . $_SESSION['action'];
             #Session::saveSessionToDB();
-            Errors::debugLogger("* ACL Returning False -> Login *");
+            Errors::debugLogger("* ACL Returning False -> Login *", ACL::$logLevel);
             if (!empty($_SESSION['controller'])
                     && !empty($_SESSION['action'])
                     && $_SESSION['controller'] == 'admin'
@@ -226,7 +233,7 @@ class ACL extends Model
                 $returnURL = $_SESSION['returnURL'];
             }
             
-            Errors::debugLogger("Redirecting to login with returnURL: ".$returnURL);
+            Errors::debugLogger("Redirecting to login with returnURL: ".$returnURL, ACL::$logLevel);
             header('Location: /users/login?returnURL=/' . $returnURL);
             exit(0);
         }
@@ -236,13 +243,13 @@ class ACL extends Model
             #$_SESSION['ErrorRedirect'] = NULL;
             #$_SESSION['ErrorRedirect'] = "/users/login?access=1&returnURL=/" . $_SESSION['controller'] . "/" . $_SESSION['action'];
             #Session::saveSessionToDB();
-            Errors::debugLogger("* ACL Returning False -> 403 *");
+            Errors::debugLogger("* ACL Returning False -> 403 *", ACL::$logLevel);
             header('Location: /users/login?access=1&returnURL=/' . $_SESSION['controller'] . '/' . $_SESSION['action']);
             exit(0);
         }
         else
         {
-            Errors::debugLogger("* ACL Returning False -> False *");
+            Errors::debugLogger("* ACL Returning False -> False *", ACL::$logLevel);
             return false;
         }
     }
