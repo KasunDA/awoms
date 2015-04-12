@@ -1,3 +1,10 @@
+<?php
+
+// @TODO: Tie IMG to DB
+
+exit;
+?>
+
 <h1>File Management</h1>
 
 <a href="/filemanager/dialog.php?type=0" class="btn iframe-btn" type="button">Open Filemanager</a>

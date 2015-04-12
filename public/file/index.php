@@ -36,6 +36,7 @@ Errors::debugLogger('Requested File: "'.$file.'"');
 #    die("Access Denied");
 #}
 # @TODO: DISABLED: Anonymous views to Pages with restricted images not showing images. Temporariliy disabling ACL check for anon to allow images to work on pages
+//^-- fixed below. This won't work until tied into Database. Using folder structure to determin acl below.
 
 Errors::debugLogger("Checking if file exists...");
 if (!is_file($file))
@@ -167,13 +168,13 @@ if ($public)
     {
         Errors::debugLogger("Is Administrator, setting AllowedByACL to TRUE...");
         $allowedByACL = TRUE;
-    } else {
-    
-        // Request is for private Brand file:
-        // ensure user's usergroup is part of this brand
+    } elseif (!empty($_SESSION['user'])
+                && $_SESSION['user']['usergroup']['usergroupName'] == "Store Owners")
+        {
+        // Request is for private Brand Store file:
+        // ensure user's usergroup is part of this brand store
         if ($brandID != NULL)
         {
-            Errors::debugLogger("Request is for private Brand file...");
             if ($brandID == $_SESSION['user']['usergroup']['brandID'])
             {
                 Errors::debugLogger("Brand # matches! Setting AllowedByACL to TRUE...");
@@ -185,18 +186,30 @@ if ($public)
         }
         
         // Request is for private Store file:
-        // ensure user's usergroup is part of this store @TODO? Assign store# to group?
         if ($storeID != NULL)
         {
-            Errors::debugLogger("Request is for private Store file...");
-            if ($storeID == $_SESSION['user']['usergroup']['storeID'])
-            {
-                Errors::debugLogger("Store # matches! Setting AllowedByACL to TRUE...");
-                $allowedByACL = TRUE;
-            } else {
-                Errors::debugLogger("Store # does NOT match! Setting AllowedByACL to FALSE...");
+            // Is this user the store owner of this store to see this private store file?
+            $Store = new Store();
+            $reqStore = $Store->getSingle(array('storeID'=>$storeID));
+            if (empty($reqStore)) {
+                Errors::debugLogger("Store not found!");
                 $allowedByACL = FALSE;
+            } else {
+                if ($reqStore['ownerID'] == $_SESSION['user']['userID'])
+                {
+                    Errors::debugLogger("User is Store Owner of requested! Setting AllowedByACL to TRUE...");
+                    $allowedByACL = TRUE;
+                } else {
+                    Errors::debugLogger("File Store #: ".$storeID." Session Store#: ".$_SESSION['user']['userID']);
+                    Errors::debugLogger("Store # does NOT match! Setting AllowedByACL to FALSE...");
+                    $allowedByACL = FALSE;
+                }
             }
+        }
+    } else {
+        if (empty($_SESSION['user']))
+        {
+            Errors::debugLogger("User NOT Logged In!");
         }
     }
 }
@@ -219,12 +232,13 @@ if ($allowedByACL === TRUE)
     Errors::debugLogger("Display mode: ".$mode,10);
     header('Pragma: private');
     header('Cache-control: private, must-revalidate');
-    header("Content-Type: application/octet-stream");
     if ($mode == "inline")
     {
         $image_mime = image_type_to_mime_type(exif_imagetype($file));
         Errors::debugLogger("Image mime: ".$image_mime,10);
         header("Content-Type: ".$image_mime); 
+    } else {
+        header("Content-Type: application/octet-stream");
     }
     header("Content-Length: " . $filesize);
     header('Content-Disposition: '.$mode.'; filename="' . $filename . '"'); 
