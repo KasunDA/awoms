@@ -34,4 +34,3 @@ foreach ($fileLocations as $fileLoc)
 {
     include($fileLoc);
 }
-return;

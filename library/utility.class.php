@@ -484,6 +484,21 @@ class Utility
     }
 
     /**
+     * Returns the distance in miles between two zip codes
+     * 
+     * @param int $zipA
+     * @param int $zipB
+     *
+     * @return int
+     */
+    public static function GetDistanceInMilesBetweenZipCodes($zipA, $zipB)
+    {
+        $distance = 10;
+        Errors::debugLogger(__METHOD__.': Returning Distance of: '.$distance);
+        return $distance;
+    }
+
+    /**
      * Generates <option> list for State select list use in template
      */
     public static function GetStateChoiceList($SelectedState = FALSE)

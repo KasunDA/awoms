@@ -624,7 +624,7 @@ class Controller
             exit(0);
         }
 
-        Errors::debugLogger(__METHOD__ . '@' . __LINE__." Setting items...");
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__." Setting items (".count($items).") as ".$this->controller."...");
         $this->set($this->controller, $items);
 
         // If user is logged in
@@ -652,6 +652,9 @@ class Controller
         else
         {
             Errors::debugLogger(__METHOD__ . '@' . __LINE__.": Authorized to Create/Update/Delete? No.",10);
+
+            // Store Locator Form
+            $this->set('formID', "frmStoreLocator");
 
             // Global Admin? (for Brands List)
             $isGlobalAdmin = FALSE;

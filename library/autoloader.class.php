@@ -57,6 +57,8 @@ class Autoloader
         }
       }
     }
+
+    /*
     if ($loaded === FALSE) {
       // ERROR
       ob_start();
@@ -75,8 +77,8 @@ class Autoloader
       #@TODO move to error handler      
       header('Location: /404.html');
       exit(0);
-      
     }
+     */
   }
 
 }

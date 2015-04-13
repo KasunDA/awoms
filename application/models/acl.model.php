@@ -38,7 +38,7 @@ class ACL extends Model
      */
     public static function IsUserAuthorized($_controller, $_action, $redirect = NULL)
     {
-        Errors::debugLogger(__METHOD__ . ': ' . $_controller . '/' . $_action . ' (redirect: ' . $redirect . ')', ACL::$logLevel);
+        Errors::debugLogger(__METHOD__.'@'.__LINE__.': ' . $_controller . '/' . $_action . ' (redirect: ' . $redirect . ')', ACL::$logLevel);
         $ACL = new ACL();
 
         // Allowed anonymous access:
@@ -48,31 +48,34 @@ class ACL extends Model
             || ($_controller == "install")
             || ($_controller == "home" && $_action == "home")
             || ($_controller == "users" && in_array($_action, array('login', 'logout', 'password')))
+            || ($_controller == "stores" && !in_array($_action, array('create', 'update', 'delete'))) // for /stores/locations/x rewrite alias
             || (empty($_SESSION['user'])
                 && in_array($_controller, array(
                     'pages',
                     'articles',
                     'comments',
-                    'stores',
                     'menus',
                     'menulinks'))
                     && in_array($_action, array('read', 'readall')))
         )
         {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.': Allowed Anonymous access', ACL::$logLevel);
             return true;
         }
 
         if (empty($_SESSION['user']))
         {
-            Errors::debugLogger("* Anonymous User *", ACL::$logLevel);
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.': Denied Anonymous access', ACL::$logLevel);
             return self::ReturnFailedAuth($redirect);
         }
 
         // User is logged in, allow access to /admin/home (/owners) - template does rest
         // and Help
-        if (($_controller == 'admin' && $_action == 'home') || $_controller == 'tools' || ($_controller == 'help' && $_action == 'home'))
+        if (($_controller == 'admin' && $_action == 'home')
+                || $_controller == 'tools'
+                || ($_controller == 'help' && $_action == 'home'))
         {
-            Errors::debugLogger("User is logged in, allowed basic pages #001", ACL::$logLevel);
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.": User is logged in, allowed basic pages #001", ACL::$logLevel);
             return true;
         }
 
@@ -82,6 +85,7 @@ class ACL extends Model
         $usergroupID = $_SESSION['user']['usergroup']['usergroupID'];
 
         // CRUD taken from controller/action
+        $crud = "read"; // for aliases default to read
         if ($_action == 'create')
         {
             $crud = "create";
@@ -104,11 +108,12 @@ class ACL extends Model
         $test = $ACL->PermissionCheckUserLevel($userID, $_controller, $crud);
         if ($test === TRUE)
         {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.": * Passed User Level Check *", ACL::$logLevel);
             return true;
         }
         elseif ($test === FALSE)
         {
-            Errors::debugLogger("* Failed User Level Check *", ACL::$logLevel);
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.": * Failed User Level Check *", ACL::$logLevel);
             return self::ReturnFailedAuth($redirect);
         }
 
@@ -116,16 +121,17 @@ class ACL extends Model
         $test = $ACL->PermissionCheckDefaultGroupLevel($usergroupID, $_controller, $crud);
         if ($test === TRUE)
         {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.": * Passed Group Level Check *", ACL::$logLevel);
             return true;
         }
         elseif ($test === FALSE)
         {
-            Errors::debugLogger("* Failed Group Level Check *", ACL::$logLevel);
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.": * Failed Group Level Check *", ACL::$logLevel);
             return self::ReturnFailedAuth($redirect);
         }
 
         // No entry found for allow or deny so returning false (deny)
-        Errors::debugLogger("* Failed *", ACL::$logLevel);
+        Errors::debugLogger(__METHOD__.'@'.__LINE__.": * Failed *", ACL::$logLevel);
         return self::ReturnFailedAuth($redirect);
     }
 
@@ -198,14 +204,14 @@ class ACL extends Model
      */
     public static function ReturnFailedAuth($redirect)
     {
-        Errors::debugLogger(__METHOD__, ACL::$logLevel);
+        Errors::debugLogger(__METHOD__.'@'.__LINE__, ACL::$logLevel);
         if ($redirect == "login" && empty($_SESSION['user']))
         {
             #$_SESSION['ErrorMessage'] = "Login Required";
             #$_SESSION['ErrorRedirect'] = NULL;
             #$_SESSION['ErrorRedirect'] = "/users/login?returnURL=/" . $_SESSION['controller'] . "/" . $_SESSION['action'];
             #Session::saveSessionToDB();
-            Errors::debugLogger("* ACL Returning False -> Login *", ACL::$logLevel);
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.": * Login Required, User Not Logged In = ACL Returning False -> Login *", ACL::$logLevel, TRUE);
             if (!empty($_SESSION['controller'])
                     && !empty($_SESSION['action'])
                     && $_SESSION['controller'] == 'admin'
@@ -233,7 +239,7 @@ class ACL extends Model
                 $returnURL = $_SESSION['returnURL'];
             }
             
-            Errors::debugLogger("Redirecting to login with returnURL: ".$returnURL, ACL::$logLevel);
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.": ReturnURL: ".$returnURL, ACL::$logLevel);
             header('Location: /users/login?returnURL=/' . $returnURL);
             exit(0);
         }
@@ -243,13 +249,13 @@ class ACL extends Model
             #$_SESSION['ErrorRedirect'] = NULL;
             #$_SESSION['ErrorRedirect'] = "/users/login?access=1&returnURL=/" . $_SESSION['controller'] . "/" . $_SESSION['action'];
             #Session::saveSessionToDB();
-            Errors::debugLogger("* ACL Returning False -> 403 *", ACL::$logLevel);
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.": * ACL Returning False -> 403 *", ACL::$logLevel, TRUE);
             header('Location: /users/login?access=1&returnURL=/' . $_SESSION['controller'] . '/' . $_SESSION['action']);
             exit(0);
         }
         else
         {
-            Errors::debugLogger("* ACL Returning False -> False *", ACL::$logLevel);
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.": * ACL Returning False -> False *", ACL::$logLevel, TRUE);
             return false;
         }
     }

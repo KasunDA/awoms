@@ -194,6 +194,7 @@ class Bootstrap
      */
     public function callHook($url, $template)
     {
+        // Extract Controller/Action/QueryString from URL
         $urlArray   = explode("/", $url);
         $controller = $urlArray[0];
         array_shift($urlArray);
@@ -223,15 +224,58 @@ class Bootstrap
         $_SESSION['model'] = $model;
         $controller .= 'Controller';
 
-        // Construct
-        if (class_exists($controller, TRUE))
+        // Construct Controller
+        Errors::debugLogger(__METHOD__.'@'.__LINE__.': Controller: '.$controller);
+        if (!class_exists($controller, TRUE))
         {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.': Controller class not found! '.$controller);
+
+            // Check Rewrite Rules (turn /locations/fl into /stores/readall/fl)...
+            $Rewrite = new RewriteMapping();
+            $globalRules = $Rewrite->getWhere();
+            foreach ($globalRules as $globalRule)
+            {
+                if (!empty($globalRule['domainID'])
+                        && $globalRule['domainID'] != BRAND_DOMAIN_ID)
+                {
+                    continue;
+                }
+
+                $check = "/".$controllerName;
+                Errors::debugLogger(__METHOD__.'@'.__LINE__.": Checking if $check matches rewriteRule: ".$globalRule['aliasURL']);
+                if ($check == $globalRule['aliasURL'])
+                {
+                    Errors::debugLogger(__METHOD__.'@'.__LINE__.": Constructing new URL from RewriteRule + ReqAction...");
+                    $new = $globalRule['actualURL']."/".$action;
+                    if (!empty($queryString))
+                    {
+                        Errors::debugLogger(__METHOD__.'@'.__LINE__.": Appending ReqQueryString...");
+                        $new .= "/".$queryString[0];
+                    }
+                    $new = substr($new, 1); // remove first slash /
+                    Errors::debugLogger(__METHOD__." NEW URL: $new");
+                    self::callHook($new, $template);
+                    return;
+                }
+            }
+
+        }
+        if (class_exists($controller, FALSE))
+        {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.': Creating Dispatch...');
             $dispatch = new $controller($controllerName, $model, $action, $template);
         }
 
         // Execute Action
+        if (!method_exists($controller, $action))
+        {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.': Method not found ('.$controller.'/'.$action.')! Defaulting to ReadAll...');
+            $action = "readall";
+            $_SESSION['action'] = $action;
+        }
         if (method_exists($controller, $action))
         {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.': Calling Method ('.$controller.'/'.$action.')...');
             call_user_func_array(array($dispatch, $action), $queryString);
         }
         else
@@ -256,8 +300,14 @@ class Bootstrap
             $dispatch->set('resultsMsg', $errorMsg);
 
             # @TODO move to error handler
-            header('Location: /404.html');
-            exit(0);
+            if (DEVELOPMENT_ENVIRONMENT)
+            {
+                var_dump($errorMsg);
+            } else {
+                header('Location: /404.html');
+                exit(0);
+            }
+            
         }
     }
 

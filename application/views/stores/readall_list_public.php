@@ -1,113 +1,130 @@
-<table style="margin-left: 50px;">
-    <tr>
-        <td>
-            <h1><?= $_SESSION['brand']['brandName']; ?> Store Locator</h1>
-            <table width="85%">
-                <tr>
-                    <td colspan="2">
-                        <p><strong>Find a store in your area or search by state</strong></p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Zip Code:</td>
-                    <td><input type="text" name="inp_zipcode" size="5"/></td>
-                </tr>
-                <tr>
-                    <td>Search Radius:</td>
-                    <td>
-                        <select name="inp_searchRadius">
-                            <option value="25">25 Miles</option>
-                            <option value="50">50 Miles</option>
-                            <option value="100" selected>100 Miles</option>
-                            <option value="200">200 Miles</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>
-                        <input type="button" value="FIND"/>
-                    </td>
-                </tr>
-            </table>
-        </td>
-        <td>
-            <img src="/css/<?= $_SESSION['brand']['brandLabel']; ?>/images/items/store_locator_map.png" alt="" width="632" height="424" border="0" usemap="#MapStore" class="no-border" />
-            <!-- Map -->
-        </td>
-    </tr>
-</table>
-
-
 <?php
-// @TODO:
-// Filter:
-// --State?
-// --Zip?
+$fileLocations = Utility::getTemplateFileLocations('readall_list_public_locator_form');
+foreach ($fileLocations as $fileLoc)
+{
+    include($fileLoc);
+}
 
-/* Display Stores */
-$cols  = 4;
+$cols = 4;
 $table = "<table class='store_locator'>";
 $colOn = 1;
-$i     = 0;
+$i = 0;
+// State Filter?
+$stateFilter = FALSE;
+if (!empty($_SESSION['query']))
+{
+    $filter = $_SESSION['query'];
+    if (!empty($filter))
+    {
+        $filter = $filter[0];
+    }
+    if (preg_match('/[a-zA-Z]+/', $filter))
+    {
+        $stateFilter = strtoupper($filter);
+        $table = "<h1>State: ".$stateFilter."</h1>".$table;
+
+    }
+}
+
+// Zip Filter?
+$zipFilter = FALSE;
+if (!empty($inp_zipcode))
+{
+    $zipMiles = $inp_searchRadius;
+    if (preg_match('/\d+/', $inp_zipcode)) {
+        $zipFilter = $inp_zipcode;
+        $table = "<h1>Zip Code:".$zipFilter."</h1>".$table;
+    }
+}
+
 foreach ($items as $item)
 {
+    // Only show "Open" stores
+    if (!empty($item['coding'])
+            && $item['coding'] != "O")
+    {
+        Errors::debugLogger(__METHOD__.'@'.__LINE__.': Skipping Non-Open store ('.$item['storeID'].')...');
+        continue;
+    }
 
-    // Coding:
-//    if ($item['coding'] != "O")
-//    { continue; }
+    // State Filter?
+    if (!empty($item['address']))
+    {
+        $storeState = $item['address']['stateProvinceCounty'];
+    } else { $storeState = ""; }
+    if (!empty($stateFilter) && $storeState != $stateFilter)
+    {
+        Errors::debugLogger(__METHOD__.'@'.__LINE__.': Skipping store ('.$storeState.') due to State Filter ('.$stateFilter.')...');
+        continue;
+    }
 
-    $itemID      = $item['storeID'];
+    // Zip Filter?
+    if (!empty($item['address']))
+    {
+        $storeZip = $item['address']['zipPostcode'];
+    } else { $storeZip = ""; }
+    if (!empty($zipFilter) && Utility::GetDistanceInMilesBetweenZipCodes($storeZip, $zipFilter) > $zipMiles)
+    {
+        Errors::debugLogger(__METHOD__.'@'.__LINE__.': Skipping store ('.$storeZip.') due to Zip Filter ('.$zipFilter.' x '.$zipMiles.'mi ...');
+        continue;
+    }
+
+    $itemID = $item['storeID'];
     $storeNumber = $item['storeNumber'];
-    $storePhone  = $item['phone'];
-    $storeEmail  = $item['email'];
+    $storePhone = $item['phone'];
+    $storeEmail = $item['email'];
 
     // Address
-    $storeAddressLine1 = $item['address']['line1'];
-    $storeAddressLine2 = $item['address']['line2'];
-    $storeAddressLine3 = $item['address']['line3'];
-    $storeAddress      = $storeAddressLine1;
-    if (!empty($storeAddressLine2))
+    if (!empty($item['address']))
     {
-        $storeAddress .= "<br />" . $storeAddressLine2;
+        $storeAddressLine1 = $item['address']['line1'];
+        $storeAddressLine2 = $item['address']['line2'];
+        $storeAddressLine3 = $item['address']['line3'];
+        $storeAddress = $storeAddressLine1;
+        if (!empty($storeAddressLine2))
+        {
+            $storeAddress .= "<br />" . $storeAddressLine2;
+        }
+        if (!empty($storeAddressLine3))
+        {
+            $storeAddress .= "<br />" . $storeAddressLine3;
+        }
+        $storeCity = $item['address']['city'];
+        $storeAddress = $storeAddress . "<br/>" . $storeCity . ", " . $storeState . " " . $storeZip;
+        $readLink = BRAND_URL . 'stores/read/' . $itemID . '/' . $storeState . '/' . $storeCity . '/' . $storeNumber;
+    } else {
+        $storeAddress = "";
+        $readLink = BRAND_URL . 'stores/read/' . $itemID . '/' . $item['storeName'];
     }
-    if (!empty($storeAddressLine3))
+
+    // Construct store listing with available data
+    if (!empty($item['address']))
     {
-        $storeAddress .= "<br />" . $storeAddressLine3;
+        $storeLabel = $storeCity;
+        $storeAddress = $storeAddress."<br />";
+    } else {
+        $storeLabel = $item['storeName'];
+        $storeAddress = "";
     }
-    $storeState   = $item['address']['stateProvinceCounty'];
-    $storeCity    = $item['address']['city'];
-    $storeZip     = $item['address']['zipPostcode'];
-    $storeAddress = $storeAddress . "<br/>" . $storeCity . ", " . $storeState . " " . $storeZip;
 
-    $readLink = BRAND_URL . 'stores/read/' . $itemID . '/' . $storeState . '/' . $storeCity . '/' . $storeNumber;
+    if (!empty($storePhone))
+    {
+        $storePhone = "Phone: " . $storePhone . "<br />";
+    } else {
+        $storePhone = "";
+    }
 
-    // Coding?
-//    switch ($item['coding']) {
-//        case "N":
-//            $activeClass = "warning";
-//            break;
-//        case "T":
-//        case "O/C":
-//            $activeClass = "info";
-//            break;
-//        case "C":
-//            $activeClass = "failure";
-//            break;
-//        case "O":
-//            $activeClass = "success";
-//            break;
-//        default:
-//            $activeClass = "failure";
-//            break;
-//    }
-//echo "<td><div class='alert " . $activeClass . " no-img center'>" . $item['coding'] . "</div></td>";
+    if (!empty($storeEmail))
+    {
+        $storeEmail = "<a href='mailto:" . $storeEmail . "'>" . $storeEmail . "</a>";
+    } else {
+        $storeEmail = "";
+    }
 
     $colData = "
-<span class='body-text-bold'><a href='" . $readLink . "'>" . $_SESSION['brand']['brandName'] . " " . $storeCity . "</a></span><br />
-" . $storeAddress . "<br />
-Phone: " . $storePhone . "<br />
-<a href='mailto:" . $storeEmail . "'>" . $storeEmail . "</a>";
+<span class='body-text-bold'><a href='" . $readLink . "'>" . $_SESSION['brand']['brandName'] . " " . $storeLabel . "</a></span>
+<br />
+" . $storeAddress . $storePhone . $storeEmail;
 
     // Table row/cell construction
     if ($colOn == 1)
@@ -141,4 +158,3 @@ Phone: " . $storePhone . "<br />
 }
 $table .= "</table>";
 echo $table;
-?>
