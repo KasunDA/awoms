@@ -57,6 +57,12 @@ foreach ($items as $item)
     $distance = 0;
     if (!empty($zipFilter))
     {
+        if (empty($storeZip))
+        {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.': Skipping store with empty zip ('.$storeZip.') due to Zip Filter ('.$zipFilter.' x '.$zipMiles.'mi ...');
+            continue;
+        }
+
         $distance = Utility::GetDistanceInMilesBetweenZipCodes($storeZip, $zipFilter);
         if ($distance > $zipMiles)
         {
