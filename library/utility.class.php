@@ -483,19 +483,45 @@ class Utility
         return $r;
     }
 
+    // This function returns Longitude & Latitude from zip code.
+    public static function getLnt($zip)
+    {
+        Errors::debugLogger(__METHOD__);
+        $url = "http://maps.googleapis.com/maps/api/geocode/json?address=".urlencode($zip)."&sensor=false";
+        $result_string = file_get_contents($url);
+        $result = json_decode($result_string, true);
+        $result1[]=$result['results'][0];
+        $result2[]=$result1[0]['geometry'];
+        $result3[]=$result2[0]['location'];
+        return $result3[0];
+    }
+
     /**
      * Returns the distance in miles between two zip codes
      * 
-     * @param int $zipA
-     * @param int $zipB
+     * @param int $zip1
+     * @param int $zip2
      *
      * @return int
      */
-    public static function GetDistanceInMilesBetweenZipCodes($zipA, $zipB)
+    public static function GetDistanceInMilesBetweenZipCodes($zip1, $zip2)
     {
-        $distance = 10;
-        Errors::debugLogger(__METHOD__.': Returning Distance of: '.$distance);
-        return $distance;
+        Errors::debugLogger(__METHOD__);
+        $first_lat = self::getLnt($zip1);
+        $next_lat = self::getLnt($zip2);
+        $lat1 = $first_lat['lat'];
+        $lon1 = $first_lat['lng'];
+        $lat2 = $next_lat['lat'];
+        $lon2 = $next_lat['lng'];
+        $theta=$lon1-$lon2;
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +
+        cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+        cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+        Errors::debugLogger(__METHOD__.': Returning Distance of: '.$miles);
+        return $miles;
     }
 
     /**

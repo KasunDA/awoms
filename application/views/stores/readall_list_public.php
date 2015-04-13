@@ -9,9 +9,21 @@ $cols = 4;
 $table = "<table class='store_locator'>";
 $colOn = 1;
 $i = 0;
-// State Filter?
+
+// Zip Filter?
+$zipFilter = FALSE;
+if (isset($_POST['inp_zipcode']) && isset($_POST['inp_searchRadius']))
+{
+    $zip = $_POST['inp_zipcode'];
+    $zipMiles = $_POST['inp_searchRadius'];
+    if (preg_match('/\d+/', $zip)) {
+        $zipFilter = $zip;
+        $table = "<h3>Stores within $zipMiles miles of ".$zipFilter."</h3>".$table;
+    }
+}
+// State Filter? (after zip and if zip is entered ignore entered state)
 $stateFilter = FALSE;
-if (!empty($_SESSION['query']))
+if (!$zipFilter && !empty($_SESSION['query']))
 {
     $filter = $_SESSION['query'];
     if (!empty($filter))
@@ -21,22 +33,11 @@ if (!empty($_SESSION['query']))
     if (preg_match('/[a-zA-Z]+/', $filter))
     {
         $stateFilter = strtoupper($filter);
-        $table = "<h1>State: ".$stateFilter."</h1>".$table;
-
+        $table = "<h3>Stores in state ".$stateFilter."</h3>".$table;
     }
 }
 
-// Zip Filter?
-$zipFilter = FALSE;
-if (!empty($inp_zipcode))
-{
-    $zipMiles = $inp_searchRadius;
-    if (preg_match('/\d+/', $inp_zipcode)) {
-        $zipFilter = $inp_zipcode;
-        $table = "<h1>Zip Code:".$zipFilter."</h1>".$table;
-    }
-}
-
+$displayedStoreCount = 0;
 foreach ($items as $item)
 {
     // Only show "Open" stores
@@ -47,28 +48,39 @@ foreach ($items as $item)
         continue;
     }
 
-    // State Filter?
-    if (!empty($item['address']))
-    {
-        $storeState = $item['address']['stateProvinceCounty'];
-    } else { $storeState = ""; }
-    if (!empty($stateFilter) && $storeState != $stateFilter)
-    {
-        Errors::debugLogger(__METHOD__.'@'.__LINE__.': Skipping store ('.$storeState.') due to State Filter ('.$stateFilter.')...');
-        continue;
-    }
-
     // Zip Filter?
     if (!empty($item['address']))
     {
         $storeZip = $item['address']['zipPostcode'];
     } else { $storeZip = ""; }
-    if (!empty($zipFilter) && Utility::GetDistanceInMilesBetweenZipCodes($storeZip, $zipFilter) > $zipMiles)
+
+    $distance = 0;
+    if (!empty($zipFilter))
     {
-        Errors::debugLogger(__METHOD__.'@'.__LINE__.': Skipping store ('.$storeZip.') due to Zip Filter ('.$zipFilter.' x '.$zipMiles.'mi ...');
-        continue;
+        $distance = Utility::GetDistanceInMilesBetweenZipCodes($storeZip, $zipFilter);
+        if ($distance > $zipMiles)
+        {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.': Skipping store ('.$storeZip.') due to Zip Filter ('.$zipFilter.' x '.$zipMiles.'mi ...');
+            continue;
+        }
     }
 
+    // State Filter? (after zip and if zip is entered, ignore entered state)
+    if (!empty($item['address']))
+    {
+        $storeState = $item['address']['stateProvinceCounty'];
+    } else { $storeState = ""; }
+    if (empty($zipFilter))
+    {
+        if (!empty($stateFilter) && $storeState != $stateFilter)
+        {
+            Errors::debugLogger(__METHOD__.'@'.__LINE__.': Skipping store ('.$storeState.') due to State Filter ('.$stateFilter.')...');
+            continue;
+        }
+    }
+
+    // Add store to display table
+    $displayedStoreCount++;
     $itemID = $item['storeID'];
     $storeNumber = $item['storeNumber'];
     $storePhone = $item['phone'];
@@ -156,5 +168,11 @@ foreach ($items as $item)
     $colOn++;
     $i++;
 }
+
+if ($displayedStoreCount == 0)
+{
+    $table .= "No stores found";
+}
+
 $table .= "</table>";
 echo $table;

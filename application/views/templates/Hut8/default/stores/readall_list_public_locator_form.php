@@ -29,7 +29,7 @@
                     <tr>
                         <td>&nbsp;</td>
                         <td>
-                            <input type="button" value="FIND"/>
+                            <input type="submit" name="stores" value="FIND"/>
                         </td>
                     </tr>
                 </table>

@@ -389,5 +389,4 @@ class StoresController extends Controller
         }
         return $choiceList;
     }
-
 }
