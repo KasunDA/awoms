@@ -78,7 +78,14 @@ body {
     background-position: right;
     background-attachment: scroll;
 }
+
 /************************************************************************/
+/* Top & Header Menus */
+ul.menu_top,
+ul.menu_header {
+    text-transform:none;
+    text-align: left;
+}
 
 /************************************************************************/
 /* Text Styles */
@@ -101,7 +108,25 @@ body {
 h1{
     color: #e0e0e0;
 }
+
 /************************************************************************/
+/* Global Link Style */
+a:link {
+    color: #0098F4 !important;
+    text-decoration: none;
+}
+a:visited {
+    color: #0098F4 !important;
+    text-decoration: none;
+}
+a:hover {
+    color: #0098F4 !important;
+    text-decoration: none;
+}
+a:active {
+    text-decoration: none;
+    color: #0098F4 !important;
+}
 
 /************************************************************************/
 /* Floating FDD */
