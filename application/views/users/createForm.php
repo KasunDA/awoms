@@ -42,7 +42,7 @@ if ($_SESSION['user']['usergroup']['usergroupName'] == "Store Owners")
 
         <tr>
             <td>
-                Passphrase<br/>
+                New Passphrase<br/>
                 <small class='muted'>
                     Please choose a <a href="http://www.passwordmeter.com/" target="_blank">complex password</a>:
                     <ul>
@@ -54,11 +54,7 @@ if ($_SESSION['user']['usergroup']['usergroupName'] == "Store Owners")
                 </small>
             </td>
             <td>
-                <input type='password' id='inp_passphrase' name='inp_passphrase' value='<?php
-                if (isset($inp_passphrase)) {
-                    echo $inp_passphrase;
-                }
-                ?>' size='60' />
+                <input type='password' id='inp_passphrase' name='inp_passphrase' size='60' />
                 <br />
                 <small class="muted">Suggestions:
                     <ul>
