@@ -37,6 +37,7 @@ body {
     /* Use header-full if front-page (.header) uses larger space than rest of pages like Hut */
     height: 46px;
     background-image: url(./images/structure/header.jpg);
+    padding-top: 65px;
 }
 
 /* GP specific */
@@ -68,6 +69,7 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     */
+    height: 0px !important;
 }
 
 /* Footer (Bottom right logo in footer nav links 960x209)*/
@@ -85,6 +87,15 @@ ul.menu_top,
 ul.menu_header {
     text-transform:none;
     text-align: left;
+    float: none;
+    margin-left: 70px;
+
+    font-family: "Lucida Sans Unicode", "Bitstream Vera Sans", "Trebuchet Unicode MS", "Lucida Grande", Verdana, Helvetica, sans-serif !important;
+    font-size: 12px !important;
+}
+
+ul.menu_header li {
+    padding: 10px 15px 0px 12px !important;
 }
 
 /************************************************************************/
@@ -143,12 +154,18 @@ a:active {
 
 /* Removes padding and margin */
 .no-padding {
-    padding: 0px !important;
     margin: 0px !important;
+    padding: 0px !important;
 }
 
 /* Removes border and margin from img */
 .plain-img {
     border: none !important;
     margin: 0px !important;
+    padding: 0px !important;
+}
+
+/* Main GP Home Image */
+#view p.no-padding .plain-img {
+    margin-top: -4px !important;
 }
