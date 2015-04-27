@@ -5,7 +5,7 @@
         echo $article['articleName'];
     } else {
         if (empty($title)) {
-            $title = BRAND_DOMAIN;
+            $title = BRAND_TITLE;
         }
         echo $title;
     }

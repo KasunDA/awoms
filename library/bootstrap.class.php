@@ -175,6 +175,7 @@ class Bootstrap
         define('BRAND_DOMAIN_ID', $domain['domainID']);
         define('BRAND_LABEL', $brand['brandLabel']);
         define('BRAND_THEME', $brand['activeTheme']);
+        define('BRAND_TITLE', $brand['brandMetaTitle']);
     }
 
     /**

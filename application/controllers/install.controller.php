@@ -16,7 +16,7 @@ class InstallController extends Controller
         // Install default data
         if (!empty($_POST['step'])) {
             $Install = new Install();
-            $Install->InstallDefaultData($_POST['inp_brandName'], $_POST['inp_brandLabel'], $_POST['inp_adminUsername'],
+            $Install->InstallDefaultData($_POST['inp_brandName'], $_POST['inp_brandLabel'], $_POST['inp_brandMetaTitle'], $_POST['inp_adminUsername'],
                                          $_POST['inp_adminPassphrase'], $_POST['inp_adminEmail'], $_POST['inp_domainName']);
         }
     }

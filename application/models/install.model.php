@@ -13,7 +13,7 @@ class Install extends Model
      * @param type $adminEmail
      * @param type $domainName
      */
-    public function InstallDefaultData($brandName, $brandLabel, $adminUsername, $adminPassphrase, $adminEmail, $domainName)
+    public function InstallDefaultData($brandName, $brandLabel, $brandMetaTitle, $adminUsername, $adminPassphrase, $adminEmail, $domainName)
     {
         // Parent Item Types
         $this->update(array('parentTypeLabel' => 'User'), "refParentItemTypes");
@@ -63,6 +63,7 @@ class Install extends Model
         $brand['brandName']   = $brandName;
         $brand['brandActive'] = 1;
         $brand['brandLabel']  = $brandLabel;
+        $brand['brandMetaTitle'] = $brandMetaTitle;
         $brand['brandEmail']  = $adminEmail;
         $brand['activeTheme'] = "default";
         $Brand->update($brand);
@@ -102,9 +103,14 @@ class Install extends Model
         $brands    = array();
         $brands[]  = array('brandName'  => "Goin&#039; Postal",
             'brandLabel' => 'GP',
+            'brandMetaTitle' => 'Goin&#039; Postal, Low cost shipping and packaging franchise',
             'brandEmail' => 'info@goinpostal.com',
             'domainName' => 'dev.goinpostal.com');
-        $brands[]  = array('brandName'  => 'Hut no. 8', 'brandLabel' => 'Hut8', 'brandEmail' => 'info@hutno8.com', 'domainName' => 'dev.hutno8.com');
+        $brands[]  = array('brandName'  => 'Hut no. 8',
+            'brandLabel' => 'Hut8',
+            'brandMetaTitle' => 'Hut no. 8 Resale Clothing Franchise Oportunities',
+            'brandEmail' => 'info@hutno8.com',
+            'domainName' => 'dev.hutno8.com');
         $brands[]  = array('brandName'  => "Vino n Brew", 'brandLabel' => 'VB', 'brandEmail' => 'info@vinonbrew.com', 'domainName' => 'dev.vb.com');
         $Brand     = new Brand();
         $Domain    = new Domain();
