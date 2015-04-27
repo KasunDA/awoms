@@ -23,22 +23,23 @@
         if (empty($_POST)) {
             ?>    
             <div id="step1">
+                <center>
+                    <h1>Install Wizard</h1>
 
-                <h1>Install Wizard</h1>
+                    <h2>Server Test</h2>
 
-                <h2>Server Test</h2>
-                
-                <p class="muted">These tests will ensure your server has all the required functions before installing.</p>
-                
-                <div id='serverTestResults'>
-                    <p>Please wait while server tests run...</p>
-                    <div id="facebookG" style="margin:25px 50px;">
-                        <div id="blockG_1" class="facebook_blockG"></div>
-                        <div id="blockG_2" class="facebook_blockG"></div>
-                        <div id="blockG_3" class="facebook_blockG"></div>
+                    <p class="muted">These tests will ensure your server has all the required functions before installing.</p>
+
+                    <div id='serverTestResults'>
+                        <p>Please wait while server tests run...</p>
+                        <div id="loading_box" style="margin:25px 50px;">
+                            <div id="blockG_1" class="loading_box_blockG"></div>
+                            <div id="blockG_2" class="loading_box_blockG"></div>
+                            <div id="blockG_3" class="loading_box_blockG"></div>
+                        </div>
                     </div>
-                </div>
-
+                </center>
+                
                 <script>
                     $(document).ready(function() {
                         // Ajax execute
@@ -64,6 +65,7 @@
                     });
                 </script>
 
+                <center>
                 <form class='wizard_form hidden' method='POST'>
                     <input type='hidden' name='step' value='2' />
 
@@ -89,6 +91,16 @@
                             </td>
                             <td>
                                 <input type='text' id='inp_brandLabel' name='inp_brandLabel' size='60' placeholder="MyCo" value="GPFC"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                Brand Meta Title
+                                <p class="muted">This will be used as the HTML Meta Title unless overriden by a page, e.g. Goin' Postal, Low cost shipping and postal store franchise</p>
+                            </td>
+                            <td>
+                                <input type='text' id='inp_brandMetaTitle' name='inp_brandMetaTitle' size='60' placeholder="Brand Title" value="Goin' Postal, Low cost shipping and postal store franchise"/>
                             </td>
                         </tr>
 
@@ -148,7 +160,7 @@
                     </table>
 
                 </form>
-
+                </center>
             </div>
 
             <?php
@@ -165,18 +177,20 @@
         }
         ?>
 
-        <!-- Loading image -->
-        <div id="loading" class="hidden">
-            <h1 id="loading_title"></h1>
-            <p>
-                <small><b>Note:</b> this may take up to a minute to complete, <strong>do NOT leave or refresh</strong> the page while it is loading.</small>
-            </p>
-            <div id="facebookG" style="margin-left:100px;">
-                <div id="blockG_1" class="facebook_blockG"></div>
-                <div id="blockG_2" class="facebook_blockG"></div>
-                <div id="blockG_3" class="facebook_blockG"></div>
+        <center>
+            <!-- Loading image -->
+            <div id="loading" class="hidden">
+                <h1 id="loading_title"></h1>
+                <p>
+                    <small><b>Note:</b> this may take up to a minute to complete, <strong>do NOT leave or refresh</strong> the page while it is loading.</small>
+                </p>
+                <div id="loading_box" style="margin-left:100px;">
+                    <div id="blockG_1" class="loading_box_blockG"></div>
+                    <div id="blockG_2" class="loading_box_blockG"></div>
+                    <div id="blockG_3" class="loading_box_blockG"></div>
+                </div>
             </div>
-        </div>  
+        </center>
 
         <script>
             $('#step1submit').on('click', function() {

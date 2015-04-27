@@ -577,9 +577,9 @@ table.store_locator td
 }
 
 /* Loading 'gif' via divs: See more at: http://cssload.net/#sthash.mEfeQd1A.dpuf */
-#facebookG{
+#loading_box{
     width:128px}
-.facebook_blockG{
+.loading_box_blockG{
     background-color:#b3d4fc;
     border:3px solid #2b5c97;
     float:left;

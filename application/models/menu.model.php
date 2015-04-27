@@ -283,6 +283,7 @@ class Menu extends Model
         }
 
         // Usergroups
+        /*
         if (ACL::IsUserAuthorized('usergroups', 'readall'))
         {
             // Add to Users sub-menu if can
@@ -316,6 +317,8 @@ class Menu extends Model
                 }
             }
         }
+         *
+         */
 
         // Pages
         if (ACL::IsUserAuthorized('pages', 'readall'))

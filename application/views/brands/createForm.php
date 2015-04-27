@@ -37,6 +37,21 @@
 
         <tr>
             <td>
+                Brand Meta Title
+                <p class="muted">This will be used for the default HTML Meta Title unless overridden by page settings, e.g. Goin' Postal, Low cost shipping and packaging franchise.</p>
+            </td>
+            <td>
+                <input type='text' id='inp_brandMetaTitle' name='inp_brandMetaTitle' value='<?php
+                if (isset($inp_brandMetaTitle))
+                {
+                    echo $inp_brandMetaTitle;
+                }
+                ?>' size='60' />
+            </td>
+        </tr>
+
+        <tr>
+            <td>
                 Brand Email
             </td>
             <td>
