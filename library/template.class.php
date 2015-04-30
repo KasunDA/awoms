@@ -70,32 +70,43 @@ class Template
      */
     private function setTitle()
     {
-        $titleController = ucwords($this->controller);
-        switch ($this->action) {
-            case "create":
-                $titleAction = "Create";
-                break;
-            case "read":
-                $titleAction = "Read";
-                break;
-            case "readall":
-                $titleAction = "Read All";
-                break;
-            case "update":
-                $titleAction = "Update";
-                break;
-            case "delete":
-                $titleAction = "Delete";
-                break;
-            default:
-                $titleAction = BRAND_TITLE;
-                break;
+        // Default titles used for Admin (or if no default brand title set)
+        if (empty(BRAND_TITLE)
+                || (!empty($_SESSION['user_logged_in']) && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators"))
+        {
+            $titleController = ucwords($this->controller);
+            switch ($this->action) {
+                case "create":
+                    $titleAction = "Create";
+                    break;
+                case "read":
+                    $titleAction = "Read";
+                    break;
+                case "readall":
+                    $titleAction = "Read All";
+                    break;
+                case "update":
+                    $titleAction = "Update";
+                    break;
+                case "delete":
+                    $titleAction = "Delete";
+                    break;
+                default:
+                    $titleAction = BRAND_TITLE;
+                    break;
+            }
+            $finalTitle = $titleController;
+            if (!empty($titleAction)) {
+                $finalTitle .= ' :: ' . $titleAction;
+            }
+            $this->title = $finalTitle;
+            return;
         }
-        $finalTitle = $titleController;
-        if (!empty($titleAction)) {
-            $finalTitle .= ' :: ' . $titleAction;
-        }
-        $this->title = $finalTitle;
+
+        // Default page title to BRAND_TITLE, can be overridden at page level
+        $this->title = BRAND_TITLE;
+        return;
+
     }
     
     /**
