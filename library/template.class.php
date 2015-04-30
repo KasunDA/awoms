@@ -71,7 +71,7 @@ class Template
     private function setTitle()
     {
         // Default titles used for Admin (or if no default brand title set)
-        if (empty(BRAND_TITLE)
+        if (!defined(BRAND_TITLE)
                 || (!empty($_SESSION['user_logged_in'])
                         && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators"))
         {
