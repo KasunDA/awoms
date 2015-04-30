@@ -26,11 +26,12 @@ class Brand extends Model
     }
 
     /**
-     * Used for CREATING brands extended items, brand id required
+     * Used for CREATING brands extended items
      * 
      * @param int $id Brand ID
+     * @param array $data Brand data
      */
-    public function create($id)
+    public function create($id, $data)
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
         if (empty($id)) {
@@ -39,9 +40,10 @@ class Brand extends Model
 
         $this->createBrandUsergroups($id);
         $this->createBrandMenus($id);
-        Install::InstallCart(NULL, $id);
         $this->createBrandFolders($id);
-
+        $this->createBrandDomains($data);
+        // Create default cart for Brand
+        Install::InstallCart(NULL, $id);
         return true;
     }
 
@@ -554,6 +556,33 @@ class Brand extends Model
             mkdir($p, 0777, true);
         }
         return true;
+    }
+
+    /**
+     * Creates brands domains
+     *
+     * @param array $data Brand data
+     */
+    public function createBrandDomains($data)
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        if (empty($data['brandID'])) {
+            Errors::debugLogger("Missing BrandID");
+        }
+        if (empty($data['domains'])) {
+            Errors::debugLogger("Missing Domains");
+            return;
+        }
+
+        // Domains
+        $Domain = new Domain();
+        foreach ($data['domains'] as $domainName)
+        {
+            $domain['brandID']      = $data['brandID'];
+            $domain['domainName']   = $domainName;
+            $domain['domainActive'] = 1;
+            $Domain->update($domain);
+        }
     }
 
 }

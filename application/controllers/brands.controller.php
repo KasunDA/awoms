@@ -46,7 +46,7 @@ class BrandsController extends Controller
         }
 
         $Brand = new Brand();
-        $Brand->create($id);        
+        $Brand->create($id, $data);
         return true;
     }
 

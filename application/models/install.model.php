@@ -27,7 +27,7 @@ class Install extends Model
             rename($map, $map . '.' . time() . '.bak');
         }
 
-        // Cart
+        // Prepare Database for Cart
         self::PrepareDatabaseForCart();
 
         /* Rewrite Map defaults */
@@ -68,9 +68,12 @@ class Install extends Model
         $brand['activeTheme'] = "default";
         $Brand->update($brand);
 
-        // Create brands default:
-        // --Menus usergroups, menu
+        $brand['domains'] = array($domainName);
+        // Creates brand defaults:
+        // --Menus
         // --Usergroups (+ACL)
+        // --User (Store Owner)
+        // --Domains
         // --Cart
         BrandsController::createStepFinish($brand['brandID'], $brand);
 
@@ -87,14 +90,6 @@ class Install extends Model
         $user['userEmail']   = $adminEmail;
         $user['notes']       = "Global Administrator";
         $User->update($user);
-
-        // Domain
-        $Domain                 = new Domain();
-        $domain['domainID']     = "DEFAULT";
-        $domain['brandID']      = $brand['brandID'];
-        $domain['domainName']   = $domainName;
-        $domain['domainActive'] = 1;
-        $Domain->update($domain);
     }
 
     public function PopulateSampleData()
@@ -105,16 +100,18 @@ class Install extends Model
             'brandLabel' => 'GP',
             'brandMetaTitle' => 'Goin&#039; Postal, Low cost shipping and packaging franchise',
             'brandEmail' => 'info@goinpostal.com',
-            'domainName' => 'dev.goinpostal.com');
+            'domains' => array('dev.goinpostal.com', 'goinpostal.local'));
         $brands[]  = array('brandName'  => 'Hut no. 8',
             'brandLabel' => 'Hut8',
             'brandMetaTitle' => 'Hut no. 8 Resale Clothing Franchise Oportunities',
             'brandEmail' => 'info@hutno8.com',
-            'domainName' => 'dev.hutno8.com');
-        $brands[]  = array('brandName'  => "Vino n Brew", 'brandLabel' => 'VB', 'brandEmail' => 'info@vinonbrew.com', 'domainName' => 'dev.vb.com');
+            'domains' => array('dev.hutno8.com', 'hutno8.local'));
+        $brands[]  = array('brandName'  => "Vino n Brew",
+            'brandLabel' => 'VB',
+            'brandMetaTitle' => 'Vino n Brew wine and beer',
+            'brandEmail' => 'info@vinonbrew.com',
+            'domains' => array('dev.vb.com', 'vb.local'));
         $Brand     = new Brand();
-        $Domain    = new Domain();
-        $Menu      = new Menu();
         $Store     = new Store();
         $Usergroup = new Usergroup();
         $User      = new User();
@@ -122,18 +119,21 @@ class Install extends Model
         $resultsMsg = "";
         foreach ($brands as $brand) {
             $resultsMsg .= "<br/>Adding <strong>" . $brand['brandName'] . "</strong>...";
-            $domain['domainName'] = $brand['domainName'];
-            unset($brand['domainName']);
 
             // Brand
+            $domains = $brand['domains'];
+            // remove domains array so we can save brand to db
+            unset($brand['domains']);
             $brand['brandActive'] = 1;
             $brand['activeTheme'] = "default";
             $brand['brandID']     = $Brand->update($brand);
+            $brand['domains'] = $domains;
 
-            // Create brands default:
+            // Creates brand defaults:
             // --Menus
             // --Usergroups (+ACL)
             // --User (Store Owner)
+            // --Domains
             // --Cart
             BrandsController::createStepFinish($brand['brandID'], $brand);
 
@@ -152,11 +152,6 @@ class Install extends Model
 
             // Create default cart for store
             Install::InstallCart($storeID, $brand['brandID']);
-
-            // Domain
-            $domain['brandID']      = $brand['brandID'];
-            $domain['domainActive'] = 1;
-            $Domain->update($domain);
 
             $resultsMsg .= "<strong style='color:green;'>Success!</strong>";
         }
@@ -196,6 +191,7 @@ class Install extends Model
             INSERT INTO `refPaymentMethodTypes`
             (paymentMethodCode, paymentMethodDescription)
             VALUES
+            ('BTC', 'Bitcoin'),
             ('AMEX', 'American Express'),
             ('MC', 'Master Card'),
             ('VISA', 'VISA'),

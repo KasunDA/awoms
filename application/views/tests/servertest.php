@@ -71,7 +71,7 @@ function runServerTests()
     $pass = TRUE;
     $results = "";
     // mcrypt
-    $results .= "<table class='bordered'><tr><td>Mcrypt</td><td>";
+    $results .= "<table class='bordered'><tr><td>Mcrypt<p class='muted'>Provides 256-bit Encryption/Decryption functionality</p></td><td>";
     if (!defined("MCRYPT_MODE_CFB")) {
         $pass = FALSE;
         $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail</span> Try installing <strong>php-mcrypt</strong>";
@@ -81,7 +81,7 @@ function runServerTests()
     $results .= "</td></tr>";
 
     // soap
-    $results .= "<tr><td>Soap</td><td>";
+    $results .= "<tr><td>Soap<p class='muted'>Provides ability to communicate with Payment Gateways and other online services</p></td><td>";
     if (!defined("SOAP_1_1")) {
         $pass = FALSE;
         $results .= "<span style='background-color:red;color:yellow;padding:10px;'>Fail</span> Try installing <strong>php-soap</strong>";
@@ -91,7 +91,7 @@ function runServerTests()
     $results .= "</td></tr>";
 
     // openSSL
-    $results .= "<tr><td>OpenSSL</td><td>";
+    $results .= "<tr><td>OpenSSL<p class='muted'>Required for SSL/TLS secure communication between server/client</p></td><td>";
     $res = testOpenSSL(OPENSSL_CONFIG);
     if (empty($res)) {
         $pass = FALSE;
@@ -102,7 +102,7 @@ function runServerTests()
     $results .= "</td></tr>";
     
     // GD library (img)
-    $results .= "<tr><td>GD Image</td><td>";
+    $results .= "<tr><td>GD Image<p class='muted'>The GD Graphics Library is a graphics software library by Thomas Boutell and others for dynamically manipulating images</p></td><td>";
     if (extension_loaded('gd') && function_exists('gd_info'))
     {$res = "Pass";} else {$res = FALSE;}
     if (empty($res)) {
@@ -114,7 +114,7 @@ function runServerTests()
     $results .= "</td></tr>";
     
     // MySQL (lowercase_table_names)
-    $results .= "<tr><td>MySQL</td><td>";
+    $results .= "<tr><td>MySQL (lowercase_table_names)<p class='muted'>The MySQL lowercase_table_names option must be enabled for cross-compatibility</p></td><td>";
     $res = testMySqlLowercaseTableNames();
     if (empty($res)) {
         $pass = FALSE;
