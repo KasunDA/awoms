@@ -72,7 +72,8 @@ class Template
     {
         // Default titles used for Admin (or if no default brand title set)
         if (empty(BRAND_TITLE)
-                || (!empty($_SESSION['user_logged_in']) && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators"))
+                || (!empty($_SESSION['user_logged_in'])
+                        && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators"))
         {
             $titleController = ucwords($this->controller);
             switch ($this->action) {
