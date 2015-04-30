@@ -46,8 +46,8 @@ class Customer extends Cart
      * 
      * Returns array of customer information
      * 
-     * @version v1.1.12
-     * @since v1.0.3
+     * @version v0.0.1
+     * @since v0.0.1
      * 
      * @param int $customerID Customer ID
      * 
@@ -75,7 +75,7 @@ class Customer extends Cart
      * 
      * Gets count of customers with matching email address
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @param string $email Email
      * 
@@ -99,7 +99,7 @@ class Customer extends Cart
      * 
      * Gets count of customers with matching username
      * 
-     * @since v1.1.9
+     * @since v0.0.1
      * 
      * @param string $username Username
      * 
@@ -123,7 +123,7 @@ class Customer extends Cart
      * 
      * Gets customer ID with matching username
      * 
-     * @since v1.1.9
+     * @since v0.0.1
      * 
      * @param string $username Username
      * 
@@ -151,7 +151,7 @@ class Customer extends Cart
      * 
      * Creates new customer
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @param int $cartID
      * @param int $groupID
@@ -215,7 +215,7 @@ class Customer extends Cart
      * 
      * Saves new customer info
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @param int $customerID CustomerID
      * @param string $companyName Company Name
@@ -273,7 +273,7 @@ class Customer extends Cart
      * 
      * Updates username and passphrase for customer
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @uses User\getPassphraseHash()
      * 
@@ -313,7 +313,7 @@ class Customer extends Cart
      * 
      * Returns array of customer addresses
      * 
-     * @version v1.0.3
+     * @version v0.0.1
      * 
      * @param int $customerID Customer ID
      * @param int $addressID Optional Address ID to narrow results to
@@ -350,7 +350,7 @@ class Customer extends Cart
      * 
      * Returns all of customers payment methods info
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @param int $customerID Customer ID
      * 
@@ -374,7 +374,7 @@ class Customer extends Cart
     /**
      * changeCustomerUserPassphrase
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @param int $customerID
      * @param string $passphrase

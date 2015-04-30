@@ -11,10 +11,8 @@ namespace killerCart;
  * @category  killerCart
  * @package   killerCart
  * @author    Brock Hensley <brock@brockhensley.com>
- * @copyright 2014 Goin' Postal Franchise Corporation
- * @license   Private
- * @version   Release: v1.0.3
- * @since     Release: v1.0.0
+ * @version   v0.0.1
+ * @since     v0.0.1
  */
 class Auth
 {
@@ -75,7 +73,7 @@ class Auth
      *
      * Authenticate user login details
      *
-     * @version v1.0.3
+     * @version v0.0.1
      * 
      * @param string $username
      * @param string $password
@@ -186,7 +184,7 @@ class Auth
      *
      * Authenticate user login details
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      *
      * @param string $username
      * @param string $passphrase
@@ -303,7 +301,7 @@ class Auth
      * 
      * Starts session
      * 
-     * @version v01.03.00
+     * @version v0.0.1
      * 
      * @param string $name Name of session
      * @param boolean $ajax True = dont regen ID
@@ -361,7 +359,7 @@ class Auth
      * 
      * Allows existing site authentication to impersonate cart customer account bypassing cart re-authentication
      * 
-     * @since v1.1.8
+     * @since v0.0.1
      * 
      * @param string $sessionName
      * @param string $sessionValue
@@ -396,7 +394,7 @@ class Auth
      * 
      * Searches for non-consumed user exchange entries
      * 
-     * @since v1.1.8
+     * @since v0.0.1
      * 
      * @param string $sessionValue
      * 
@@ -424,7 +422,7 @@ class Auth
      *
      * Creates and saves in database encryption key for user on first login, also saves priv key in SESSION
      *
-     * @version v1.0.3
+     * @version v0.0.1
      * 
      * @param string $passphrase
      * 
@@ -457,7 +455,7 @@ class Auth
      * Changes cart user passphrase for private key, saves new protected key in database and new unprotected key in session,
      * also saves new user passphrase as they must match
      *
-     * @version v01.03.03
+     * @version v0.0.1
      * 
      * @param string $passphrase New passphrase for private key
      * 
@@ -773,7 +771,7 @@ class Auth
      * 
      * Generate random passphrase, simple or complex characters with optional length 
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @static
      * 

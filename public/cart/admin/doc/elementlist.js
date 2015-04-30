@@ -1,3 +1,0 @@
-
-var ApiGen = ApiGen || {};
-ApiGen.elements = [["c","killerCart\\Auth"],["c","killerCart\\Cart"],["c","killerCart\\Customer"],["c","killerCart\\Database"],["c","killerCart\\Email"],["c","killerCart\\Error"],["c","killerCart\\Image"],["c","killerCart\\MercuryPay"],["c","killerCart\\Order"],["c","killerCart\\PaymentGateway"],["c","killerCart\\Product"],["c","killerCart\\Product_Category"],["c","killerCart\\Report"],["c","killerCart\\Sanitize"],["c","killerCart\\SimpleImage"],["c","killerCart\\Store"],["c","killerCart\\User"],["c","killerCart\\Util"],["c","SimpleXMLElement"],["c","SoapClient"],["c","Traversable"]];

@@ -11,9 +11,7 @@ namespace killerCart;
  * @category  killerCart
  * @package   killerCart
  * @author    Brock Hensley <brock@brockhensley.com>
- * @copyright 2014 Goin' Postal Franchise Corporation
- * @license   Private
- * @version   Release: v1.0.1
+ * @version   v0.0.1
  */
 class Product_Category
 {
@@ -73,7 +71,7 @@ class Product_Category
      * 
      * Create or update product category
      * 
-     * @version v1.2.4
+     * @version v0.0.1
      * 
      * @param int $cartID
      * @param int $categoryID
@@ -266,7 +264,7 @@ class Product_Category
     /**
      * getCategoryIDs
      * 
-     * @version v01.04.00
+     * @version v0.0.1
      * 
      * @param string $type
      * @param int $cartID
@@ -319,9 +317,9 @@ class Product_Category
      * 
      * Finds child categories with the matching parent category ID
      * 
-     * @version v1.2.7
+     * @version v0.0.1
      * 
-     * @since v1.2.2
+     * @since v0.0.1
      * 
      * @param int $categoryID CategoryID to find children of
      * @param int $active Optional 1=Active, 0=Inactive
@@ -352,9 +350,9 @@ class Product_Category
     /**
      * getCategoryInfo
      * 
-     * @version v01.06.00
+     * @version v0.0.1
      * 
-     * @since v01.00.00
+     * @since v0.0.1
      * 
      * @param int $categoryID Category ID
      * 
@@ -388,14 +386,14 @@ class Product_Category
      * 
      * Gets category image path
      * 
-     * @version v1.2.8
+     * @version v0.0.1
      * 
      * @param int $cartID
      * @param int $categoryID
      * 
      * @return boolean|string Img path
      * 
-     * @deprecated since version v01.03.00
+     * @deprecated since version v0.0.1
      */
     public function getCategoryImage($cartID, $categoryID)
     {
@@ -426,7 +424,7 @@ class Product_Category
      * 
      * Gets privacy status of category
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @param int $categoryID Category ID
      * 
@@ -454,7 +452,7 @@ class Product_Category
     /**
      * getCategoryTaxable
      * 
-     * @version v1.0.3
+     * @version v0.0.1
      * 
      * Gets taxable status of category
      * 
@@ -486,7 +484,7 @@ class Product_Category
      * 
      * @return boolean
      * 
-     * @deprecated since version v1.0.1
+     * @deprecated since version v0.0.1
      */
     public function updateCategorySettings()
     {

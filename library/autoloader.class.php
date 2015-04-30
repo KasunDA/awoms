@@ -9,9 +9,9 @@
  * 
  * @author    Brock Hensley <Brock@brockhensley.com>
  * 
- * @version   v00.00.0000
+ * @version v0.0.1
  * 
- * @since     v00.00.0000
+ * @since v0.0.1
  */
 class Autoloader
 {
@@ -19,9 +19,9 @@ class Autoloader
   /**
    * loadClass
    * 
-   * @version   v00.00.0000
+   * @version v0.0.1
    * 
-   * @since     v00.00.0000
+   * @since v0.0.1
    * 
    * @static Must be static for autoloader
    * 

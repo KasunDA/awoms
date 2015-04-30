@@ -9,10 +9,8 @@ namespace killerCart;
  * @category   Cart
  * @package    Cart
  * @author     Brock Hensley <brock@brockhensley.com>
- * @copyright  2014 Goin' Postal Franchise Corporation
- * @license    Private
- * @version    Release: v1.0.1
- * @since      Class available since Release v1.0.1
+ * @version    v0.0.1
+ * @since      v0.0.1
  */
 class Cart
 {
@@ -83,7 +81,7 @@ class Cart
      *
      * Triggers start new or resume existing session based on client cookie
      *
-     * @version v01.04.02
+     * @version v0.0.1
      * 
      * @uses resumeSession
      * @uses startSession
@@ -225,7 +223,7 @@ class Cart
      *
      * Validates current visitor information against database to ensure session is not being hijacked
      *
-     * @version v01.04.02
+     * @version v0.0.1
      * 
      * @uses getVisitorIP
      * @return boolean
@@ -303,7 +301,7 @@ class Cart
      *
      * Saves cookie with session identifier on visitor browser
      * 
-     * @version v01.04.02
+     * @version v0.0.1
      *
      * @return boolean
      * 
@@ -346,7 +344,7 @@ class Cart
      *
      * Removes all cart cookies from visitor browser
      *
-     * @version v01.04.02
+     * @version v0.0.1
      * 
      * @return boolean
      */
@@ -416,7 +414,7 @@ class Cart
      *
      * Updates product quantity in cart
      * 
-     * @version v1.0.2
+     * @version v0.0.1
      * 
      * @uses removeProductFromCart() if quantity is 0
      * 
@@ -464,9 +462,9 @@ class Cart
      * 
      * Updates product options in cart
      * 
-     * @version v01.03.00
+     * @version v0.0.1
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param int $productID
      * @param int $optionID
@@ -500,7 +498,7 @@ class Cart
      *
      * Removes product from cart
      * 
-     * @version v1.0.2
+     * @version v0.0.1
      * 
      * @param type $productID
      * 
@@ -695,7 +693,7 @@ class Cart
      * 
      * Creates or saves payment method information
      * 
-     * @version v1.0.3
+     * @version v0.0.1
      * 
      * @param int $cartID Cart ID
      * @param string $number1 Number1 (Should be encrypted when passed in)
@@ -921,7 +919,7 @@ class Cart
      * 
      * Returns the price subtotal of all products/options x quantity in cart
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @return float
      */
@@ -956,7 +954,7 @@ class Cart
      * 
      * Returns carts tax rate for selected state
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @param int $cartID Cart ID
      * @param string $stateCode State code
@@ -985,7 +983,7 @@ class Cart
      * 
      * Returns the taxable amount of the cart
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @return float Taxable amount
      */
@@ -1024,7 +1022,7 @@ class Cart
      * 
      * Creates order for checkout process
      * 
-     * @version v1.0.3
+     * @version v0.0.1
      * 
      * @param int $customerID Customer ID
      * @param int $shippingAddressID Shipping Address ID
@@ -1146,7 +1144,7 @@ class Cart
      *
      * Records order in database, triggers email notifications
      * 
-     * @version v1.2.4
+     * @version v0.0.1
      * 
      * @param int $customerID Customer ID
      * @param int $orderID Order ID
@@ -1439,7 +1437,7 @@ class Cart
      * @param string $orderPaymentStatus
      * @param string $orderProductDetailRows
      * 
-     * @version v01.03.08
+     * @version v0.0.1
      * 
      * @return string $template Email body
      */
@@ -1477,7 +1475,7 @@ class Cart
      * 
      * Prepares order email alert template to customer
      * 
-     * @version v01.03.08
+     * @version v0.0.1
      * 
      * @param string $cartLogo
      * @param string $orderDateTime
@@ -1521,7 +1519,7 @@ class Cart
     /**
      * getCartInfo
      * 
-     * @since v1.1.4
+     * @since v0.0.1
      * 
      * @param int $cartID Cart ID
      * 
@@ -1591,7 +1589,7 @@ class Cart
      *
      * @return string Theme name
      * 
-     * @deprecated since version v01.03.00 (use getCartInfo() instead)
+     * @deprecated since version v0.0.1 (use getCartInfo() instead)
      */
     public function getCartTheme()
     {
@@ -1613,11 +1611,11 @@ class Cart
      * 
      * Get carts active name for template
      * 
-     * @since v1.1.12
+     * @since v0.0.1
      *
      * @return string Cart name
      * 
-     * @deprecated since version v01.03.00 (use getCartInfo() instead)
+     * @deprecated since version v0.0.1 (use getCartInfo() instead)
      */
     public function getCartName()
     {
@@ -1698,7 +1696,7 @@ public function saveCartTOS($cartID, $tos)
     /**
      * getCartIDs
      * 
-     * @version v01.03.00
+     * @version v0.0.1
      * 
      * @param string $type Optional type to return: ALL (default), ACTIVE, INACTIVE
      * 
@@ -1728,7 +1726,7 @@ public function saveCartTOS($cartID, $tos)
     /**
      * getCartAddressInfo
      *
-     * @version v01.03.00
+     * @version v0.0.1
      * 
      * @param int $addressID
      * 
@@ -2035,7 +2033,7 @@ public function saveCartTOS($cartID, $tos)
      * 
      * Sanitizes user input from cart edit form, saves cart in database
      * 
-     * @version v01.03.00
+     * @version v0.0.1
      * 
      * @return boolean
      * 

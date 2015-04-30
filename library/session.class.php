@@ -9,9 +9,9 @@
  * 
  * @author    Brock Hensley <Brock@brockhensley.com>
  * 
- * @version   v00.00.0000
+ * @version v0.0.1
  * 
- * @since     v00.00.0000
+ * @since v0.0.1
  */
 class Session
 {
@@ -34,9 +34,9 @@ class Session
      * 
      * Magic method executed on new class
      * 
-     * @since v00.00.0000
+     * @since v0.0.1
      * 
-     * @version v00.00.0000
+     * @version v0.0.1
      */
     public function __construct()
     {
@@ -72,7 +72,7 @@ class Session
      *
      * Triggers start new or resume existing session based on client cookie
      *
-     * @version v01.04.02
+     * @version v0.0.1
      * 
      * @uses resumeSession
      * @uses startSession
@@ -256,7 +256,7 @@ class Session
      *
      * Validates current visitor information against database to ensure session is not being hijacked
      *
-     * @version v01.04.02
+     * @version v0.0.1
      * 
      * @uses getVisitorIP
      * @return boolean
@@ -304,7 +304,7 @@ class Session
      *
      * Configures cookie to be saved or resumed
      * 
-     * @version v01.04.02
+     * @version v0.0.1
      *
      * @return boolean
      * 
@@ -386,7 +386,7 @@ class Session
      *
      * Removes all cart cookies from visitor browser
      *
-     * @version v01.04.02
+     * @version v0.0.1
      * 
      * @return boolean
      */

@@ -11,9 +11,7 @@ namespace killerCart;
  * @category  killerCart
  * @package   killerCart
  * @author    Brock Hensley <brock@brockhensley.com>
- * @copyright 2014 Goin' Postal Franchise Corporation
- * @license   Private
- * @version   Release: v1.0.2
+ * @version   v0.0.1
  */
 class Product extends Cart
 {
@@ -36,7 +34,7 @@ class Product extends Cart
     /**
      * saveProduct
      *
-     * @version v1.2.3
+     * @version v0.0.1
      * 
      * Sanitizes user input from product edit form, saves product in database
      *
@@ -206,7 +204,7 @@ class Product extends Cart
      *
      * Gets count of products matching selected type
      *
-     * @version v01.04.00
+     * @version v0.0.1
      * 
      * @param string $type Type of product: All, Active, Inactive
      * @param int $cartID Cart ID (null for all)
@@ -255,7 +253,7 @@ class Product extends Cart
     /**
      * getProductIDs
      *
-     * @version v01.04.00
+     * @version v0.0.1
      * 
      * @param string $active ALL/ACTIVE/INACTIVE
      * @param int $cartID Cart ID (null for all)
@@ -324,7 +322,7 @@ class Product extends Cart
      *
      * Returns product information
      * 
-     * @version v1.2.3
+     * @version v0.0.1
      * 
      * @param int $productID Product ID
      * 
@@ -355,7 +353,7 @@ class Product extends Cart
      *
      * Gets products images (active only by default)
      * 
-     * @version v1.0.2
+     * @version v0.0.1
      * 
      * @param int $productID Product ID
      * @param int $imageID Optional image ID to narrow results to
@@ -363,7 +361,7 @@ class Product extends Cart
      * 
      * @return array Image details
      * 
-     * @deprecated since version v01.03.00
+     * @deprecated since version v0.0.1
      */
     public function getProductImages($productID, $imageID = NULL, $inactive = NULL)
     {
@@ -398,7 +396,7 @@ class Product extends Cart
      * 
      * Removes product image from database and server (actually sets to Inactive in DB)
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param int $cartID
      * @param int $categoryID
@@ -470,7 +468,7 @@ class Product extends Cart
      * 
      * Gets privacy state of product or category if inherits
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @param type $productID
      * 
@@ -505,9 +503,9 @@ class Product extends Cart
      * 
      * Gets product options information at cart level
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param int $cartID Cart ID
      * @param int $optionID Optional option ID to narrow results
@@ -557,9 +555,9 @@ class Product extends Cart
      * Gets product options information at product level
      * Also gets global option information the custom creation was inherited from
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param int $cartID Cart ID
      * @param int $productID Product ID
@@ -619,9 +617,9 @@ class Product extends Cart
      * 
      * Gets product options choices info for option ID and option detail ID
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param int $optionID
      * @param int $choiceID Optional choice ID to trim results to
@@ -668,9 +666,9 @@ class Product extends Cart
     /**
      * getProductOptionChoiceCustomMaxSortOrder
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param type $optionIDCustom
      * 
@@ -692,9 +690,9 @@ class Product extends Cart
      * 
      * Gets product options choices
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param int $optionIDCustom Custom option ID
      * @param int $choiceIDCustom Optional custom choice ID to trim results to
@@ -745,9 +743,9 @@ class Product extends Cart
      * 
      * Creates or updates global product option template for cart
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param int|string $optionID DEFAULT for new or ID for updating existing
      * @param int $cartID
@@ -789,9 +787,9 @@ class Product extends Cart
     /**
      * getProductOptionCustomMaxSortOrder
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param type $productID
      * 
@@ -813,9 +811,9 @@ class Product extends Cart
      * 
      * Creates or updates product option customized for a specific product
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param string|int $optionIDCustom DEFAULT for new or ID for existing
      * @param int $optionIDGlobal Global template option ID
@@ -876,9 +874,9 @@ class Product extends Cart
      * 
      * Creates or updates global product option choices template for cart/option
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param int $choiceID
      * @param int $optionID
@@ -923,9 +921,9 @@ class Product extends Cart
      * 
      * Creates or updates product option choices customized for a specific product
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param type $productOptionsChoicesCustomID DEFAULT for new
      * @param type $productOptionsCustomID
@@ -981,9 +979,9 @@ class Product extends Cart
      * 
      * Removes product option (actually sets to Inactive in DB)
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @uses removeProductOptionChoice
      * 
@@ -1015,9 +1013,9 @@ class Product extends Cart
      * 
      * Removes product option choice (actually sets to Inactive in DB)
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param int $optionID Option ID to remove
      * @param int $choiceID Optional Choice ID to restrict delete to
@@ -1046,9 +1044,9 @@ class Product extends Cart
      * 
      * Removes custom product option (actually sets to Inactive in DB)
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @uses removeProductOptionChoiceCustom
      * 
@@ -1084,9 +1082,9 @@ class Product extends Cart
      * 
      * Removes custom product option choice (actually sets to Inactive in DB)
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param int $optionIDCustom Custom Option ID to remove
      * @param int $choiceIDCustom Optional custom choice ID to restrict delete to
@@ -1116,7 +1114,7 @@ class Product extends Cart
     /**
      * getOptionChildren
      * 
-     * @since v01.03.03
+     * @since v0.0.1
      * 
      * @param int $optionID
      * 
@@ -1136,9 +1134,9 @@ class Product extends Cart
     /**
      * getOptionChildrenCustom
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param int $optionIDCustom
      * 
@@ -1163,7 +1161,7 @@ class Product extends Cart
      * 
      * Can be used to find parentOptionID or triggerChoiceID of childOptionID
      * 
-     * @since v01.03.03
+     * @since v0.0.1
      * 
      * @param int $optionID childOptionID
      * 
@@ -1190,9 +1188,9 @@ class Product extends Cart
      * 
      * Can be used to find parentOptionID or triggerChoiceID of childOptionID
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param int $optionIDCustom childOptionIDCustom
      * 
@@ -1217,7 +1215,7 @@ class Product extends Cart
     /**
      * isChoiceTrigger
      * 
-     * @since v01.03.03
+     * @since v0.0.1
      * 
      * @param int $choiceID
      * 
@@ -1237,9 +1235,9 @@ class Product extends Cart
     /**
      * isChoiceTriggerCustom
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param int $choiceIDCustom
      * 
@@ -1259,9 +1257,9 @@ class Product extends Cart
     /**
      * saveProductOptionChoiceTrigger
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.03.03
+     * @since v0.0.1
      * 
      * @param int $parentOptionID
      * @param int $childOptionID
@@ -1286,9 +1284,9 @@ class Product extends Cart
     /**
      * saveProductOptionChoiceTriggerCustom
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.03.03
+     * @since v0.0.1
      * 
      * @param int $parentOptionID
      * @param int $childOptionID
@@ -1315,9 +1313,9 @@ class Product extends Cart
      * 
      * Clears parent/child option triggers
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param type $parentOptionID
      * @param type $childOptionID
@@ -1340,9 +1338,9 @@ class Product extends Cart
      * 
      * Changes sort order of product option
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param type $productID
      * @param type $optionIDCustom
@@ -1403,9 +1401,9 @@ class Product extends Cart
      * 
      * Changes sort order of product option choice
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param type $productID
      * @param type $choiceIDCustom

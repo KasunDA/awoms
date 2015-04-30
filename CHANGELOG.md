@@ -1,4 +1,4 @@
-#v00.00.00
+#v0.0.1
  - [x] humans.txt, robots.txt
  - [x] 403,404,500.html
  - [x] MVC API Framework accessible via PHP or AJAX for dynamic content

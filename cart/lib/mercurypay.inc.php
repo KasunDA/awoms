@@ -11,10 +11,8 @@ namespace killerCart;
  * @category  Cart
  * @package   Cart
  * @author    Brock Hensley <brock@brockhensley.com>
- * @copyright 2014 Goin' Postal Franchise Corporation
- * @license   Private
- * @version   Release: v1.0.1
- * @since     Class available since Release v1.0.1
+ * @version   v0.0.1
+ * @since     v0.0.1
  */
 class MercuryPay extends Cart
 {
@@ -144,7 +142,7 @@ class MercuryPay extends Cart
      * 
      * Gets last codes for payment method for subsequent byRecordNo use
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @param int $paymentMethodID
      * 
@@ -240,7 +238,7 @@ class MercuryPay extends Cart
      * 
      * Prepares XML for PreAuth transaction, handles both new payment methods and existing tokens
      * 
-     * @version v1.0.3
+     * @version v0.0.1
      * 
      * @param string $merchantID Merchant ID
      * @param string $operatorID Operator ID
@@ -668,7 +666,7 @@ class MercuryPay extends Cart
      * 
      * Evaluate CreditTransactionResult according to pg 27 of integration guide
      * 
-     * @version v1.0.3
+     * @version v0.0.1
      * 
      * @param SimpleXMLElement $cmdStatus CmdStatus
      * @param string $textResponse TextResponse

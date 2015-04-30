@@ -95,7 +95,7 @@ if (empty($_REQUEST['m'])) {
                 break;
             }
         // Cart/Global Read/Write only
-        // (Everyone allowed v1.0.1)
+        // (Everyone allowed v0.0.1)
         case "user": {
                 //if (!empty($cartACL['read'])
 //                            || !empty($globalACL['read'])

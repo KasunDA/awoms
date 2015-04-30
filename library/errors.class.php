@@ -67,7 +67,7 @@ class Errors
      * Record message into database log table
      * 
      * @category  Error handling
-     * @version   Release: v1.0.1
+     * @version   v0.0.1
      * 
      * @param string $msg Message to record
      * @param int $cartID Optional Brand ID to associate message with, 1 if null

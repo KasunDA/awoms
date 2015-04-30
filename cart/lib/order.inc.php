@@ -11,9 +11,7 @@ namespace killerCart;
  * @category  killerCart
  * @package   killerCart
  * @author    Brock Hensley <brock@brockhensley.com>
- * @copyright 2014 Goin' Postal Franchise Corporation
- * @license   Private
- * @version   Release: v1.0.1
+ * @version   v0.0.1
  */
 class Order extends Cart
 {
@@ -212,7 +210,7 @@ class Order extends Cart
      * 
      * Gets details of order
      * 
-     * @version v01.06.00
+     * @version v0.0.1
      * 
      * @param int Order ID ($this->id)
      * 
@@ -240,7 +238,7 @@ class Order extends Cart
      * 
      * Gets products in order
      * 
-     * @version v01.03.08
+     * @version v0.0.1
      * 
      * @param int $orderID Order ID
      * 
@@ -271,9 +269,9 @@ class Order extends Cart
      * 
      * Gets product options in order if any were selected
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param int $orderID Order ID
      * @param int $productID Product ID
@@ -493,7 +491,7 @@ class Order extends Cart
      * 
      * @todo parameters so cart can use it (see setOrderStatusCode)
      * 
-     * @deprecated since version v1.0.1
+     * @deprecated since version v0.0.1
      */
     public function updateOrderStatusCode()
     {
@@ -813,9 +811,9 @@ SELECT * FROM (
      * 
      * Gets the orders taxable amount
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param int $orderID Order ID
      * 
@@ -1046,9 +1044,9 @@ SELECT * FROM (
      * 
      * Checks each product in order for Notification Alerts to send
      * 
-     * @version v01.03.08
+     * @version v0.0.1
      * 
-     * @since v1.2.4
+     * @since v0.0.1
      * 
      * @param int $orderID Order ID
      * 

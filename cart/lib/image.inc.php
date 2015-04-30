@@ -11,10 +11,8 @@ namespace killerCart;
  * @category  killerCart
  * @package   killerCart
  * @author    Brock Hensley <brock@brockhensley.com>
- * @copyright 2014 Goin' Postal Franchise Corporation
- * @license   Private
- * @version   Release: v01.06.00
- * @since     Release: v01.02.06
+ * @version   v0.0.1
+ * @since     v0.0.1
  */
 class Image
 {
@@ -76,9 +74,9 @@ class Image
      * 
      * Saves image info to database
      * 
-     * @version v01.06.00
+     * @version v0.0.1
      * 
-     * @since v01.03.00
+     * @since v0.0.1
      * 
      * @param int $cartID
      * @param int $id
@@ -143,9 +141,9 @@ class Image
      * 
      * Sets image (parent and children) to active/inactive
      * 
-     * @since v01.03.00
+     * @since v0.0.1
      * 
-     * @version v01.03.00
+     * @version v0.0.1
      * 
      * @param int $cartID
      * @param int $imageID
@@ -172,9 +170,9 @@ class Image
     /**
      * getProductImageMaxSortOrder
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param type $productID
      * 
@@ -196,9 +194,9 @@ class Image
      * 
      * Changes sort order of image
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.02
+     * @since v0.0.1
      * 
      * @param type $productID
      * @param type $imageID
@@ -260,9 +258,9 @@ class Image
      * 
      * Sets image visibility
      * 
-     * @version v01.06.00
+     * @version v0.0.1
      * 
-     * @since v01.03.00
+     * @since v0.0.1
      * 
      * @param int $cartID
      * @param int $imageID
@@ -321,9 +319,9 @@ class Image
      * 
      * Gets parent image info from database
      * 
-     * @version v01.06.00
+     * @version v0.0.1
      * 
-     * @since v01.03.00
+     * @since v0.0.1
      * 
      * @param int $cartID
      * @param int $active 2=All, 1=Active, 0=Inactive
@@ -389,9 +387,9 @@ class Image
      * 
      * Gets info of all children images
      * 
-     * @version v01.06.00
+     * @version v0.0.1
      * 
-     * @since v01.03.00
+     * @since v0.0.1
      * 
      * @param int $cartID
      * @param int $parentImageID
@@ -428,9 +426,9 @@ class Image
      * 
      * Returns best image dimensions to use for desired dimensions
      * 
-     * @since v01.03.00
+     * @since v0.0.1
      * 
-     * @version v01.03.00
+     * @version v0.0.1
      * 
      * @param int $cartID
      * @param int $parentImageID
@@ -487,16 +485,16 @@ class Image
      * 
      * Gets image details by image ID
      * 
-     * @version v01.06.00
+     * @version v0.0.1
      * 
-     * @since v01.02.06
+     * @since v0.0.1
      * 
      * @param int $imageID Image ID
      * @param int $imageActive Optional 1=Active, 0=Inactive
      * 
      * @return array Info
      * 
-     * @deprecated since version v01.03.00
+     * @deprecated since version v0.0.1
      */
     public function getImageInfoByID($imageID, $imageActive = NULL)
     {
@@ -524,9 +522,9 @@ class Image
      * 
      * Serves cached copy of image or serves image for first time if no cache
      * 
-     * @since v1.2.5
+     * @since v0.0.1
      * 
-     * @version v1.2.6
+     * @version v0.0.1
      * 
      * @param string $imagePath Absolute path to image file to serve
      * 
@@ -570,9 +568,9 @@ class Image
      * 
      * Updates product options using old image to new image
      * 
-     * @version v01.05.02
+     * @version v0.0.1
      * 
-     * @since v01.05.00
+     * @since v0.0.1
      * 
      * @uses setImageActive()
      * 
@@ -654,9 +652,9 @@ class Image
      * 
      * Displays requested image or creates size if doesnt exist
      * 
-     * @version v01.03.00
+     * @version v0.0.1
      * 
-     * @since v1.2.6
+     * @since v0.0.1
      * 
      * @uses createImage()
      * @uses displayImage()
@@ -669,7 +667,7 @@ class Image
      * @param int $categoryID Optional
      * @param int $productID Optional
      * 
-     * @deprecated since version v01.03.00
+     * @deprecated since version v0.0.1
      */
     public function getImage($cartID, $imageName, $imageSize, $width, $height, $categoryID = NULL, $productID = NULL,
                              $textOverlay = NULL, $fontFile = NULL, $fontSize = NULL, $fontColor = NULL, $fontPosition = NULL,
@@ -710,9 +708,9 @@ class Image
      * Creates new image from original
      * Optional text overlay can be added
      * 
-     * @version v01.03.00
+     * @version v0.0.1
      * 
-     * @since v1.2.6
+     * @since v0.0.1
      * 
      * @uses SimpleImage()
      * 

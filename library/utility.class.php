@@ -9,7 +9,7 @@
  *
  * @author    Brock Hensley <Brock@brockhensley.com>
  * @license   MIT/X see LICENSE
- * @version   v00.00.00
+ * @version v0.0.1
  */
 class Utility
 {
@@ -27,9 +27,9 @@ class Utility
      *
      * @static
      *
-     * @version v00.00.00
+     * @version v0.0.1
      *
-     * @since v00.00.00
+     * @since v0.0.1
      *
      * @param string $dirPath
      *
@@ -340,7 +340,7 @@ class Utility
      *
      * Converts newlines to <br />
      *
-     * @since v1.0.2
+     * @since v0.0.1
      *
      * @param string $string
      *
@@ -358,7 +358,7 @@ class Utility
      *
      * Converts <br /> to newlines (\r\n)
      *
-     * @since v1.0.2
+     * @since v0.0.1
      *
      * @param string $string
      *
@@ -379,7 +379,7 @@ class Utility
      *
      * Strips all <br /> from string
      *
-     * @since v1.0.2
+     * @since v0.0.1
      *
      * @param string $string
      *
@@ -398,7 +398,7 @@ class Utility
      *
      * Gets logo of payment method code/type
      *
-     * @since v1.0.3
+     * @since v0.0.1
      *
      * @param string $paymentMethodCode Code
      *
@@ -454,7 +454,7 @@ class Utility
      *
      * Generate random passphrase, simple or complex characters with optional length
      *
-     * @since v1.0.3
+     * @since v0.0.1
      *
      * @static
      *

@@ -76,7 +76,7 @@ class Error
      * 
      * @category  Error handling
      * @package   killerCart
-     * @version   Release: v1.0.1
+     * @version   v0.0.1
      * 
      * @param string $msg Message to record
      * @param int $cartID Optional Cart ID to associate message with, 1 if null
@@ -374,7 +374,7 @@ class Error
      * 
      * Returns list of messages from database
      * 
-     * @version v1.2.2
+     * @version v0.0.1
      * 
      * @param int $cartID Optional cart ID
      * @param int $limit Optional limit results

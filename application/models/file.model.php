@@ -35,9 +35,9 @@ class File extends Model
      *
      * Handles all file uploads
      *
-     * @since v00.00.00
+     * @since v0.0.1
      *
-     * @version v00.00.00
+     * @version v0.0.1
      *
      * @uses SimpleImage
      *

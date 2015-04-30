@@ -14,9 +14,7 @@ use DateInterval;
  * @category  killerCart
  * @package   killerCart
  * @author    Brock Hensley <brock@brockhensley.com>
- * @copyright 2014 Goin' Postal Franchise Corporation
- * @license   Private
- * @version   Release: v01.03.00
+ * @version   v0.0.1
  */
 class Util
 {
@@ -25,9 +23,9 @@ class Util
      * 
      * Handles all file uploads
      * 
-     * @version v01.06.00
+     * @version v0.0.1
      * 
-     * @since v01.03.00
+     * @since v0.0.1
      * 
      * @param string $htmlFilesName
      * @param string  $fileType
@@ -282,9 +280,9 @@ class Util
      * 
      * @static
      * 
-     * @version v01.03.00
+     * @version v0.0.1
      * 
-     * @since v01.03.00
+     * @since v0.0.1
      * 
      * @param string $dirPath
      * 
@@ -456,7 +454,7 @@ class Util
      * 
      * Converts newlines to <br />
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param string $string
      * 
@@ -474,7 +472,7 @@ class Util
      * 
      * Converts <br /> to newlines (\r\n)
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param string $string
      * 
@@ -495,7 +493,7 @@ class Util
      * 
      * Converts <br /> to JavaScript newlines (\)
      * 
-     * @since v01.04.00
+     * @since v0.0.1
      * 
      * @param string $string
      * 
@@ -516,7 +514,7 @@ class Util
      * 
      * Strips all <br /> from string
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @param string $string
      * 
@@ -535,7 +533,7 @@ class Util
      * 
      * Gets logo of payment method code/type
      * 
-     * @since v1.0.3
+     * @since v0.0.1
      * 
      * @param string $paymentMethodCode Code
      * 

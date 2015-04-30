@@ -16,7 +16,7 @@ class Sanitize
      * 
      * Filters provided array through filter_input_array with provided arguments list of FILTERS per value
      * 
-     * @version v1.0.2
+     * @version v0.0.1
      * 
      * @uses Util\convertNLToBR
      *
@@ -72,7 +72,7 @@ class Sanitize
      * 
      * Filters provided data through filter_input with provided FILTER
      * 
-     * @since v1.0.2
+     * @since v0.0.1
      * 
      * @uses Util\convertNLToBR
      * 
