@@ -58,39 +58,45 @@ class Controller
         empty($_REQUEST['step']) ? $this->step = 1 : $this->step = $_REQUEST['step'];
         $this->set('step', $this->step);
 
-        // Menus used by normal template
-        if ($controller != "install"
-            && empty($template))
+        // Below here we set template data NOT used by AJAX requests and install wizard like Menus
+        if (!empty($template)
+                ||$controller == "install")
         {
-            $Menu  = new Menu();
-            $Menus = array();
-
-            $menuType             = "Heading Nav";
-            $menuName             = NULL;
-            $menuUlClass          = "menu_horizontal menu_header menu_hover";
-            $menuTitle            = NULL;
-            $Menus['heading_nav'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
-
-            $menuType             = "Footer Left";
-            $menuName             = NULL;
-            $menuUlClass          = "menu_footer footer_menu_left";
-            $menuTitle            = "Store Info";
-            $Menus['footer_left'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
-
-            $menuType               = "Footer Middle";
-            $menuName               = NULL;
-            $menuUlClass            = "menu_footer footer_menu_middle";
-            $menuTitle              = "Site Info";
-            $Menus['footer_middle'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
-
-            $menuType              = "Footer Right";
-            $menuName              = NULL;
-            $menuUlClass           = "menu_footer menu_footer_wood footer_menu_right";
-            $menuTitle             = NULL;
-            $Menus['footer_right'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
-
-            $this->set('Menus', $Menus);
+            return;
         }
+
+        // Menus
+        $Menu  = new Menu();
+        $Menus = array();
+
+        $menuType             = "Heading Nav";
+        $menuName             = NULL;
+        $menuUlClass          = "menu_horizontal menu_header menu_hover";
+        $menuTitle            = NULL;
+        $Menus['heading_nav'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
+
+        $menuType             = "Footer Left";
+        $menuName             = NULL;
+        $menuUlClass          = "menu_footer footer_menu_left";
+        $menuTitle            = "Store Info";
+        $Menus['footer_left'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
+
+        $menuType               = "Footer Middle";
+        $menuName               = NULL;
+        $menuUlClass            = "menu_footer footer_menu_middle";
+        $menuTitle              = "Site Info";
+        $Menus['footer_middle'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
+
+        $menuType              = "Footer Right";
+        $menuName              = NULL;
+        $menuUlClass           = "menu_footer menu_footer_wood footer_menu_right";
+        $menuTitle             = NULL;
+        $Menus['footer_right'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
+
+        $this->set('Menus', $Menus);
+
+        // Title
+        $this->set('title', BRAND_TITLE);
     }
 
     /**

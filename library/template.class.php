@@ -88,7 +88,7 @@ class Template
                 $titleAction = "Delete";
                 break;
             default:
-                $titleAction = BRAND;
+                $titleAction = BRAND_TITLE;
                 break;
         }
         $finalTitle = $titleController;
