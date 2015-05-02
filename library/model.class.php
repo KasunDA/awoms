@@ -9,9 +9,9 @@
  *
  * @author    Brock Hensley <Brock@brockhensley.com>
  *
- * @version   v00.00.0000
+ * @version v0.0.1
  *
- * @since     v00.00.0000
+ * @since v0.0.1
  *
  * @example $db = Database::getDB();
  */
@@ -26,13 +26,20 @@ class Model extends Database
     protected $model, $table;
 
     /**
+     * Log Level
+     *
+     * @var int $logLevel Config log level; 0 would always be logged, 9999 would only be logged in Dev
+     */
+    protected static $logLevel = 1000;
+
+    /**
      * __construct
      *
      * Magic method executed on new class
      *
-     * @since v00.00.0000
+     * @since v0.0.1
      *
-     * @version v00.00.0000
+     * @version v0.0.1
      *
      * @uses Database()
      * @uses routeRequest()
@@ -64,9 +71,9 @@ class Model extends Database
      *
      * Magic method executed on class end
      *
-     * @since v00.00.0000
+     * @since v0.0.1
      *
-     * @version v00.00.0000
+     * @version v0.0.1
      */
     #public function __destruct() {
     // Triggers Database::__destruct [?]
@@ -77,9 +84,9 @@ class Model extends Database
      *
      * Used to execute INSERT or UPDATE queries on a SINGLE table
      *
-     * @since v00.00.0000
+     * @since v0.0.1
      *
-     * @version v00.00.0000
+     * @version v0.0.1
      *
      * @param array $data Data col=>data
      * @param string $table Optional table to specify otherwise uses $this->model
@@ -137,9 +144,9 @@ class Model extends Database
      *
      * Used to execute SELECT queries on a SINGLE table
      *
-     * @since v00.00.0000
+     * @since v0.0.1
      *
-     * @version v00.00.0000
+     * @version v0.0.1
      *
      * @param array $columns
      * @param string|array $where Optional col => val
@@ -261,9 +268,9 @@ class Model extends Database
      *
      * Used to execute DELETE queries on a SINGLE table
      *
-     * @since v00.00.0000
+     * @since v0.0.1
      *
-     * @version v00.00.0000
+     * @version v0.0.1
      *
      * @param array $data Data col=>data
      * @param string $table Optional table to specify otherwise uses $this->model
@@ -329,29 +336,39 @@ class Model extends Database
         $res['where'] = NULL;
         $res['in']    = NULL;
 
-        // No session if we are looking up domain so allow
-        // Also allow: (Models that do not have BrandID column...)
-        // rewrite lookups -> session/start
-        // brands -> session/start
-        // stores -> sample
+        // Exceptions that do not need to check ACL returns null
+        // Exceptions are determined either by controller, action, table or combination
+        // (exception -> reason)
+        //
+        // empty session -> looking up domain
+        // install -> install wizard
+        // tests -> install wizard and troubleshooting
+        // users + login/password -> login and lost password
         // usergroups -> login
-        // users -> login --------------------<<
-        // addresses -> ?
-        //Errors::debugLogger("Model.aclWhere :: Checking... (table: ".$this->table.")", 10);
+        // brands -> session/start
+        // rewrite lookups -> session/start
+        // menus, menulinks -> everyone needs access to menus/links (@TODO unless really want to ensure the private links are secure?)
+        // addressess -> // Addresses have no brandID, as they can be used by more than just 'Brand's. Instead, the Brand model stores it's 'AddressID', so @TODO it is a reverse lookup to find out which Brand an Address would belong to depending on which model is using the address.
+        // bodycontents -> @TODO same as menus
+        Errors::debugLogger("Model.aclWhere :: Checking... (table: ".$this->table.")", Model::$logLevel);
         if (empty($_SESSION)
             || $_SESSION['controller'] == "install"
             || $_SESSION['controller'] == "tests"
             || ($_SESSION['controller'] == "users" && in_array($_SESSION['action'], array('login','password')))
             || in_array(strtolower($this->table),
-                        array(
-                'rewritemappings',
-                'brands',
+                    array(
                 'usergroups',
-                'menulinks', // @todo move to menulinks.model like stores/users
-                'addresses',
-                'bodycontents')))
+                'brands',
+                'rewritemappings',
+                'menus', // ? should move to model to restrict by brandID for private menus.
+                'menulinks', // ? should move to model to restrict by brandID for private links.
+                'addresses', // ? would need reverse lookup from calling model to find owning brandID
+                'bodycontents' // ? should move to model to restrict by brandID for private pages.
+                        )
+                    )
+            )
         {
-            //Errors::debugLogger("Returning as-is", 10);
+            Errors::debugLogger("Returning as-is", Model::$logLevel);
             return $res;
         }
 
@@ -370,15 +387,16 @@ class Model extends Database
         else
         {
 
+            // Logged In User
             if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators"
                 && $_SESSION['user']['usergroup']['brandID'] == 1)
             {
-                // Global Admin / Brand; allow all
+                // Logged In Global Admin; allow all
                 return $res;
             }
 
             // Non-Admin: Ensure ACLWhere is limited by BrandID etc.
-            // Use brandID from users.usergroup (can be different from live brandID)
+            // Use brandID from users.usergroup (can be different from live brandID)!
             $brandID = $_SESSION['user']['usergroup']['brandID'];
         }
 
@@ -428,7 +446,7 @@ class Model extends Database
             || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
             || $_SESSION['user']['usergroup']['brandID'] != 1)
         {
-            //Errors::debugLogger("Appending BrandID for added Security...", 1000);
+            Errors::debugLogger("Appending BrandID for added Security...", Model::$logLevel);
             $res['where'] = array('brandID' => $brandID);
         }
         return $res;
@@ -485,9 +503,11 @@ class Model extends Database
 
         // If we don't pass in a custom aclWhere:
         // Use aclWhere() which adds BrandID to WHERE clause if logged in user is a non-Administrator
+
+        // @TODO Improve this for actual Store Owners
         if (empty($aclWhere) || (empty($aclWhere['where']) && empty($aclWhere['in'])))
         {
-            //Errors::debugLogger(__METHOD__.'@'.__LINE__."Applying ACL to getWhere to append BrandID...",1000);
+            Errors::debugLogger(__METHOD__.'@'.__LINE__."Applying ACL to getWhere to append BrandID...", Model::$logLevel);
             $aclWhere = self::aclWhere();
         }
 
@@ -548,7 +568,7 @@ class Model extends Database
             $new   = array();
             foreach ($all as $item)
             {
-                Errors::debugLogger(__METHOD__.'@'.__LINE__.': Loading children items for item...',10);
+                Errors::debugLogger(__METHOD__.'@'.__LINE__.': Loading children items for item...', Model::$logLevel);
                 $new[] = $model::LoadExtendedItem($item);
             }
             $all = $new;
@@ -572,9 +592,9 @@ class Model extends Database
      *
      * Used to save body contents of x parent item (used by multiple models)
      *
-     * @since v00.00.0000
+     * @since v0.0.1
      *
-     * @version v00.00.0000
+     * @version v0.0.1
      *
      * @param type $parentItemID
      * @param type $parentItemTypeID
@@ -612,9 +632,9 @@ class Model extends Database
      *
      * Used to get body contents of x parent item (used by multiple models)
      *
-     * @since v00.00.0000
+     * @since v0.0.1
      *
-     * @version v00.00.0000
+     * @version v0.0.1
      *
      * @param int $parentItemID
      * @param int $parentItemTypeID
