@@ -9,10 +9,11 @@ googleSiteVerification.php
 url-alias-map.txt
 
 # Images and Files
-cart/images/
-public/file/source/
-public/file/thumbs/
-/files/
+# Uncomment to skip keeping images in sync with remote servers (recommended once live)
+#cart/images/
+#public/file/source/
+#public/file/thumbs/
+#/files/
 
 # Logs
 logs/
