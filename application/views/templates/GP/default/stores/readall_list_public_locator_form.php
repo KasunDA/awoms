@@ -4,7 +4,7 @@
     <table style="margin-left: 50px;">
         <tr>
             <td>
-                <h1><?= $_SESSION['brand']['brandName']; ?> Store Locator</h1>
+                <h1>Locations</h1>
                 <table width="85%">
                     <tr>
                         <td colspan="2">

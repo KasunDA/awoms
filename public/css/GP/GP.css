@@ -41,9 +41,42 @@ body {
 }
 
 /* GP specific */
-#main-container {
-    padding: 0px;
+#main-container
+{
+    background-color:   white;
+    margin: 10px;
+
+    /* http://www.cssmatic.com/box-shadow */
+    /*  bottom
+        top
+        right
+        left*/
+    box-shadow: 0 9px 0px 0px #330909,
+                0 -9px 0px 0px #330909,
+                12px 0 15px -4px #002093,
+                -12px 0 15px -4px red;
+    -moz-box-shadow: 0 9px 0px 0px #330909,
+                0 -9px 0px 0px #330909,
+                12px 0 15px -4px blue,
+                -12px 0 15px -4px red;
+    -webit-box-shadow: 0 9px 0px 0px #330909,
+                0 -9px 0px 0px #330909,
+                12px 0 15px -4px blue,
+                -12px 0 15px -4px red;
+    
+    -moz-border-radius: 15px;
+    border-radius:      15px;
 }
+
+.no-white-bg! > #main-container
+{
+    background: red !important;
+}
+
+
+
+
+
 
 /* Middle separator */
 .middle {
@@ -101,23 +134,23 @@ ul.menu_header li {
 /************************************************************************/
 /* Text Styles */
 .body-text {
-    color: #e0e0e0;
+    color: #000;
 }
 .body-text-bold {
-    color: #e0e0e0;
+    color: #000;
 }
 .body-text-bold-nj {
-    color: #e0e0e0;
+    color: #000;
 }
 .subheader-text-bold {
-    color: #e0e0e0;
+    color: #000;
 }
 .body-text-small {
-    color: #e0e0e0;
+    color: #000;
 }
 .header-text,
 h1{
-    color: #e0e0e0;
+    color: #999;
 }
 
 /************************************************************************/
