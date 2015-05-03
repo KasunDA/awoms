@@ -2,8 +2,9 @@
 
     <?php
     // Home page has different header (doesnt have bottom to hang over wowslider images)
-    if ($_SESSION['controller'] == 'home'
+    if (($_SESSION['controller'] == 'home'
             && $_SESSION['action'] == 'home')
+            || $_SERVER['SCRIPT_URL'] == "/")
     {
         $class = "header";
     } else {

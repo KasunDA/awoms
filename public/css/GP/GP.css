@@ -40,12 +40,31 @@ body {
     padding-top: 65px;
 }
 
+/* Home */
+.header
+{
+    margin-bottom: -10px !important;
+}
+
+/* Non-home Pages */
+.header-full
+{
+    margin-top: 0px !important;
+}
+
 /* GP specific */
 #main-container
 {
     background-color:   white;
     margin: 10px;
-
+}
+#main-container.front
+{
+    padding: 0px !important;
+    background-color: #000 !important;
+}
+#main-container.non-front
+{
     /* http://www.cssmatic.com/box-shadow */
     /*  bottom
         top
@@ -67,16 +86,6 @@ body {
     -moz-border-radius: 15px;
     border-radius:      15px;
 }
-
-.no-white-bg! > #main-container
-{
-    background: red !important;
-}
-
-
-
-
-
 
 /* Middle separator */
 .middle {

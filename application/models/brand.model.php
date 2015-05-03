@@ -4,7 +4,7 @@ class Brand extends Model
 {
     protected static function getColumns()
     {
-        $cols = array('brandID', 'brandName', 'brandActive', 'brandLabel', 'brandMetaTitle', 'brandEmail', 'activeTheme', 'addressID', 'cartID');
+        $cols = array('brandID', 'brandName', 'brandActive', 'brandLabel', 'brandMetaTitle', 'brandEmail', 'activeTheme', 'addressID', 'cartID', 'brandFavIcon');
         return $cols;
     }
 
@@ -170,7 +170,7 @@ class Brand extends Model
                 // User Settings
                 Errors::debugLogger("Deleting User Settings for user...");
                 $query = "
-                    DELETE FROM UserSettings
+                    DELETE FROM userSettings
                     WHERE userID = :userID
                     ";
                 $DB->query($query, array(':userID' => $u['userID']));
@@ -185,7 +185,7 @@ class Brand extends Model
         
         // Brand
         $m = new Model();
-        $m->delete(array('brandID' => $ID), 'Brands');
+        $m->delete(array('brandID' => $ID), 'brands');
         
         return true;
     }

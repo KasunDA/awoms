@@ -167,8 +167,9 @@
 <p>Pages are associated to Brands. When adding a new page, there are many options:</p>
 <ul class="bordered">
 <li>Brand</li>
-<li>Title - Title of page</li>
-<li>SEO Alias - URL of page, overrides Title in URL</li>
+<li>Private Name - Private title of the page for identifying it in the list of pages</li>
+<li>Title - Title of page displayed to visitors</li>
+<li>SEO Alias - URL rewrite alias for page</li>
 <li>Add to Menu - Adds the page as a new menu link to the selected Menu. If an SEO Alias is entered, that alias will be used as the target URL.</li>
 <li>Display Title - If True, the title will be printed as the Heading of the page when viewing the page.</li>
 <li>Login Restricted - If True, the page will require the user to be authenticated before viewing the page. This is useful for Owners pages.</li>
@@ -270,6 +271,10 @@ Defined in <b><cite>library/controller.class.php</cite></b>
 <hr/>
 
 <pre>
+    CSS:
+    Front-page: #header, #main-container .front
+    Non-front-page: #header-full, #main-container .non-front
+
     Store Locator:
     views/stores/readall_list_public_locator_form.php
     views/templates/GP/default/stores/readall_list_public_locator_form.php

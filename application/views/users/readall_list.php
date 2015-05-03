@@ -34,8 +34,8 @@ if (empty($items))
             echo "<th>Group</th>";
         }
         ?>
-        <th>Full Name</th>
         <th>Username</th>
+        <th>Full Name</th>
     </tr>
 
     <?php
@@ -105,7 +105,15 @@ if (empty($items))
             $rowData .= "</td>";
         }
 
-        $rowData .= "<td>";
+
+        $rowData .= "
+            <td>
+                <a href='" . $updateLink . "'>
+                    " . $item['userName'] . "
+                </a>
+            </td>
+
+            <td>";
         if (!empty($item['lastName']) || !empty($item['firstName']))
         {
             $rowData .= "
@@ -115,13 +123,6 @@ if (empty($items))
         }
         $rowData .= "
         </td>
-
-        <td>
-            <a href='" . $updateLink . "'>
-                " . $item['userName'] . "
-            </a>
-        </td>
-
     </tr>";
         echo $rowData;
     }

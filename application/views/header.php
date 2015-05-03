@@ -18,9 +18,18 @@
         // Dynamic Meta Tags (from template 'header_style'
         echo $headerStyle;
 
+        // Dynamic Favicon
+        $favicon = "/favicon.ico";
+        if (!empty($_SESSION['brand']) && !empty($_SESSION['brand']['brandFavIcon']))
+        {
+            $favicon = $_SESSION['brand']['brandFavIcon'];
+        }
+
         // Google Site Verification (from template 'googleSiteVerification'
         echo $headerGoogleSiteVerification;
         ?>
+        <link rel="SHORTCUT ICON" type="image/x-icon" href="<?php echo $favicon; ?>"/>
+
         <!-- Modernizr (keep after styles and in header) -->
         <script src="/js/libs/modernizr-respond/2.6.2-respond-1.1.0/modernizr-respond.min.js"></script>
     </head>
@@ -39,9 +48,19 @@
             // Note: include code needed here to read template data such as $template or $page
             $fileLocations = Utility::getTemplateFileLocations('header_nav');
             foreach ($fileLocations as $fileLoc){include $fileLoc;}
+
+            // Home page has different header (doesnt have bottom to hang over wowslider images)
+            if (($_SESSION['controller'] == 'home'
+                    && $_SESSION['action'] == 'home')
+                    || $_SERVER['SCRIPT_URL'] == "/")
+            {
+                $class = "front";
+            } else {
+                $class = "non-front";
+            }
             ?>
 
-            <div id="main-container" class="body-text">
+            <div id="main-container" class="body-text <?php echo $class; ?>">
                 <a style="display:none" name='top'></a>
 
                 <?php

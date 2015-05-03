@@ -1,4 +1,4 @@
-<form id='<?php echo $formID; ?>'  method='POST'>
+   <form id='<?php echo $formID; ?>'  method='POST'>
   <input type='hidden' name='step' value='2' />
   <input type='hidden' name='inp_pageID' value='<?php echo $pageID; ?>' />
 
@@ -41,10 +41,25 @@
 
     <tr>
       <td>
-        Title
+        Private Name
+        <p class="muted">This is used to help you identify pages and is never seen by the public.
       </td>
       <td>
-          <table>
+            <input type='text' id='inp_pagePrivateName' name='inp_pagePrivateName' value='<?php
+            if (isset($inp_pagePrivateName)) {
+                echo $inp_pagePrivateName;
+            }
+            ?>' size='60' />
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        SEO Title
+        <p class="muted">Title for the page that will appear in SEO results and in the browser.</p>
+      </td>
+      <td>
+          <table <?php if (!empty($class)) { echo "class='no-border'"; } ?>>
               <tr>
                   <td colspan='2'>
                     <input type='text' id='inp_pageName' name='inp_pageName' value='<?php
@@ -93,6 +108,7 @@ if (!empty($menuChoiceList))
     <tr>
         <td>
             Display Title
+            <p class="muted">Displays title as heading for page if enabled.</p>
         </td>
         <td>
 <?php
@@ -115,6 +131,7 @@ if (!empty($inp_pageShowTitle)) {
     <tr>
         <td>
             Login Restricted
+            <p class="muted">User must be logged in to view this page if enabled.</p>
         </td>
         <td>
 <?php
@@ -136,7 +153,8 @@ if (!empty($inp_pageRestricted)) {
     <tr>
       <td>
           <!-- Short Desc -->
-          Short Description
+          Meta Short Description
+          <p class="muted">Meta Short Description may appear in search results.</p>
       </td>
       <td>
         <textarea id='inp_pageShortDescription' name='inp_pageShortDescription' cols='20' rows='3'><?php
@@ -150,7 +168,8 @@ if (!empty($inp_pageRestricted)) {
     <tr>
       <td>
         <!-- Long Desc -->
-        Long Description
+        Meta Long Description
+        <p class="muted">Meta Long Description may appear in search results.</p>
       </td>
       <td>
         <textarea id='inp_pageLongDescription' name='inp_pageLongDescription' cols='40' rows='4'><?php
@@ -202,7 +221,15 @@ if ($pageID == 'DEFAULT' || empty($page['pageJavaScript']))
     <tr>
         <td colspan="2">
             JavaScript Scripts to Include
-            <br /><small class="muted">e.g. &lt;script src="/js/MyBnd/myscript.js"&gt;&lt;/script&gt; <!-- <button type="button" id="cloneButton" class="alert only-img add" title="Add JavaScript"></button> -->
+            <p class="muted">
+                Inline or external JavaScript to include on this page for full custom control or special scripts.<br/>
+                <small>
+                    e.g. &lt;script src="/js/MyBnd/myscript.js"&gt;&lt;/script&gt;
+                    <br/>
+                    or &lt;script&gt;$('#main-container').hide();&lt;/script&gt;
+                    <!-- <button type="button" id="cloneButton" class="alert only-img add" title="Add JavaScript"></button> -->
+                </small>
+            </p>
         </td>
     </tr>
     <tr>

@@ -19,13 +19,14 @@ if (empty($items))
 
 <table class="bordered">
     <tr>
+        <th>Edit</th>
         <?php
         if ($showBrandColumn)
         {
             echo "<th>Brand Name</th>";
         }
         ?>
-        <th><?php echo $this->model; ?> Name</th>
+        <th><?php if (empty($this->model)) { echo trim(ucfirst($this->controller), "s"); } else { echo $this->model; } ?> Name</th>
     </tr>
 
     <?php
@@ -47,6 +48,8 @@ if (empty($items))
 
         $rowData = "<tr>";
         //$rowData .= "<td><div class='alert " . $activeClass . " no-img center'>" . $activeLabel . "</div></td>";
+
+        $rowData .= "<td><a href='" . $updateLink . "'>[Edit]</a></td>";
 
         if ($showBrandColumn)
         {

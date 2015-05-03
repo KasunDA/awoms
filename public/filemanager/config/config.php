@@ -134,7 +134,7 @@ $copy_cut_max_count = FALSE;
 //**********************
 //Allowed extensions (lowercase insert)
 //**********************
-$ext_img            = array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'svg'); //Images
+$ext_img            = array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'svg', 'ico'); //Images
 $ext_file           = array('doc', 'docx', 'rtf', 'pdf', 'xls', 'xlsx', 'txt', 'csv', 'html', 'xhtml', 'psd', 'sql', 'log', 'fla', 'xml',
     'ade', 'exe',
     'adp', 'mdb', 'accdb', 'ppt', 'pptx', 'odt', 'ots', 'ott', 'odb', 'odg', 'otp', 'otg', 'odf', 'ods', 'odp', 'css', 'ai'); //Files
