@@ -17,6 +17,20 @@
  - [x] favicon per brand
   
 #@TODO
+
+Brand level
+    [x] Name,
+    Meta [x] Title
+         [ ] Desc
+         [ ] Keywords
+    Page level
+        [x] Private Name,
+        [/] Heading,
+        Meta [x] Title
+             [x] Desc
+             [x] Keywords
+
+ - [ ] Page comments enabled/disabled option (per page)
  - [ ] Stores Territory Maps
  - [ ] Cart integration
  - [ ] Admin: Dynamic Brand selection list (domain etc., ACL to view/change)

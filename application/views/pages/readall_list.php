@@ -27,7 +27,8 @@ if (empty($items))
         }
         ?>
         <th><?php echo trim(ucfirst($this->controller), "s"); ?> Private Name</th>
-        <th><?php echo trim(ucfirst($this->controller), "s"); ?> SEO Title</th>
+        <th><?php echo trim(ucfirst($this->controller), "s"); ?> Meta Title</th>
+        <th><?php echo trim(ucfirst($this->controller), "s"); ?> Heading</th>
     </tr>
 
     <?php
@@ -35,8 +36,9 @@ if (empty($items))
     foreach ($items as $item)
     {
         $itemID      = $item[$lbl . 'ID'];
-        $itemPrivateName    = $item[$lbl . 'PrivateName'];
-        $itemName    = $item[$lbl . 'Name'];
+        $itemName    = $item[$lbl . 'PrivateName'];
+        $itemMetaTitle    = $item[$lbl . 'MetaTitle'];
+        $itemHeading    = $item[$lbl . 'Heading'];
         $itemNameSEO = str_replace(' ', '-', $itemName);
         $updateLink  = BRAND_URL . $this->controller . '/update/' . $itemID . '/' . $itemNameSEO;
 
@@ -68,12 +70,15 @@ if (empty($items))
         $rowData .= "
             <td>
                 <a href='" . $updateLink . "'>
-                    " . $itemPrivateName . "
+                    " . $itemName . "
                 </a>
             </td>
             <td>
+                " . $itemMetaTitle . "
+            </td>
+            <td>
                 <a href='" . $updateLink . "'>
-                    " . $itemName . "
+                    " . $itemHeading . "
                 </a>
             </td>
         </tr>";

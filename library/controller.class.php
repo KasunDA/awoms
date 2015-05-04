@@ -94,9 +94,6 @@ class Controller
         $Menus['footer_right'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
 
         $this->set('Menus', $Menus);
-
-        // Title
-        $this->set('title', BRAND_TITLE);
     }
 
     /**
@@ -606,6 +603,27 @@ class Controller
             }
             $this->set('isGlobalAdmin', $isGlobalAdmin);
         }
+
+        $m = strtolower($this->model);
+
+        // Meta Title
+        if (!empty($this->template->data[$m][$m.'MetaTitle']))
+        {
+            $this->set('metaTitle', $this->template->data[$m][$m.'MetaTitle']);
+        }
+
+        // Meta Description
+        if (!empty($this->template->data[$m][$m.'MetaDescription']))
+        {
+            $this->set('metaDescription', $this->template->data[$m][$m.'MetaDescription']);
+        }
+
+        // Meta Keywords
+        if (!empty($this->template->data[$m][$m.'MetaKeywords']))
+        {
+            $this->set('metaKeywords', $this->template->data[$m][$m.'MetaKeywords']);
+        }
+
         return true;
     }
 

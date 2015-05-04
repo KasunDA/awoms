@@ -55,16 +55,30 @@
 
     <tr>
       <td>
-        SEO Title
-        <p class="muted">Title for the page that will appear in SEO results and in the browser.</p>
+        Page Heading
+        <p class="muted">This is used as the page heading, if set.
+      </td>
+      <td>
+            <input type='text' id='inp_pageHeading' name='inp_pageHeading' value='<?php
+            if (isset($inp_pageHeading)) {
+                echo $inp_pageHeading;
+            }
+            ?>' size='60' />
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Meta Title
+        <p class="muted">Title for the page that will appear in SEO results and in the browser. If it is not set here, it will use the one set at the Brand level.</p>
       </td>
       <td>
           <table <?php if (!empty($class)) { echo "class='no-border'"; } ?>>
               <tr>
                   <td colspan='2'>
-                    <input type='text' id='inp_pageName' name='inp_pageName' value='<?php
-                        if (isset($inp_pageName)) {
-                          echo $inp_pageName;
+                    <input type='text' id='inp_pageMetaTitle' name='inp_pageMetaTitle' value='<?php
+                        if (isset($inp_pageMetaTitle)) {
+                          echo $inp_pageMetaTitle;
                         }
                       ?>' size='60' />
                   </td>
@@ -103,35 +117,42 @@ if (!empty($menuChoiceList))
           </table>
         
       </td>
+    </tr>   
+    
+    <tr>
+      <td>
+          <!-- Meta Desc -->
+          Meta Description
+          <p class="muted">Meta Description may appear in search results. If it is not set here, it will use the one set at the Brand level.</p>
+      </td>
+      <td>
+        <textarea id='inp_pageMetaDescription' name='inp_pageMetaDescription' cols='40' rows='4'><?php
+          if (isset($inp_pageMetaDescription)) {
+            echo $inp_pageMetaDescription;
+          }
+      ?></textarea>
+      </td>
+    </tr>
+
+    <!-- Meta Keywords -->
+    <tr>
+      <td>
+        Meta Keywords
+        <p class='muted'>Meta Keywords (comma separated) may appear in search results. If it is not set here, it will use the one set at the Brand level.</p>
+      </td>
+      <td>
+        <input type='text' id='inp_pageMetaKeywords' name='inp_pageMetaKeywords' value='<?php
+          if (isset($inp_pageMetaKeywords)) {
+            echo $inp_pageMetaKeywords;
+          }
+        ?>' size='60' />
+      </td>
     </tr>
 
     <tr>
         <td>
-            Display Title
-            <p class="muted">Displays title as heading for page if enabled.</p>
-        </td>
-        <td>
-<?php
-if (!empty($inp_pageShowTitle)) {
-?>
-            <input type="radio" name="inp_pageShowTitle" value="1" checked/>&nbsp;Yes
-            <input type="radio" name="inp_pageShowTitle" value="0"/>&nbsp;No
-<?php
-} else {
-?>
-            <input type="radio" name="inp_pageShowTitle" value="1"/>&nbsp;Yes
-            <input type="radio" name="inp_pageShowTitle" value="0" checked/>&nbsp;No
-<?php
-}
-?>
-        </td>
-    </tr>
-    
-    
-    <tr>
-        <td>
             Login Restricted
-            <p class="muted">User must be logged in to view this page if enabled.</p>
+            <p class="muted">User (e.g. Store Owner) must be logged in to view this page if enabled.</p>
         </td>
         <td>
 <?php
@@ -149,52 +170,7 @@ if (!empty($inp_pageRestricted)) {
 ?>
         </td>
     </tr>
-    
-    <tr>
-      <td>
-          <!-- Short Desc -->
-          Meta Short Description
-          <p class="muted">Meta Short Description may appear in search results.</p>
-      </td>
-      <td>
-        <textarea id='inp_pageShortDescription' name='inp_pageShortDescription' cols='20' rows='3'><?php
-          if (isset($inp_pageShortDescription)) {
-            echo $inp_pageShortDescription;
-          }
-      ?></textarea>
-      </td>
-    </tr>
 
-    <tr>
-      <td>
-        <!-- Long Desc -->
-        Meta Long Description
-        <p class="muted">Meta Long Description may appear in search results.</p>
-      </td>
-      <td>
-        <textarea id='inp_pageLongDescription' name='inp_pageLongDescription' cols='40' rows='4'><?php
-          if (isset($inp_pageLongDescription)) {
-            echo $inp_pageLongDescription;
-          }
-      ?></textarea>
-      </td>
-    </tr>
-
-    <!-- Keywords
-    <tr>
-      <td>
-        Keywords
-      </td>
-      <td>
-        <input type='text' id='inp_pageKeywords' name='inp_pageKeywords' value='<?php
-          if (isset($inp_pageKeywords)) {
-            echo $inp_pageKeywords;
-          }
-        ?>' size='60' placeholder='Coming Soon!' disabled />
-      </td>
-    </tr>
-    -->
-    
     <tr>
       <td>
         <!-- Body -->

@@ -4,8 +4,8 @@ class Page extends Model
 {
     protected static function getColumns()
     {
-        $cols = array('pageID', 'pageActive', 'pagePrivateName', 'pageName', 'pageShortDescription', 'pageLongDescription', 'pageDatePublished', 'pageDateLastReviewed',
-            'pageDateLastUpdated', 'pageDateExpires', 'userID', 'brandID', 'pageJavaScript', 'pageJavaScript', 'pageShowTitle', 'pageRestricted');
+        $cols = array('pageID', 'pageActive', 'pagePrivateName', 'pageHeading', 'pageMetaTitle', 'pageMetaDescription', 'pageMetaKeywords', 'pageDatePublished', 'pageDateLastReviewed',
+            'pageDateLastUpdated', 'pageDateExpires', 'userID', 'brandID', 'pageJavaScript', 'pageJavaScript', 'pageRestricted');
         return $cols;
     }
 
@@ -19,7 +19,7 @@ class Page extends Model
     {
         if ($order == NULL)
         {
-            $order = "brandID, pageName, pageDatePublished";
+            $order = "brandID, pageHeading, pageDatePublished";
         }
         
         $all = parent::getWhere($where, $cols, $order, $aclWhere, $in, $loadChildren);

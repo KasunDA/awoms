@@ -10,6 +10,32 @@ class ArticlesController extends Controller
     public static $staticData = array();
 
     /**
+     * @param type $args
+     */
+    public function read($args)
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+
+        // Ensures article exists
+        parent::read($args);
+
+        // ACL: Ensures user has permission to view requested page
+        if (!empty($this->template->data['article']['articleRestricted']))
+        {
+            // Page is restricted
+            if (empty($_SESSION['user_logged_in'])
+                    || !in_array($_SESSION['user']['usergroup']['usergroupName'], array('Administrators', 'Store Owners')))
+            {
+                // Access Denied
+                Errors::debugLogger("Access Denied, redirecting...", 10);
+                unset($this->template->data['article']);
+                $this->set('success', FALSE);
+                header('Location: /' . $this->controller . '/readall');
+            }
+        }
+    }
+
+    /**
      * Controller specific input filtering on save, for use with StepFinish method
      * 
      * e.g. pulls out inp_pageBody and saves that after page has been saved via StepFinish method

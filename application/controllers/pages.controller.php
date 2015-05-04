@@ -123,7 +123,7 @@ class PagesController extends Controller
     }
 
     /**
-     * @param type $args
+     * @param array|string $args
      */
     public function read($args)
     {
@@ -152,7 +152,7 @@ class PagesController extends Controller
             }
         }
     }
-    
+
 //        // Get page comments
 //        $pageComments     = $this->Page->getPageComments($pageID);
 //        $pageCommentsList = array();

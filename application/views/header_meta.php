@@ -1,36 +1,17 @@
 <title><?php
-    if (!empty($page['pageName'])) {
-        echo $page['pageName'];
-    } elseif (!empty($article['articleName'])) {
-        echo $article['articleName'];
+    // Admins use different title
+    if (!defined(BRAND_TITLE)
+            || (!empty($_SESSION['user_logged_in'])
+                && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators"))
+        {
+        $metaTitle = $this->title;
     } else {
-        if (empty($title)) {
-            $title = BRAND_TITLE;
+        if (empty($metaTitle)) {
+            // Default BRAND_TITLE is set in Brand Meta Title setting
+            $metaTitle = BRAND_TITLE;
         }
-        echo $title;
     }
+    echo $metaTitle;
     ?></title>
-
-<meta name="description" content="<?php
-    if (!empty($page['pageLongDescription'])) {
-        echo $page['pageLongDescription'];
-    } elseif (!empty($page['pageShortDescription'])) {
-        echo $page['pageShortDescription'];
-    } elseif (!empty($article['articleLongDescription'])) {
-        echo $article['articleLongDescription'];
-    } elseif (!empty($article['articleShortDescription'])) {
-        echo $article['articleShortDescription'];
-    } else {
-        echo $title;
-    }
-?>">
-
-<meta name="keywords" content="<?php
-if (!empty($article['articleName'])) {
-    echo $article['articleName'];
-} elseif (!empty($page['pageName'])) {
-    echo $page['pageName'];
-} else {
-    echo $title;
-}
-?>">
+<meta name="description" content="<?php echo !empty($metaDescription) ? $metaDescription : $metaTitle; ?>">
+<meta name="keywords" content="<?php echo !empty($metaKeywords) ? $metaKeywords : $metaTitle; ?>">

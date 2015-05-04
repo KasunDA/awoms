@@ -56,7 +56,7 @@ body {
 #main-container
 {
     background-color:   white;
-    margin: 10px;
+    margin: 10px auto;
 }
 #main-container.front
 {

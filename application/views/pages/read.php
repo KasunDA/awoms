@@ -3,11 +3,11 @@
 
   <article>
 <?php
-if (!empty($page['pageShowTitle']))
+if (!empty($page['pageHeading']))
 {
 ?>
     <header>
-      <h1><?=$page['pageName'];?></h1>
+      <h1><?=$page['pageHeading'];?></h1>
     </header>
 <?php
 }
