@@ -37,7 +37,7 @@
 
         <tr>
             <td>
-                Brand Meta Title
+                Default Meta Title
                 <p class="muted">This will be used for the default HTML Meta Title unless overridden by page settings, e.g. Goin' Postal, Low cost shipping and packaging franchise.</p>
             </td>
             <td>
@@ -49,6 +49,34 @@
                 ?>' size='60' />
             </td>
         </tr>
+
+        <tr>
+            <td>
+                Default Meta Description
+                <p class="muted">Meta Description may appear in search results.</p>
+            </td>
+            <td>
+              <textarea id='inp_brandMetaDescription' name='inp_brandMetaDescription' cols='40' rows='4'><?php
+                if (isset($inp_brandMetaDescription)) {
+                  echo $inp_brandMetaDescription;
+                }
+            ?></textarea>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              Default Meta Keywords
+              <p class='muted'>Meta Keywords (comma separated) may appear in search results.</p>
+            </td>
+            <td>
+              <input type='text' id='inp_brandMetaKeywords' name='inp_brandMetaKeywords' value='<?php
+                if (isset($inp_brandMetaKeywords)) {
+                  echo $inp_brandMetaKeywords;
+                }
+              ?>' size='60' />
+            </td>
+          </tr>
 
 <?php
 if ($brandID != "DEFAULT")

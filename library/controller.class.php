@@ -610,18 +610,30 @@ class Controller
         if (!empty($this->template->data[$m][$m.'MetaTitle']))
         {
             $this->set('metaTitle', $this->template->data[$m][$m.'MetaTitle']);
+        } else {
+            $this->set('metaTitle', BRAND_TITLE);
         }
 
         // Meta Description
         if (!empty($this->template->data[$m][$m.'MetaDescription']))
         {
             $this->set('metaDescription', $this->template->data[$m][$m.'MetaDescription']);
+        } else {
+            if (!empty($_SESSION['brand']['brandMetaDescription']))
+            {
+                $this->set('metaDescription', $_SESSION['brand']['brandMetaDescription']);
+            }
         }
 
         // Meta Keywords
         if (!empty($this->template->data[$m][$m.'MetaKeywords']))
         {
             $this->set('metaKeywords', $this->template->data[$m][$m.'MetaKeywords']);
+        } else {
+            if (!empty($_SESSION['brand']['brandMetaKeywords']))
+            {
+                $this->set('metaKeywords', $_SESSION['brand']['brandMetaKeywords']);
+            }
         }
 
         return true;

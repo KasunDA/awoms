@@ -4,7 +4,7 @@ class Brand extends Model
 {
     protected static function getColumns()
     {
-        $cols = array('brandID', 'brandName', 'brandActive', 'brandLabel', 'brandMetaTitle', 'brandEmail', 'activeTheme', 'addressID', 'cartID', 'brandFavIcon');
+        $cols = array('brandID', 'brandName', 'brandActive', 'brandLabel', 'brandMetaTitle', 'brandMetaDescription', 'brandMetaKeywords', 'brandEmail', 'activeTheme', 'addressID', 'cartID', 'brandFavIcon');
         return $cols;
     }
 

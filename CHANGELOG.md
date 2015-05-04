@@ -15,21 +15,9 @@
  - [x] Forgot password
  - [x] Store Locator
  - [x] favicon per brand
+ - [x] Brand, Page and Article level Meta Title, Description and Keywords
   
 #@TODO
-
-Brand level
-    [x] Name,
-    Meta [x] Title
-         [ ] Desc
-         [ ] Keywords
-    Page level
-        [x] Private Name,
-        [/] Heading,
-        Meta [x] Title
-             [x] Desc
-             [x] Keywords
-
  - [ ] Page comments enabled/disabled option (per page)
  - [ ] Stores Territory Maps
  - [ ] Cart integration

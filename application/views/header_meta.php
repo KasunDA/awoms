@@ -1,15 +1,13 @@
 <title><?php
     // Admins use different title
-    if (!defined(BRAND_TITLE)
-            || (!empty($_SESSION['user_logged_in'])
-                && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators"))
+    if (!empty($_SESSION['user_logged_in'])
+                && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
         {
         $metaTitle = $this->title;
-    } else {
-        if (empty($metaTitle)) {
-            // Default BRAND_TITLE is set in Brand Meta Title setting
-            $metaTitle = BRAND_TITLE;
-        }
+    }
+    if (empty($metaTitle)) {
+        // Default BRAND_TITLE is set in Brand Meta Title setting
+        $metaTitle = BRAND_TITLE;
     }
     echo $metaTitle;
     ?></title>
