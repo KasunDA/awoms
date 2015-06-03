@@ -10,7 +10,6 @@ class User extends Model
         return $cols;
     }
 
-//
 //    public function getSingle($where)
 //    {
 //        $res = self::getWhere($where);
@@ -22,7 +21,7 @@ class User extends Model
 //        }
 //        return false;
 //    }
-//
+
     public function getWhere($where = NULL, $cols = NULL, $order = NULL, $aclWhere = NULL, $in = NULL, $loadChildren = FALSE)
     {
 
@@ -101,6 +100,9 @@ class User extends Model
             }
         }
 
+        // Force lowercase for login comparison
+        $data['userName'] = strtolower($data['userName']);
+        
         // DB Changes
         $userID = parent::update($data, $table);
 
@@ -211,7 +213,7 @@ class User extends Model
 
         // Load user (with extended info (group))
         $_user = self::getSingle(array('userActive'  => 1,
-                'userName'    => $username,
+                'userName'    => strtolower($username), // Force lowercase for comparison and storage
                 'usergroupID' => NULL), // Gets IN (xxx) appended to it
                                  $in, TRUE);
 
