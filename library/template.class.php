@@ -71,7 +71,7 @@ class Template
     private function setTitle()
     {
         // Default titles used for Admin (or if no default brand title set)
-        if (!defined(BRAND_TITLE)
+        if (!defined("BRAND_TITLE")
                 || (!empty($_SESSION['user_logged_in'])
                         && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators"))
         {
@@ -93,7 +93,10 @@ class Template
                     $titleAction = "Delete";
                     break;
                 default:
-                    $titleAction = BRAND_TITLE;
+                    if (defined("BRAND_TITLE"))
+                    {
+                        $titleAction = BRAND_TITLE;
+                    }
                     break;
             }
             $finalTitle = $titleController;
