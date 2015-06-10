@@ -45,17 +45,14 @@ class ACL extends Model
         if (($_controller == "home" && $_action == "home")
             || ($_controller == "users" && in_array($_action, array('login', 'logout', 'password')))
             || ($_controller == "stores" && !in_array($_action, array('create', 'update', 'delete'))) // needed to get non 'readall' links to work like: /stores/locations/x rewrite alias
+            || (in_array($_controller, array('help', 'tests', 'install')))
             || (in_array($_controller, array(
-                    'help',
-                    'tests',
-                    'install',
                     'pages',
                     'articles',
                     'comments',
                     'menus',
                     'menulinks'))
-                && in_array($_action, array('read', 'readall'))
-                    )
+                && in_array($_action, array('read', 'readall')))
         )
         {
             Errors::debugLogger(__METHOD__.'@'.__LINE__.': Allowed Anonymous access', ACL::$logLevel);
