@@ -1,0 +1,14 @@
+/owners /admin/home
+/locations /stores/readall
+/login /users/login
+/logout /users/logout
+/profile /users/update
+/stores /stores/readall
+goinpostal.com/ /pages/read/1
+goinpostal.local/ /pages/read/1
+goinpostal.com/services /pages/read/2
+goinpostal.local/services /pages/read/2
+goinpostal.com/franchises /pages/read/3
+goinpostal.local/franchises /pages/read/3
+goinpostal.com/company /pages/read/4
+goinpostal.local/company /pages/read/4

@@ -6,7 +6,7 @@ googleSiteVerification.php
 .settings/
 .buildpath
 .project
-url-alias-map.txt
+#url-alias-map.txt
 
 # Images and Files
 # Uncomment to skip keeping images in sync with remote servers (recommended once live)
