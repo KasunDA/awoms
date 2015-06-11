@@ -61,7 +61,7 @@ class Menu extends Model
         $menuPageChoiceList = '';
         foreach ($_pages as $_page)
         {
-            $menuPageChoiceList .= "<option value='" . $_page['pageID'] . "'>" . $_page['pageName'] . "</option>";
+            $menuPageChoiceList .= "<option value='" . $_page['pageID'] . "'>" . $_page['pagePrivateName'] . "</option>";
         }
         $item['pageChoiceList'] = $menuPageChoiceList;
 
@@ -80,7 +80,7 @@ class Menu extends Model
                         $selected = " selected";
                     }
                 }
-                $pageChoiceList .= "<option value='" . $_page['pageID'] . "'" . $selected . ">" . $_page['pageName'] . "</option>";
+                $pageChoiceList .= "<option value='" . $_page['pageID'] . "'" . $selected . ">" . $_page['pagePrivateName'] . "</option>";
             }
             $item['links'][$i]['pageChoiceList'] = $pageChoiceList;
             $i++;

@@ -31,7 +31,7 @@ class PagesController extends Controller
         }
 
         // We need page title, brandID if creating menu
-        if (in_array($k, array('inp_pageName', 'inp_brandID'))) {
+        if (in_array($k, array('inp_pagePrivateName', 'inp_brandID'))) {
             //Errors::debugLogger(__FILE__."@".__LINE__." k:$k = v:$v",10);
             self::$staticData[$k] = $v;
         }
@@ -86,7 +86,7 @@ class PagesController extends Controller
         if (!empty(self::$staticData['inp_menuID'])
                 && self::$staticData['inp_menuID'] != "NULL") {
             Errors::debugLogger("Create menu link...");
-            $display = self::$staticData['inp_pageName'];
+            $display = self::$staticData['inp_pagePrivateName'];
             $alias   = self::$staticData['inp_pageAlias'];
             $actualURL = '/pages/read/' . $id;
             if (empty($alias)) {
