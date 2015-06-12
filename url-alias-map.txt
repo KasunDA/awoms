@@ -12,3 +12,7 @@ goinpostal.com/franchises /pages/read/3
 goinpostal.local/franchises /pages/read/3
 goinpostal.com/company /pages/read/4
 goinpostal.local/company /pages/read/4
+dev.goinpostal.com/ /pages/read/1
+dev.goinpostal.com/company /pages/read/4
+dev.goinpostal.com/franchises /pages/read/3
+dev.goinpostal.com/services /pages/read/2
