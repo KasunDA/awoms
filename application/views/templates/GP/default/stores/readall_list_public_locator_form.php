@@ -8,15 +8,16 @@
                 <table width="85%">
                     <tr>
                         <td colspan="2">
-                            <p><strong>Find a store in your area or search by state</strong></p>
+                            <h3>Find a store in your area</h3>
+                            <p>Please enter your zip code to find the store nearest you or click on a state below</p>
                         </td>
                     </tr>
                     <tr>
-                        <td>Zip Code:</td>
+                        <td class='align-right'>Zip Code:</td>
                         <td><input type="text" name="inp_zipcode" size="5"/></td>
                     </tr>
                     <tr>
-                        <td>Search Radius:</td>
+                        <td class='align-right'>Search Radius:</td>
                         <td>
                             <select name="inp_searchRadius">
                                 <option value="25">25 Miles</option>

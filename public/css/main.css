@@ -318,6 +318,9 @@ h1{
     font-weight: lighter;
     font-size: 17px;
 }
+.align-right {
+    text-align: right;
+}
 
 /************************************************************************/
 /* Horizontal Menu */

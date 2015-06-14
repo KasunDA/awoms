@@ -31,6 +31,8 @@ if (empty($items))
     </tr>
 
     <?php
+    $lastBrandName = "";
+    $lastMenuType = "";
     for ($i = 0; $i < count($menus); $i++)
     {
         $updateLink = BRAND_URL . 'menus/update/' . $menus[$i]['menuID'] . '/' . $menus[$i]['menuName'] . '/' . str_replace(' ', '-',
@@ -47,12 +49,28 @@ if (empty($items))
                 }
             }
 
-            echo "<td>" . $brand['brandName'] . "</td>";
+            if ($brand['brandName'] == $lastBrandName)
+            {
+                echo "<td>&nbsp;</td>";
+            }
+            else
+            {
+                echo "<td>" . $brand['brandName'] . "</td>";
+            }
+            $lastBrandName = $brand['brandName'];
         }
         ?>
 
         <td>
-            <?php echo $menus[$i]['menuType']; ?>
+            <?php
+            if ($menus[$i]['menuType'] == $lastMenuType)
+            {
+                echo "&nbsp;";
+            } else {
+                echo $menus[$i]['menuType'];
+            }
+            $lastMenuType = $menus[$i]['menuType'];
+            ?>
         </td>
 
         <td>

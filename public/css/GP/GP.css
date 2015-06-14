@@ -7,6 +7,11 @@
 body {
     background-color: #000;
     color: #e0e0e0;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    text-align: left;
+
     /*
     background-attachment: fixed;
     background-image: url(./images/structure/background.jpg);
@@ -117,6 +122,8 @@ body {
 /* Footer (Bottom right logo in footer nav links 960x209)*/
 .footer-container
 {
+    font-family: Arial, Helvetica, sans-serif;
+    height: 209px;
     background-image: url(./images/structure/gp-cash.jpg);
     background-repeat: no-repeat;
     background-position: right;
@@ -143,23 +150,53 @@ ul.menu_header li {
 /************************************************************************/
 /* Text Styles */
 .body-text {
+    font-family: Arial, Helvetica, sans-serif;
     color: #000;
+    font-size: 15px;
+    text-decoration: none;
+    text-align: left;
 }
 .body-text-bold {
+    font-family: Arial, Helvetica, sans-serif;
     color: #000;
+    font-size: 16px;
+    text-decoration: none;
+    text-align: left;
+    font-weight: bolder;
 }
 .body-text-bold-nj {
+    font-family: Arial, Helvetica, sans-serif;
     color: #000;
+    font-size: 16px;
+    text-decoration: none;
+    font-weight: bolder;
 }
 .subheader-text-bold {
+    font-family: Arial, Helvetica, sans-serif;
     color: #000;
+    font-size: 20px;
+    text-decoration: none;
+    text-align: left;
+    font-weight: bolder;
 }
 .body-text-small {
+    font-family: Arial, Helvetica, sans-serif;
     color: #000;
+    font-size: 12px;
+    text-decoration: none;
+    text-align: left;
 }
 .header-text,
 h1{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 22px;
     color: #999;
+    text-decoration: none;
+    /* text-indent: 45px; */
+    text-transform: lowercase;
+    text-align: left;
+    padding-left: 45px;
+    vertical-align: top;
 }
 
 /************************************************************************/

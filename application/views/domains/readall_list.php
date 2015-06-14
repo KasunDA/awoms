@@ -31,6 +31,7 @@ if (empty($items))
     </tr>
 
     <?php
+    $lastBrandName = "";
     foreach ($items as $item)
     {
         $itemID      = $item[$lbl . 'ID'];
@@ -46,10 +47,18 @@ if (empty($items))
             {
                 if ($item['brandID'] == $brand['brandID'])
                 {
-                    $rowData .= "<td>" . $brand['brandName'] . "</td>";
+                    if ($lastBrandName != $brand['brandName'])
+                    {
+                        $rowData .= "<td>" . $brand['brandName'] . "</td>";
+                    }
+                    else
+                    {
+                        $rowData .= "<td>&nbsp;</td>";
+                    }
                     break;
                 }
             }
+            $lastBrandName = $brand['brandName'];
 
             $rowData .= "<td>";
             if (!empty($item['storeID']))
