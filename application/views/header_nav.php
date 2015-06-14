@@ -21,7 +21,6 @@
                     && $_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
             {
                 // Admins need special menu JS and div id
-
                 $finalMenu = "<div id='cssmenu'>" . $Menus['heading_nav'] . "</div>";
                 // JS required for Admin menu
                 $pageJavaScript[] = "
@@ -36,7 +35,6 @@
             if (empty($finalMenu))
             {
                 // Not logged in or no custom menu
-
                 $finalMenu = "<div id='usermenu'>" . $Menus['heading_nav'] . "</div>";
             }
             echo $finalMenu;

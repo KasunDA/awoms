@@ -65,33 +65,14 @@ class Controller
             return;
         }
 
-        // Menus
+        // Menus - standard menus designed for overall template. Enable/disable menus or change their titles the in admin site, not here.
+        // To add more menus, you would first add them in the admin site, then you would add them here with the matching Menu Type to be loaded into the template
         $Menu  = new Menu();
         $Menus = array();
-
-        $menuType             = "Heading Nav";
-        $menuName             = NULL;
-        $menuUlClass          = "menu_horizontal menu_header menu_hover";
-        $menuTitle            = NULL;
-        $Menus['heading_nav'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
-
-        $menuType             = "Footer Left";
-        $menuName             = NULL;
-        $menuUlClass          = "menu_footer footer_menu_left";
-        $menuTitle            = "Store Info";
-        $Menus['footer_left'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
-
-        $menuType               = "Footer Middle";
-        $menuName               = NULL;
-        $menuUlClass            = "menu_footer footer_menu_middle";
-        $menuTitle              = "Site Info";
-        $Menus['footer_middle'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
-
-        $menuType              = "Footer Right";
-        $menuName              = NULL;
-        $menuUlClass           = "menu_footer menu_footer_wood footer_menu_right";
-        $menuTitle             = NULL;
-        $Menus['footer_right'] = $Menu->getMenu($menuType, $menuName, $menuUlClass, $menuTitle);
+        $Menus['heading_nav'] = $Menu->getMenu("Heading Nav", "menu_horizontal menu_header menu_hover");
+        $Menus['footer_left'] = $Menu->getMenu("Footer Left", "menu_footer footer_menu_left");
+        $Menus['footer_middle'] = $Menu->getMenu("Footer Middle", "menu_footer footer_menu_middle");
+        $Menus['footer_right'] = $Menu->getMenu("Footer Right", "menu_footer menu_footer_wood footer_menu_right");
 
         $this->set('Menus', $Menus);
     }

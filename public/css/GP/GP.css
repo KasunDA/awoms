@@ -124,9 +124,10 @@ body {
 {
     font-family: Arial, Helvetica, sans-serif;
     height: 209px;
+    border-top: 2px solid #999;
     background-image: url(./images/structure/gp-cash.jpg);
     background-repeat: no-repeat;
-    background-position: right;
+    background-position: right top;
     background-attachment: scroll;
 }
 

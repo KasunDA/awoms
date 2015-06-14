@@ -5,7 +5,11 @@ class Menu extends Model
 
     protected static function getMenuColumns()
     {
-        $cols = array('menuID', 'brandID', 'menuType', 'menuName', 'menuRestricted', 'menuActive');
+        /*
+ALTER TABLE `gpfc`.`menus`
+ADD COLUMN `menuTitle` VARCHAR(255) NULL AFTER `menuName`;
+         */
+        $cols = array('menuID', 'brandID', 'menuType', 'menuName', 'menuTitle', 'menuRestricted', 'menuActive');
         return $cols;
     }
 
@@ -372,16 +376,13 @@ class Menu extends Model
      *
      * @return string
      */
-    private function user($menuID, $ulClass, $menuTitle)
+    private function user($data, $ulClass)
     {
-        $res = self::getSingle(array('menuID' => $menuID));
+        $res = self::getSingle($data, NULL, TRUE); // TRUE loads menu links
         if (empty($res))
         {
             return false;
         }
-
-        $MenuLink     = new MenuLink();
-        $res['links'] = $MenuLink->getWhere(array('menuID'     => $res['menuID'], 'linkActive' => 1));
 
         /** Build Menu * */
         $menu = array();
@@ -408,7 +409,7 @@ class Menu extends Model
             }
         }
 
-        $finalMenu = self::buildMenu($menu, FALSE, $ulClass, $menuTitle);
+        $finalMenu = self::buildMenu($menu, FALSE, FALSE, $ulClass);
         return $finalMenu;
     }
 
@@ -416,7 +417,7 @@ class Menu extends Model
      * Recursive menu builder (no touchy)
      */
 
-    private static function buildMenu($menu_array, $is_sub = FALSE, $ulClass = FALSE, $menuTitle = FALSE)
+    private static function buildMenu($menu_array, $menuTitle = FALSE, $is_sub = FALSE, $ulClass = FALSE)
     {
         $menu = "\n<ul>\n"; // Open the menu container
         if ($ulClass !== FALSE)
@@ -451,7 +452,7 @@ class Menu extends Model
                  */
                 if (is_array($val))
                 {
-                    $sub = self::buildMenu($val, TRUE);
+                    $sub = self::buildMenu($val, FALSE, TRUE);
                 }
 
                 /*
@@ -509,7 +510,7 @@ class Menu extends Model
      *
      * @return string
      */
-    public function getMenu($menuType, $menuName = NULL, $ulClass = NULL, $menuTitle = NULL)
+    public function getMenu($menuType, $ulClass = NULL)
     {
         // Admin
         if (!empty($_SESSION['user_logged_in'])
@@ -526,24 +527,13 @@ class Menu extends Model
         $data['brandID']    = $_SESSION['brandID'];
         $data['menuType']   = $menuType;
         $data['menuActive'] = 1;
-        if (!empty($menuName))
-        {
-            $data['menuName'] = $menuName;
-        }
-        $menu = NULL;
+        $data['menuRestricted'] = 0;
         if (!empty($_SESSION['user_logged_in']))
         {
             // Look for restricted menu first, if none found then use non-restricted menu
             $data['menuRestricted'] = 1;
-            $menu                   = $this->getSingle($data);
         }
-        if (empty($menu))
-        {
-            $data['menuRestricted'] = 0;
-            $menu                   = $this->getSingle($data);
-        }
-        if (empty($menu)) return false;
-        return self::user($menu['menuID'], $ulClass, $menuTitle);
+        return self::user($data, $ulClass);
     }
 
 }

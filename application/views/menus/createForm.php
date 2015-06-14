@@ -61,7 +61,7 @@ if (!empty($inp_menuRestricted)) {
     
         <tr>
             <td>
-                Menu Name
+                Menu Private Name
             </td>
             <td>
                 <input type='text' id='inp_menuName' name='inp_menuName' value='<?php
@@ -69,6 +69,19 @@ if (!empty($inp_menuRestricted)) {
             echo $inp_menuName;
         } else {
             echo "Default";
+        }
+        ?>' size='40' autocomplete="off" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                Menu Title
+            </td>
+            <td>
+                <input type='text' id='inp_menuTitle' name='inp_menuTitle' value='<?php
+        if (isset($inp_menuTitle)) {
+            echo $inp_menuTitle;
         }
         ?>' size='40' autocomplete="off" />
             </td>
