@@ -27,4 +27,35 @@ class Service extends Model
         return $item;
     }
 
+    public function delete($data, $table = NULL, $limit = false)
+    {
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+
+        if (is_array($data))
+        {
+            $ID = $data['serviceID'];
+        } else {
+            $ID = $data;
+        }
+
+        if (empty($ID)) {
+            Errors::debugLogger("Missing ServiceID");
+        }
+
+        $DB = new \Database();
+        Errors::debugLogger("Deleting service references...");
+        $query = "
+            DELETE FROM refStoreServices
+            WHERE serviceID = :serviceID
+            ";
+        $DB->query($query, array(':serviceID' => $ID));
+
+        Errors::debugLogger("Deleting service...");
+        $m = new Model();
+        $m->delete(array('serviceID' => $ID), 'services');
+        
+        return true;
+    }
+
+
 }

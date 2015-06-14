@@ -5,6 +5,12 @@
  */
 class StoresController extends Controller
 {
+    /**
+     * Log Level
+     *
+     * @var int $logLevel Config log level; 0 would always be logged, 9999 would only be logged in Dev
+     */
+    protected static $logLevel = 10;
 
     public function __construct($controller, $model, $action, $template = NULL)
     {
@@ -22,7 +28,7 @@ class StoresController extends Controller
      */
     public function prepareFormCustom($ID = NULL, $data)
     {
-        Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__, StoresController::$logLevel);
 
         /* Store specific form list preparation */
         if (empty($data['store']))
@@ -109,50 +115,101 @@ class StoresController extends Controller
         $p = ROOT.DS.'public'.DS.'file'.DS.'source'.DS.'Brands'.DS.$store['brandID'].DS.'Stores'.DS.$storeID.DS.'Public';
         if (!file_exists($p))
         {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.': Creating store folder '.$p, StoresController::$logLevel);
             mkdir($p, 0777, true);
         }
         
         $p = ROOT.DS.'public'.DS.'file'.DS.'thumbs'.DS.'Brands'.DS.$store['brandID'].DS.'Stores'.DS.$storeID.DS.'Public';
         if (!file_exists($p))
         {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.': Creating store folder '.$p, StoresController::$logLevel);
             mkdir($p, 0777, true);
         }
         
         $p = ROOT.DS.'public'.DS.'file'.DS.'source'.DS.'Brands'.DS.$store['brandID'].DS.'Stores'.DS.$storeID.DS.'Private';
         if (!file_exists($p))
         {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.': Creating store folder '.$p, StoresController::$logLevel);
             mkdir($p, 0777, true);
         }
         
         $p = ROOT.DS.'public'.DS.'file'.DS.'thumbs'.DS.'Brands'.DS.$store['brandID'].DS.'Stores'.DS.$storeID.DS.'Private';
         if (!file_exists($p))
         {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.': Creating store folder '.$p, StoresController::$logLevel);
             mkdir($p, 0777, true);
         }
         
-//        $store   = $Store->getSingle(array('storeID' => $storeID));
         // Now that the parent model data is saved, you can do whatever is needed with self::$staticData and link it to the parent model id $id
+
+        /***
+         * Create default Cart for New Store
+         */
         if (empty(self::$staticData))
         {
-            // Create default cart for store
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.': Installing Cart for new store', StoresController::$logLevel);
             Install::InstallCart($storeID, $store['brandID']);
             return true;
         }
 
-        // Store services
+        /**
+         * Services - update list of selected services for store
+         */
         $Service = new Service();
-        // Unchecked all services
-        $Service->delete(array('storeID' => $storeID), "refStoreServices");
-        if (!empty(self::$staticData['services']))
+        $prevListOfServices = $Service->select("*", array('storeID' => $storeID), NULL, "refStoreServices");
+
+        // No services selected, clear prev services in db
+        if (empty(self::$staticData['services'])
+                && !empty($prevListOfServices))
         {
-            // Save checked store services
-            foreach (self::$staticData['services'] as $serviceID)
-            {
-                $Service->update(array('serviceID' => $serviceID,
-                    'storeID'   => $storeID), "refStoreServices");
-            }
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.': No services selected, clearing previous services', StoresController::$logLevel);
+            $Service->delete(array('storeID' => $storeID), "refStoreServices");
         }
 
+        // Ensure selected services are saved in db, removing prev services that are now unchecked
+        if (!empty(self::$staticData['services']))
+        {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.': Updating stores services list', StoresController::$logLevel);
+            $DB = new \Database();
+            $m = new \Model();
+
+            // Update checked services in db
+            // First remove unchecked services
+            foreach ($prevListOfServices as $existingService)
+            {
+                // If this existing service isn't in the new list, remove it from db
+                if (array_search($existingService['serviceID'], self::$staticData['services']) === FALSE)
+                {
+                    Errors::debugLogger(__METHOD__ . '@' . __LINE__.': Removing stores ('.$storeID.') service ('.$existingService['serviceID'].')', StoresController::$logLevel);
+                    $m->delete((array('serviceID' => $existingService['serviceID'],
+                            'storeID'   => $storeID)), "refStoreServices");
+
+                    /*
+                    $query = "
+                        DELETE FROM refStoreServices
+                        WHERE serviceID = :serviceID
+                        AND storeID = :storeID
+                        ";
+                    $DB->query($query, array('serviceID' => $existingService['serviceID'],
+                        'storeID'   => $storeID));
+                     */
+                }
+            }
+                // Second add new checked services
+                foreach (self::$staticData['services'] as $newServiceID)
+                {
+                    // If this new service ID isn't in the old list, add it to db
+                    if (array_search($newServiceID, array_column($prevListOfServices, 'serviceID')) === FALSE)
+                    {
+                        Errors::debugLogger(__METHOD__ . '@' . __LINE__.': Adding stores ('.$storeID.') service ('.$newServiceID.')', StoresController::$logLevel);
+                        $Service->update(array('serviceID' => $newServiceID,
+                        'storeID'   => $storeID), "refStoreServices");
+                    }
+                }
+//            }
+        }
+
+        //@todo removing an address?
         // Save Address
         if (!empty(self::$staticData['address']['phone'])
             || !empty(self::$staticData['address']['addressLine1'])
