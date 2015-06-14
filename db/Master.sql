@@ -1740,6 +1740,7 @@ CREATE TABLE IF NOT EXISTS `menus` (
   `brandID` BIGINT(20) UNSIGNED NOT NULL,
   `menuType` VARCHAR(45) NULL,
   `menuName` VARCHAR(45) NULL DEFAULT NULL,
+  `menuTitle` VARCHAR(255) NULL DEFAULT NULL,
   `menuRestricted` TINYINT(1) NULL,
   `menuActive` TINYINT(1) NULL DEFAULT NULL,
   PRIMARY KEY (`menuID`, `brandID`),

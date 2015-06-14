@@ -5,10 +5,6 @@ class Menu extends Model
 
     protected static function getMenuColumns()
     {
-        /*
-ALTER TABLE `gpfc`.`menus`
-ADD COLUMN `menuTitle` VARCHAR(255) NULL AFTER `menuName`;
-         */
         $cols = array('menuID', 'brandID', 'menuType', 'menuName', 'menuTitle', 'menuRestricted', 'menuActive');
         return $cols;
     }
