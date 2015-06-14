@@ -1,4 +1,8 @@
 <?php
+// Brand
+$Brand = new Brand();
+$brand = $Brand->getSingle(array('brandID' => $store['brandID']));
+
 // Address
 if (!empty($store['address']))
 {
@@ -26,29 +30,108 @@ else
     $storeCity    = "";
 }
 
-// Brand
-$Brand = new Brand();
-$brand = $Brand->getSingle(array('brandID' => $store['brandID']));
+// Hours
+$days  = array('hrsMon' => 'Monday',
+    'hrsTue' => 'Tuesday',
+    'hrsWed' => 'Wednesday',
+    'hrsThu' => 'Thursday',
+    'hrsFri' => 'Friday',
+    'hrsSat' => 'Saturday',
+    'hrsSun' => 'Sunday');
+$hours = "<h2>Hours</h2>";
+$showHours = FALSE;
+foreach ($days as $code => $codeLabel)
+{
+    if (!empty($store[$code]))
+    {
+        $showHours = TRUE;
+        $hours .= "<tr><td>" . $codeLabel . "</td><td>" . $store[$code] . "</td></tr>";
+    }
+}
+if (!$showHours)
+{
+    $hours = FALSE;
+}
+
+// Images
+$storeImages = FALSE;
+if (!empty($store['images']))
+{
+    $storeImages = "<tr><td colspan='2'>";
+
+    /* Display Multiple Store Images */
+    $cols  = count($store['images']);
+    $table = "<table>";
+    $colOn = 1;
+    $i     = 0;
+    foreach ($store['images'] as $storeImage)
+    {
+        $showImage = "<img src='" . $storeImage . "' style='width:300px;height:300px;'/>";
+
+        // Table row/cell construction
+        if ($colOn == 1)
+        {
+            // New Row
+            $colData = "<tr><td>" . $showImage . "</td>";
+        }
+        elseif ($colOn == $cols)
+        {
+            // End Row
+            $colData = "<td>" . $showImage . "</td></tr>";
+        }
+        elseif ($i == (count($store['images']) - 1))
+        {
+            // Last entry (fill in blank cells as needed)
+            $blanks = "";
+            for ($j = 0; $j < ($cols - $colOn); $j++)
+            {
+                $blanks .= "<td>&nbsp;</td>";
+            }
+            $colData = "<td>" . $showImage . "</td>" . $blanks . "</tr>";
+        }
+        else
+        {
+            // Normal Col
+            $colData = "<td>" . $showImage . "</td>";
+        }
+        $table .= $colData;
+        $colOn++;
+        $i++;
+    }
+    $table .= "</table>";
+    echo $table;
+    $storeImages .= $table."</td></tr>";
+}
 ?>
 
-<table style="width:100%; margin-left:30px">
+<!-- MAIN TBL -->
+<table style="width:100%;">
     <tr>
-        <td style="width:300px;">
-
+        <td colspan="2">
             <header>
                 <h1>Locations &amp; Services</h1>
                 <h2><?= $brand['brandName'] . ' ' . $storeCity; ?></h2>
             </header>
-
+        </td>
+    </tr>
+    <tr>
+        <!-- LEFT COL -->
+        <td style="width:300px;">
             <table class="bordered_outside">
+                <?php
+                // Address
+                if (!empty($storeAddress))
+                {
+                ?>
                 <tr>
                     <td><strong>Address</strong></td>
                     <td>
                         <?= $storeAddress; ?>
                     </td>
                 </tr>
-
                 <?php
+                }
+
                 // Phone
                 if (!empty($store['phone']))
                 {
@@ -111,36 +194,18 @@ $brand = $Brand->getSingle(array('brandID' => $store['brandID']));
                 ?>
             </table>
 
+    <?php
+    if (!empty($hours))
+    {
+    ?>
+            <table class='bordered_outside'>
             <?php
-            // Hours
-            $days  = array('hrsMon' => 'Monday',
-                'hrsTue' => 'Tuesday',
-                'hrsWed' => 'Wednesday',
-                'hrsThu' => 'Thursday',
-                'hrsFri' => 'Friday',
-                'hrsSat' => 'Saturday',
-                'hrsSun' => 'Sunday');
-            $hours = "<table>";
-            $showHours = FALSE;
-            foreach ($days as $code => $codeLabel)
-            {
-                if (!empty($store[$code]))
-                {
-                    $showHours = TRUE;
-                    $hours .= "<tr><td>" . $codeLabel . "</td><td>" . $store[$code] . "</td></tr>";
-                }
-            }
-            $hours .= "</table>";
-
-            if ($showHours)
-            {
+                echo $hours;
             ?>
-            <h2><strong>Hours</strong></h2>
-            <?= $hours; ?>
+            </table>
+    <?php
+    }
 
-            <?php
-            }
-            
             // Facebook
             if (!empty($store['facebookURL']))
             {
@@ -153,10 +218,10 @@ $brand = $Brand->getSingle(array('brandID' => $store['brandID']));
                 <?php
             }
             ?>
-
         </td>
-        <td>
 
+        <!-- RIGHT COL -->
+        <td>
             <?php
             // Bio
             if (!empty($store['bio']))
@@ -164,11 +229,13 @@ $brand = $Brand->getSingle(array('brandID' => $store['brandID']));
                 echo "<p>" . $store['bio'] . "</p>";
             }
 
+            // Store Images
+            /*
             if (!empty($store['images']) && count($store['images']) == 1)
             {
-                /* Display Multiple Store Images */
                 echo "<img style='width:585px;height:385px;'/>";
             }
+            */
             ?>
 
         </td>
@@ -181,71 +248,45 @@ $brand = $Brand->getSingle(array('brandID' => $store['brandID']));
         <tr>
             <td colspan="2">
                 <h2><strong>Services Offered</strong></h2>
-                <ul>
+                <table class="bordered_outside">
+                    <tr>
+                        <td>
                     <?php
+                    $ss = "";
+                    $i = 0;
                     foreach ($store['services'] as $storeService)
                     {
-                        echo "<li>" . $storeService['serviceName'] . "</li>";
+                        $i++;
+                        $ss .= $storeService['serviceName'] . ", ";
                     }
+                    if ($i > 1)
+                    {
+                        $ss = substr($ss, 0, strlen($ss)-2);
+                    }
+                    echo $ss;
                     ?>
-                </ul>
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
         <?php
     }
 
-    if (!empty($store['images']) && count($store['images']) > 1)
+    // Images
+    if (!empty($storeImages))
     {
-        /* Display Multiple Store Images */
-        $cols  = count($store['images']);
-        $table = "<table>";
-        $colOn = 1;
-        $i     = 0;
-        foreach ($store['images'] as $storeImage)
-        {
-            $showImage = "<img src='" . $storeImage . "' style='width:300px;height:300px;'/>";
-
-            // Table row/cell construction
-            if ($colOn == 1)
-            {
-                // New Row
-                $colData = "<tr><td>" . $showImage . "</td>";
-            }
-            elseif ($colOn == $cols)
-            {
-                // End Row
-                $colData = "<td>" . $showImage . "</td></tr>";
-            }
-            elseif ($i == (count($store['images']) - 1))
-            {
-                // Last entry (fill in blank cells as needed)
-                $blanks = "";
-                for ($j = 0; $j < ($cols - $colOn); $j++)
-                {
-                    $blanks .= "<td>&nbsp;</td>";
-                }
-                $colData = "<td>" . $showImage . "</td>" . $blanks . "</tr>";
-            }
-            else
-            {
-                // Normal Col
-                $colData = "<td>" . $showImage . "</td>";
-            }
-            $table .= $colData;
-            $colOn++;
-            $i++;
-        }
-        $table .= "</table>";
-        echo $table;
+        echo $storeImages;
     }
 
+    // Map
     if (!empty($store['map']))
     {
         ?>
         <tr>
             <td colspan="2">
                 <h2>Map</h2>
-                <img style="width:870px;height:550px;margin:0 auto;" />
+                <img style="width:870px;height:550px;margin:0 auto;" src="<?php echo $store['map']; ?>" />
             </td>
         </tr>
         <?php

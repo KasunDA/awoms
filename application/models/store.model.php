@@ -103,6 +103,18 @@ class Store extends Model
             {
                 $item['services'][] = $Service->getSingle(array('serviceID' => $serviceID['serviceID']));
             }
+            $out = $item['services'];
+            $sortArray = array();
+            foreach($item['services'] as $s){
+                foreach($s as $key=>$value){
+                    if(!isset($sortArray[$key])){
+                        $sortArray[$key] = array();
+                    }
+                    $sortArray[$key][] = $value;
+                }
+            }
+            $orderby = "serviceName"; //change this to whatever key you want from the array
+            array_multisort($sortArray[$orderby],SORT_ASC,$item['services']);
             Errors::debugLogger(__METHOD__.": (Service count: ".count($item['services']).")", Store::$logLevel);
         }
         return $item;
