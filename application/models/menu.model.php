@@ -405,7 +405,7 @@ class Menu extends Model
             }
         }
 
-        $finalMenu = self::buildMenu($menu, FALSE, FALSE, $ulClass);
+        $finalMenu = self::buildMenu($menu, $res['menuTitle'], FALSE, $ulClass);
         return $finalMenu;
     }
 
@@ -506,7 +506,7 @@ class Menu extends Model
      *
      * @return string
      */
-    public function getMenu($menuType, $ulClass = NULL)
+    public function getMenu($menuType, $menuName = NULL, $ulClass = NULL, $loginRestricted = FALSE)
     {
         // Admin
         if (!empty($_SESSION['user_logged_in'])
@@ -523,13 +523,26 @@ class Menu extends Model
         $data['brandID']    = $_SESSION['brandID'];
         $data['menuType']   = $menuType;
         $data['menuActive'] = 1;
+
+        if (!empty($menuName))
+        {
+            $data['menuName'] = $menuName;
+        }
+
+        // If user is logged in, default to restricted menu type
         $data['menuRestricted'] = 0;
         if (!empty($_SESSION['user_logged_in']))
         {
-            // Look for restricted menu first, if none found then use non-restricted menu
             $data['menuRestricted'] = 1;
         }
-        return self::user($data, $ulClass);
+        $res = self::user($data, $ulClass);
+        if (empty($res))
+        {
+            // If no menu found, try for nonrestricted menus, return empty if still nothing found
+            $data['menuRestricted'] = 0;
+            $res = self::user($data, $ulClass);
+        }
+        return $res;
     }
 
 }

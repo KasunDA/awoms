@@ -1,5 +1,4 @@
 <?php
-
 class PagesController extends Controller
 {
     public function __construct($controller, $model, $action, $template = NULL)

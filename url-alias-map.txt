@@ -20,3 +20,5 @@ dev.goinpostal.com/ /pages/read/1
 goinpostal.local/ /pages/read/1
 dev.goinpostal.com/franchises /pages/read/3
 goinpostal.local/franchises /pages/read/3
+dev.goinpostal.com/Boxes-for-Holiday-Shipping /pages/read/7
+goinpostal.local/Boxes-for-Holiday-Shipping /pages/read/7

@@ -3,6 +3,9 @@
 
   <article>
 <?php
+
+//var_dump($page);
+
 if (!empty($page['pageHeading']))
 {
 ?>
