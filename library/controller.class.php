@@ -542,35 +542,40 @@ class Controller
     {
         Errors::debugLogger(__METHOD__ . '@' . __LINE__, 10);
 
+        // Ensure item exists and Load Item if found
+        Errors::debugLogger(__METHOD__ . '@' . __LINE__." Ensure item exists and Load Item if found, prepareFormID: ".$prepareFormID);
+        $ID = self::itemExists($prepareFormID);
+
         // If user is logged in
         // AND has at least one permission to Create/Update/Delete
         // Then: Prepare Create Form (custom controller override or default)
-        if (!empty($_SESSION['user_logged_in'])
-            && (ACL::IsUserAuthorized($this->controller, "create")
-            || ACL::IsUserAuthorized($this->controller, "update")
-            || ACL::IsUserAuthorized($this->controller, "delete")))
+        $done = FALSE;
+        if (!empty($_SESSION['user_logged_in']))
         {
-            Errors::debugLogger(__METHOD__ . '@' . __LINE__.": Authorized to Create/Update/Delete? Yes.",10);
-            $_m = $this->model;
-            $_c = $_m . "sController";
-            if (method_exists($_c, 'prepareFormCustom'))
+            if (ACL::IsUserAuthorized($this->controller, "create")
+            || ACL::IsUserAuthorized($this->controller, "update")
+            || ACL::IsUserAuthorized($this->controller, "delete"))
             {
-                Errors::debugLogger(__METHOD__ . '@' . __LINE__." Calling custom prepareFormCustom...",10);
-                $_c::prepareFormCustom($prepareFormID, $this->template->data);
-            }
-            else
-            {
-                Errors::debugLogger(__METHOD__ . '@' . __LINE__." Calling prepareForm...",10);
-                self::prepareForm($prepareFormID, $this->template->data);
+                Errors::debugLogger(__METHOD__ . '@' . __LINE__.": Authenticated User Authorized to Create/Update/Delete? Yes.",10);
+                $_m = $this->model;
+                $_c = $_m . "sController";
+                if (method_exists($_c, 'prepareFormCustom'))
+                {
+                    Errors::debugLogger(__METHOD__ . '@' . __LINE__." Calling custom prepareFormCustom...",10);
+                    $_c::prepareFormCustom($prepareFormID, $this->template->data);
+                }
+                else
+                {
+                    Errors::debugLogger(__METHOD__ . '@' . __LINE__." Calling prepareForm...",10);
+                    self::prepareForm($prepareFormID, $this->template->data);
+                }
+                $done = TRUE;
             }
         }
-        else
-        {
-            Errors::debugLogger(__METHOD__ . '@' . __LINE__.": Authorized to Create/Update/Delete? No.",10);
 
-            // Load Item?
-            $ID = self::itemExists($prepareFormID);
-            Errors::debugLogger(__METHOD__ . '@' . __LINE__." ID: ".$ID);
+        if ($done === FALSE)
+        {
+            Errors::debugLogger(__METHOD__ . '@' . __LINE__.": Authorized to Create/Update/Delete? No. Reading...",10);
 
             // Global Admin? (for Brands List)
             $isGlobalAdmin = FALSE;
