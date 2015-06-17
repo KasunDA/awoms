@@ -16,9 +16,11 @@ dev.goinpostal.com/company /pages/read/4
 goinpostal.local/company /pages/read/4
 dev.goinpostal.com/contact /pages/read/5
 goinpostal.local/contact /pages/read/5
-dev.goinpostal.com/ /pages/read/1
-goinpostal.local/ /pages/read/1
 dev.goinpostal.com/franchises /pages/read/3
 goinpostal.local/franchises /pages/read/3
 dev.goinpostal.com/Boxes-for-Holiday-Shipping /pages/read/7
 goinpostal.local/Boxes-for-Holiday-Shipping /pages/read/7
+dev.goinpostal.com/ /pages/read/1
+goinpostal.local/ /pages/read/1
+dev.goinpostal.com/stores/resources-important-information /pages/read/8
+goinpostal.local/stores/resources-important-information /pages/read/8

@@ -46,6 +46,7 @@ elseif ($_SESSION['user']['usergroup']['usergroupName'] == "Store Owners")
 ?>
     
 <span class="header-text"><?php echo BRAND; ?> Owners Section</span>
+<h3 style="color:red;">Referrals. Get $3,000 CASH instantly!</h3>
 
     <table width="100%">
         <tr>

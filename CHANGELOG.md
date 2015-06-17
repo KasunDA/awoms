@@ -18,13 +18,14 @@
  - [x] Brand, Page and Article level Meta Title, Description and Keywords
   
 #@TODO
- - [ ] Page comments enabled/disabled option (per page)
  - [ ] Stores Territory Maps
  - [ ] Cart integration
  - [ ] Admin: Dynamic Brand selection list (domain etc., ACL to view/change)
  - [/] Sanitization (audit all input sanitization and usage)
- - [ ] CSS editor (move favicon to templates table too)
+ - [ ] CSS editor
  - [/] Model - aclWhere - Tables that do NOT have brandID column but still need to be restricted by the associated brand
+ - [ ] Page comments enabled/disabled option (per page)
  - [ ] Filemanager/dialog -- tie into database
- - [ ] Check for updates
- - [ ] v1.0.0
+ - [ ] Check for updates - central template sync
+ - [ ] v1.0.0 tag
+ - [ ] Store Owner home page message sub-heading (e.g. Referral bonus)

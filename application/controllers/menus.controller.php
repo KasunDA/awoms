@@ -48,6 +48,8 @@ class MenusController extends Controller
         $MenuLink       = new MenuLink();
         $RewriteMapping = new RewriteMapping();
 
+        // @TODO improve
+
         // Remove existing rewrite rules (across all selected brands domains)
         $Menu              = new Menu();
         $m                 = $Menu->getSingle(array('menuID' => $id));
@@ -80,7 +82,14 @@ class MenusController extends Controller
             $actualPageID = self::$staticData['inp_menuLinkActualPageID'][$i];
             $actualURL    = self::$staticData['inp_menuLinkActualURL'][$i];
 
-            // If selection is made and custom url is entered (must start with http), custom url will override selection.
+            // Skip empty/cloneable tr
+            if (empty($display) && empty($aliasURL) && empty($actualURL))
+            {
+                continue;
+            }
+
+            // If selection is made and custom url is entered (must start with http),
+            // custom url will override selection.
             // otherwise the selected page id will be used
             if (!empty($actualURL) && preg_match('/^http/', $actualURL))
             {
@@ -94,16 +103,19 @@ class MenusController extends Controller
                 }
             }
 
-            // Skip empty/cloneable tr
-            if (empty($display) && empty($aliasURL) && empty($actualURL))
+            // This allows actual URL of local files
+            // /file/source/Brands/2/Private/Stores/Resources/UPS ID Flyer.pdf
+            if (!empty($actualURL) && !preg_match('/^http/', $actualURL))
             {
-                continue;
+                $data['url']          = $actualURL;
+            } else {
+                $data['url']          = $aliasURL;
             }
+            
             $data['menuID']       = $id;
             $data['sortOrder']    = $i;
             $data['parentLinkID'] = NULL;
             $data['display']      = $display;
-            $data['url']          = $aliasURL;
             $data['linkActive']   = 1;
             $linkID               = $MenuLink->update($data);
 

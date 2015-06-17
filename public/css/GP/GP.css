@@ -151,8 +151,8 @@ ul.menu_header li {
 /* Menus */
 ul.menu .heading
 {
-    text-transform: uppercase;
-    color: #999;
+    text-transform: none;
+    color: #800000;
     font-size: 18px !important;
     font-weight: 600 !important;
 
