@@ -115,6 +115,7 @@ if ($storeID == 'DEFAULT')
             <tr>
                 <td>
                     Coding
+                    <p class="muted">Only Open stores will appear to public</p>
                 </td>
                 <td>
                     <select name='inp_coding'>
@@ -182,6 +183,7 @@ if ($storeID == 'DEFAULT')
             <tr>
                 <td>
                     Facebook URL
+                    <p class="muted">Enter the entire facebook URL including http://www.</p>
                 </td>
                 <td>
                     <input type='text' id='inp_facebookURL' name='inp_facebookURL' value='<?php
@@ -196,6 +198,7 @@ if ($storeID == 'DEFAULT')
             <tr>
                 <td>
                     Store Website URL
+                    <p class="muted">If a store has their own website URL, enter it here including http://www. and it will be displayed on the store location page</p>
                 </td>
                 <td>
                     <input type='text' id='inp_website' name='inp_website' value='<?php
@@ -210,6 +213,7 @@ if ($storeID == 'DEFAULT')
             <tr>
                 <td>
                     Store-to-Store Sales
+                    <p class="muted">Private use only</p>
                 </td>
                 <td>
                     <?php
@@ -227,6 +231,7 @@ if ($storeID == 'DEFAULT')
             <tr>
                 <td>
                     Company Legal Name
+                    <p class="muted">Private use only</p>
                 </td>
                 <td>
                     <input type='text' id='inp_legalName' name='inp_legalName' value='<?php
@@ -241,6 +246,7 @@ if ($storeID == 'DEFAULT')
             <tr>
                 <td>
                     Company EIN
+                    <p class="muted">Private use only</p>
                 </td>
                 <td>
                     <input type='text' id='inp_ein' name='inp_ein' value='<?php
@@ -336,7 +342,6 @@ if ($storeID == 'DEFAULT')
                 </td>
             </tr>
 
-
             <tr>
                 <td>
                     State
@@ -410,6 +415,7 @@ if ($storeID == 'DEFAULT')
             <tr>
                 <td>
                     Owner
+                    <p class="muted">Store Owner is granted access to edit the store information that is displayed on the store location page</p>
                 </td>
                 <td>
                     <select name='inp_ownerID'>

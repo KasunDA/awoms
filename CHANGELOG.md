@@ -18,7 +18,13 @@
  - [x] Brand, Page and Article level Meta Title, Description and Keywords
   
 #@TODO
- - [ ] Stores Territory Maps
+ - [ ] Stores
+        - [ ] Name/Title
+        - [ ] Hours/Format
+        - [ ] Bio/Format
+        - [ ] Pictures
+        - [ ] Map and Directions
+        - [ ] Territory Maps (logged in)
  - [ ] Cart integration
  - [ ] Admin: Dynamic Brand selection list (domain etc., ACL to view/change)
  - [/] Sanitization (audit all input sanitization and usage)
