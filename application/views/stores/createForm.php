@@ -114,6 +114,21 @@ if ($storeID == 'DEFAULT')
 
             <tr>
                 <td>
+                    Store Name
+                    <p class="muted">This is used for the store display name. Don't include the Brand Name.</p>
+                </td>
+                <td>
+                    <input type='text' id='inp_storeName' name='inp_storeName' value='<?php
+                    if (isset($inp_storeName))
+                    {
+                        echo $inp_storeName;
+                    }
+                    ?>' size='60' />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
                     Coding
                     <p class="muted">Only Open stores will appear to public</p>
                 </td>
@@ -267,6 +282,20 @@ if ($storeID == 'DEFAULT')
                         if (isset($inp_bio))
                         {
                             echo $inp_bio;
+                        }
+                        ?></textarea>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Store Hours
+                </td>
+                <td>
+                    <textarea id='inp_hours' name='inp_hours' cols="60" rows="2"><?php
+                        if (isset($inp_hours))
+                        {
+                            echo $inp_hours;
                         }
                         ?></textarea>
                 </td>
@@ -435,11 +464,12 @@ if ($storeID == 'DEFAULT')
                 </td>
             </tr>
         </table>
-
+        
+        <!--
         <h1>Hours</h1>
         <table class="bordered">
             <?= $hoursChoiceList; ?>
-        </table>
+        </table>-->
 
     </div>
 

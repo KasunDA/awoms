@@ -30,7 +30,15 @@ else
     $storeCity    = "";
 }
 
+if (empty($store['storeName']))
+{
+    $storeName = $storeCity;
+} else {
+    $storeName = $store['storeName'];
+}
+
 // Hours
+/*
 $days  = array('hrsMon' => 'Monday',
     'hrsTue' => 'Tuesday',
     'hrsWed' => 'Wednesday',
@@ -52,6 +60,7 @@ if (!$showHours)
 {
     $hours = FALSE;
 }
+*/
 
 // Images
 $storeImages = FALSE;
@@ -110,7 +119,7 @@ if (!empty($store['images']))
         <td colspan="2">
             <header>
                 <h1>Locations &amp; Services</h1>
-                <h2><?= $brand['brandName'] . ' ' . $storeCity; ?></h2>
+                <h2><?= $brand['brandName'] . ' ' . $storeName; ?></h2>
             </header>
         </td>
     </tr>
@@ -190,6 +199,21 @@ if (!empty($store['images']))
                         </td>
                     </tr>
                     <?php
+                }
+
+                // Hours
+                if (!empty($store['hours']))
+                {
+                ?>
+                    <tr>
+                        <td>
+                            <strong>Hours:</strong>
+                        </td>
+                        <td>
+                            <?php echo $store['hours']; ?>
+                        </td>
+                    </tr>
+                <?php
                 }
                 ?>
             </table>

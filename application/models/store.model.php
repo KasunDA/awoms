@@ -23,7 +23,7 @@ class Store extends Model
             'storeToStoreSales', 'bankruptcy', 'turnkey', 'openDate', 'transferDate', 'closeDate', 'terminationDate',
             'facebookURL',
             // Hours
-            'hrsMon', 'hrsTue', 'hrsWed', 'hrsThu', 'hrsFri', 'hrsSat', 'hrsSun'
+            'hours', 'hrsMon', 'hrsTue', 'hrsWed', 'hrsThu', 'hrsFri', 'hrsSat', 'hrsSun'
         );
         return $cols;
     }

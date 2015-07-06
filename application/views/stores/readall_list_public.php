@@ -91,6 +91,7 @@ foreach ($items as $item)
     $storeNumber = $item['storeNumber'];
     $storePhone = $item['phone'];
     $storeEmail = $item['email'];
+    $storeCity = "";
 
     // Address
     if (!empty($item['address']))
@@ -116,13 +117,26 @@ foreach ($items as $item)
     }
 
     // Construct store listing with available data
-    if (!empty($item['address']))
+    if (!empty($item['storeName']))
     {
-        $storeLabel = $storeCity;
-        $storeAddress = $storeAddress."<br />";
-    } else {
         $storeLabel = $item['storeName'];
-        $storeAddress = "";
+    }
+    else
+    {
+        if (!empty($storeCity))
+        {
+            $storeLabel = $storeCity;    
+        }
+        else
+        {
+            $storeLabel = $storeNumber;
+        }
+    }
+    
+    if (!empty($storeAddress))
+    {
+        
+        $storeAddress = $storeAddress."<br />";
     }
 
     if (!empty($storePhone))

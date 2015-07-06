@@ -7,19 +7,19 @@
         <input type='hidden' name='inp_storeID' value='<?php echo $storeID; ?>' />
         <input type='hidden' name='inp_brandID' value='<?php echo $inp_brandID; ?>' />
 
-        <h1>Store Information</h1>
-        <p>Make sure what you type here is correct as the store info is what will dynamically show up on the website.
-            Only relevant store information will show up on the public website. Your personal information will be kept strictly confidential.</p>
-
         <table>
 
             <tr>
                 <td>
 
+                    <h1>Store Information</h1>
+                    <p class='muted'>Make sure what you type here is correct as the store info is what will dynamically show up on the website.
+                    Only relevant store information will show up on the public website. Your personal information will be kept strictly confidential.</p>
+
                     <table>
 
                         <tr>
-                            <td style="width:200px">
+                            <td style="width:150px">
                                 Store Number
                             </td>
                             <td>
@@ -46,7 +46,7 @@
                                 {
                                     echo $inp_phone;
                                 }
-                                ?>' size='30' />
+                                ?>' size='15' />
                             </td>
                         </tr>
 
@@ -60,7 +60,7 @@
                                 {
                                     echo $inp_tollFree;
                                 }
-                                ?>' size='30' />
+                                ?>' size='15' />
                             </td>
                         </tr>
 
@@ -74,7 +74,7 @@
                                 {
                                     echo $inp_fax;
                                 }
-                                ?>' size='30' />
+                                ?>' size='15' />
                             </td>
                         </tr>
 
@@ -88,7 +88,7 @@
                                 {
                                     echo $inp_facebookURL;
                                 }
-                                ?>' size='60' />
+                                ?>' size='15' />
                             </td>
                         </tr>
 
@@ -102,7 +102,7 @@
                                 {
                                     echo $inp_website;
                                 }
-                                ?>' size='30' />
+                                ?>' size='15' />
                             </td>
                         </tr>
 
@@ -122,13 +122,7 @@
                                 <input type='checkbox' name='inp_storeToStoreSales' value='1'<?= $checked; ?>/>
                             </td>
                         </tr>
-                    </table>
 
-                </td>
-
-                <td>
-
-                    <table>
                         <tr>
                             <td>
                                 Company Legal Name
@@ -139,7 +133,7 @@
                                 {
                                     echo $inp_legalName;
                                 }
-                                ?>' size='30' />
+                                ?>' size='15' />
                             </td>
                         </tr>
 
@@ -153,40 +147,45 @@
                                 {
                                     echo $inp_ein;
                                 }
-                                ?>' size='30' />
+                                ?>' size='15' />
                             </td>
                         </tr>
+                    </table>
 
+                    <table>
                         <tr>
                             <td>
-                                Store Bio
+                                Store Hours
+                                <small>
+                                <p class='muted'>Format:<br/>8:00 AM - 6:00 PM Mon-Fri<br />9:00 AM - 12:00 PM Saturday</p>
+                                </small>
                             </td>
                             <td>
-                                <textarea id='inp_bio' name='inp_bio' cols="32" rows="5"><?php
-                                    if (isset($inp_bio))
-                                    {
-                                        echo $inp_bio;
-                                    }
-                                    ?></textarea>
+                                <br />
+                                <textarea id='inp_hours' name='inp_hours' cols="12" rows="2"><?php
+                                        if (isset($inp_hours))
+                                        {
+                                            echo $inp_hours;
+                                        }
+                                        ?></textarea>
+                                <!--
+                                <table>
+                                    <?= $hoursChoiceList; ?>
+                                </table>
+                                -->
                             </td>
                         </tr>
-
                     </table>
+
                 </td>
-            </tr>
 
-        </table>
-
-        <table>
-            <tr>
                 <td>
-
 
                     <h1>Store Address</h1>
                     <table>
 
                         <tr>
-                            <td>
+                            <td style="width:50px">
                                 Line 1
                                 <?php
                                 if (!empty($inp_address['addressID']))
@@ -205,7 +204,7 @@
                                 {
                                     echo $inp_address['line1'];
                                 }
-                                ?>' size='60' />
+                                ?>' size='20' />
                             </td>
                         </tr>
 
@@ -219,7 +218,7 @@
                                 {
                                     echo $inp_address['line2'];
                                 }
-                                ?>' size='60' />
+                                ?>' size='20' />
                             </td>
                         </tr>
 
@@ -233,7 +232,7 @@
                                 {
                                     echo $inp_address['line3'];
                                 }
-                                ?>' size='60' />
+                                ?>' size='20' />
                             </td>
                         </tr>
 
@@ -247,7 +246,7 @@
                                 {
                                     echo $inp_address['city'];
                                 }
-                                ?>' size='15' />
+                                ?>' size='10' />
 
                                 &nbsp;State
                                 <?php
@@ -262,18 +261,20 @@
                                     <?= $stateChoiceList; ?>
                                 </select>
 
-                                &nbsp;Zipcode
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Zipcode</td>
+                            <td>
                                 <input type='text' id='inp_addressZipcode' name='inp_addressZipcode' value='<?php
                                 if (isset($inp_address))
                                 {
                                     echo $inp_address['zipPostcode'];
                                 }
-                                ?>' size='10' />
-
+                                ?>' size='5' />
                             </td>
                         </tr>
-
-
 
                         <tr>
                             <td>
@@ -294,41 +295,26 @@
                             </td>
                         </tr>
 
+                        <!--
                         <tr>
                             <td>
                                 Address Notes
                             </td>
                             <td>
-                                <textarea id='inp_addressNotes' name='inp_addressNotes' cols="40" rows="3"><?php
+                        -->
+                                <textarea id='inp_addressNotes' name='inp_addressNotes' cols="20" rows="3" style='display:none;'><?php
                                     if (isset($inp_address))
                                     {
                                         echo $inp_address['addressNotes'];
                                     }
                                     ?></textarea>
+                        <!--
                             </td>
                         </tr>
-
+                        -->
                     </table>
 
-                </td>
-                <td>
-
-                    <h1>Hours</h1>
-                    <table>
-                        <?= $hoursChoiceList; ?>
-                    </table>
-
-
-                </td>
-            </tr>
-        </table>
-
-        <table>
-            <tr>
-                <td>
-
-
-                    <h1>Services</h1>
+                    <h1>Store Services</h1>
                     <table class="bordered">
                         <tr>
                             <td>
@@ -338,13 +324,28 @@
                             </td>
                         </tr>
                     </table>
+                
+                </td>
+            </tr>
+        </table>
 
-
+        <table>
+            <tr>
+                <td>
+                    <h1>Store Bio</h1>
+                    <p class='muted'>
+                        Your Bio and store description.  Please make this as flowery and happy happy as possible.  Talk about your family, your goals etc.  Anything that will set you and your store apart from the local competition.<br />
+                        <br />
+                        Include your location relating to other local landmarks and things people may be searching for on the web.
+                    </p>
                 </td>
                 <td>
-
-
-
+                    <textarea id='inp_bio' name='inp_bio' cols="55" rows="15"><?php
+                        if (isset($inp_bio))
+                        {
+                            echo $inp_bio;
+                        }
+                        ?></textarea>
                 </td>
             </tr>
         </table>
