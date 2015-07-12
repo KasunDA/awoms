@@ -612,6 +612,7 @@ CREATE TABLE IF NOT EXISTS `stores` (
   `hrsSat` VARCHAR(45) NULL,
   `hrsSun` VARCHAR(45) NULL,
   `facebookURL` VARCHAR(255) NULL,
+  `territoryURL` VARCHAR(255) NULL,
   PRIMARY KEY (`storeID`, `brandID`),
   UNIQUE INDEX `storeID_UNIQUE` (`storeID` ASC),
   INDEX `fk_stores_brands2_idx` (`brandID` ASC),
