@@ -64,6 +64,20 @@ if (!$showHours)
 
 // Images
 $storeImages = FALSE;
+$store['images'] = array();
+if (!empty($store['pic1']))
+{
+    $store['images'][] = $store['pic1'];
+}
+if (!empty($store['pic2']))
+{
+    $store['images'][] = $store['pic2'];
+}
+if (!empty($store['pic3']))
+{
+    $store['images'][] = $store['pic3'];
+}
+
 if (!empty($store['images']))
 {
     $storeImages = "<tr><td colspan='2'>";
@@ -75,7 +89,8 @@ if (!empty($store['images']))
     $i     = 0;
     foreach ($store['images'] as $storeImage)
     {
-        $showImage = "<img src='" . $storeImage . "' style='width:300px;height:300px;'/>";
+        $width = round(900 / $cols) - 20;
+        $showImage = "<img src='" . $storeImage . "' style='width:".$width."px;'/>";
 
         // Table row/cell construction
         if ($colOn == 1)
@@ -108,7 +123,6 @@ if (!empty($store['images']))
         $i++;
     }
     $table .= "</table>";
-    echo $table;
     $storeImages .= $table."</td></tr>";
 }
 ?>
@@ -123,6 +137,13 @@ if (!empty($store['images']))
             </header>
         </td>
     </tr>
+    <?php
+    // Images
+    if (!empty($storeImages))
+    {
+        echo $storeImages;
+    }
+    ?>
     <tr>
         <!-- LEFT COL -->
         <td style="width:300px;">
@@ -136,6 +157,14 @@ if (!empty($store['images']))
                     <td><strong>Address</strong></td>
                     <td>
                         <?= $storeAddress; ?>
+                        <?php
+                        if (!empty($store['map']))
+                        {
+                        ?><br />
+                            <a href='#map'>Map &amp; Directions</a>
+                        <?php
+                        }
+                        ?>
                     </td>
                 </tr>
                 <?php
@@ -216,61 +245,13 @@ if (!empty($store['images']))
                 <?php
                 }
                 ?>
-            </table>
-
-    <?php
-    if (!empty($hours))
-    {
-    ?>
-            <table class='bordered_outside'>
-            <?php
-                echo $hours;
-            ?>
-            </table>
-    <?php
-    }
-
-            // Facebook
-            if (!empty($store['facebookURL']))
-            {
-                ?>
-                <p>
-                    <a href="<?= $store['facebookURL']; ?>">
-                        <img src="/css/images/items/facebook.jpg" class="no-border"/>
-                    </a>
-                </p>
+                </table>
                 <?php
-            }
-            ?>
-        </td>
 
-        <!-- RIGHT COL -->
-        <td>
-            <?php
-            // Bio
-            if (!empty($store['bio']))
-            {
-                echo "<p>" . Utility::convertNLToBR($store['bio']) . "</p>";
-            }
-
-            // Store Images
-            /*
-            if (!empty($store['images']) && count($store['images']) == 1)
-            {
-                echo "<img style='width:585px;height:385px;'/>";
-            }
-            */
-            ?>
-
-        </td>
-    </tr>
-
-    <?php
-    if (!empty($store['services']))
-    {
-        ?>
-        <tr>
-            <td colspan="2">
+                // Services
+                if (!empty($store['services']))
+                {
+                ?>
                 <h2><strong>Services Offered</strong></h2>
                 <table class="bordered_outside">
                     <tr>
@@ -292,25 +273,78 @@ if (!empty($store['images']))
                         </td>
                     </tr>
                 </table>
-            </td>
-        </tr>
-        <?php
-    }
+                <?php
+                }
 
-    // Images
-    if (!empty($storeImages))
+    /*
+    if (!empty($hours))
     {
-        echo $storeImages;
+    ?>
+            <table class='bordered_outside'>
+            <?php
+                echo $hours;
+            ?>
+            </table>
+    <?php
     }
+     */
 
+            // Facebook (img link)
+            if (!empty($store['facebookURL']))
+            {
+                ?>
+                <p>
+                    <a href="<?= $store['facebookURL']; ?>">
+                        <img src="/css/images/items/facebook.jpg" class="no-border"/>
+                    </a>
+                </p>
+                <?php
+            }
+    ?>
+
+        </td>
+
+        <!-- RIGHT COL -->
+        <td>
+            <?php
+            // Owners
+            if (!empty($store['ownerName']))
+            {
+                echo "<p><b>Owners: </b>" . $store['ownerName'] . "</p>";
+            }
+
+            // Bio
+            if (!empty($store['bio']))
+            {
+                echo "<p>" . Utility::convertNLToBR($store['bio']) . "</p>";
+            }
+
+            // Store Images
+            /*
+            if (!empty($store['images']) && count($store['images']) == 1)
+            {
+                echo "<img style='width:585px;height:385px;'/>";
+            }
+            */
+            ?>
+
+        </td>
+    </tr>
+
+<?php
     // Map
     if (!empty($store['map']))
     {
         ?>
         <tr>
-            <td colspan="2">
-                <h2>Map</h2>
-                <img style="width:870px;height:550px;margin:0 auto;" src="<?php echo $store['map']; ?>" />
+            <td colspan="2" class='center'>
+                <a name='map'>
+                <h2>Map and Directions</h2>
+                </a>
+                <!-- <img style="width:870px;height:550px;margin:0 auto;" src="" /> -->
+                <?php
+                echo html_entity_decode($store['map']);
+                ?>
             </td>
         </tr>
         <?php

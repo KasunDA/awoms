@@ -150,6 +150,21 @@
                                 ?>' size='15' />
                             </td>
                         </tr>
+
+                        <tr>
+                            <td>
+                                Rate Pro Reg Key(s)
+                            </td>
+                            <td>
+                                <?php
+                                if (isset($inp_rateprokey))
+                                {
+                                    echo "<span style='color:red'>".$inp_rateprokey."</span>";
+                                }
+                                ?>
+                            </td>
+                        </tr>
+
                     </table>
 
                     <table>

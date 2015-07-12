@@ -275,6 +275,21 @@ if ($storeID == 'DEFAULT')
 
             <tr>
                 <td>
+                    Rate Pro Reg Key(s)
+                    <p class="muted">Private use only</p>
+                </td>
+                <td>
+                    <input type='text' id='inp_rateprokey' name='inp_rateprokey' value='<?php
+                    if (isset($inp_rateprokey))
+                    {
+                        echo $inp_rateprokey;
+                    }
+                    ?>' size='30' />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
                     Store Bio
                 </td>
                 <td>
@@ -316,6 +331,73 @@ if ($storeID == 'DEFAULT')
 
                     <a href="/filemanager/dialog.php?type=0" class="btn iframe-btn" type="button">Choose</a>
                     <p class="muted">Click Choose then upload or find an existing image to use. Right click on the file and choose 'Show URL'. <b>Copy the URL</b> then close then file manager. Pase the URL into the field here then Save.</p>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Map and Directions iframe link
+                    <p class="muted">This is the full iframe link provided by Google Maps</p>
+                </td>
+                <td>
+                    <input type='text' id='inp_map' name='inp_map' value='<?php
+                    if (isset($inp_map))
+                    {
+                        echo $inp_map;
+                    }
+                    ?>' size='60' />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    Store Images
+                    <p class="muted">Displayed on store location page</p>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>Pic #1</td>
+                            <td>
+                                <input type='text' id='inp_pic1' name='inp_pic1' value='<?php
+                                if (isset($inp_pic1))
+                                {
+                                    echo $inp_pic1;
+                                }
+                                ?>' size='60' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Pic #2</td>
+                            <td>
+                                <input type='text' id='inp_pic2' name='inp_pic2' value='<?php
+                                if (isset($inp_pic2))
+                                {
+                                    echo $inp_pic2;
+                                }
+                                ?>' size='60' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Pic #3</td>
+                            <td>
+                                <input type='text' id='inp_pic3' name='inp_pic3' value='<?php
+                                if (isset($inp_pic3))
+                                {
+                                    echo $inp_pic3;
+                                }
+                                ?>' size='60' />
+                            </td>
+                        </tr>
+                    </table>
+
+                    <a href="/filemanager/dialog.php?type=0" class="btn iframe-btn" type="button">Choose</a>
+                    <p class="muted">Click Choose then upload or find an existing image to use. Right click on the file and choose 'Show URL'. <b>Copy the URL</b> then close then file manager. Pase the URL into the field here then Save.</p>
+                </td>
+            </tr>
+
+        </table>
+
 <?php
     $pageJavaScript[] = "
         $('.iframe-btn').fancybox({
@@ -325,11 +407,6 @@ if ($storeID == 'DEFAULT')
             'autoSize'  : false
         });";
 ?>
-
-                </td>
-            </tr>
-
-        </table>
 
         <h1>Store Address</h1>
         <table class="bordered">
@@ -479,6 +556,20 @@ if ($storeID == 'DEFAULT')
                     <select name='inp_ownerID'>
                         <?= $contactsChoiceList; ?>
                     </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Owner Display Name
+                    <p class="muted">This is the actual Owners Name that is displayed on the location page.</p>
+                </td>
+                <td>
+                    <input type='text' id='inp_ownerName' name='inp_ownerName' value='<?php
+                    if (isset($inp_ownerName))
+                    {
+                        echo $inp_ownerName;
+                    }
+                    ?>' size='60' />
                 </td>
             </tr>
         </table>

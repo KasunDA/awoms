@@ -19,9 +19,10 @@ class Store extends Model
             // Info
             'addressID', 'coding', 'companyName', 'legalName', 'ein',
             'phone', 'fax', 'tollFree', 'website', 'email', 'emailStoreCorrespondence',
-            'bio', 'latitude', 'longitude', // 'pic1', 'pic2', 'pic3', 'cap1', 'cap2', 'cap3',
+            'bio', 'latitude', 'longitude',
+            'map', 'pic1', 'pic2', 'pic3', 'cap1', 'cap2', 'cap3',
             'storeToStoreSales', 'bankruptcy', 'turnkey', 'openDate', 'transferDate', 'closeDate', 'terminationDate',
-            'facebookURL', 'territoryURL',
+            'facebookURL', 'territoryURL', 'rateprokey', 'ownerName',
             // Hours
             'hours', 'hrsMon', 'hrsTue', 'hrsWed', 'hrsThu', 'hrsFri', 'hrsSat', 'hrsSun'
         );
