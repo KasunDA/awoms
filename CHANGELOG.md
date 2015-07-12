@@ -2,33 +2,19 @@
  - [x] humans.txt, robots.txt
  - [x] 403,404,500.html
  - [x] MVC API Framework accessible via PHP or AJAX for dynamic content
- - [x] Brands, Domains, Usergroups, Users, Pages, Articles, Comments
- - [x] Custom Sessions stored encrypted in database
- - [x] Detect URL -> DomainName HTTP_HOST -> DomainID -> Brand ID
- - [x] ACL
- - [x] Optional $template variable added to Controller class to allow specifying whether to load header/footer, useful for AJAX requests returning JSON datatype
- - [x] WYSIWYG (TinyMCE + Responsive File Manager)
- - [x] Public and Private folders per Brand and Store
- - [x] Restrict content (Pages, Articles) to that brand ID
+ - [x] Brands, Domains, Usergroups, Users, Pages, Articles, Comments, Files and Images, ACL security
+ - [x] Custom Sessions stored encrypted in database allows for secured scalability
+ - [x] WYSIWYG Editor (TinyMCE + Responsive File Manager)
+ - [x] Public and Private files per Brand and Store
+ - [x] Restricted content by ACLs
  - [x] URL Rewrites => /about <==> /pages/view/2/2014/05/23/about-page
  - [x] Brand Theme support
- - [x] Forgot password
- - [x] Store Locator
- - [x] favicon per brand
- - [x] Brand, Page and Article level Meta Title, Description and Keywords
+ - [x] Store Locator and Territory Maps
+ - [x] Per-brand and per-store customizations
+ - [x] SEO Meta Title, Description and Keywords at Brand, Page and Article levels
   
 #@TODO
- - [/] Stores
-   - [x] Name/Title
-   - [x] Hours/Format
-   - [x] Bio/Format
-   - [x] Territory Maps (logged in)
-   - [x] Pictures (brand admin selects which store images to use on store location page)
-   - [x] Map and Directions (Map service integration e.g. google maps)
-   - [x] Rate Pro Reg Key (general extra pub/priv fields?)
-   - [ ] Owners displayed on location page
- - [x] File manager, store folder, replace id# with actual store number similar to brand folder
- - [ ] Cart integration
+ - [ ] Cart / Owners Store integration
  - [ ] Admin: Dynamic Brand selection list (domain etc., ACL to view/change)
  - [/] Sanitization (audit all input sanitization and usage)
  - [ ] CSS editor
