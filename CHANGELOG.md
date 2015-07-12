@@ -18,14 +18,15 @@
  - [x] Brand, Page and Article level Meta Title, Description and Keywords
   
 #@TODO
- - [ ] Stores
-        - [x] Name/Title
-        - [x] Hours/Format
-        - [x] Bio/Format
-        - [x] Territory Maps (logged in)
-        - [ ] Pictures (brand admin selects which store images to use on store location page)
-        - [ ] Map and Directions (Map service integration e.g. google maps)
-        - [ ] Rate Pro Reg Key (general extra pub/priv fields?)
+ - [/] Stores
+   - [x] Name/Title
+   - [x] Hours/Format
+   - [x] Bio/Format
+   - [x] Territory Maps (logged in)
+   - [x] Pictures (brand admin selects which store images to use on store location page)
+   - [x] Map and Directions (Map service integration e.g. google maps)
+   - [x] Rate Pro Reg Key (general extra pub/priv fields?)
+   - [ ] Owners displayed on location page
  - [x] File manager, store folder, replace id# with actual store number similar to brand folder
  - [ ] Cart integration
  - [ ] Admin: Dynamic Brand selection list (domain etc., ACL to view/change)
