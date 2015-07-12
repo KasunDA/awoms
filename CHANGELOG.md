@@ -22,9 +22,9 @@
         - [x] Name/Title
         - [/] Hours/Format
         - [/] Bio/Format
+        - [x] Territory Maps (logged in)
         - [ ] Pictures
         - [ ] Map and Directions
-        - [ ] Territory Maps (logged in)
  - [x] File manager, store folder, replace id# with actual store number similar to brand folder
  - [ ] Cart integration
  - [ ] Admin: Dynamic Brand selection list (domain etc., ACL to view/change)

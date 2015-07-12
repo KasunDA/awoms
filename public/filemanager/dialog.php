@@ -632,7 +632,7 @@ else
                     Errors::debugLogger("Store folder # lookup needed, using brandID: $brandID...");
                     $storeLookup = TRUE;
                     $Store = new Store();
-                    $storeList = $Store->getWhere(array('brandID' => $brandID));
+                    $storeList = $Store->getWhere(array('brandID' => $brandID), NULL, NULL, NULL, NULL, TRUE);
                 }
             }
             
@@ -1033,7 +1033,31 @@ else
                                                         {
                                                             if ($sll['storeID'] == $label)
                                                             {
-                                                                $label = $sll['storeName'];
+                                                                $storeNumber = "";
+                                                                if (!empty($sll['storeNumber']))
+                                                                {
+                                                                    $storeNumber = $sll['storeNumber'];
+                                                                }
+
+                                                                $storeCity = "";
+                                                                if (!empty($sll['address'])
+                                                                        && !empty($sll['address']['city']))
+                                                                {
+                                                                    $storeCity = $sll['address']['city'];
+                                                                }
+
+                                                                $storeName = "";
+                                                                if (!empty($sll['storeName']))
+                                                                {
+                                                                    $storeName = $sll['storeName'];
+                                                                }
+
+                                                                if (!empty($storeName))
+                                                                {
+                                                                    $label = $storeNumber.' '.$storeName;
+                                                                } else {
+                                                                    $label = $storeNumber.' '.$storeCity;
+                                                                }
                                                                 break;
                                                             }
                                                         }

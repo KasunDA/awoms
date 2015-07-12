@@ -300,6 +300,35 @@ if ($storeID == 'DEFAULT')
                         ?></textarea>
                 </td>
             </tr>
+
+            <tr>
+                <td>
+                    Territory Map Image
+                    <p class="muted">Private use only</p>
+                </td>
+                <td>
+                    <input type='text' id='inp_territoryImg' name='inp_territoryImg' value='<?php
+                    if (isset($inp_territoryImg))
+                    {
+                        echo $inp_territoryImg;
+                    }
+                    ?>' size='60' />
+
+                    <a href="/filemanager/dialog.php?type=0" class="btn iframe-btn" type="button">Choose</a>
+                    <p class="muted">Click Choose then upload or find an existing image to use. Right click on the file and choose 'Show URL'. <b>Copy the URL</b> then close then file manager. Pase the URL into the field here then Save.</p>
+<?php
+    $pageJavaScript[] = "
+        $('.iframe-btn').fancybox({
+            'width'		: 900,
+            'height'	: 600,
+            'type'		: 'iframe',
+            'autoSize'  : false
+        });";
+?>
+
+                </td>
+            </tr>
+
         </table>
 
         <h1>Store Address</h1>

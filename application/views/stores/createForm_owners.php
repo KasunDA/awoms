@@ -378,12 +378,18 @@
 
     <p>&nbsp;</p>
 
+    <?php
+    if (!empty($inp_territoryImg))
+    {
+    ?>
     <p>
-    <h1>Your store's protected territory</h1>
-</p>
-<p class='center'>
-    <img src='' width='500' height='500'/>
-</p>
-
+        <h1>Your store's protected territory</h1>
+    </p>
+    <p class='center'>
+        <img src='<?php echo $inp_territoryImg; ?>'/>
+    </p>
+<?php
+    }
+?>
 
 </div>

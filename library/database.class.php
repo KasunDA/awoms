@@ -99,7 +99,7 @@ class Database
     
     // Is this a SELECT/INSERT/UPDATE/REPLACE
     $tokens = array_map('trim', explode(" ", trim($query)));
-    
+
     //
     // Query
     //
