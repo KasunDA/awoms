@@ -20,11 +20,12 @@
 #@TODO
  - [ ] Stores
         - [x] Name/Title
-        - [/] Hours/Format
-        - [/] Bio/Format
+        - [x] Hours/Format
+        - [x] Bio/Format
         - [x] Territory Maps (logged in)
-        - [ ] Pictures
-        - [ ] Map and Directions
+        - [ ] Pictures (brand admin selects which store images to use on store location page)
+        - [ ] Map and Directions (Map service integration e.g. google maps)
+        - [ ] Rate Pro Reg Key (general extra pub/priv fields?)
  - [x] File manager, store folder, replace id# with actual store number similar to brand folder
  - [ ] Cart integration
  - [ ] Admin: Dynamic Brand selection list (domain etc., ACL to view/change)
