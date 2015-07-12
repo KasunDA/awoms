@@ -154,4 +154,14 @@ class Store extends Model
         return $item;
     }
 
+    function update($data, $table = NULL)
+    {
+        // For NL to BR conversion on save
+        if (!empty($data['bio']))
+        {
+            $data['bio'] = Utility::convertNLToBR(($data['bio']));
+        }
+        parent::update($data, $table);
+    }
+
 }

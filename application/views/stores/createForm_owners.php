@@ -157,15 +157,15 @@
                             <td>
                                 Store Hours
                                 <small>
-                                <p class='muted'>Format:<br/>8:00 AM - 6:00 PM Mon-Fri<br />9:00 AM - 12:00 PM Saturday</p>
+                                <p class='muted' style="font-size:.9em;">Format:<br/>8:00 AM - 6:00 PM Mon-Fri<br />9:00 AM - 12:00 PM Saturday</p>
                                 </small>
                             </td>
                             <td>
                                 <br />
-                                <textarea id='inp_hours' name='inp_hours' cols="12" rows="2"><?php
+                                <textarea id='inp_hours' name='inp_hours' cols="20" rows="2"><?php
                                         if (isset($inp_hours))
                                         {
-                                            echo $inp_hours;
+                                            echo Utility::convertBRToNL($inp_hours);
                                         }
                                         ?></textarea>
                                 <!--
@@ -179,7 +179,7 @@
 
                 </td>
 
-                <td>
+                <td width="53%">
 
                     <h1>Store Address</h1>
                     <table>
@@ -315,7 +315,7 @@
                     </table>
 
                     <h1>Store Services</h1>
-                    <table class="bordered">
+                    <table class="bordered" width="100%">
                         <tr>
                             <td>
                                 <ul class="menu menu-horizontal">
@@ -343,7 +343,7 @@
                     <textarea id='inp_bio' name='inp_bio' cols="55" rows="15"><?php
                         if (isset($inp_bio))
                         {
-                            echo $inp_bio;
+                            echo Utility::convertBRToNL($inp_bio);
                         }
                         ?></textarea>
                 </td>

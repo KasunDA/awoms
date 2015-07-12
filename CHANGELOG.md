@@ -19,12 +19,13 @@
   
 #@TODO
  - [ ] Stores
-        - [ ] Name/Title
-        - [ ] Hours/Format
-        - [ ] Bio/Format
+        - [x] Name/Title
+        - [/] Hours/Format
+        - [/] Bio/Format
         - [ ] Pictures
         - [ ] Map and Directions
         - [ ] Territory Maps (logged in)
+ - [x] File manager, store folder, replace id# with actual store number similar to brand folder
  - [ ] Cart integration
  - [ ] Admin: Dynamic Brand selection list (domain etc., ACL to view/change)
  - [/] Sanitization (audit all input sanitization and usage)

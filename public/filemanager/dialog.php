@@ -1,7 +1,7 @@
 <?php
 include('config/config.php');
 /**
- * GPFC Integration
+ * AWOMS Integration
  */
 Errors::debugLogger("Checking if user has files Read access...", 10);
 if (!ACL::IsUserAuthorized("files", "read"))
@@ -13,7 +13,7 @@ $_SESSION['RF']["verify"] = "RESPONSIVEfilemanager";
 if (isset($_POST['submit']))
 {
     /**
-     * GPFC Integration
+     * AWOMS Integration
      */
     Errors::debugLogger("Post received, checking if user has Create/Update permissions...");
     if (
@@ -306,7 +306,7 @@ else
     ));
 
     /**
-     * GPFC Integration
+     * AWOMS Integration
      */
     Session::saveSessionToDB();    
     // No need to edit below this, pretty stock GUI code
@@ -608,7 +608,8 @@ else
             $files   = scandir($current_path . $rfm_subfolder . $subdir);
             $n_files = count($files);
 
-            //brand # -> name lookup for friendly label
+            // CUSTOM AWOMS Integration
+            // Brand # -> Brand Name lookup for friendly label
             Errors::debugLogger("Checking if brand folder # lookup needed (".$current_path . $rfm_subfolder . $subdir.")...");
             $brandLookup = FALSE;
             if (preg_match('/^\.\.\/file\/source\/Brands\/$/', $current_path . $rfm_subfolder . $subdir))
@@ -617,6 +618,22 @@ else
                 $brandLookup = TRUE;
                 $Brand = new Brand();
                 $brandList = $Brand->getWhere();
+            }
+
+            // Store # -> Store Name lookup for friendly label
+            Errors::debugLogger("Checking if store folder # lookup needed (".$current_path . $rfm_subfolder . $subdir.")...");
+            $storeLookup = FALSE;
+            if (!empty(preg_match_all('/^\.\.\/file\/source\/Brands\/(\d+)\/Stores\/$/', $current_path . $rfm_subfolder . $subdir, $matches)))
+            {
+                $brandID = $matches[1];
+                if (!empty($brandID))
+                {
+                    $brandID = $brandID[0];
+                    Errors::debugLogger("Store folder # lookup needed, using brandID: $brandID...");
+                    $storeLookup = TRUE;
+                    $Store = new Store();
+                    $storeList = $Store->getWhere(array('brandID' => $brandID));
+                }
             }
             
             //php sorting
@@ -982,6 +999,7 @@ else
                                                 </div>
                                             </div>
                                             <?php
+
                                             if ($file == "..")
                                             {
                                                 ?>
@@ -991,24 +1009,36 @@ else
                                             </a>
 
                                             <?php
-                                        }
-                                        else
-                                        {
-                                            Errors::debugLogger("Brand Lookup: $brandLookup File: $file");
-                                            $label = $file;
-                                            if ($brandLookup && preg_match('/^\d+$/', $label))
+                                            }
+                                            else
                                             {
-                                                Errors::debugLogger("Brand folder # lookup...");
-                                                foreach ($brandList as $bll)
+                                                $label = $file;
+                                                // Brand or Store id#/name conversion
+                                                if (preg_match('/^\d+$/', $label))
                                                 {
-                                                    Errors::debugLogger("bll: ".$bll['brandName']);
-                                                    if ($bll['brandID'] == $label)
+                                                    if (!empty($brandLookup))
                                                     {
-                                                        $label = $bll['brandName'];
-                                                        Errors::debugLogger("Brand folder # lookup label: $label");
+                                                        foreach ($brandList as $bll)
+                                                        {
+                                                            if ($bll['brandID'] == $label)
+                                                            {
+                                                                $label = $bll['brandName'];
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                    elseif (!empty($storeLookup))
+                                                    {
+                                                        foreach ($storeList as $sll)
+                                                        {
+                                                            if ($sll['storeID'] == $label)
+                                                            {
+                                                                $label = $sll['storeName'];
+                                                                break;
+                                                            }
+                                                        }
                                                     }
                                                 }
-                                            }
                                             ?>
                                             </a>
                                             <div class="box">

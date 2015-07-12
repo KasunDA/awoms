@@ -3,7 +3,7 @@
 if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators")
 {
 ?>
-    <h1>Custom GPFC Admin Home Template</h1>
+    <h1>Custom Admin Home Template</h1>
 
     <p>To modify this admin home page template, edit the file below:</p>
 <?php

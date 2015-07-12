@@ -1,4 +1,4 @@
-<h1>Custom GPFC Home Template</h1>
+<h1>Custom Home Template</h1>
 
 <p>To modify this home page template, edit the file below:</p>
 

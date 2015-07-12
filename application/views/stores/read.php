@@ -250,7 +250,7 @@ if (!empty($store['images']))
             // Bio
             if (!empty($store['bio']))
             {
-                echo "<p>" . $store['bio'] . "</p>";
+                echo "<p>" . Utility::convertNLToBR($store['bio']) . "</p>";
             }
 
             // Store Images

@@ -39,6 +39,6 @@ mb_internal_encoding('UTF-8');
 $versionFile = ROOT.DS.'config'.DS.'version.txt';
 if (file_exists($versionFile)){$version = file_get_contents($versionFile);}else{$version = "v0.0.1";}
 $productName = ROOT.DS.'config'.DS.'product.txt';
-if (file_exists($productName)){$product = file_get_contents($productName);}else{$product = "GPFC PHP MVC CMS";}
+if (file_exists($productName)){$product = file_get_contents($productName);}else{$product = "AWOMS PHP MVC CMS";}
 define('ProductName', $product);
 define('Version', $version);

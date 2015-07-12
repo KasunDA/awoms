@@ -115,7 +115,7 @@ if ($storeID == 'DEFAULT')
             <tr>
                 <td>
                     Store Name
-                    <p class="muted">This is used for the store display name. Don't include the Brand Name.</p>
+                    <p class="muted">This is used for the store display name. If nothing is specified, the City name will be used. Don't include the Brand Name.</p>
                 </td>
                 <td>
                     <input type='text' id='inp_storeName' name='inp_storeName' value='<?php
@@ -281,7 +281,7 @@ if ($storeID == 'DEFAULT')
                     <textarea id='inp_bio' name='inp_bio' cols="60" rows="5"><?php
                         if (isset($inp_bio))
                         {
-                            echo $inp_bio;
+                            echo Utility::convertBRToNL($inp_bio);
                         }
                         ?></textarea>
                 </td>
@@ -295,7 +295,7 @@ if ($storeID == 'DEFAULT')
                     <textarea id='inp_hours' name='inp_hours' cols="60" rows="2"><?php
                         if (isset($inp_hours))
                         {
-                            echo $inp_hours;
+                            echo Utility::convertBRToNL($inp_hours);
                         }
                         ?></textarea>
                 </td>
