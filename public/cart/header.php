@@ -14,14 +14,39 @@ if (count(get_included_files()) == 1) {
  * Example: "/var/www/vhosts/cart.com/private/cart/cart_settings.inc.php"
  * Example: "C:\wamp\www\cart.com\private\cart\cart_settings.inc.php";
  *****/
-$cartPrivateSettingsFile = "E:/Projects/GPFC/cart/cart_settings.inc.php";
+//$cartPrivateSettingsFile = "E:/Projects/GPFC/cart/cart_settings.inc.php";
+$cartPrivateSettingsFile = "../../kcart/cart_settings.inc.php";
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Loading cart settings<BR/>';
 require_once($cartPrivateSettingsFile);
-\Errors::debugLogger(PHP_EOL . '***** New Page Load (' . $_SERVER['REQUEST_URI'] . ') *****', 1, true);
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Loading cart settings complete. CART_ID:'.CART_ID.'<BR/>';
+\Errors::debugLogger(PHP_EOL . '***** New (Cart) Page Load (' . $_SERVER['REQUEST_URI'] . ') *****', 1, true);
 \Errors::debugLogger(PHP_EOL . serialize($_POST) . PHP_EOL . '*****' . PHP_EOL, 8);
+
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Store:<BR/>';
+if (!empty($store))
+{
+    var_dump($store);
+}
+
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Brand:<BR/>';
+if (!empty($brand))
+{
+    var_dump($brand);
+}
+
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Cart:<BR/>';
+if (!empty($cart))
+{
+    var_dump($cart);
+}
+
 // Load cart class and session data
-$cart                    = new killerCart\Cart(CART_ID);
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Attempting to init AWOMS cart<BR/>';
+
+$cart                    = new killerCart\KillerCart(CART_ID);
 // Authentication and Authorization
 $auth                    = new killerCart\Auth();
+
 if (empty($_REQUEST['customerID'])) {
     \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] CustomerID is Empty. sessionName = Customer', 1, true);
     $sessionName = cartCodeNamespace.'Customer';
@@ -29,8 +54,14 @@ if (empty($_REQUEST['customerID'])) {
     \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] CustomerID is: '.$_REQUEST['customerID'].'. sessionName = Admin', 1, true);
     $sessionName = cartCodeNamespace.'Admin';
 }
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=SessionName='.$sessionName.'<BR/>';
+
 // Start Session
-$auth->startSession($sessionName);
+//$auth->startSession($sessionName);
+
+$Session = new Session();
+var_dump($Session);
+
 
 //
 // BEGIN CODE SPECIFIC TO EXISTING USER LOGIN EXCHANGE

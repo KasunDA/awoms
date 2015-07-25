@@ -1,0 +1,179 @@
+<!-- Variables from user.php -->
+Edit User</small></h2>
+<div id='div_admin_edit_user' class='row'>
+    <!-- /***** BEGIN: EDIT USER FORM *****/ -->
+    <form id='frm_admin_edit_user' class='form-horizontal' method='POST' enctype='multipart/form-data'>
+        <input type='hidden' name='p' value='<?php echo $_REQUEST['p']; ?>' />
+        <input type='hidden' name='a' value='edit_user' />
+        <input type='hidden' name='s' value='2' />
+        <input type='hidden' name='userID' value='<?php echo $userID; ?>' />
+
+        <!-- Cart Owner -->
+        <div class="control-group">
+            <label class="control-label" for="cartID">Cart</label>
+            <div class="controls">
+                <?php
+                $cart = new killerCart\KillerCart($_SESSION['cartID']);
+                ?>
+                <select id="cartID" name="cartID">
+                    <?php
+                    // @todo Check if allowed to add users
+                    // @todo Check if allowed to add master admin
+                    // @todo Check if allowed to add admin to other cart IDs
+                    // @todo Only allow adding admins to current cart
+                    foreach ($cart->getCartIDs('All') as $k => $v) {
+                        //
+                        // ACL Check
+                        //
+                        if (empty($globalACL['write'])) {
+                            if ($_SESSION['cartID'] != $v['cartID']) {
+                                continue;
+                            }
+                        }
+                        if ($v['cartID'] == $u['cartID']) {
+                            $selected = ' selected';
+                        } else {
+                            $selected = '';
+                        }
+                        $s = $cart->getCartInfo($v['cartID']);
+                        echo "<option value='" . $s['cartID'] . "'" . $selected . ">" . $s['cartName'] . "</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
+
+        <!-- Group -->
+        <div class="control-group">
+            <label class="control-label" for="userGroupID">Group</label>
+            <div class="controls">
+                <?php
+                $user = new killerCart\User();
+                ?>
+                <select id="userGroupID" name="userGroupID">
+                    <option value='' selected="selected" disabled>--Select--</option>
+                    <?php
+                    foreach ($user->getGroups($_SESSION['cartID']) as $g) {
+                        //
+                        // ACL Check
+                        //
+                        // Not global admin, skip group
+                        if (empty($globalACL['write'])) {
+                            if (strstr($g['groupName'], 'Global')) {
+                                continue;
+                            }
+                        }
+                        // Not global or cart admin, skip group
+                        if (empty($globalACL['write'])
+                                && empty($cartACL['write'])) {
+                            if ($g['groupID'] != $u['groupID']) {
+                                continue;
+                            }
+                        }
+                        if ($g['groupID'] == $u['groupID']) {
+                            $selected = ' selected';
+                        } else {
+                            $selected = '';
+                        }
+                        echo "<option value='" . $g['groupID'] . "'" . $selected . ">" . $g['groupName'] . "</option>";
+                    }
+                    ?>
+                </select>
+                <span class="help-inline">
+                    <a href="#groupHelpModal" id='groupHelpBtn' role="button" class="btn" data-toggle="modal"><small>Need Help?</small></a>
+                </span>
+                <!-- Group Help -->
+                <div id="groupHelp">
+                    <?php
+                    foreach ($user->getGroups($_SESSION['cartID']) as $g) {
+                        //
+                        // ACL Check
+                        //
+                        if (empty($globalACL['write'])) {
+                            if (strstr($g['groupName'], 'Global')) {
+                                continue;
+                            }
+                        }
+                        echo "<strong>" . $g['groupName'] . "</strong><br />" . $g['groupDescription'] . "<br />";
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active -->
+        <div class="control-group">
+            <label class="control-label" for="userActive">Active</label>
+            <div class="controls">
+                <select id="userActive" name="userActive">
+                    <option value='1'<?php
+                    if ($u['userActive'] == 1) {
+                        echo ' selected';
+                    }
+                    ?>>Active</option>
+                    <option value='0'<?php
+                            if ($u['userActive'] == 0) {
+                                echo ' selected';
+                            }
+                            ?>>Inactive</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Username -->
+        <div class="control-group">
+            <label class="control-label" for="username">Username</label>
+            <div class="controls">
+                <input type="text" id="username" name="username" placeholder="Enter Username" value='<?php echo $u['username']; ?>' />
+            </div>
+        </div>
+
+        <!-- User Passphrase -->
+        <!-- @todo -->
+        <div class="control-group">
+            <label class="control-label" for="passphrase">Passphrase</label>
+            <div class="controls">
+                <input type="password" id="passphrase" name="passphrase" placeholder="Enter New Passphrase" />
+                <span class="help-inline">
+                    <a href="#" id='userPassphraseGeneratorBtn' role="button" class="btn" data-toggle="modal"><small>Generate</small></a>
+                </span>
+                <!-- Passphrase Generator -->
+                <div id="userPassphraseGenerator">
+                    <?php
+                    $len = 12;
+                    // Very complex
+                    for ($p = 0; $p <= 3; $p++) {
+                        echo htmlentities(killerCart\Auth::randomPassphrase($len)) . '<br />';
+                        $len--;
+                    }
+                    // A little easier to remember
+                    echo htmlentities(killerCart\Auth::randomPassphrase($len, true)) . '<br />';
+                    echo htmlentities(killerCart\Auth::randomPassphrase($len, true)) . '<br />';
+                    ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email -->
+        <div class="control-group">
+            <label class="control-label" for="userEmail">Email</label>
+            <div class="controls">
+                <input type="text" id="userEmail" name="userEmail" placeholder="Enter User Email" value='<?php echo $u['email']; ?>' />
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="control-group">
+            <label class="control-label" for="userNotes">Notes</label>
+            <div class="controls">
+                <textarea id="userNotes" name="userNotes" placeholder="Enter User Notes"><?php echo $u['userNotes']; ?></textarea>
+            </div>
+        </div>
+
+        <div class='form-actions'>
+            <a href='?p=user' class='btn'><i class='icon-remove-sign'></i>&nbsp;Cancel</a>
+            <button type="submit" class="btn btn-success"><i class='icon-ok-sign icon-white'></i>&nbsp;Save User</button>
+        </div>
+
+    </form><!--#frmEditUser-->
+</div>

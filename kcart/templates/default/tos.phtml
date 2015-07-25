@@ -1,0 +1,5 @@
+<?php
+$cart     = new killerCart\KillerCart($_SESSION['cartID']);
+$s = $cart->getCartInfo($cartID);
+echo $s['termsOfService'];
+?>

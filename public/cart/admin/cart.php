@@ -41,7 +41,7 @@ if (isset($_REQUEST['m'])
         $slideNum = $_REQUEST['slideNum'];
         $newImageID = $_REQUEST['newImageID'];
         
-        $cart     = new killerCart\Cart($cartID);
+        $cart     = new killerCart\KillerCart($cartID);
         $s = $cart->getCartInfo($cartID);
         $cart->updateCartCarouselSlide($cartID, $slideNum, $newImageID);
         echo "Saved Carousel Slide!";
@@ -82,7 +82,7 @@ if (isset($_REQUEST['m'])
         
         $cartHomeDesc = $_REQUEST['homepageDescription'];
         
-        $cart     = new killerCart\Cart($cartID);
+        $cart     = new killerCart\KillerCart($cartID);
         $s = $cart->getCartInfo($cartID);
         $cart->setCartCarousel($_POST['cartID'], $_POST['showCarousel'], $_POST['carouselInterval'],
                 $slide1ImageID, $slide1Title, $slide1Description, $slide1URL,
@@ -105,7 +105,7 @@ if (isset($_REQUEST['m'])
         if (!empty($_REQUEST['cartID'])) {
             
             $cartID   = $_REQUEST['cartID'];
-            $cart     = new killerCart\Cart($cartID);
+            $cart     = new killerCart\KillerCart($cartID);
             $s = $cart->getCartInfo($cartID);
         }
 
@@ -162,7 +162,7 @@ if (!isset($_REQUEST['a'])) {
         <div class='page-header'>
             <h1>Cart Management<small>&nbsp;
         <?php
-        $cart                  = new killerCart\Cart(CART_ID);
+        $cart                  = new killerCart\KillerCart(CART_ID);
         $cartCount['Active']   = $cart->getCartCount('Active');
         $cartCount['Inactive'] = $cart->getCartCount('Inactive');
         $cartCount['All']      = $cartCount['Active'] + $cartCount['Inactive'];
@@ -190,7 +190,7 @@ if (!isset($_REQUEST['a'])) {
         if ($_REQUEST['a'] == "edit_cart") {
             
                         // Initialize Cart Object
-                        $cart = new killerCart\Cart($cartID);
+                        $cart = new killerCart\KillerCart($cartID);
                         
                         // Load selected cart info
                         if (!empty($_REQUEST['cartID'])) {
@@ -394,7 +394,7 @@ if (!isset($_REQUEST['a'])) {
 
                     // Validated, save each entry
                     if ($validated === true) {
-                        $cart = new killerCart\Cart($cartID);
+                        $cart = new killerCart\KillerCart($cartID);
                         foreach ($san as $k => $v) {
                             if (!$cart->setCartTaxRate($cartID, $k, $stateList[$k], $v)) {
                                 $validated = false;

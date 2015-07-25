@@ -1,14 +1,17 @@
 <?php
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'<BR/>';
 //
 // Load Cart Header (unless in mini mode)
 //
 if (empty($cart_mini_mode)) {
+    echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'<BR/>';
     require('header.php');
     $fileloc_prefix = "";
 } else {
+    echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'<BR/>';
     $fileloc_prefix = "../"; // Sets file include path prefix to up a directory when in mini-mode (set appropriately depending on location of mini-cart to cart)
 }
-
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'<BR/>';
 //
 // Load selected action required file
 //

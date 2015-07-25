@@ -69,6 +69,18 @@ More info: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritemap
  >         RewriteCond   ${url-aliases:$1}  >"" [NC]
  >         RewriteRule   ^(.*)              ${url-aliases:$1|/404.html} [NC,L,QSA]
  >         </VirtualHost>
-  
+
+# Log Level Configuration
+ - 9999 = Encryption class
+ - 8500 = Session class
+ - 8000 = ACL class
+ - 7000 = Utility class
+
+# Known Error Codes
+ - 1001 = Unknown domain name (kcart/cart_settings)
+ - 1002 = Unknown cart (kcart/cart_settings)
+ - 1003 = Unable to load class (kcart/cart_settings)
+ - 1004 = Unable to load class file (kcart/cart_settings)
+
 # Contact
 @author Brock Hensley <brock@brockhensley.com>

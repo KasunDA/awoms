@@ -1,5 +1,7 @@
 <h1>Generic Home Template (<?php echo __FILE__; ?>)</h1>
 
+<p>CART WIP</p>
+
 <?php
 return;
 
@@ -17,7 +19,7 @@ require_once($cartPrivateSettingsFile);
 \Errors::debugLogger(PHP_EOL . '***** New Page Load (' . $_SERVER['REQUEST_URI'] . ') *****', 1, true);
 \Errors::debugLogger(PHP_EOL . serialize($_POST) . PHP_EOL . '*****' . PHP_EOL, 8);
 // Load cart class and session data
-$cart                    = new killerCart\Cart(CART_ID);
+$cart                    = new killerCart\KillerCart(CART_ID);
 // Authentication and Authorization
 $auth                    = new killerCart\Auth();
 $sessionName = cartCodeNamespace . 'Customer';

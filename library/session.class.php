@@ -81,7 +81,8 @@ class Session
     public function doIKnowYou()
     {
         Errors::debugLogger(__METHOD__, Session::$logLevel);
-        if (isset($_SERVER['HTTP_COOKIE']) && !empty($_COOKIE[BRAND_LABEL])) {
+        if (isset($_SERVER['HTTP_COOKIE'])
+                && !empty($_COOKIE[BRAND_LABEL])) {
 
             Errors::debugLogger(__METHOD__ . ':  Cookie found: ' . $_COOKIE[BRAND_LABEL] . ' getting session from DB...', Session::$logLevel);
             if (self::getSessionFromDB()) {
@@ -211,12 +212,18 @@ class Session
         // Force current theme (@TODO Global theme vs User theme)
         $this->data['session']['storeTheme'] = BRAND_THEME;
 
+        // Cart: Set current theme, ID
+        if (defined("CART_ID"))
+        {
+            $this->data['session']['cartID'] = CART_ID;
+            //$this->data['session']['cartTheme'] = self::getCartTheme();
+        }
+
         $loggedInMsg = "YES";
         if (!isset($this->data['session']['user_logged_in']))
         {
             $this->data['session']['user_logged_in'] = FALSE;
             // @TODO assign to brands anonymous user group?
-
             $loggedInMsg = "NO";
         }
 
@@ -336,7 +343,10 @@ class Session
         $brand = $Brand->getSingle(array('brandID' => BRAND_ID));
         $this->data['session']['brand'] = $brand;
         $this->data['session']['brandID']    = BRAND_ID;
-        $this->data['session']['cartID']    = NULL;
+        if (defined("CART_ID"))
+        {
+            $this->data['session']['cartID']    = CART_ID;
+        }
         $this->data['session']['name']       = BRAND_LABEL;
         
         // If custom Port, exclude Port

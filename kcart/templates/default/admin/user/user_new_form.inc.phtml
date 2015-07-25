@@ -1,0 +1,144 @@
+<!-- Button to trigger modal -->
+<a href="#newUserModal" role="button" class="btn" data-toggle="modal"><i class='icon-plus'></i>&nbsp;Add New User</a>
+
+<!-- User Modal -->
+<!-- /***** ADD NEW USER FORM *****/ -->
+<form id="frm_admin_newUser" class="form-horizontal" method="POST">
+    <div id="newUserModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="newUserModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times</button>
+            <h3 id="newUserModalLabel">Add New User</h3>
+        </div>
+        <div class="modal-body">
+
+            <!-- Cart Owner -->
+            <div class="control-group">
+                <label class="control-label" for="cartOwnerID">Cart Owner</label>
+                <div class="controls">
+                    <?php
+                    $cart = new killerCart\KillerCart($_SESSION['cartID']);
+                    ?>
+                    <select id="cartID" name="cartID">
+                        <?php
+                        // @todo Check if allowed to add users
+                        // @todo Check if allowed to add master admin
+                        // @todo Check if allowed to add admin to other cart IDs
+                        // @todo Only allow adding admins to current cart
+                        foreach ($cart->getCartIDs('All') as $k => $v) {
+                            //
+                            // ACL Check
+                            //
+                            if (empty($globalACL['write'])) {
+                                if ($_SESSION['cartID'] != $v['cartID']) {
+                                    continue;
+                                }
+                            }
+                            $s = $cart->getCartInfo($v['cartID']);
+                            ?>
+                            <option selected value='<?php echo $s['cartID']; ?>'><?php echo $s['cartName']; ?></option>
+                            <?php
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+            <!-- User Group -->
+            <div class="control-group">
+                <label class="control-label" for="userGroupID">User Group</label>
+                <div class="controls">
+                    <?php
+                    $user = new killerCart\User();
+                    ?>
+                    <select id="userGroupID" name="userGroupID">
+                        <option value='' selected="selected">--Select--</option>
+                        <?php
+                        foreach ($user->getGroups() as $g) {
+                            //
+                            // ACL Check
+                            //
+                            if (empty($globalACL['write'])) {
+                                if (strstr($g['groupName'], 'Global')) {
+                                    continue;
+                                }
+                            }
+                            echo "<option value='" . $g['groupID'] . "'>" . $g['groupName'] . "</option>";
+                        }
+                        ?>
+                    </select>
+                    <span class="help-inline">
+                        <a href="#" id='groupHelpBtn' role="button" class="btn"><small>Need Help?</small></a>
+                    </span>
+                    <!-- Group Help -->
+                    <div id="groupHelp">
+                        <?php
+                        foreach ($user->getGroups() as $g) {
+                            echo "<strong>" . $g['groupName'] . "</strong><br />" . $g['groupDescription'] . "<br />";
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Name -->
+            <div class="control-group">
+                <label class="control-label" for="username">User Name</label>
+                <div class="controls">
+                    <input type="text" id="username" name="username" placeholder="Enter User Name">
+                </div>
+            </div>
+
+            <!-- User Passphrase -->
+            <div class="control-group">
+                <label class="control-label" for="passphrase">Passphrase</label>
+                <div class="controls">
+                    <input type="password" id="passphrase" name="passphrase" placeholder="Enter Passphrase" />
+                    <span class="help-inline">
+                        <a href="#" id='userPassphraseGeneratorBtn' role="button" class="btn"><small>Generate</small></a>
+                    </span>
+                    <!-- Passphrase Generator -->
+                    <div id="userPassphraseGenerator">
+                        <?php
+                        $len = 12;
+                        // Very complex
+                        for ($p = 0; $p <= 3; $p++) {
+                            echo htmlentities(killerCart\Auth::randomPassphrase($len)) . '<br />';
+                            $len--;
+                        }
+                        // A little easier to remember
+                        echo htmlentities(killerCart\Auth::randomPassphrase($len, true)) . '<br />';
+                        echo htmlentities(killerCart\Auth::randomPassphrase($len, true)) . '<br />';
+                        ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="control-group">
+                <label class="control-label" for="userEmail">Email</label>
+                <div class="controls">
+                    <input type="text" id="userEmail" name="userEmail" placeholder="Enter User Email">
+                </div>
+            </div>
+
+            <!-- User Notes -->
+            <div class="control-group">
+                <label class="control-label" for="userNotes">User Notes</label>
+                <div class="controls">
+                    <textarea id="userNotes" name="userNotes" placeholder="Enter User Notes"></textarea>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <input type='hidden' name='p' value='<?php echo $_REQUEST['p']; ?>' />
+            <input type='hidden' name='a' value='edit_user' />
+            <input type='hidden' name='s' value='2' />
+            <button type="submit" class="btn btn-success">
+                <i class='icon-ok-sign icon-white'></i>&nbsp;Add New User
+            </button>
+        </div>
+
+    </div>
+</form><!--#frm_admin_new_user-->

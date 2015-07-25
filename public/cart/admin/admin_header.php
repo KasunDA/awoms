@@ -21,7 +21,7 @@ require_once($cartPrivateSettingsFile);
 \Errors::debugLogger(PHP_EOL . serialize($_POST) . PHP_EOL . '*****' . PHP_EOL, 10);
 
 // Load cart class and session data
-$cart                    = new killerCart\Cart(CART_ID);
+$cart                    = new killerCart\KillerCart(CART_ID);
 
 // Authentication and Authorization
 $auth = new killerCart\Auth();
