@@ -36,12 +36,6 @@ if (empty($_REQUEST['customerID'])) {
 }
 echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=SessionName='.$sessionName.':<BR/>';
 
-// Start Session
-//$auth->startSession($sessionName);
-
-//$Session = new Session();
-//var_dump($_Session);
-
 //
 // BEGIN CODE SPECIFIC TO EXISTING USER LOGIN EXCHANGE
 // (Allow use of existing logins exchanged to cart customers accounts)
@@ -253,6 +247,7 @@ if (empty($_REQUEST['p']) || $_REQUEST['p'] == 'cart') {
     //
     // View Cart
     //
+    echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=View cart<BR/>';
 } elseif ($_REQUEST['p'] == 'category') {
 
     //
@@ -341,6 +336,5 @@ if (!empty($cart->products)) {
 //
 // Header Template
 //
-//include(cartPrivateDir . 'templates/' . $cart->session['cartTheme'] . '/header.phtml');
-include(cartPrivateDir . 'templates/default/header.phtml');
+include(cartPrivateDir . 'templates/' . $cart->session['cartTheme'] . '/header.phtml');
 ?>

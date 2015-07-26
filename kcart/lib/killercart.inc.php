@@ -45,26 +45,21 @@ class KillerCart
             return false;
         }
 
-        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=LookupDomainBrand<BR/>';
+        // New cart construction; ensure we have brand/domain/cart info and start/resume/load session
+        $this->DB = new \Database(); // Initiates db connection in "$this" for use later (?)
         $load = \Bootstrap::lookupDomainBrand();
-
-        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=NewSession<BR/>';
         $s = new \Session();
-
-        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Session[data]:<BR/>';
         $ts = $s->data['session'];
-        var_dump($ts);
-
-        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=preThis()<BR/>';
-        var_dump($this);
-
         $this->data['session'] = $ts;
-        $this->data['session']['cartID'] = $cartID;
-        $this->DB                         = new \Database();
-
-        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=postThis()<BR/>';
-        var_dump($this);
-
+        self::getCartInfo($cartID);
+        // Session cart info
+        if (empty($_SESSION['cartName'])) {
+            $_SESSION['cartID']    = $this->data['session']['cartID'];
+            $_SESSION['cartName']  = $this->data['session']['cartName'];
+            $_SESSION['cartTheme'] = $this->data['session']['cartTheme'];
+        }
+        //$this->data['session']['cartID'] = $cartID;
+        //$this->data['session']['cartTheme'] = self::getCartTheme();
         //$this->doIKnowYou();
     }
 
@@ -95,6 +90,16 @@ class KillerCart
         }
     }
 
+
+
+
+
+
+
+
+
+
+
     /**
      * doIKnowYou
      *
@@ -105,9 +110,13 @@ class KillerCart
      * @uses resumeSession
      * @uses startSession
      * @return boolean True on existing session, False on unknown
+     *
+     * @deprecated since v2
      */
     private function doIKnowYou()
     {
+        return;
+
         \Errors::debugLogger(__METHOD__, 10);
         if (isset($_SERVER['HTTP_COOKIE'])
                 && (!empty($_COOKIE[cartCodeNamespace])
@@ -147,9 +156,13 @@ class KillerCart
      * @uses setCookie
      * @uses saveSession
      * @return boolean
+     *
+     * @deprecated since v2
      */
     private function startNewSession()
     {
+        return;
+
         \Errors::debugLogger(__METHOD__, 10);
         // Make new fingerprint for visitor
         $this->makeFingerprint();
@@ -211,7 +224,7 @@ class KillerCart
      * @uses decrypt
      * @return boolean
      *
-     * @deprecated
+     * @deprecated since v2
      */
     private function resumeSession()
     {
@@ -255,9 +268,13 @@ class KillerCart
      * @uses getVisitorIP
      * @return boolean
      * @todo expand validation to browser fingerprint etc.
+     *
+     * @deprecated since v2
      */
     private function validateVisitor($fingerprint)
     {
+        return;
+
         \Errors::debugLogger(__METHOD__, 10);
         \Errors::debugLogger(func_get_args(), 10);
         $this->sql = "
@@ -292,9 +309,13 @@ class KillerCart
      *
      * @uses getVisitorIP
      * @return string Visitor unique fingerprint
+     *
+     * @deprecated since v2
      */
     private function makeFingerprint()
     {
+        return;
+
         \Errors::debugLogger(__METHOD__, 10);
         $this->getVisitorIP();
         $this->data['session']['fingerprint'] = hash('sha512',
@@ -310,9 +331,13 @@ class KillerCart
      * Gets visitor IP address
      *
      * @return string Visitor IP address
+     *
+     * @deprecated since v2
      */
     private function getVisitorIP()
     {
+        return;
+
         \Errors::debugLogger(__METHOD__, 10);
         $ip = $_SERVER['REMOTE_ADDR'];
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -335,7 +360,7 @@ class KillerCart
      * @todo Regenerate fingerprint
      * @todo domain
      *
-     * @deprecated
+     * @deprecated since v2
      */
     private function setCookie()
     {
@@ -379,9 +404,12 @@ class KillerCart
      * @version v0.0.1
      * 
      * @return boolean
+     *
+     * @deprecated since v2
      */
     public function removeCookies()
     {
+        return;
         \Errors::debugLogger(__METHOD__, 10);
         if (isset($_SERVER['HTTP_COOKIE'])) {
             $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
@@ -406,9 +434,13 @@ class KillerCart
      * @param string $authKey
      * @param string $plain
      * @return string Encrypted $plain
+     *
+     * @deprecated since v2
      */
     function encrypt($key, $authKey, $plain)
     {
+        return;
+
         \Errors::debugLogger(__METHOD__, 9);
         \Errors::debugLogger(func_get_args(), 9);
         $size       = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CFB);
@@ -425,9 +457,13 @@ class KillerCart
      * @param string $authKey
      * @param string $encrypted
      * @return string Decrypted $encrypted
+     *
+     * @deprecated since v2
      */
     function decrypt($key, $authKey, $encrypted)
     {
+        return;
+
         \Errors::debugLogger(__METHOD__, 9);
         \Errors::debugLogger(func_get_args(), 9);
         $size       = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CFB);
