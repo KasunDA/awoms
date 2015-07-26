@@ -221,6 +221,8 @@ class Brand extends Model
             ACL::UpdateAccess($id, $usergroupID, NULL, 'acls', 1, 1, 1, 1);
 
             // Full permissions for rest of standard items
+            ACL::UpdateAccess($id, $usergroupID, NULL, 'carts', 1, 1, 1, 1);
+
             ACL::UpdateAccess($id, $usergroupID, NULL, 'services', 1, 1, 1, 1);
             ACL::UpdateAccess($id, $usergroupID, NULL, 'files', 1, 1, 1, 1);
 
@@ -244,6 +246,7 @@ class Brand extends Model
         $usergroupID = $Usergroup->update($data);
 
         // Assign new Store Owners group default ACL
+        ACL::UpdateAccess($id, $usergroupID, NULL, 'carts', 0, 1, 0, 0); // R
         ACL::UpdateAccess($id, $usergroupID, NULL, 'files', 1, 1, 1, 1);
         ACL::UpdateAccess($id, $usergroupID, NULL, 'stores', 0, 1, 1, 0); // RU
         ACL::UpdateAccess($id, $usergroupID, NULL, 'domains', 1, 1, 1, 1); // CRUD

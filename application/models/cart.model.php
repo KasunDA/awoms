@@ -40,4 +40,13 @@ class Cart extends Model
         return parent::getWhere($where, $cols, $order, $aclWhere, $in, $loadChildren);
     }
 
+    public static function LoadExtendedItem($item)
+    {
+        if (empty($item['address'])) {
+            $Address = new Address();
+            $item['address'] = $Address->getSingle(array('addressID' => $item['addressID']));
+        }
+        return $item;
+    }
+
 }

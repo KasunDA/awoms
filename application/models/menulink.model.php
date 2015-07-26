@@ -5,7 +5,7 @@ class MenuLink extends Model
     /**
      * Log Level
      *
-     * @var int $logLevel Config log level; 0 would always be logged, 9999 would only be logged in Dev
+     * @var int $logLevel Config log level used for this class
      */
     protected static $logLevel = 1000;
 

@@ -29,6 +29,14 @@ if (!empty($items) && $isGlobalAdmin && $this->controller != "brands")
         $brands          = $Brand->getWhere();
         $showBrandColumn = TRUE;
     }
+    elseif ($this->controller == "carts")
+    {
+        // Carts dont have brandID but a Brand can:
+        // Brands List (single db call)
+        $Brand           = new Brand();
+        $brands          = $Brand->getWhere();
+        $showBrandColumn = TRUE;
+    }
     else
     {
         // Only show brand column if this is an item that has Brand to show
@@ -59,6 +67,14 @@ if (!empty($items) && $isGlobalAdmin && $this->controller != "stores")
 //        $Store           = new Store();
 //        $stores          = $Store->getWhere();
 //        $showStoreColumn = TRUE;
+    }
+    elseif ($this->controller == "carts")
+    {
+        // Carts dont have storeID but a Store can:
+        // Stores List (single db call)
+        $Store           = new Store();
+        $stores          = $Store->getWhere();
+        $showStoreColumn = TRUE;
     }
     else
     {

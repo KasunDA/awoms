@@ -248,24 +248,18 @@ class Menu extends Model
         }
         
         // Carts
-        /*
-        if (ACL::IsUserAuthorized('carts', 'create'))
+        if (ACL::IsUserAuthorized('carts', 'readall'))
+        {
+            $menu['Carts'] = array(
+                "display" => "Carts",
+                "url"     => "/carts/readall");
+            if (ACL::IsUserAuthorized('carts', 'create'))
             {
-                // Add to Stores sub-menu if can
-                if (!empty($menu['Stores']))
-                {
-                    $menu['Stores']['sub']['Carts']['sub']['Add Cart'] = array(
-                        "display" => "Add Cart",
-                        "url"     => "/carts/create");
-                }
-                else
-                {
-                    $menu['Carts']['sub']['Add Carts'] = array(
-                        "display" => "Add Service",
-                        "url"     => "/carts/create");
-                }
+                $menu['Carts']['sub']['Add Cart'] = array(
+                    "display" => "Add Cart",
+                    "url"     => "/carts/create");
             }
-            */
+        }
 
         // Users
         if (ACL::IsUserAuthorized('users', 'readall'))
@@ -347,6 +341,9 @@ class Menu extends Model
 //                    "url"     => "/articles/create");
 //            }
 //        }
+
+
+        /*
         // Comments
         if (ACL::IsUserAuthorized('comments', 'readall'))
         {
@@ -354,6 +351,7 @@ class Menu extends Model
                 "display" => "Comments",
                 "url"     => "/comments/readall");
         }
+        */
 
         /*
         $menu['Log Out'] = array(
