@@ -106,6 +106,7 @@ class Util
                     $sortOrder = NULL;
                 }
                 // If replaceing image, save new image with same sort order as old
+                $origImgID = NULL;
                 if (!empty($_POST['origImgID'])) {
                     $origImgID = $_POST['origImgID'];
                     if (!empty($_POST['imgSortOrder'.$origImgID])) {

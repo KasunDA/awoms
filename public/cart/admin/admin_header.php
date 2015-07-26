@@ -23,7 +23,7 @@ require_once($cartPrivateSettingsFile);
 
 // Load cart class and session data
 $cart                    = new killerCart\KillerCart(CART_ID);
-$auth                    = new killerCart\Auth();
+//$auth                    = new killerCart\Auth();
 if (empty($_REQUEST['customerID'])) {
     \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] CustomerID is Empty. sessionName = Customer', 1, true);
     $sessionName = cartCodeNamespace.'Customer';
@@ -60,8 +60,6 @@ if (!empty($_SESSION['user'])) {
     $_SESSION['user']['ACL']['cart']    = array('read'  => 1, 'write' => 1);
     $_SESSION['user']['ACL']['billing']  = array('read'  => 1, 'write' => 1);
     $_SESSION['user']['ACL']['shipping'] = array('read'  => 1, 'write' => 1);
-
-    Session::saveSessionToDB();
 
     /* @TODO
     // Shipping
@@ -103,6 +101,9 @@ if (!empty($_SESSION['user'])) {
         $_SESSION['user']['usergroupName']  = $u['groupName'];
         unset($_SESSION['customerID']);
     }
+    
+    Session::saveSessionToDB();
+
 } else {
     \Errors::debugLogger('You are NOT logged in', 10);
 }
@@ -126,14 +127,14 @@ if (empty($_SESSION['user'])) {
     if (!empty($_POST['a']) && $_POST['a'] == 'login') {
         // Validate and sanitize required params
         if (empty($_POST['username']) || empty($_POST['passphrase'])) {
-            trigger_error('Missing parameters.', E_USER_ERROR);
+            trigger_error('1006A - Invalid login parameters', E_USER_ERROR);
             return false;
         }
         $s    = new killerCart\Sanitize();
         $args = array('username'   => FILTER_SANITIZE_SPECIAL_CHARS,
             'passphrase' => FILTER_SANITIZE_SPECIAL_CHARS);
         if (!$san  = $s->filterArray(INPUT_POST, $args)) {
-            trigger_error('Invalid parameters.', E_USER_ERROR);
+            trigger_error('1006B - Invalid login parameters', E_USER_ERROR);
             return false;
         }
 
@@ -169,17 +170,8 @@ if (empty($_SESSION['user'])) {
             //reload page (to have new settings take effect)
             Session::saveSessionToDB();
             header('Location: ' . $_SERVER['REQUEST_URI']);
+            exit(0);
         }
-
-        /*
-        if (!$auth->checkCartUserLogin($san['username'], $san['passphrase'])) {
-            $e->dbLogger('Failed login for '.$san['username'], $_SESSION['cartID'], 'Audit', __FILE__, __LINE__);
-            $fail_msg = "Login failed! Caps Lock? Typo? Try again or click 'Reset Password' to get a new one.";
-        } else {
-            $e->dbLogger('Successful login for '.$san['username'], $_SESSION['cartID'], 'Audit', __FILE__, __LINE__);
-            header('Location: ' . $_SERVER['REQUEST_URI']);
-        }
-        */
     }
 
 } else {

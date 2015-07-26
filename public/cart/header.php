@@ -22,110 +22,23 @@ require_once($cartPrivateSettingsFile);
 \Errors::debugLogger(PHP_EOL . serialize($_POST) . PHP_EOL . '*****' . PHP_EOL, 8);
 
 // Load cart class and session data
-echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Attempting to init AWOMS cart<BR/>';
 $cart                    = new killerCart\KillerCart(CART_ID);
 // Authentication and Authorization
 //$auth                    = new killerCart\Auth();
 
+// Admin logged in, impersonating a customer
 if (empty($_REQUEST['customerID'])) {
-    \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] CustomerID is Empty. sessionName = Customer', 1, true);
     $sessionName = cartCodeNamespace.'Customer';
 } else {
-    \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] CustomerID is: '.$_REQUEST['customerID'].'. sessionName = Admin', 1, true);
     $sessionName = cartCodeNamespace.'Admin';
 }
-echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=SessionName='.$sessionName.':<BR/>';
-
-//
-// BEGIN CODE SPECIFIC TO EXISTING USER LOGIN EXCHANGE
-// (Allow use of existing logins exchanged to cart customers accounts)
-//
-/*
-if ($_SERVER['HTTP_HOST'] == "goinpostal.com")
-{
-// This must match the existing session cookie name
-$existingSessionName = "PHPSESSID"; // <-- When removing GP code this reference in the Logout section below needs to be removed as well
-// Customer Session
-if ($sessionName == 'killerCartCustomer') {
-    // Not logged into Cart
-    if (empty($_SESSION['customerID'])) {
-        // No cookie -> redirect to existing login
-        if (empty($_COOKIE[$existingSessionName])) {
-            $existingAuthenticated = FALSE;
-        } else {
-            // Cookie exists, Check for unconsumed user exchange sessions
-            $ux = $auth->getUserExchange($_COOKIE[$existingSessionName]);
-
-            if (OPMODE == 'DEV') {
-                $ux                   = array();
-                $ux['existingUser']   = 'zephyrhills';
-                $ux['sessionName']    = $existingSessionName;
-                $ux['sessionValue']   = $_COOKIE[$existingSessionName];
-                $ux['authenticated']  = 1;
-                $ux['sessionExpires'] = NULL;
-            }
-
-            // No unconsumed sessions available, will redirect to login
-            if ($ux === FALSE) {
-                $existingAuthenticated = FALSE;
-            } else {
-                // Unconsumed session available, consume/initlogin! (<.....*
-                $existingAuthenticated  = TRUE;
-                $customer               = new killerCart\Customer();
-                $_SESSION['customerID'] = $customer->getCustomerIDByUsername($ux['existingUser']);
-
-                // Owners login authenticated, but no cart customer ID for this user yet...
-                if (empty($_SESSION['customerID'])) {
-                    $dbCustomerID                  = NULL;
-                    $_SESSION['customerID']        = 'NEW';
-                    $_SESSION['cInfo']['username'] = $ux['existingUser'];
-                } else {
-                    $dbCustomerID      = $_SESSION['customerID'];
-                    $_SESSION['cInfo'] = $customer->getCustomerInfo($_SESSION['customerID']);
-                }
-                // Consume exchange session
-                $auth->updateUserExchange($ux['sessionName'], $ux['sessionValue'], $ux['authenticated'], $ux['existingUser'],
-                                          $dbCustomerID, $ux['sessionExpires'], TRUE);
-            }
-        }
-    } else {
-        // Is logged In
-        $existingAuthenticated = TRUE;
-
-        // Load Customer Info
-        if (empty($_SESSION['cInfo']['firstName']) && $_SESSION['customerID'] != 'NEW') {
-            $customer          = new killerCart\Customer();
-            $_SESSION['cInfo'] = $customer->getCustomerInfo($_SESSION['customerID']);
-        }
-    }
-    // Redirect to Owners Login
-    if ($existingAuthenticated === FALSE) {
-        $devLoc = strtolower(OPMODE);
-        if ($devLoc == 'prod') {
-            $devLoc = 'cart';
-        }
-        header("Location: https://www.goinpostal.com/owners/login.php?returnUrl=".$devLoc);
-        exit;
-    }
-}
-}
- * 
- */
-//
-// END CODE SPECIFIC TO GOINPOSTAL.COM OWNERS STORE
-//
-
-// Admin Impersonation
 if ($sessionName == 'killerCartAdmin') {
-    
     \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] killerCartAdmin', 1, true);
     
     // ACL Check
     if (!empty($_SESSION['user']['usergroup']['usergroupID']) && $_SESSION['user']['usergroup']['usergroupID'] <= 2
     ) {
-        
         \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] Load Customer Data', 1, true);
-        
         // Load Customer Data into Session (one-time only)
         if (empty($_SESSION['customerID']) || ($_SESSION['customerID'] != $_REQUEST['customerID'])) {
             $s                      = new killerCart\Sanitize();
@@ -134,9 +47,7 @@ if ($sessionName == 'killerCartAdmin') {
             $_SESSION['cInfo']      = $customer->getCustomerInfo($_SESSION['customerID']);
         }
     } else {
-        
         \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] Security catch', 1, true);
-        
         trigger_error('Security catch.', E_USER_ERROR);
         return false;
     }
@@ -144,6 +55,7 @@ if ($sessionName == 'killerCartAdmin') {
 
 // Session cart info
 if (empty($_SESSION['cartID'])) {
+    \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] loading session cart info?... this still needed?', 1, true);
     $cart->getCartInfo($cartID);
     $_SESSION['cartID']    = $cart->session['cartID'];
     $_SESSION['cartName']  = $cart->session['cartName'];
@@ -178,29 +90,15 @@ if (!empty($_REQUEST['p']) && $_REQUEST['p'] == 'account') {
                 $parts = explode('=', $cookie);
                 $name  = trim($parts[0]);
                 // Only delete our cookies
-                
-                // CODE SPECIFIC TO EXISTING USER LOGIN EXCHANGE
-                if ($_SERVER['HTTP_HOST'] == "goinpostal.com")
-                {
-                    if (!in_array($name, array('killerCartCustomer', $existingSessionName))) {
-                        continue;
-                    }
+                if (!in_array($name, array('killerCartCustomer'))) {
+                    continue;
                 }
-                else
-                {
-                    if (!in_array($name, array('killerCartCustomer'))) {
-                        continue;
-                    }
-                }
-                
                 setcookie($name, '', time() - 1000);
                 setcookie($name, '', time() - 1000, '/');
             }
         }
         session_destroy();
-        
         \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] RESET Send to Account', 1, true);
-        
         header('Location: ' . cartPublicUrl . '?p=account');
         exit(0);
     }
@@ -210,7 +108,7 @@ if (!empty($_REQUEST['p']) && $_REQUEST['p'] == 'account') {
 
         if (!empty($_POST['a']) && $_POST['a'] == 'login') {
             if (empty($_POST['username']) || empty($_POST['passphrase'])) {
-                trigger_error('1006 - Invalid login parameters', E_USER_ERROR);
+                trigger_error('1006C - Invalid login parameters', E_USER_ERROR);
                 return false;
             }
             if (empty($s)) {
@@ -219,14 +117,29 @@ if (!empty($_REQUEST['p']) && $_REQUEST['p'] == 'account') {
             $args = array('username'   => FILTER_SANITIZE_SPECIAL_CHARS,
                 'passphrase' => FILTER_SANITIZE_SPECIAL_CHARS);
             if (!$san  = $s->filterArray(INPUT_POST, $args)) {
-                trigger_error('Invalid parameters.', E_USER_ERROR);
+                trigger_error('1006D - Invalid login parameters', E_USER_ERROR);
                 return false;
             }
-            if (!$auth->checkCustomerUserLogin($san['username'], $san['passphrase'])) {
+
+            // Now, Validate Login attempt
+            $e   = new Errors();
+            $User = new User();
+            $u = $User->ValidateLogin($san['username'], $san['passphrase']);
+            if ($u === FALSE)
+            {
+                $e->dbLogger('Failed login for '.$san['username'], $_SESSION['cartID'], 'Audit', __FILE__, __LINE__);
                 $fail_msg = "Login failed! Caps Lock? Typo? Try again or click 'Reset Password' to get a new one.";
             } else {
+                $e->dbLogger('Successful login for '.$san['username'], $_SESSION['cartID'], 'Audit', __FILE__, __LINE__);
+                // Setting (missing) session variables
+                $_SESSION['user']['userID']     = $u['userID'];
+                $_SESSION['user']['userName']   = $san['username'];
+                $_SESSION['user']['usergroup']  = $u['usergroup'];
 
-                // Returning customer logged in trying to checkout
+                //reload page (to have new settings take effect)
+                Session::saveSessionToDB();
+
+                // Returning customer logged in, resuming checkout
                 if (!empty($_REQUEST['r']) && $_REQUEST['r'] == 'checkout'
                 ) {
                     header('Location: ' . cartPublicUrl . '?p=checkout');
