@@ -1,50 +1,55 @@
 <h1>Generic Home Template (<?php echo __FILE__; ?>)</h1>
 
-<p>CART WIP</p>
+<div style='background-color: #fff;'>CART WIP
 
 <?php
-return;
-
-/* * *** BEGIN CART CODE **** */
+/***** BEGIN CART CODE *****/
 /* ! IMPORTANT: DO NOT CHANGE THE BEGINNING OR ENDING TAGS OF THIS 'CART CODE' SECTION ! */
-/* * ***
+/*****
  * Set $cartID to your cart ID
  * Set $cartPrivateSettingsFile to the FULL PATH to the 'cart_settings.inc.php' file
  * Note: This file should NOT be in the public web root for security
  * Example: "/var/www/vhosts/cart.com/private/cart/cart_settings.inc.php"
  * Example: "C:\wamp\www\cart.com\private\cart\cart_settings.inc.php";
- * *** */
-$cartPrivateSettingsFile = "E:/Projects/GPFC/cart/cart_settings.inc.php";
+ *****/
+//$cartPrivateSettingsFile = "E:/Projects/GPFC/cart/cart_settings.inc.php";
+$cartPrivateSettingsFile = ROOT.DS."kcart".DS."cart_settings.inc.php";
+// This makes available: $Brand/$brand, $Store/$store, $Cart/$cart
 require_once($cartPrivateSettingsFile);
-\Errors::debugLogger(PHP_EOL . '***** New Page Load (' . $_SERVER['REQUEST_URI'] . ') *****', 1, true);
+\Errors::debugLogger(PHP_EOL . '***** New (Cart) Page Load (' . $_SERVER['REQUEST_URI'] . ') *****', 1, true);
 \Errors::debugLogger(PHP_EOL . serialize($_POST) . PHP_EOL . '*****' . PHP_EOL, 8);
+
 // Load cart class and session data
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Attempting to init AWOMS cart<BR/>';
 $cart                    = new killerCart\KillerCart(CART_ID);
-// Authentication and Authorization
-$auth                    = new killerCart\Auth();
-$sessionName = cartCodeNamespace . 'Customer';
-// Start Session
-$auth->startSession($sessionName);
-// Session cart info
-if (empty($_SESSION['cartID'])) {
-    $cart->getCartInfo(CART_ID);
-    $_SESSION['cartID']    = $cart->session['cartID'];
-    $_SESSION['cartName']  = $cart->session['cartName'];
-    $_SESSION['cartTheme'] = $cart->session['cartTheme'];
+
+//$auth                    = new killerCart\Auth();
+
+if (empty($_REQUEST['customerID'])) {
+    \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] CustomerID is Empty. sessionName = Customer', 1, true);
+    $sessionName = cartCodeNamespace.'Customer';
+} else {
+    \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] CustomerID is: '.$_REQUEST['customerID'].'. sessionName = Admin', 1, true);
+    $sessionName = cartCodeNamespace.'Admin';
 }
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=SessionName='.$sessionName.':<BR/>';
 // Stop loading rest if in ajax mode or mini-view mode
 if ((!empty($_REQUEST['m']) && $_REQUEST['m'] == 'ajax') || (!empty($isCartMini))) {return;}
 /***** END CART CODE *****/
 
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Home<BR/>';
+
 $image = new killerCart\Image();
 $s = $cart->getCartInfo($_SESSION['cartID']);
 $car = $cart->getStorefrontCarousel($_SESSION['cartID']);
-
 if (empty($car))
 {
-    include(ROOT.DS.'cart'.DS.'templates'.DS.'default'.DS.'storefront_home.inc.phtml'); //product_category'.DS.'product_category_list.inc.phtml');
+    echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Empty storefront carousel, default storefront home:<BR/>';
+    include(ROOT.DS.'kcart'.DS.'templates'.DS.$s['cartTheme'].DS.'storefront_home.inc.phtml'); //product_category'.DS.'product_category_list.inc.phtml');
     return;
 }
+
+echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Storefront carousel:<BR/>';
 
 $slideCount = 0;
 $tallestHeight = 0;

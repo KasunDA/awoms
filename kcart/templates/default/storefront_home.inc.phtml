@@ -1,8 +1,9 @@
 <?php
+$cartID = $_SESSION['cartID'];
 $cart = new killerCart\KillerCart($_SESSION['cartID']);
 $image = new killerCart\Image();
-$s = $cart->getCartInfo($cartID);
-$car = $cart->getStorefrontCarousel($cartID);
+$s = $cart->getCartInfo($_SESSION['cartID']);
+$car = $cart->getStorefrontCarousel($_SESSION['cartID']);
 
 if (empty($car))
 {

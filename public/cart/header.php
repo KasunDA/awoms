@@ -25,7 +25,7 @@ require_once($cartPrivateSettingsFile);
 echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Attempting to init AWOMS cart<BR/>';
 $cart                    = new killerCart\KillerCart(CART_ID);
 // Authentication and Authorization
-$auth                    = new killerCart\Auth();
+//$auth                    = new killerCart\Auth();
 
 if (empty($_REQUEST['customerID'])) {
     \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] CustomerID is Empty. sessionName = Customer', 1, true);
