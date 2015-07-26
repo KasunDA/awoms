@@ -81,6 +81,8 @@ More info: http://httpd.apache.org/docs/2.2/mod/mod_rewrite.html#rewritemap
  - 1002 = Unknown cart (kcart/cart_settings)
  - 1003 = Unable to load class (kcart/cart_settings)
  - 1004 = Unable to load class file (kcart/cart_settings)
+ - 1005 = Missing Cart ID (kcart/lib/killercart)
+ - 1006 = Invalid login parameters (public/cart/header)
 
 # Contact
 @author Brock Hensley <brock@brockhensley.com>

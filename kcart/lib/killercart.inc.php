@@ -41,25 +41,30 @@ class KillerCart
         \Errors::debugLogger(__METHOD__, 10);
         \Errors::debugLogger(func_get_args(), 10);
         if (empty($cartID)) {
-            trigger_error("Error #C001: Missing cart ID.", E_USER_ERROR);
+            trigger_error("1005 - Missing cart ID", E_USER_ERROR);
             return false;
         }
 
-        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'<BR/>';
-        echo "<h2>NEW KILLERCART - NEW SESSION</h2>";
-
+        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=LookupDomainBrand<BR/>';
         $load = \Bootstrap::lookupDomainBrand();
 
+        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=NewSession<BR/>';
         $s = new \Session();
-        var_dump($s);
 
-        echo "<h2>TS</h2>";
+        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=Session[data]:<BR/>';
         $ts = $s->data['session'];
         var_dump($ts);
+
+        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=preThis()<BR/>';
+        var_dump($this);
 
         $this->data['session'] = $ts;
         $this->data['session']['cartID'] = $cartID;
         $this->DB                         = new \Database();
+
+        echo str_replace("/home/dirt/Projects/AWOMS","",__FILE__).':'.__LINE__.'@'.time().'=postThis()<BR/>';
+        var_dump($this);
+
         //$this->doIKnowYou();
     }
 

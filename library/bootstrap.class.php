@@ -106,9 +106,11 @@ class Bootstrap
      */
     public static function lookupDomainBrand()
     {
+if (!defined("BRAND_ID"))
+{
         // Domain lookup
         $Domain = new Domain();
-        
+
         // Remove 'www.' prefix
         $domainName = $_SERVER['HTTP_HOST'];
         $domainName = str_replace("www.", "", $domainName);
@@ -167,7 +169,10 @@ class Bootstrap
             define('PROTOCOL', 'http://');
         }
 
-        define('CART_ID', $cartID);
+        if (!defined("CART_ID"))
+        {
+            define('CART_ID', $cartID);
+        }
         define('BRAND_ID', $brand['brandID']);
         define('BRAND', $brand['brandName']);
         define('BRAND_URL', PROTOCOL . $domain['domainName'] . '/');
@@ -176,6 +181,7 @@ class Bootstrap
         define('BRAND_LABEL', $brand['brandLabel']);
         define('BRAND_THEME', $brand['activeTheme']);
         define('BRAND_TITLE', $brand['brandMetaTitle']);
+}
     }
 
     /**
