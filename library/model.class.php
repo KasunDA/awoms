@@ -352,9 +352,12 @@ class Model extends Database
         // bodycontents -> @TODO same as menus
         Errors::debugLogger("Model.aclWhere :: Checking... (table: ".$this->table.")", Model::$logLevel);
         if (empty($_SESSION)
-            || $_SESSION['controller'] == "install"
-            || $_SESSION['controller'] == "tests"
-            || ($_SESSION['controller'] == "users" && in_array($_SESSION['action'], array('login','password')))
+            || (!empty($_SESSION['controller'])
+                    && ($_SESSION['controller'] == "install"
+                    || $_SESSION['controller'] == "tests"
+                    || ($_SESSION['controller'] == "users"
+                            && (!empty($_SESSION['action'])
+                                    && in_array($_SESSION['action'], array('login','password'))))))
             || in_array(strtolower($this->table),
                     array(
                 'usergroups',
@@ -372,7 +375,7 @@ class Model extends Database
             return $res;
         }
 
-        if (empty($_SESSION['user']))
+        if (empty($_SESSION['user']) || empty($_SESSION['user']['usergroup']))
         {
             // Anonymous User: Use brandID from active domain/session
             if (empty($_SESSION['brandID']))
@@ -386,7 +389,6 @@ class Model extends Database
         }
         else
         {
-
             // Logged In User
             if ($_SESSION['user']['usergroup']['usergroupName'] == "Administrators"
                 && $_SESSION['user']['usergroup']['brandID'] == 1)
@@ -442,7 +444,7 @@ class Model extends Database
          */
 
         // Non-Global-Admins (BrandID=1, Group=Admin) == limited by brand
-        if (empty($_SESSION['user'])
+        if (empty($_SESSION) || empty($_SESSION['user']) || empty($_SESSION['user']['usergroup'])
             || $_SESSION['user']['usergroup']['usergroupName'] != "Administrators"
             || $_SESSION['user']['usergroup']['brandID'] != 1)
         {
@@ -503,12 +505,15 @@ class Model extends Database
 
         // If we don't pass in a custom aclWhere:
         // Use aclWhere() which adds BrandID to WHERE clause if logged in user is a non-Administrator
-
+        // ...unless we are already filtering by non-empty brandID (trust?)
         // @TODO Improve this for actual Store Owners
-        if (empty($aclWhere) || (empty($aclWhere['where']) && empty($aclWhere['in'])))
+        if (empty($where) || empty($where['brandID']))
         {
-            Errors::debugLogger(__METHOD__.'@'.__LINE__."Applying ACL to getWhere to append BrandID...", Model::$logLevel);
-            $aclWhere = self::aclWhere();
+            if (empty($aclWhere) || (empty($aclWhere['where']) && empty($aclWhere['in'])))
+            {
+                Errors::debugLogger(__METHOD__.'@'.__LINE__."Applying ACL to getWhere to append BrandID...", Model::$logLevel);
+                $aclWhere = self::aclWhere();
+            }
         }
 
         // ACL Where may contain an array of IDs to use in a 'WHERE x IN (1,2,3)' query

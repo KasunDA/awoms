@@ -8,7 +8,7 @@ if (count(get_included_files()) == 1) {
 //
 // ACL Check
 //
-if (empty($cartACL['read']) && empty($globalACL['read'])
+if (empty($_SESSION['user']['ACL']['cart']['read']) && empty($_SESSION['user']['ACL']['global']['read'])
 ) {
     die("Unauthorized Access (403)");
 }
@@ -24,7 +24,7 @@ if (isset($_REQUEST['cartID'])) {
     //
     // ACL Check ensuring access to selected cart
     //
-    if (empty($globalACL['read']) && $_REQUEST['cartID'] != $_SESSION['cartID']) {
+    if (empty($_SESSION['user']['ACL']['global']['read']) && $_REQUEST['cartID'] != $_SESSION['cartID']) {
         die('403');
     }
     $cartID = $_REQUEST['cartID'];
@@ -32,7 +32,7 @@ if (isset($_REQUEST['cartID'])) {
 // Default: All carts if global admin, otherwise admins cart
 } else {
 
-    if (!empty($globalACL['read'])) {
+    if (!empty($_SESSION['user']['ACL']['global']['read'])) {
         $cartID = 'ALL';
     } else {
         $cartID = $_SESSION['cartID'];

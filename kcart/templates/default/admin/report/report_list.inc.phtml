@@ -6,7 +6,7 @@
         <input type='hidden' name='a' value='viewReport' />
         <?php
 // Show Cart selection if Global admin
-        if (!empty($globalACL['read'])) {
+        if (!empty($_SESSION['user']['ACL']['global']['read'])) {
             ?>
             <select name='cartID'>
                 <option value='ALL'<?php

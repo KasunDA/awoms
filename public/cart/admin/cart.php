@@ -9,7 +9,7 @@ if (count(get_included_files()) == 1) {
 //
 // ACL Check
 //
-if (empty($cartACL['read']) && empty($globalACL['read'])
+if (empty($_SESSION['user']['ACL']['cart']['read']) && empty($_SESSION['user']['ACL']['global']['read'])
 ) {
     die("Unauthorized Access (403)");
 }
@@ -175,7 +175,7 @@ if (!isset($_REQUEST['a'])) {
                     //
                     // ACL Check
                     //
-                    if (!empty($globalACL['write'])) {
+                    if (!empty($_SESSION['user']['ACL']['global']['write'])) {
                         // New Cart Form
                         include(cartPrivateDir . 'templates/'.$_SESSION['cartTheme'].'/admin/cart/cart_new_form.inc.phtml');
                     }

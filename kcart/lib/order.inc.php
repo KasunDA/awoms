@@ -506,7 +506,7 @@ class Order extends KillerCart
 			(:orderID, :dateReported, :userIDReported, :orderStatusCode)";
         $sql_data  = array(':orderID'         => $this->id,
             ':dateReported'    => Util::getDateTimeUTC(),
-            ':userIDReported'  => $_SESSION['userID'],
+            ':userIDReported'  => $_SESSION['user']['userID'],
             ':orderStatusCode' => $san_orderStatusCode);
         $results   = $this->DB->query($this->sql, $sql_data);
 
@@ -708,7 +708,7 @@ class Order extends KillerCart
         $sql_data                             = array(':orderID'            => $this->id,
             ':productID'          => $san_order_productID,
             ':dateReported'       => Util::getDateTimeUTC(),
-            ':userIDReported'     => $_SESSION['userID'],
+            ':userIDReported'     => $_SESSION['user']['userID'],
             ':deliveryStatusCode' => $san_order_product_deliveryStatusCode);
         return $this->DB->query($this->sql, $sql_data);
     }

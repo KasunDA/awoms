@@ -121,7 +121,7 @@ if ($sessionName == 'killerCartAdmin') {
     \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] killerCartAdmin', 1, true);
     
     // ACL Check
-    if (!empty($_SESSION['groupID']) && $_SESSION['groupID'] <= 2
+    if (!empty($_SESSION['user']['usergroup']['usergroupID']) && $_SESSION['user']['usergroup']['usergroupID'] <= 2
     ) {
         
         \Errors::debugLogger('['.__FILE__.':'.__LINE__.'] Load Customer Data', 1, true);

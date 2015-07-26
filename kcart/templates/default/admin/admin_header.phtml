@@ -27,7 +27,7 @@
         <![endif]-->
 
         <?php
-        if (empty($_SESSION['userID']) || !empty($fail_msg)) {
+        if (empty($_SESSION['user']['userID']) || !empty($fail_msg)) {
             ?>
             <div class='hero-unit'>
                 <h1 id='admin_login_title'>Welcome!&nbsp;<small>Please login to continue</small></h1>
@@ -132,9 +132,9 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href='<?php echo cartPublicUrl; ?>admin/?p=user&a=edit_user&userID=<?php echo $_SESSION['userID']; ?>'>
+                                <a href='<?php echo cartPublicUrl; ?>admin/?p=user&a=edit_user&userID=<?php echo $_SESSION['user']['userID']; ?>'>
                                     <i class='icon-user icon-white'></i>
-                                    &nbsp;<?php echo $_SESSION['username']; ?>
+                                    &nbsp;<?php echo $_SESSION['user']['userName']; ?>
                                 </a>
                             </li>
                             <li>

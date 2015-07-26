@@ -10,8 +10,8 @@ if (count(get_included_files()) == 1) {
 //
 // ACL Check: Read Access
 //
-if (empty($cartACL['read'])
-        && empty($globalACL['read'])
+if (empty($_SESSION['user']['ACL']['cart']['read'])
+        && empty($_SESSION['user']['ACL']['global']['read'])
 ) {
     trigger_error('Security alert.', E_USER_ERROR);
     return false;
@@ -19,7 +19,7 @@ if (empty($cartACL['read'])
 //
 // ACL Check: Cart limits
 //
-if ($_SESSION['groupID'] == 1) { // Global Admin
+if ($_SESSION['user']['usergroup']['usergroupID'] == 1) { // Global Admin
     $cartToGet = NULL; // All
 } else {
     $cartToGet = $_SESSION['cartID']; // This cart only
@@ -329,7 +329,7 @@ if (isset($_REQUEST['m'])
         //
         if (!empty($_REQUEST['categoryID'])) {
             $pcInfo = $category->getCategoryInfo($_REQUEST['categoryID']);
-            if ($pcInfo['cartID'] != $_SESSION['cartID'] && $_SESSION['groupID'] != 1) {
+            if ($pcInfo['cartID'] != $_SESSION['cartID'] && $_SESSION['user']['usergroup']['usergroupID'] != 1) {
                 trigger_error('Security alert.', E_USER_ERROR);
                 return false;
             }
@@ -446,7 +446,7 @@ if (isset($_REQUEST['a'])) {
             // ACL Check: Extra security check
             //
             if ($pcInfo['cartID'] != $_SESSION['cartID']
-                    && $_SESSION['groupID'] != 1
+                    && $_SESSION['user']['usergroup']['usergroupID'] != 1
                     ) {
                 trigger_error('Security alert.', E_USER_ERROR);
                 return false;

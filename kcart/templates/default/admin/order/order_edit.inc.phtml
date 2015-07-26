@@ -50,7 +50,7 @@ echo '&nbsp;<small>Viewing selected order</small></h1></div><!--#page-header-->'
                     <td>
                         <?php
                         // [x] ACL
-                        if (empty($billingACL['read'])) {
+                        if (empty($_SESSION['user']['ACL']['billing']['read'])) {
                             echo 'Restricted';
                         } else {
                             ?>
@@ -323,7 +323,7 @@ foreach ($order->getOrderStatusCodes() as $osc) {
                                 $allowVoidButton   = false;
                                 $allowRefundButton = false;
                                 // ACL: If allowed to change billing
-                                if (!empty($billingACL['write'])) {
+                                if (!empty($_SESSION['user']['ACL']['billing']['write'])) {
                                     if (empty($spg['gatewayOffline'])) {
                                         // Allow Charge Button if order authorized and shipping completed
                                         if ($orderCurStatusCode['orderStatusCode'] == 'ATH' && in_array($orderCurDeliveryStatusCode['deliveryStatusCode'],

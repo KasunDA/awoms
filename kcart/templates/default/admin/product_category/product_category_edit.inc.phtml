@@ -25,7 +25,7 @@
                             $cart = new killerCart\KillerCart($_SESSION['cartID']);
                             foreach ($cart->getCartIDs('All') as $k => $v) {
                                 // ACL Check
-                                if ($_SESSION['groupID'] != 1 && ($v['cartID'] != $_SESSION['cartID'])
+                                if ($_SESSION['user']['usergroup']['usergroupID'] != 1 && ($v['cartID'] != $_SESSION['cartID'])
                                 ) {
                                     continue;
                                 }

@@ -25,7 +25,7 @@ Edit User</small></h2>
                         //
                         // ACL Check
                         //
-                        if (empty($globalACL['write'])) {
+                        if (empty($_SESSION['user']['ACL']['global']['write'])) {
                             if ($_SESSION['cartID'] != $v['cartID']) {
                                 continue;
                             }
@@ -58,14 +58,14 @@ Edit User</small></h2>
                         // ACL Check
                         //
                         // Not global admin, skip group
-                        if (empty($globalACL['write'])) {
+                        if (empty($_SESSION['user']['ACL']['global']['write'])) {
                             if (strstr($g['groupName'], 'Global')) {
                                 continue;
                             }
                         }
                         // Not global or cart admin, skip group
-                        if (empty($globalACL['write'])
-                                && empty($cartACL['write'])) {
+                        if (empty($_SESSION['user']['ACL']['global']['write'])
+                                && empty($_SESSION['user']['ACL']['cart']['write'])) {
                             if ($g['groupID'] != $u['groupID']) {
                                 continue;
                             }
@@ -89,7 +89,7 @@ Edit User</small></h2>
                         //
                         // ACL Check
                         //
-                        if (empty($globalACL['write'])) {
+                        if (empty($_SESSION['user']['ACL']['global']['write'])) {
                             if (strstr($g['groupName'], 'Global')) {
                                 continue;
                             }

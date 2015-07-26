@@ -28,7 +28,7 @@
                             //
                             // ACL Check
                             //
-                            if (empty($globalACL['write'])) {
+                            if (empty($_SESSION['user']['ACL']['global']['write'])) {
                                 if ($_SESSION['cartID'] != $v['cartID']) {
                                     continue;
                                 }
@@ -57,7 +57,7 @@
                             //
                             // ACL Check
                             //
-                            if (empty($globalACL['write'])) {
+                            if (empty($_SESSION['user']['ACL']['global']['write'])) {
                                 if (strstr($g['groupName'], 'Global')) {
                                     continue;
                                 }

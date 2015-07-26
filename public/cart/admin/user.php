@@ -26,7 +26,7 @@ if (count(get_included_files()) == 1) {
         </div>
         <!--#page-header-->
         <?php
-        if ($_SESSION['groupID'] <= 2) {
+        if ($_SESSION['user']['usergroup']['usergroupID'] <= 2) {
             // New User Form
             include(cartPrivateDir . 'templates/'.$_SESSION['cartTheme'].'/admin/user/user_new_form.inc.phtml');
 
@@ -43,7 +43,7 @@ if (count(get_included_files()) == 1) {
             //
             // ACL Check
             //
-            if ($_SESSION['groupID'] > 2 && $_SESSION['userID'] != $_REQUEST['userID']) {
+            if ($_SESSION['user']['usergroup']['usergroupID'] > 2 && $_SESSION['user']['userID'] != $_REQUEST['userID']) {
                 die('403');
             }
 
@@ -104,9 +104,9 @@ if (count(get_included_files()) == 1) {
                     $aclCheck = FALSE;
                     $aclFailReason = 'Default...';
                     // Not a Global Admin
-                    if (empty($globalACL['write'])) {
+                    if (empty($_SESSION['user']['ACL']['global']['write'])) {
                         // Is a Cart Admin
-                        if (!empty($cartACL['write'])) {
+                        if (!empty($_SESSION['user']['ACL']['cart']['write'])) {
                             // Only allow this cart
                             if ($san['cartID'] != $_SESSION['cartID']) {
                                 // Allow all groups but Global Admin
@@ -128,12 +128,12 @@ if (count(get_included_files()) == 1) {
                                 $aclCheck = FALSE;
                             }
                             // Only allow this group
-                            if ($san['userGroupID'] != $_SESSION['groupID']) {
+                            if ($san['userGroupID'] != $_SESSION['user']['usergroup']['usergroupID']) {
                                 $aclFailReason = 'Not global admin, Not cart admin... BUT NOT allowed to modify Group ID!';
                                 $aclCheck = FALSE;
                             }
                             // Only allow this user
-                            if ($san['userID'] != $_SESSION['userID']) {
+                            if ($san['userID'] != $_SESSION['user']['userID']) {
                                 $aclFailReason = 'Not global admin, Not cart admin... BUT NOT allowed to modify User ID!';
                                 $aclCheck = FALSE;
                             }

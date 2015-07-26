@@ -142,18 +142,19 @@ class Auth
             $_SESSION['cartID']    = $u['cartID'];
             $_SESSION['cartName']  = $u['cartName'];
             $_SESSION['cartTheme'] = $u['cartTheme'];
-            $_SESSION['userID']     = $u['userID'];
-            $_SESSION['username']   = $username;
-            $_SESSION['groupID']    = $u['groupID'];
-            $_SESSION['groupName']  = $u['groupName'];
+
+            $_SESSION['user']['userID']     = $u['userID'];
+            $_SESSION['user']['userName']   = $username;
+            $_SESSION['user']['usergroup']['usergroupID']    = $u['groupID'];
+            $_SESSION['user']['usergroupName']  = $u['groupName'];
 
             // Save unprotected private key in session for reading of encrypted data throughout session
-            $_SESSION['unprotPrivKey'] = $this->getUnprotectedPrivateKey($this->getCartUsersProtectedPrivateKey($_SESSION['userID']),
+            $_SESSION['unprotPrivKey'] = $this->getUnprotectedPrivateKey($this->getCartUsersProtectedPrivateKey($_SESSION['user']['userID']),
                                                                                                                  $password);
             // If user has no keypair, call makeKeys to handle
             if (empty($_SESSION['unprotPrivKey'])) {
                 \Errors::debugLogger(__METHOD__ . ': Generating initial cart and user encryption keys on first login', 100);
-                $this->makeCartUserKeys($_SESSION['cartID'], $_SESSION['userID'], $password);
+                $this->makeCartUserKeys($_SESSION['cartID'], $_SESSION['user']['userID'], $password);
             }
             return true;
         } else {
@@ -254,7 +255,7 @@ class Auth
 
             /*
               $_SESSION['customCustomerID'] = $c['customCustomerID'];
-              $_SESSION['username']         = $c['username'];
+              $_SESSION['user']['userName']         = $c['username'];
               $_SESSION['email']            = $c['email'];
               $_SESSION['firstName']        = $cInfo['firstName'];
               $_SESSION['middleName']       = $cInfo['middleName'];
@@ -481,7 +482,7 @@ class Auth
         
         // Change protected private key in database
         $newProtPrivKey = self::extractProtectedPrivateKey($_SESSION['unprotPrivKey'], $passphrase, $opensslConfigPath);
-        if (!self::saveCartUserPrivateKey($newProtPrivKey, $_SESSION['userID'])) {
+        if (!self::saveCartUserPrivateKey($newProtPrivKey, $_SESSION['user']['userID'])) {
             \Errors::debugLogger(__METHOD__ . ': false saveUserPrivateKey');
             return false;
         }
@@ -490,7 +491,7 @@ class Auth
         $_SESSION['unprotPrivKey'] = $newUnprotPrivKey;
         // Change user passphrase in database
         $user                      = new User();
-        if (!$user->changeCartUserPassphrase($_SESSION['userID'], $passphrase)) {
+        if (!$user->changeCartUserPassphrase($_SESSION['user']['userID'], $passphrase)) {
             return false;
         }
         return true;

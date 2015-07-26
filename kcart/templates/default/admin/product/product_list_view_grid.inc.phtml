@@ -25,7 +25,7 @@ foreach ($productIDs as $productID) {
     //
     // ACL Check: Cart limit
     //
-    if (empty($globalACL['read'])) {
+    if (empty($_SESSION['user']['ACL']['global']['read'])) {
         if ($_SESSION['cartID'] != $p['cartID']) {
             continue;
         }

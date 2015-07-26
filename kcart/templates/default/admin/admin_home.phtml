@@ -18,7 +18,7 @@
                             <td>
                                 <?php
                                 // ACL Check
-                                if ($_SESSION['groupID'] == 1) {
+                                if ($_SESSION['user']['usergroup']['usergroupID'] == 1) {
                                     $cartToGet = NULL;
                                 } else {
                                     $cartToGet = $_SESSION['cartID'];
@@ -80,7 +80,7 @@
                 </div>
             </li>
             <?php
-            if (!empty($cartACL['read']) || !empty($globalACL['read'])
+            if (!empty($_SESSION['user']['ACL']['cart']['read']) || !empty($_SESSION['user']['ACL']['global']['read'])
             ) {
                 ?>
                 <li span='4'>
@@ -95,7 +95,7 @@
                 </li>
                 <?php
             }
-            if (!empty($cartACL['read']) || !empty($globalACL['read'])
+            if (!empty($_SESSION['user']['ACL']['cart']['read']) || !empty($_SESSION['user']['ACL']['global']['read'])
             ) {
                 ?>
                 <li span='4'>
@@ -110,7 +110,7 @@
                 </li>
                 <?php
             }
-            if (!empty($cartACL['read']) || !empty($globalACL['read'])
+            if (!empty($_SESSION['user']['ACL']['cart']['read']) || !empty($_SESSION['user']['ACL']['global']['read'])
             ) {
                 ?>
                 <li span='4'>
@@ -125,7 +125,7 @@
                 </li>
                 <?php
             }
-            if (!empty($cartACL['read']) || !empty($globalACL['read'])
+            if (!empty($_SESSION['user']['ACL']['cart']['read']) || !empty($_SESSION['user']['ACL']['global']['read'])
             ) {
                 ?>
                 <li span='4'>
@@ -141,7 +141,7 @@
                 <?php
             }
 
-            if (!empty($cartACL['read']) || !empty($globalACL['read'])
+            if (!empty($_SESSION['user']['ACL']['cart']['read']) || !empty($_SESSION['user']['ACL']['global']['read'])
             ) {
                 ?>
                 <li span='4'>

@@ -32,7 +32,7 @@
                         //
                         // If not Global Admin then you must be a Cart Admin, only show users of this cart
                         // also do not show Global Admins as Cart Admins do not have permission to edit Global
-                        if (empty($globalACL['read'])) {
+                        if (empty($_SESSION['user']['ACL']['global']['read'])) {
                             if ($u['cartID'] != $_SESSION['cartID']) {
                                 continue;
                             }

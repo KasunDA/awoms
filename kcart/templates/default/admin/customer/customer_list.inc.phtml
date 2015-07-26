@@ -2,7 +2,7 @@
 //
 // ACL Check
 //
-if ($_SESSION['groupID'] == 1) {
+if ($_SESSION['user']['usergroup']['usergroupID'] == 1) {
     $cartToGet = NULL;
 } else {
     $cartToGet = $_SESSION['cartID'];

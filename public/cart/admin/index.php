@@ -57,14 +57,14 @@ if (empty($_REQUEST['m'])) {
             }
         // Global Read/Write only
         case "log": {
-                if (!empty($globalACL['read'])) {
+                if (!empty($_SESSION['user']['ACL']['global']['read'])) {
                     $access = true;
                 }
                 break;
             }
         // Cart/Global Read/Write only
         case "report": {
-                if (!empty($cartACL['read']) || !empty($globalACL['read'])
+                if (!empty($_SESSION['user']['ACL']['cart']['read']) || !empty($_SESSION['user']['ACL']['global']['read'])
                 ) {
                     $access = true;
                 }
@@ -72,7 +72,7 @@ if (empty($_REQUEST['m'])) {
             }
         // Cart/Global Read/Write only
         case "product": {
-                if (!empty($cartACL['read']) || !empty($globalACL['read'])
+                if (!empty($_SESSION['user']['ACL']['cart']['read']) || !empty($_SESSION['user']['ACL']['global']['read'])
                 ) {
                     $access = true;
                 }
@@ -80,7 +80,7 @@ if (empty($_REQUEST['m'])) {
             }
         // Cart/Global Read/Write only
         case "product_category": {
-                if (!empty($cartACL['read']) || !empty($globalACL['read'])
+                if (!empty($_SESSION['user']['ACL']['cart']['read']) || !empty($_SESSION['user']['ACL']['global']['read'])
                 ) {
                     $access = true;
                 }
@@ -88,7 +88,7 @@ if (empty($_REQUEST['m'])) {
             }
         // Cart/Global Read/Write only
         case "cart": {
-                if (!empty($cartACL['read']) || !empty($globalACL['read'])
+                if (!empty($_SESSION['user']['ACL']['cart']['read']) || !empty($_SESSION['user']['ACL']['global']['read'])
                 ) {
                     $access = true;
                 }
@@ -97,8 +97,8 @@ if (empty($_REQUEST['m'])) {
         // Cart/Global Read/Write only
         // (Everyone allowed v0.0.1)
         case "user": {
-                //if (!empty($cartACL['read'])
-//                            || !empty($globalACL['read'])
+                //if (!empty($_SESSION['user']['ACL']['cart']['read'])
+//                            || !empty($_SESSION['user']['ACL']['global']['read'])
 //                    ) {
                 $access = true;
 //                }
@@ -106,7 +106,7 @@ if (empty($_REQUEST['m'])) {
             }
         // Cart/Global Read/Write only
         case "admin_getfile": {
-                if (!empty($cartACL['read']) || !empty($globalACL['read'])
+                if (!empty($_SESSION['user']['ACL']['cart']['read']) || !empty($_SESSION['user']['ACL']['global']['read'])
                 ) {
                     $access = true;
                 }

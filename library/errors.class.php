@@ -77,7 +77,7 @@ class Errors
      * 
      * @return boolean
      */
-    private function dbLogger($msg, $brandID = NULL, $cartID = NULL, $type = NULL, $file = NULL, $line = NULL)
+    public function dbLogger($msg, $brandID = NULL, $cartID = NULL, $type = NULL, $file = NULL, $line = NULL)
     {
         try
         {

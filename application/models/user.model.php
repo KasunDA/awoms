@@ -24,7 +24,6 @@ class User extends Model
 
     public function getWhere($where = NULL, $cols = NULL, $order = NULL, $aclWhere = NULL, $in = NULL, $loadChildren = FALSE)
     {
-
         if ($order == NULL)
         {
             $order = "usergroupID, lastName, firstName, userName";
@@ -32,10 +31,12 @@ class User extends Model
 
         // ACL: Ensure user only sees items they have permission to
         // if !empty aclwhere?
-
-        $aclWhere          = array();
-        $aclWhere['where'] = NULL;
-        $aclWhere['in']    = NULL;
+        if (empty($aclWhere))
+        {
+            $aclWhere          = array();
+            $aclWhere['where'] = NULL;
+            $aclWhere['in']    = NULL;
+        }
 
         // Admin: All
         // Else: users.usergroup.brand = users.usergroup.brand (done via model.class.aclWhere)
@@ -153,7 +154,6 @@ class User extends Model
      */
     public static function LoadExtendedItem($item)
     {
-
         // Group
         $Usergroup         = new Usergroup();
         $item['usergroup'] = $Usergroup->getSingle(array('usergroupID' => $item['usergroupID']));
@@ -195,7 +195,7 @@ class User extends Model
      */
     public function ValidateLogin($username, $passphrase)
     {
-        Errors::debugLogger(__METHOD__ . ': username: ' . $username . ' brandid: ' . BRAND_ID);
+        Errors::debugLogger(__METHOD__ . ': username: ' . $username . ' on brandid: ' . BRAND_ID);
         $UserGroup = new UserGroup();
         $groups    = $UserGroup->getWhere(array('brandID'         => BRAND_ID, 'usergroupActive' => 1));
         if (empty($groups))
@@ -210,17 +210,23 @@ class User extends Model
         {
             $in[] = $group['usergroupID'];
         }
+        // manually adding main brand id master admin group 10000 to include ability for master admin to login on sub-brand
+        $in[] = '10000';
 
         // Load user (with extended info (group))
-        $_user = self::getSingle(array('userActive'  => 1,
+        $where = array('userActive'  => 1,
                 'userName'    => strtolower($username), // Force lowercase for comparison and storage
-                'usergroupID' => NULL), // Gets IN (xxx) appended to it
-                                 $in, TRUE);
-
+                'usergroupID' => NULL);
+        $aclWhere = array('where' => $where);
+        $_user = self::getWhere($where, NULL, NULL, $aclWhere, $in, TRUE);
         if (empty($_user))
         {
             Errors::debugLogger(__METHOD__.': User not found');
             return false;
+        }
+        else
+        {
+            $_user = $_user[0];
         }
 
         if (crypt($passphrase, $_user['passphrase']) == $_user['passphrase'])
@@ -245,7 +251,7 @@ class User extends Model
         $UserGroup->update($updatedUser, "userSettings");
 
         return false;
-        // $_SESSION['unprotPrivKey'] = $this->getUnprotectedPrivateKey($this->getCartUsersProtectedPrivateKey($_SESSION['userID']), $password);
+        // $_SESSION['unprotPrivKey'] = $this->getUnprotectedPrivateKey($this->getCartUsersProtectedPrivateKey($_SESSION['user']['userID']), $password);
     }
 
     /**

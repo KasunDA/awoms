@@ -26,7 +26,7 @@ foreach ($cartIDs as $cartID) {
     //
     // ACL Check
     //
-    if (empty($globalACL['read'])) {
+    if (empty($_SESSION['user']['ACL']['global']['read'])) {
         if ($_SESSION['cartID'] != $cartID['cartID']) {
             continue;
         }

@@ -1,7 +1,5 @@
 <h1>Generic Home Template (<?php echo __FILE__; ?>)</h1>
-
 <div style='background-color: #fff;'>CART WIP
-
 <?php
 /***** BEGIN CART CODE *****/
 /* ! IMPORTANT: DO NOT CHANGE THE BEGINNING OR ENDING TAGS OF THIS 'CART CODE' SECTION ! */

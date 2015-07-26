@@ -11,7 +11,7 @@ if (count(get_included_files()) == 1) {
 //
 // ACL Check
 //
-if (empty($cartACL['read']) && empty($globalACL['read'])
+if (empty($_SESSION['user']['ACL']['cart']['read']) && empty($_SESSION['user']['ACL']['global']['read'])
 ) {
     die("Unauthorized Access (403)");
 }
@@ -72,7 +72,7 @@ if (!empty($_REQUEST['a']) && $_REQUEST['a'] == 'export'
             $label = $tables;
         }
 
-        $msg = '(' . $_SESSION['userID'] . ') ' . $_SESSION['username'] . ' requested export of ' . $label . ' successfully';
+        $msg = '(' . $_SESSION['user']['userID'] . ') ' . $_SESSION['user']['userName'] . ' requested export of ' . $label . ' successfully';
         \Errors::debugLogger($msg);
         $e   = new \Errors();
         $e->dbLogger($msg, $_SESSION['cartID'], 'Audit', __FILE__, __LINE__);

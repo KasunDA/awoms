@@ -74,7 +74,7 @@ if (count(get_included_files()) == 1) {
                                 $mpToken         = $mp->getToken($customerID, $paymentMethodID);
 
                                 // Prepare PreAuthCapture Request
-                                $operatorID  = $_SESSION['username'];
+                                $operatorID  = $_SESSION['user']['userName'];
                                 $tranType    = 'Credit';
                                 $tranCode    = 'PreAuthCaptureByRecordNo';
                                 $invoiceNo   = $order->id;
@@ -116,11 +116,11 @@ if (count(get_included_files()) == 1) {
                                 // Complete order if payment approved
                                 if ($returnStatus == 'Approved') {
                                     // Update order status to Paid
-                                    $order->setOrderStatusCode($customerID, $orderID, 'PD', $_SESSION['userID']);
+                                    $order->setOrderStatusCode($customerID, $orderID, 'PD', $_SESSION['user']['userID']);
                                     $label = 'Capture Payment Successful!';
                                 } else {
                                     // Mark order as declined instead of paid
-                                    $order->setOrderStatusCode($customerID, $orderID, 'DCL', $_SESSION['userID']);
+                                    $order->setOrderStatusCode($customerID, $orderID, 'DCL', $_SESSION['user']['userID']);
                                     $alertType = 'error';
                                     $label     = 'Capture Payment Declined!';
                                 }
@@ -146,7 +146,7 @@ if (count(get_included_files()) == 1) {
                                 $mpToken         = $mp->getToken($customerID, $paymentMethodID);
 
                                 // Prepare Universal Request Data
-                                $operatorID  = $_SESSION['username'];
+                                $operatorID  = $_SESSION['user']['userName'];
                                 $tranType    = 'Credit';
                                 $invoiceNo   = $order->id;
                                 $refNo       = $invoiceNo;
@@ -199,8 +199,8 @@ if (count(get_included_files()) == 1) {
                                     if ($returnStatus == 'Approved' && ($returnTextResponse == 'REVERSED' || $returnTextResponse == 'APPROVED STANDIN')) {
                                         \Errors::debugLogger(__FILE__ . ': Reverse Succeeded');
                                         // Update order status to Void
-                                        $order->setOrderStatusCode($customerID, $orderID, 'VD', $_SESSION['userID']);
-                                        $order->setOrderDeliveryStatusCode($customerID, $orderID, 'CNC', $_SESSION['userID']);
+                                        $order->setOrderStatusCode($customerID, $orderID, 'VD', $_SESSION['user']['userID']);
+                                        $order->setOrderDeliveryStatusCode($customerID, $orderID, 'CNC', $_SESSION['user']['userID']);
                                         $alertType  = 'success';
                                         $label      = 'Reversal Successful!';
                                         $doVoidSale = false;
@@ -286,8 +286,8 @@ if (count(get_included_files()) == 1) {
                                     // Complete order if payment approved
                                     if ($returnStatus == 'Approved') {
                                         // Update order status to Paid
-                                        $order->setOrderStatusCode($customerID, $orderID, 'VD', $_SESSION['userID']);
-                                        $order->setOrderDeliveryStatusCode($customerID, $orderID, 'CNC', $_SESSION['userID']);
+                                        $order->setOrderStatusCode($customerID, $orderID, 'VD', $_SESSION['user']['userID']);
+                                        $order->setOrderDeliveryStatusCode($customerID, $orderID, 'CNC', $_SESSION['user']['userID']);
                                         $alertType = 'success';
                                         $label     = 'Void Successful!';
                                     } else {
@@ -317,7 +317,7 @@ if (count(get_included_files()) == 1) {
                                 $mpToken         = $mp->getToken($customerID, $paymentMethodID);
 
                                 // Prepare Refund Request
-                                $operatorID  = $_SESSION['username'];
+                                $operatorID  = $_SESSION['user']['userName'];
                                 $tranType    = 'Credit';
                                 $tranCode    = 'ReturnByRecordNo';
                                 $invoiceNo   = $order->id;
@@ -353,7 +353,7 @@ if (count(get_included_files()) == 1) {
                                 // Update order status if refund approved
                                 if ($returnStatus == 'Approved') {
                                     // Update order status to Refunded
-                                    $order->setOrderStatusCode($customerID, $orderID, 'RFN', $_SESSION['userID']);
+                                    $order->setOrderStatusCode($customerID, $orderID, 'RFN', $_SESSION['user']['userID']);
                                     $label = 'Refund was Successful!';
                                 } else {
                                     $alertType = 'error';
@@ -364,7 +364,7 @@ if (count(get_included_files()) == 1) {
                                 // Update Order Status Code
                             //
                             } elseif ($_POST['ia'] == 'updateOrderStatusCode') {
-                                $order->setOrderStatusCode($customerID, $orderID, $_POST['orderStatusCode'], $_SESSION['userID']);
+                                $order->setOrderStatusCode($customerID, $orderID, $_POST['orderStatusCode'], $_SESSION['user']['userID']);
                                 $label = 'Order Status Updated!';
 
                                 //
@@ -372,7 +372,7 @@ if (count(get_included_files()) == 1) {
                             //
                             } elseif ($_POST['ia'] == 'update_orderDeliveryStatusCode') {
                                 $order->setOrderDeliveryStatusCode($customerID, $orderID, $_POST['orderDeliveryStatusCode'],
-                                                                   $_SESSION['userID']);
+                                                                   $_SESSION['user']['userID']);
                                 $label = 'Order Delivery Status Updated!';
 
                                 // Update order total when shipping completed
@@ -399,7 +399,7 @@ if (count(get_included_files()) == 1) {
                                 // If all products in order are shipped, automagically set order delivery status to shipped as well
                                 // as add total price with all shipping costs
                                 if ($order->getOrderProductsDeliveryReady($orderID)) {
-                                    $order->setOrderDeliveryStatusCode($customerID, $orderID, 'SHP', $_SESSION['userID']);
+                                    $order->setOrderDeliveryStatusCode($customerID, $orderID, 'SHP', $_SESSION['user']['userID']);
                                     $label         = 'Product & Order Delivery Updated!';
                                     // Update order total when shipping completed
                                     $totalDelivery = 0;
@@ -455,7 +455,7 @@ if (count(get_included_files()) == 1) {
                         } else {
 
                             // ACL: Not allowed to change shipping
-                            if (empty($shippingACL['write'])) {
+                            if (empty($_SESSION['user']['ACL']['shipping']['write'])) {
                                 $enableOrderDeliveryStatus   = ' disabled';
                                 $enableProductDeliveryStatus = ' disabled';
                             } else {
@@ -463,7 +463,7 @@ if (count(get_included_files()) == 1) {
                             }
 
                             // ACL: Allowed to see billing (and order has billing info)
-                            if (!empty($billingACL['read']) && $o['totalOrderPrice'] != '0.00') {
+                            if (!empty($_SESSION['user']['ACL']['billing']['read']) && $o['totalOrderPrice'] != '0.00') {
 
                                 // Payment Method Details
                                 $pm   = $order->getOrderPaymentMethod();
@@ -528,7 +528,7 @@ if (count(get_included_files()) == 1) {
                             // Disable Update Order Status Button unless in Offline processing & in state that can be changed
                             // [x] ACL
                             $enableOrderStatus = ' disabled';
-                            if (!empty($billingACL['write'])) {
+                            if (!empty($_SESSION['user']['ACL']['billing']['write'])) {
                                 if (!empty($spg['gatewayOffline']) || $o['totalOrderPrice'] == '0.00') {
                                     if (in_array($orderCurStatusCode['orderStatusCode'], array('PND', 'ATH', 'PD', 'CMP'))) {
                                         $enableOrderStatus = '';
